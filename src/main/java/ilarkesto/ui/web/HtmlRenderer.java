@@ -658,7 +658,12 @@ public class HtmlRenderer {
 	}
 
 	public void A(String href, String text) {
-		startA(href);
+		A(href, text, false);
+	}
+
+	public void A(String href, String text, boolean targetBlank) {
+		Tag a = startA(href);
+		if (targetBlank) a.setTargetBlank();
 		text(text);
 		endA();
 	}
