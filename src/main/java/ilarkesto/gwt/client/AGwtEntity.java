@@ -13,6 +13,7 @@ public abstract class AGwtEntity {
 
 	private String id;
 	private boolean inCreation;
+	private transient long localModificationTime = -7;
 
 	public abstract String getEntityType();
 
@@ -21,10 +22,20 @@ public abstract class AGwtEntity {
 	public AGwtEntity() {
 		this.id = getDao().getNewEntityId();
 		inCreation = true;
+		updateLocalModificationTime();
 	}
 
 	public AGwtEntity(Map data) {
 		this.id = (String) data.get("id");
+		updateLocalModificationTime();
+	}
+
+	public long getLocalModificationTime() {
+		return localModificationTime;
+	}
+
+	public void updateLocalModificationTime() {
+		localModificationTime = System.currentTimeMillis();
 	}
 
 	public final String getId() {
@@ -41,6 +52,7 @@ public abstract class AGwtEntity {
 		if (value instanceof Time) value = value.toString();
 		if (value instanceof DateAndTime) value = value.toString();
 		getDao().entityPropertyChanged(this, property, value);
+		updateLocalModificationTime();
 	}
 
 	public void storeProperties(Map properties) {
