@@ -12,11 +12,17 @@ import javax.servlet.http.HttpSession;
 import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.consumer.VerificationResult;
+import org.openid4java.discovery.DiscoveryException;
 import org.openid4java.discovery.DiscoveryInformation;
 import org.openid4java.discovery.Identifier;
 import org.openid4java.message.AuthRequest;
+import org.openid4java.message.AuthSuccess;
+import org.openid4java.message.MessageException;
 import org.openid4java.message.Parameter;
 import org.openid4java.message.ParameterList;
+import org.openid4java.message.ax.AxMessage;
+import org.openid4java.message.ax.FetchRequest;
+import org.openid4java.message.ax.FetchResponse;
 import org.openid4java.util.HttpClientFactory;
 import org.openid4java.util.ProxyProperties;
 
@@ -64,21 +70,103 @@ public class OpenId {
 		return false;
 	}
 
+	public static String createAuthenticationRequestUrl(String openId, String returnUrl, HttpSession session,
+			boolean fetchNickname, boolean nicknameRequired, boolean fetchFullname, boolean fullnameRequired,
+			boolean fetchEmail, boolean emailRequired) {
+		AuthRequest authReq = createAuthenticationRequest(openId, returnUrl, session);
+
+		FetchRequest fetch = FetchRequest.createFetchRequest();
+		if (fetchNickname) addAttribute(fetch, "nickname", getNicknameFetchRequestAttribute(openId), nicknameRequired);
+		if (fetchFullname) addAttribute(fetch, "fullname", getFullnameFetchRequestAttribute(openId), fullnameRequired);
+		if (fetchEmail) addAttribute(fetch, "email", getEmailFetchRequestAttribute(openId), emailRequired);
+		if (!fetch.getAttributes().isEmpty()) addExtension(authReq, fetch);
+
+		return authReq.getDestinationUrl(true);
+	}
+
+	private static String getEmailFetchRequestAttribute(String openId) {
+		if (isAxProvider(openId)) return "http://axschema.org/contact/email";
+		return "http://schema.openid.net/contact/email";
+	}
+
+	private static String getNicknameFetchRequestAttribute(String openId) {
+		if (isAxProvider(openId)) return "http://axschema.org/namePerson/friendly";
+		return "http://schema.openid.net/namePerson/friendly";
+	}
+
+	private static String getFullnameFetchRequestAttribute(String openId) {
+		if (isAxProvider(openId)) return "http://axschema.org/namePerson";
+		return "http://schema.openid.net/namePerson";
+	}
+
+	public static boolean isAxProvider(String openId) {
+		if (openId.contains("myopenid.com")) return false;
+		return true;
+	}
+
 	public static String createAuthenticationRequestUrl(String openId, String returnUrl, HttpSession session)
 			throws RuntimeException {
+		AuthRequest authReq = createAuthenticationRequest(openId, returnUrl, session);
+		return authReq.getDestinationUrl(true);
+	}
+
+	public static void appendFetchRequest(AuthRequest authReq, boolean required, String... attributes) {
+		FetchRequest fetch = FetchRequest.createFetchRequest();
+		for (String attribute : attributes) {
+			addAttribute(fetch, attribute, attribute, required);
+		}
+		addExtension(authReq, fetch);
+	}
+
+	public static void addExtension(AuthRequest authReq, FetchRequest fetch) {
 		try {
-			ConsumerManager manager = getConsumerManager(session);
-			List discoveries = manager.discover(openId);
-			DiscoveryInformation discovered = manager.associate(discoveries);
-			session.setAttribute("openIdDiscovered", discovered);
-			AuthRequest authReq = manager.authenticate(discovered, returnUrl);
-			return authReq.getDestinationUrl(true);
-		} catch (Exception ex) {
-			throw new RuntimeException("Creating OpenID authentication request URL failed.", ex);
+			authReq.addExtension(fetch);
+		} catch (MessageException ex) {
+			throw new RuntimeException("Adding fetch request to OpenID authentication request failed.", ex);
 		}
 	}
 
-	public static String getIdentifierFromCallback(HttpServletRequest request) {
+	public static void addAttribute(FetchRequest fetch, String alias, String attribute, boolean required) {
+		try {
+			fetch.addAttribute(alias, attribute, required);
+		} catch (MessageException ex) {
+			throw new RuntimeException("Adding fetch request attribute to OpenID authentication request failed: "
+					+ attribute, ex);
+		}
+	}
+
+	public static AuthRequest createAuthenticationRequest(String openId, String returnUrl, HttpSession session) {
+		ConsumerManager manager = getConsumerManager(session);
+		List discoveries;
+		try {
+			discoveries = manager.discover(openId);
+		} catch (DiscoveryException ex) {
+			throw new RuntimeException("Discovering OpenID failed: " + openId, ex);
+		}
+		DiscoveryInformation discovered = manager.associate(discoveries);
+		session.setAttribute("openIdDiscovered", discovered);
+		AuthRequest authReq;
+		try {
+			authReq = manager.authenticate(discovered, returnUrl);
+		} catch (Exception ex) {
+			throw new RuntimeException("OpenID Authentication with the provider failed: "
+					+ discovered.getDelegateIdentifier(), ex);
+		}
+		return authReq;
+	}
+
+	public static String getIdentifierIdFromCallback(HttpServletRequest request) {
+		Identifier verifiedId = getIdentifierFromCallback(request);
+		return verifiedId == null ? null : verifiedId.getIdentifier();
+	}
+
+	public static Identifier getIdentifierFromCallback(HttpServletRequest request) {
+		VerificationResult verification = getVerificationFromCallback(request);
+		Identifier verifiedId = verification.getVerifiedId();
+		return verifiedId;
+	}
+
+	public static VerificationResult getVerificationFromCallback(HttpServletRequest request) {
 		log.info("Reading OpenID response");
 		ParameterList openidResp = new ParameterList(request.getParameterMap());
 		for (Iterator iterator = openidResp.getParameters().iterator(); iterator.hasNext();) {
@@ -100,15 +188,51 @@ public class OpenId {
 		} catch (Exception ex) {
 			throw new RuntimeException("Reading OpenID response data failed.", ex);
 		}
-
-		Identifier verifiedId = verification.getVerifiedId();
-		return verifiedId == null ? null : verifiedId.getIdentifier();
+		return verification;
 	}
 
-	public static String getIdentifierFromCallbackWithoutSuffix(HttpServletRequest request) {
-		String id = getIdentifierFromCallback(request);
+	public static String getEmail(VerificationResult verification) {
+		String value = getFetchResponseAttribute(verification, "email");
+		return Str.isBlank(value) ? null : value;
+	}
+
+	public static String getFullname(VerificationResult verification) {
+		String value = getFetchResponseAttribute(verification, "fullname");
+		return Str.isBlank(value) ? null : value;
+	}
+
+	public static String getNickname(VerificationResult verification) {
+		String value = getFetchResponseAttribute(verification, "nickname");
+		return Str.isBlank(value) ? null : value;
+	}
+
+	public static String getOpenId(VerificationResult verification) {
+		if (verification == null) return null;
+		Identifier identifier = verification.getVerifiedId();
+		if (identifier == null) return null;
+		String id = identifier.getIdentifier();
 		if (id == null || !id.contains("#")) return id;
 		return Str.cutTo(id, "#");
+	}
+
+	public static String getFetchResponseAttribute(VerificationResult verification, String attributeAlias) {
+		if (verification == null) return null;
+		AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
+		if (!authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) return null;
+		FetchResponse fetchResp;
+		try {
+			fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
+		} catch (MessageException ex) {
+			throw new RuntimeException("Reading fetch response from OpenID callback failed.", ex);
+		}
+		List values = fetchResp.getAttributeValues(attributeAlias);
+		if (values.isEmpty()) return null;
+		return (String) values.get(0);
+	}
+
+	public static String getOpenIdFromCallback(HttpServletRequest request) {
+		VerificationResult verification = getVerificationFromCallback(request);
+		return getOpenId(verification);
 	}
 
 	public static ConsumerManager getConsumerManager(HttpSession session) {
