@@ -100,7 +100,7 @@ public class GwtDaoGenerator extends AClassGenerator {
 			ln("        entityCreated(" + nameLower + ", null);");
 			ln("    }");
 			ln();
-			ln("    private final void update" + name + "(Map data) {");
+			ln("    private final " + type + " update" + name + "(Map data) {");
 			ln("        String id = (String) data.get(\"id\");");
 			ln("        " + type + " entity =", mapVar + ".get(id);");
 			ln("        if (entity == null) {");
@@ -112,7 +112,7 @@ public class GwtDaoGenerator extends AClassGenerator {
 			ln("            entity.updateProperties(data);");
 			ln("            " + Log.class.getName() + ".DEBUG(\"" + name + " updated: \" + entity);");
 			ln("        }");
-			ln("        onEntityModifiedRemotely(entity);");
+			ln("        return entity;");
 			ln("    }");
 			ln();
 			ln("    public final", type, "get" + name + "(String id) {");
@@ -197,12 +197,11 @@ public class GwtDaoGenerator extends AClassGenerator {
 
 		ln();
 		ln("    @Override");
-		ln("    protected final void updateLocalEntity(String type, Map data) {");
+		ln("    protected final " + AGwtEntity.class.getName() + " updateLocalEntity(String type, Map data) {");
 		for (EntityModel entity : entities) {
 			ln("        if (type.equals(" + entity.getPackageName().replace(".server.", ".client.") + "."
 					+ entity.getName() + ".ENTITY_TYPE)) {");
-			ln("            update" + entity.getName() + "(data);");
-			ln("            return;");
+			ln("            return update" + entity.getName() + "(data);");
 			ln("        }");
 		}
 		ln("       throw new RuntimeException(\"Unsupported type: \" + type);");
@@ -219,19 +218,5 @@ public class GwtDaoGenerator extends AClassGenerator {
 		ln("        return ret;");
 		ln("    }");
 
-		// ln();
-		// ln("    @Override");
-		// ln("    public void handleDataFromServer(DataTransferObject data) {");
-		// ln("        super.handleDataFromServer(data);");
-		// for (EntityModel entity : entities) {
-		// String name = entity.getName();
-		// String type = entity.getPackageModel().toString().replace(".server.", ".client.") + "." + name;
-		// String nameLower = Str.lowercaseFirstLetter(name);
-		// String mapVar = nameLower + "s";
-		// ln();
-		// ln("        Collection<Map> " + nameLower + "s = data.get" + name + "s();");
-		// ln("        if (" + nameLower + "s != null) update" + name + "s(" + nameLower + "s);");
-		// }
-		// ln("    }");
 	}
 }

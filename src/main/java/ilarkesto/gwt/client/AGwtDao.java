@@ -14,7 +14,7 @@ public abstract class AGwtDao extends AComponent {
 
 	protected abstract Collection<Map<String, ? extends AGwtEntity>> getEntityMaps();
 
-	protected abstract void updateLocalEntity(String type, Map data);
+	protected abstract AGwtEntity updateLocalEntity(String type, Map data);
 
 	protected abstract void onEntityModifiedRemotely(AGwtEntity entity);
 
@@ -46,9 +46,12 @@ public abstract class AGwtDao extends AComponent {
 			entityIdBase = data.entityIdBase;
 			log.debug("entityIdBase received:", data.entityIdBase);
 		}
+		List<AGwtEntity> modifiedEntities = null;
 		if (data.containsEntities()) {
+			modifiedEntities = new ArrayList<AGwtEntity>(data.getEntities().size());
 			for (Map entityData : data.getEntities()) {
-				updateLocalEntity((String) entityData.get("@type"), entityData);
+				AGwtEntity entity = updateLocalEntity((String) entityData.get("@type"), entityData);
+				modifiedEntities.add(entity);
 			}
 		}
 		if (data.containsDeletedEntities()) {
@@ -62,6 +65,11 @@ public abstract class AGwtDao extends AComponent {
 						onEntityDeletedRemotely(entity);
 					}
 				}
+			}
+		}
+		if (modifiedEntities != null) {
+			for (AGwtEntity entity : modifiedEntities) {
+				onEntityModifiedRemotely(entity);
 			}
 		}
 	}
