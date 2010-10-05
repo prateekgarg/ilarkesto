@@ -65,13 +65,17 @@ public abstract class AWidget extends Composite implements Updatable {
 		wrapper.setContent(widget);
 	}
 
+	@Override
 	public final AWidget update() {
 		if (isResetRequired()) reset();
 		initialize();
-		// wrapper.setVisible(true);
-		// GwtLogger.DEBUG("Updating widget: " + toString());
+		if (!isUpdateRequired()) return this;
 		onUpdate();
 		return this;
+	}
+
+	protected boolean isUpdateRequired() {
+		return true;
 	}
 
 	public final boolean isInitialized() {
