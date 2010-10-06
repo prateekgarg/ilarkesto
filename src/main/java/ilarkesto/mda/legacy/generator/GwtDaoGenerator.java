@@ -7,6 +7,7 @@ import ilarkesto.base.time.Time;
 import ilarkesto.core.logging.Log;
 import ilarkesto.gwt.client.AGwtDao;
 import ilarkesto.gwt.client.AGwtEntity;
+import ilarkesto.gwt.client.EntityDoesNotExistException;
 import ilarkesto.mda.legacy.model.ApplicationModel;
 import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
@@ -117,7 +118,7 @@ public class GwtDaoGenerator extends AClassGenerator {
 			ln();
 			ln("    public final", type, "get" + name + "(String id) {");
 			ln("        " + type, "ret =", mapVar + ".get(id);");
-			ln("        if (ret == null) throw new RuntimeException(\"" + name + " does not exist: \" + id);");
+			ln("        if (ret == null) throw new " + EntityDoesNotExistException.class.getName() + "(id);");
 			ln("        return ret;");
 			ln("    }");
 			ln();
@@ -125,7 +126,7 @@ public class GwtDaoGenerator extends AClassGenerator {
 			ln("        Set<" + type + "> ret = new HashSet<" + type + ">();");
 			ln("        for (String id : ids) {");
 			ln("            " + type + " entity = " + mapVar + ".get(id);");
-			ln("            if (entity == null) throw new RuntimeException(\"" + name + " does not exist: \" + id);");
+			ln("            if (entity == null) throw new " + EntityDoesNotExistException.class.getName() + "(id);");
 			ln("            ret.add(entity);");
 			ln("        }");
 			ln("        return ret;");

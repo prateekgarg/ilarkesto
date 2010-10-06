@@ -403,6 +403,7 @@ public class GwtEntityGenerator extends ABeanGenerator<DatobModel> {
 				}
 			}
 		}
+		ln("        updateLocalModificationTime();");
 		ln("    }");
 	}
 
