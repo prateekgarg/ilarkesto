@@ -582,6 +582,10 @@ public class CssRenderer {
 			return attr("background", color + " url(" + url + ")");
 		}
 
+		public Style background(String color, String url, String repeat) {
+			return attr("background", color + " url(" + url + ") " + repeat);
+		}
+
 		public Style backgroundUrl(String imageUrl) {
 			return background("url(" + imageUrl + ")");
 		}
