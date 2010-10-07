@@ -28,6 +28,7 @@ public class Table extends ATable implements ItextElement {
 		return c;
 	}
 
+	@Override
 	public Element getITextElement() {
 		float[] cellWidths = getCellWidths();
 		PdfPTable t = cellWidths == null ? new PdfPTable(getColumnCount()) : new PdfPTable(cellWidths);
@@ -55,7 +56,7 @@ public class Table extends ATable implements ItextElement {
 			cell.setBorderRight(color, width);
 			cell.setBorderBottom(color, width);
 			if (col == 0) cell.setBorderLeft(color, width);
-			col++;
+			col += cell.getColspan();
 			if (col >= cols) {
 				col = 0;
 				row++;

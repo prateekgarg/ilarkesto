@@ -4,6 +4,8 @@ import java.awt.Color;
 
 public abstract class ACell extends APdfContainerElement {
 
+	private int colspan = 1;
+
 	private Color backgroundColor;
 
 	private Color borderTopColor;
@@ -25,6 +27,11 @@ public abstract class ACell extends APdfContainerElement {
 
 	public ACell(APdfElement parent) {
 		super(parent);
+	}
+
+	public ACell setColspan(int colspan) {
+		this.colspan = colspan;
+		return this;
 	}
 
 	public ACell setBorderTop(Color color, float width) {
@@ -95,6 +102,10 @@ public abstract class ACell extends APdfContainerElement {
 		setPaddingBottom(padding);
 		setPaddingLeft(padding);
 		return this;
+	}
+
+	public int getColspan() {
+		return colspan;
 	}
 
 	public Color getBackgroundColor() {

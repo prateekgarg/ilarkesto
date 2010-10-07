@@ -17,6 +17,11 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String appendIfNotBlank(String s, String suffix) {
+		if (isBlank(s)) return s;
+		return s + suffix;
+	}
+
 	public static String toHtml(String s) {
 		if (s == null) return null;
 		s = s.replace("&", "&amp;");

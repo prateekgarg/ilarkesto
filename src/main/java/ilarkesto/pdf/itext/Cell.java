@@ -60,6 +60,7 @@ public class Cell extends ACell implements ItextElement {
 		return i;
 	}
 
+	@Override
 	public Element getITextElement() {
 		PdfPCell cell = new PdfPCell();
 		cell.setBorderColorTop(getBorderTopColor());
@@ -79,6 +80,7 @@ public class Cell extends ACell implements ItextElement {
 		cell.setIndent(0);
 		cell.setUseBorderPadding(false);
 		cell.setBackgroundColor(getBackgroundColor());
+		cell.setColspan(getColspan());
 		for (ItextElement element : elements)
 			cell.addElement(element.getITextElement());
 		return cell;
