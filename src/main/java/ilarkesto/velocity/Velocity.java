@@ -4,9 +4,8 @@ import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.StringWriter;
 import java.util.Map;
 
 import org.apache.velocity.Template;
@@ -58,14 +57,15 @@ public class Velocity {
 	public void processTemplate(String name, File outputFile, VelocityContext velocityContext) {
 		log.debug("Processing", templateDir.getAbsolutePath() + "/" + name, "->", outputFile.getAbsolutePath());
 		IO.createDirectory(outputFile.getParentFile());
+		StringWriter out = new StringWriter();
 		try {
 			Template template = velocityEngine.getTemplate(name);
-			BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
 			template.merge(velocityContext, out);
 			out.close();
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			throw new RuntimeException("Processing velocity template failed: " + name, ex);
 		}
+		IO.writeFileIfChanged(outputFile, out.toString(), IO.UTF_8);
 	}
 
 	public static VelocityContext createContext(Map<String, ?> context) {

@@ -300,15 +300,13 @@ public class JavaPrinter {
 				LOG.debug("File already exists:", file.getPath());
 				return;
 			}
-			String oldCode = IO.readFile(file, charset);
-			if (oldCode.equals(toString())) {
-				LOG.debug("File is up to date:", file.getPath());
-				return;
-			}
 		}
 
-		LOG.info("Writing file:", file.getPath());
-		IO.writeFile(file, toString(), charset);
+		if (IO.writeFileIfChanged(file, toString(), charset)) {
+			LOG.info("File written:", file.getPath());
+		} else {
+			LOG.debug("File is up to date:", file.getPath());
+		}
 	}
 
 	@Override

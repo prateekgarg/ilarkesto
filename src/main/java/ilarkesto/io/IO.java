@@ -1039,17 +1039,7 @@ public abstract class IO {
 	}
 
 	public static void copyFile(String sourceFile, String destinationFile) {
-		FileInputStream in;
-		try {
-			in = new FileInputStream(sourceFile);
-		} catch (FileNotFoundException ex) {
-			throw new RuntimeException("File not found: " + sourceFile, ex);
-		}
-		try {
-			copyDataToFile(in, new File(destinationFile));
-		} finally {
-			close(in);
-		}
+		copyFile(new File(sourceFile), new File(destinationFile));
 	}
 
 	public static void copyFile(String src, OutputStream dst) {
@@ -1214,6 +1204,12 @@ public abstract class IO {
 
 	public static void writeFile(String fileName, String data, String charset) {
 		writeFile(new File(fileName), data, charset);
+	}
+
+	public static boolean writeFileIfChanged(File file, String data, String charset) {
+		if (file.exists() && IO.readFile(file, charset).equals(data)) return false;
+		writeFile(file, data, charset);
+		return true;
 	}
 
 	public static void writeFile(File file, String data, String charset) {
@@ -1511,6 +1507,7 @@ public abstract class IO {
 			HttpsURLConnection sconnection = (HttpsURLConnection) connection;
 			sconnection.setHostnameVerifier(new HostnameVerifier() {
 
+				@Override
 				public boolean verify(String hostname, SSLSession session) {
 					return true;
 				}
