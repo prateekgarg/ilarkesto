@@ -11,6 +11,8 @@ import java.io.IOException;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.HTMLElement;
+import com.meterware.httpunit.TableCell;
+import com.meterware.httpunit.WebImage;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 
@@ -115,6 +117,17 @@ public class Imdb {
 		} catch (SAXException ex) {
 			throw new RuntimeException(ex);
 		}
+		if (img == null) {
+			TableCell td;
+			try {
+				td = (TableCell) response.getElementWithID("img_primary");
+			} catch (SAXException ex1) {
+				throw new RuntimeException(ex1);
+			}
+			WebImage[] images = td.getImages();
+			if (images != null && images.length > 0) img = images[0];
+		}
+
 		if (img == null) return null;
 		String url = img.getAttribute("src");
 		if (url == null) return null;
