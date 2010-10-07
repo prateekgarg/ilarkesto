@@ -15,6 +15,8 @@ public abstract class AParagraph extends APdfElement {
 	private FontStyle defaultFontStyle;
 	protected float height;
 	protected Align align;
+	protected float spacingTop;
+	protected float spacingBottom;
 	protected List<AParagraphElement> elements = new ArrayList<AParagraphElement>(1);
 
 	public abstract AImage image(File file);
@@ -23,6 +25,14 @@ public abstract class AParagraph extends APdfElement {
 
 	public AParagraph(APdfElement parent) {
 		super(parent);
+	}
+
+	public void setSpacingTop(float spacingTop) {
+		this.spacingTop = spacingTop;
+	}
+
+	public void setSpacingBottom(float spacingBottom) {
+		this.spacingBottom = spacingBottom;
 	}
 
 	protected List<AParagraphElement> getElements() {

@@ -23,6 +23,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 		super(parent);
 	}
 
+	@Override
 	public Element getITextElement() {
 		com.lowagie.text.Paragraph p = new com.lowagie.text.Paragraph();
 		float maxSize = 0;
@@ -49,7 +50,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 				if (color != null) font.setColor(color);
 				chunk.setFont(font);
 				p.add(chunk);
-				float size = style.getSize() * 1.3f;
+				float size = (style.getSize() * 1.1f) + 1f;
 				if (size > maxSize) maxSize = PdfBuilder.mmToPoints(size);
 			} else if (element instanceof Image) {
 				Image image = (Image) element;
@@ -70,6 +71,8 @@ public class Paragraph extends AParagraph implements ItextElement {
 			}
 		}
 		p.setLeading(maxSize);
+		p.setSpacingBefore(PdfBuilder.mmToPoints(spacingTop));
+		p.setSpacingAfter(PdfBuilder.mmToPoints(spacingBottom));
 		if (align != null) p.setAlignment(convertAlign(align));
 		if (height <= 0) return p;
 

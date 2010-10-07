@@ -7,23 +7,32 @@ import java.util.List;
 public class ARow {
 
 	private List<ACell> cells = new ArrayList<ACell>();
+	private Color defaultBackgroundColor;
 
 	public ACell cell() {
 		ACell cell = table.cell();
+		cell.setBackgroundColor(defaultBackgroundColor);
 		cells.add(cell);
 		return cell;
 	}
 
 	public ACell cell(Object text, FontStyle fontStyle) {
 		ACell cell = table.cell(text, fontStyle);
+		cell.setBackgroundColor(defaultBackgroundColor);
 		cells.add(cell);
 		return cell;
 	}
 
 	public ACell cell(Object text) {
 		ACell cell = table.cell(text);
+		cell.setBackgroundColor(defaultBackgroundColor);
 		cells.add(cell);
 		return cell;
+	}
+
+	public ARow setDefaultBackgroundColor(Color backgroundColor) {
+		this.defaultBackgroundColor = backgroundColor;
+		return this;
 	}
 
 	public ARow setBorder(Color color, float width) {
