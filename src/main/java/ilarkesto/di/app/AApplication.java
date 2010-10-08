@@ -215,20 +215,16 @@ public abstract class AApplication {
 		return releaseLabel;
 	}
 
-	private Properties buildProperties;
+	protected Properties buildProperties;
 
 	public Properties getBuildProperties() {
 		if (buildProperties == null) {
-			if (isDevelopmentMode()) {
+			try {
+				buildProperties = IO.loadProperties(IO.getResource(getApplicationName() + ".build.properties"),
+					IO.UTF_8);
+			} catch (Throwable t) {
+				log.error(t);
 				buildProperties = new Properties();
-			} else {
-				try {
-					buildProperties = IO.loadProperties(IO.getResource(getApplicationName() + ".build.properties"),
-						IO.UTF_8);
-				} catch (Throwable t) {
-					log.error(t);
-					buildProperties = new Properties();
-				}
 			}
 		}
 		return buildProperties;
@@ -239,18 +235,22 @@ public abstract class AApplication {
 		final long deadline = System.currentTimeMillis() - Tm.DAY * 3;
 		IO.FileProcessor processor = new IO.FileProcessor() {
 
+			@Override
 			public boolean isAbortRequested() {
 				return false;
 			}
 
+			@Override
 			public void onFile(File file) {
 				if (file.lastModified() < deadline) IO.delete(file);
 			}
 
+			@Override
 			public boolean onFolderBegin(File folder) {
 				return true;
 			}
 
+			@Override
 			public void onFolderEnd(File folder) {
 				folder.delete();
 			}
