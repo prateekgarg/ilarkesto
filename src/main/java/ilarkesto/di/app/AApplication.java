@@ -4,6 +4,7 @@ import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
+import ilarkesto.base.time.Time;
 import ilarkesto.concurrent.ATask;
 import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.logging.Log;
@@ -210,9 +211,16 @@ public abstract class AApplication {
 	public String getReleaseLabel() {
 		if (releaseLabel == null) {
 			releaseLabel = getBuildProperties().getProperty("release.label");
-			if (releaseLabel == null || releaseLabel.equals("@release-label@")) releaseLabel = "dev";
+			if (releaseLabel == null || releaseLabel.equals("@release-label@"))
+				releaseLabel = "dev[" + getBuild() + "]";
 		}
 		return releaseLabel;
+	}
+
+	public String getBuild() {
+		String date = getBuildProperties().getProperty("date");
+		if ("@build-date@".equals(date)) date = Time.now().toString();
+		return date;
 	}
 
 	protected Properties buildProperties;
