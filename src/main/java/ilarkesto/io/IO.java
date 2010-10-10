@@ -241,6 +241,12 @@ public abstract class IO {
 		return sb.toString();
 	}
 
+	public static void closeQuiet(InputStream in) {
+		try {
+			in.close();
+		} catch (IOException ex) {}
+	}
+
 	public static void closeQuiet(OutputStream out) {
 		try {
 			out.close();
@@ -1377,12 +1383,30 @@ public abstract class IO {
 		return p;
 	}
 
-	public static Properties loadProperties(URL url, String encoding) throws IOException {
+	public static Properties loadPropertiesFromUrl(String url, String encoding) {
+		try {
+			return loadProperties(new URL(url), encoding);
+		} catch (MalformedURLException ex) {
+			throw new RuntimeException("Malformed URL: " + url, ex);
+		}
+	}
+
+	public static Properties loadProperties(URL url, String encoding) {
 		if (url == null) { return new Properties(); }
-		URLConnection connection = url.openConnection();
-		InputStream in = connection.getInputStream();
+		URLConnection connection;
+		try {
+			connection = url.openConnection();
+		} catch (IOException ex) {
+			throw new RuntimeException("Connecting URL failed: " + url, ex);
+		}
+		InputStream in;
+		try {
+			in = connection.getInputStream();
+		} catch (IOException ex) {
+			throw new RuntimeException("Loading from URL failed: " + url, ex);
+		}
 		Properties p = loadProperties(in, encoding);
-		in.close();
+		closeQuiet(in);
 		return p;
 	}
 
