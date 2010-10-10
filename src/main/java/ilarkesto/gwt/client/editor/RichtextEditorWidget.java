@@ -1,6 +1,7 @@
 package ilarkesto.gwt.client.editor;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
 import ilarkesto.gwt.client.AAction;
 import ilarkesto.gwt.client.AViewEditWidget;
 import ilarkesto.gwt.client.BetterTextArea;
@@ -77,7 +78,13 @@ public class RichtextEditorWidget extends AViewEditWidget {
 			@Override
 			public void onClick(ClickEvent event) {
 				String target = event.getNativeEvent().getEventTarget().toString();
-				if (!target.contains("object HTMLDivElement")) event.stopPropagation();
+				if (isLink(target)) event.stopPropagation();
+			}
+
+			private boolean isLink(String target) {
+				if (target.contains("object HTML")) return false;
+				Log.DEBUG("Link clicked:", target);
+				return true;
 			}
 		});
 		return viewer;
