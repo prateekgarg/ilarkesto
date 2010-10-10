@@ -10,6 +10,8 @@ import ilarkesto.gwt.client.RichtextFormater;
 import ilarkesto.gwt.client.ToolbarWidget;
 
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -70,6 +72,14 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		// viewer = new Label();
 		viewer = new HTML();
 		viewer.setStyleName("ARichtextViewEditWidget-viewer");
+		viewer.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				String target = event.getNativeEvent().getEventTarget().toString();
+				if (!target.contains("object HTMLDivElement")) event.stopPropagation();
+			}
+		});
 		return viewer;
 	}
 
