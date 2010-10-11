@@ -75,7 +75,7 @@ public class GwtDaoGenerator extends AClassGenerator {
 			ln();
 			comment(name);
 			ln();
-			ln("    private Map<String, " + type + ">", mapVar + " = new HashMap<String, " + type + ">();");
+			ln("    protected Map<String, " + type + ">", mapVar + " = new HashMap<String, " + type + ">();");
 			ln();
 			ln("    public final void clear" + entity.getName() + "s() {");
 			ln("        " + Log.class.getName() + ".DEBUG(\"Clearing " + entity.getName() + "s\");");
@@ -101,7 +101,7 @@ public class GwtDaoGenerator extends AClassGenerator {
 			ln("        entityCreated(" + nameLower + ", null);");
 			ln("    }");
 			ln();
-			ln("    private final " + type + " update" + name + "(Map data) {");
+			ln("    protected " + type + " update" + name + "(Map data) {");
 			ln("        String id = (String) data.get(\"id\");");
 			ln("        " + type + " entity =", mapVar + ".get(id);");
 			ln("        if (entity == null) {");

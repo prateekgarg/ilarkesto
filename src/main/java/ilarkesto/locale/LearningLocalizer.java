@@ -41,6 +41,7 @@ public final class LearningLocalizer extends Localizer {
 	private Cache<String, MessageFormat> formatsCache = new Cache<String, MessageFormat>(
 			new Cache.Factory<String, MessageFormat>() {
 
+				@Override
 				public MessageFormat create(String template) {
 					return new MessageFormat(template);
 				}
@@ -105,11 +106,7 @@ public final class LearningLocalizer extends Localizer {
 			String resource = RESOURCE_BUNDLE + "_" + localeSuffix + ".properties";
 			ClassLoader classLoader = getClass().getClassLoader();
 			LOG.debug("Loading localizer data:", resource, classLoader);
-			try {
-				templates = IO.loadProperties(classLoader.getResource(resource), IO.UTF_8);
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+			templates = IO.loadProperties(classLoader.getResource(resource), IO.UTF_8);
 		}
 		return templates;
 	}
@@ -129,8 +126,8 @@ public final class LearningLocalizer extends Localizer {
 			String localeSuffix = locale.toString();
 			if (localeSuffix.length() > 2) localeSuffix = localeSuffix.substring(0, 2);
 			try {
-				IO.appendLine("src/main/java/" + RESOURCE_BUNDLE + "_" + localeSuffix + ".properties", key + "="
-						+ Str.replaceUnicodeCharsWithJavaNotation(template));
+				IO.appendLine("src/main/java/" + RESOURCE_BUNDLE + "_" + localeSuffix + ".properties",
+					key + "=" + Str.replaceUnicodeCharsWithJavaNotation(template));
 			} catch (IOException ex1) {
 				throw new RuntimeException(ex1);
 			}
