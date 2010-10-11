@@ -21,7 +21,7 @@ public class BetterTextArea extends TextArea {
 		int to = from + getSelectionLength();
 		if (from < 0) from = 0;
 		if (to > text.length()) to = text.length() - 1;
-		if (from > to) {
+		if (from > to && from >= 0) {
 			int x = to;
 			to = from;
 			from = x;
