@@ -46,8 +46,14 @@ public class NavigatorWidget<K extends Object> extends AWidget {
 		lastUpdateTime = System.currentTimeMillis();
 	}
 
+	protected String getHref(MenuItem item) {
+		return null;
+	}
+
 	private Widget createItemWidget(final MenuItem item) {
-		ImageAnchor a = new ImageAnchor(null, item.getLabel());
+		final ImageAnchor a = new ImageAnchor(null, item.getLabel());
+		String href = getHref(item);
+		if (href != null) a.setHref(href);
 		a.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -55,6 +61,7 @@ public class NavigatorWidget<K extends Object> extends AWidget {
 				log.debug("Item clicked:", item.getLabel());
 				event.stopPropagation();
 				item.select();
+				a.setFocus(false);
 				update();
 			}
 		});
