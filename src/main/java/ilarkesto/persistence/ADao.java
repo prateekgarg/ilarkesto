@@ -3,6 +3,7 @@ package ilarkesto.persistence;
 import ilarkesto.auth.AUser;
 import ilarkesto.auth.AUserDao;
 import ilarkesto.auth.Auth;
+import ilarkesto.base.Iconized;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Utl;
 import ilarkesto.base.time.DateAndTime;
@@ -13,7 +14,6 @@ import ilarkesto.id.IdentifiableResolver;
 import ilarkesto.search.SearchResultsConsumer;
 import ilarkesto.search.Searchable;
 import ilarkesto.search.Searcher;
-import ilarkesto.base.Iconized;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -35,13 +35,16 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 
 	@Override
 	public void onDatobModified(E entity, String comment) {
-		entity.setLastModified(DateAndTime.now());
-
 		// don's save new entities
 		if (!isPersistent(entity)) return;
 
 		LOG.info("Entity modified:", Utl.toStringWithType(entity), "->", comment);
 		saveEntity(entity);
+	}
+
+	@Override
+	public void updateLastModified(E entity) {
+		entity.updateLastModified();
 	}
 
 	@Override
@@ -68,6 +71,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		if (entityTypeFilter == null) {
 			entityTypeFilter = new Predicate<Class>() {
 
+				@Override
 				public boolean test(Class parameter) {
 					return parameter.isAssignableFrom(getEntityClass());
 				}
@@ -141,6 +145,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	public Set<E> getEntitiesVisibleForUser(final AUser user) {
 		return getEntities(new Predicate<E>() {
 
+			@Override
 			public boolean test(E e) {
 				return Auth.isVisible(e, user);
 			}
@@ -198,6 +203,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		}
 	}
 
+	@Override
 	public void entityDeleted(EntityEvent event) {
 		AEntity entity = event.getEntity();
 		for (AEntity e : getEntities()) {
@@ -209,13 +215,16 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		}
 	}
 
+	@Override
 	public void entitySaved(EntityEvent event) {}
 
+	@Override
 	public void feed(final SearchResultsConsumer searchBox) {
 		if (!Searchable.class.isAssignableFrom(getEntityClass())) return;
 
 		for (AEntity entity : getEntities(new Predicate<E>() {
 
+			@Override
 			public boolean test(E e) {
 				return Auth.isVisible(e, searchBox.getSearcher()) && e instanceof Searchable
 						&& Persist.matchesKeys(e, searchBox.getKeys());

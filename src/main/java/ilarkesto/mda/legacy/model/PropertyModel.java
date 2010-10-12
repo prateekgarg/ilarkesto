@@ -28,8 +28,19 @@ public abstract class PropertyModel {
 
 	private String tooltip;
 
+	private boolean fireModified = true;
+
 	public PropertyModel setTooltip(String tooltip) {
 		this.tooltip = tooltip;
+		return this;
+	}
+
+	public boolean isFireModified() {
+		return fireModified;
+	}
+
+	public PropertyModel setFireModified(boolean fireModified) {
+		this.fireModified = fireModified;
 		return this;
 	}
 

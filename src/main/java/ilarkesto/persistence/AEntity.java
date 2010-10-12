@@ -1,10 +1,10 @@
 package ilarkesto.persistence;
 
 import ilarkesto.auth.AUser;
+import ilarkesto.base.Iconized;
 import ilarkesto.base.Utl;
 import ilarkesto.base.time.DateAndTime;
 import ilarkesto.id.Identifiable;
-import ilarkesto.base.Iconized;
 
 import java.util.Map;
 import java.util.UUID;
@@ -43,6 +43,7 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized {
 		return getDao().getIcon();
 	}
 
+	@Override
 	public final String getId() {
 		if (id == null) id = UUID.randomUUID().toString();
 		return id;
@@ -78,6 +79,15 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized {
 
 	public final boolean isLastEditorSet() {
 		return lastEditorId != null;
+	}
+
+	@Override
+	protected void fireModified(String comment) {
+		super.fireModified(comment);
+	}
+
+	protected void updateLastModified() {
+		setLastModified(DateAndTime.now());
 	}
 
 	@Override

@@ -9,4 +9,6 @@ public abstract class ADatobManager<D extends ADatob> {
 
 	public abstract void onMissingMaster(D datob);
 
+	public abstract void updateLastModified(D datob);
+
 }

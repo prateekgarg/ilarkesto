@@ -32,7 +32,13 @@ public abstract class ADatob implements Searchable {
 
 	public abstract void updateProperties(Map<?, ?> properties);
 
-	protected final void fireModified(String comment) {
+	protected void updateLastModified() {
+		ADatobManager manager = getManager();
+		if (manager == null) return;
+		manager.updateLastModified(this);
+	}
+
+	protected void fireModified(String comment) {
 		ADatobManager manager = getManager();
 		if (manager == null) return;
 		manager.onDatobModified(this, comment);
@@ -44,6 +50,7 @@ public abstract class ADatob implements Searchable {
 		manager.onMissingMaster(this);
 	}
 
+	@Override
 	public boolean matchesKey(String key) {
 		return false;
 	}
@@ -143,6 +150,11 @@ public abstract class ADatob implements Searchable {
 		@Override
 		public void onDatobModified(D datob, String comment) {
 			fireModified(comment);
+		}
+
+		@Override
+		public void updateLastModified(D datob) {
+			ADatob.this.updateLastModified();
 		}
 
 		@Override
