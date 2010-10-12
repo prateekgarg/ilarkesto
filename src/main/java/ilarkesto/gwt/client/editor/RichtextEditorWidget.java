@@ -1,18 +1,15 @@
 package ilarkesto.gwt.client.editor;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.logging.Log;
 import ilarkesto.gwt.client.AAction;
 import ilarkesto.gwt.client.AViewEditWidget;
-import ilarkesto.gwt.client.BetterTextArea;
+import ilarkesto.gwt.client.CodemirrorEditorWidget;
 import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.Initializer;
 import ilarkesto.gwt.client.RichtextFormater;
 import ilarkesto.gwt.client.ToolbarWidget;
 
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -20,12 +17,14 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class RichtextEditorWidget extends AViewEditWidget {
 
 	private HTML viewer;
-	private BetterTextArea editor;
+	private SimplePanel editorWrapper;
+	private CodemirrorEditorWidget editor;
 	private String editorHeight = "300px";
 	private ToolbarWidget editorToolbar;
 	private String applyButtonLabel = "Apply";
@@ -41,6 +40,10 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected void onViewerUpdate() {
+		if (editor != null) {
+			editor = null;
+			editorWrapper.clear();
+		}
 		setViewerText(model.getValue());
 	}
 
@@ -49,14 +52,25 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		String text = model.getValue();
 		String template = model.getTemplate();
 		if (template != null && Str.isBlank(text)) text = template;
+
+		editor = new CodemirrorEditorWidget();
+		// editor.addFocusListener(new EditorFocusListener());
+		editor.addKeyPressHandler(new EditorKeyboardListener());
+		editor.ensureDebugId("richtext-id");
+		editor.setStyleName("ARichtextViewEditWidget-editor");
+		// editor.setWidth("97%");
+		if (editorHeight != null) editor.setHeight(editorHeight);
+		editor.initialize();
 		editor.setText(text);
-		editor.setFocus(true);
+		editor.focus();
+		editor.update();
+		editorWrapper.setWidget(editor);
 		bottomToolbar.update();
 	}
 
 	@Override
 	protected void focusEditor() {
-		editor.setFocus(true);
+		editor.focus();
 	}
 
 	@Override
@@ -73,20 +87,6 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		// viewer = new Label();
 		viewer = new HTML();
 		viewer.setStyleName("ARichtextViewEditWidget-viewer");
-		viewer.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				String target = event.getNativeEvent().getEventTarget().toString();
-				if (isLink(target)) event.stopPropagation();
-			}
-
-			private boolean isLink(String target) {
-				if (target.contains("object HTML")) return false;
-				Log.DEBUG("Link clicked:", target);
-				return true;
-			}
-		});
 		return viewer;
 	}
 
@@ -110,16 +110,7 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		editorToolbar = new ToolbarWidget();
 		armToolbar(editorToolbar);
 
-		editor = new BetterTextArea();
-		// editor.addFocusListener(new EditorFocusListener());
-		editor.addKeyPressHandler(new EditorKeyboardListener());
-		editor.ensureDebugId("richtext-id");
-		editor.setStyleName("ARichtextViewEditWidget-editor");
-		editor.setWidth("97%");
-		if (editorHeight != null) editor.setHeight(editorHeight);
-
-		// no toolbar (for scrumtool)!
-		// RichTextToolbar editorToolbar = new RichTextToolbar(editor);
+		editorWrapper = new SimplePanel();
 
 		bottomToolbar = new ToolbarWidget();
 		bottomToolbar.addButton(new AAction() {
@@ -154,7 +145,8 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		FlowPanel editorPanel = new FlowPanel();
 		editorPanel.setStyleName("AEditableTextareaWidget-editorPanel");
 		if (!editorToolbar.isEmpty()) editorPanel.add(editorToolbar.update());
-		editorPanel.add(editor);
+
+		editorPanel.add(editorWrapper);
 		editorPanel.add(bottomToolbar.update());
 
 		Initializer<RichtextEditorWidget> initializer = Gwt.getRichtextEditorEditInitializer();
@@ -175,7 +167,7 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		return editorToolbar;
 	}
 
-	public BetterTextArea getEditor() {
+	public CodemirrorEditorWidget getEditor() {
 		return editor;
 	}
 
