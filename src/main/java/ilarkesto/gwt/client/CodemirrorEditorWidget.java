@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
+// http://codemirror.net/manual.html
 public class CodemirrorEditorWidget extends AWidget {
 
 	private TextArea textArea;
@@ -29,7 +30,7 @@ public class CodemirrorEditorWidget extends AWidget {
 
 	public void setText(String text) {
 		textArea.setText(text);
-		if (editor != null) editorSetCode(editor, text);
+		if (editor != null) setCode(editor, text);
 	}
 
 	public void focus() {
@@ -53,15 +54,16 @@ public class CodemirrorEditorWidget extends AWidget {
 	}
 
 	public void wrapSelection(String prefix, String suffix) {
-		String selection = editorSelection(editor);
-		if (selection == null) selection = "";
-		selection = prefix + selection + suffix;
-		editorReplaceSelection(editor, selection);
+		wrapSelection(editor, prefix, suffix);
+	}
+
+	public void wrapLine(String prefix, String suffix) {
+		wrapLine(editor, prefix, suffix);
 	}
 
 	public String getSelectedText() {
 		if (editor == null) return null;
-		return editorSelection(editor);
+		return selection(editor);
 	}
 
 	private native JavaScriptObject createEditor(String textAreaId, String height, String text)
@@ -81,29 +83,47 @@ public class CodemirrorEditorWidget extends AWidget {
 		return editor;
 	}-*/;
 
-	private native String editorSelection(JavaScriptObject jsEditor)
+	private native String selection(JavaScriptObject editor)
 	/*-{
-		return jsEditor.selection();
+		return editor.selection();
 	}-*/;
 
-	private native String editorGetCode(JavaScriptObject jsEditor)
+	private native String editorGetCode(JavaScriptObject editor)
 	/*-{
-		return jsEditor.getCode();
+		return editor.getCode();
 	}-*/;
 
-	private native void editorSetCode(JavaScriptObject jsEditor, String text)
+	private native void setCode(JavaScriptObject editor, String text)
 	/*-{
-		jsEditor.setCode(text);
+		editor.setCode(text);
 	}-*/;
 
-	private native void editorReplaceSelection(JavaScriptObject jsEditor, String text)
+	private native void wrapLine(JavaScriptObject editor, String prefix, String suffix)
 	/*-{
-		jsEditor.replaceSelection(text);
+	    cursorPosition = editor.cursorPosition(true);
+	    selection = editor.selection();
+	    if (selection==null) selection = "";
+	    line = editor.lineContent(cursorPosition.line); 
+		editor.setLineContent(cursorPosition.line, prefix + line + suffix);
+		from = cursorPosition.character+prefix.length;
+		to = cursorPosition.character+prefix.length+selection.length;
+		editor.selectLines(cursorPosition.line, from, cursorPosition.line, to);
 	}-*/;
 
-	private native void editorFocus(JavaScriptObject jsEditor)
+	private native void wrapSelection(JavaScriptObject editor, String prefix, String suffix)
 	/*-{
-		jsEditor.focus();
+	    cursorPosition = editor.cursorPosition(true);
+	    selection = editor.selection(); 
+	    if (selection==null) selection = "";
+		editor.replaceSelection(prefix + selection + suffix);
+		from = cursorPosition.character+prefix.length;
+		to = cursorPosition.character+prefix.length+selection.length;
+		editor.selectLines(cursorPosition.line, from, cursorPosition.line, to);
+	}-*/;
+
+	private native void focus(JavaScriptObject editor)
+	/*-{
+		editor.focus();
 	}-*/;
 
 }
