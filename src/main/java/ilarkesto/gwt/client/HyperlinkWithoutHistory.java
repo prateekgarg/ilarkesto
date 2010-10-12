@@ -34,15 +34,18 @@ public class HyperlinkWithoutHistory extends Widget implements HasHTML, HasClick
 		setStyleName("gwt-Hyperlink");
 	}
 
+	@Override
 	@Deprecated
 	public HandlerRegistration addClickHandler(ClickHandler handler) {
 		return addHandler(handler, ClickEvent.getType());
 	}
 
+	@Override
 	public String getHTML() {
 		return DOM.getInnerHTML(anchorElem);
 	}
 
+	@Override
 	public String getText() {
 		return DOM.getInnerText(anchorElem);
 	}
@@ -55,10 +58,12 @@ public class HyperlinkWithoutHistory extends Widget implements HasHTML, HasClick
 		}
 	}
 
+	@Override
 	public void setHTML(String html) {
 		DOM.setInnerHTML(anchorElem, html);
 	}
 
+	@Override
 	public void setText(String text) {
 		DOM.setInnerText(anchorElem, text);
 	}
