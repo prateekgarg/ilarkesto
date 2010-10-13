@@ -76,7 +76,7 @@ public class CodemirrorEditorWidget extends AWidget {
 		    continuousScanning: 1000,
 		    lineNumbers: false,
 		    readOnly: false,
-		    textWrapping: false,
+		    textWrapping: true,
 		    tabMode: "spaces",
 		    content: text		
 		});
