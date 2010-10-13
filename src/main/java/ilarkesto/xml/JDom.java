@@ -24,12 +24,14 @@ import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public abstract class JDom {
 
-	private static final Log LOG = Log.get(JDom.class);
+	private static Log log = Log.get(JDom.class);
 
 	public static final EntityResolver DUMMY_ENTITY_RESOLVER = new DummyEntityResolver();
 
@@ -90,13 +92,28 @@ public abstract class JDom {
 		}
 	}
 
-	public static Document createDocumentFromUrl(String url) {
-		LOG.debug("Downloading:", url);
+	public static Document createDocumentFromUrl(final String url) {
+		log.debug("Downloading:", url);
 		try {
 			SAXBuilder builder = new SAXBuilder(false);
 			builder.setExpandEntities(false);
 			builder.setValidation(false);
 			builder.setEntityResolver(DUMMY_ENTITY_RESOLVER);
+			builder.setErrorHandler(new ErrorHandler() {
+
+				@Override
+				public void warning(SAXParseException ex) throws SAXException {}
+
+				@Override
+				public void fatalError(SAXParseException ex) throws SAXException {
+					log.warn("Fatal error while parsing XML from URL:", url, ex);
+				}
+
+				@Override
+				public void error(SAXParseException ex) throws SAXException {
+					log.warn("Error while parsing XML from URL:", url, ex);
+				}
+			});
 			return builder.build(new URL(url));
 		} catch (Exception ex) {
 			throw new RuntimeException("Loading XML from URL failed: " + url, ex);
@@ -104,7 +121,7 @@ public abstract class JDom {
 	}
 
 	public static Document createDocumentFromUrl(String url, String username, String password) {
-		LOG.debug("Downloading:", url);
+		log.debug("Downloading:", url);
 		try {
 			SAXBuilder builder = new SAXBuilder(false);
 			builder.setExpandEntities(false);
