@@ -29,7 +29,7 @@ public class CodemirrorEditorWidget extends AWidget {
 		    content: text		
 		});
 		editor.ensureWindowLoaded = function() {
-			if (this.editor == null) alert("Waiting for internal frame to load. This is a Codemirror and GWT-HostedMode bug.");
+			if (this.editor == null) alert("Waiting for internal frame to load. This is a temporary workaround.");
 		}
 		return editor;
 	}-*/;
@@ -87,21 +87,25 @@ public class CodemirrorEditorWidget extends AWidget {
 
 	private native String selection(JavaScriptObject editor)
 	/*-{
+	    editor.ensureWindowLoaded();
 		return editor.selection();
 	}-*/;
 
 	private native String editorGetCode(JavaScriptObject editor)
 	/*-{
+	    editor.ensureWindowLoaded();
 		return editor.getCode();
 	}-*/;
 
 	private native void setCode(JavaScriptObject editor, String text)
 	/*-{
+	    editor.ensureWindowLoaded();
 		editor.setCode(text);
 	}-*/;
 
 	private native void wrapLine(JavaScriptObject editor, String prefix, String suffix)
 	/*-{
+	    editor.ensureWindowLoaded();
 	    cursorPosition = editor.cursorPosition(true);
 	    selection = editor.selection();
 	    if (selection==null) selection = "";
@@ -114,6 +118,7 @@ public class CodemirrorEditorWidget extends AWidget {
 
 	private native void wrapSelection(JavaScriptObject editor, String prefix, String suffix)
 	/*-{
+	    editor.ensureWindowLoaded();
 	    cursorPosition = editor.cursorPosition(true);
 	    selection = editor.selection(); 
 	    if (selection==null) selection = "";
@@ -145,6 +150,7 @@ public class CodemirrorEditorWidget extends AWidget {
 
 		@Override
 		protected void onDetach() {
+			textArea.setText(editorGetCode(editor));
 			editor = null;
 			super.onDetach();
 		}
