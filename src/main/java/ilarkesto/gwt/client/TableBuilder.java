@@ -30,12 +30,14 @@ public class TableBuilder {
 	private int cellSpacing;
 	private int cellPadding;
 	private boolean centered;
+	private String styleName;
 
 	public TableBuilder() {}
 
 	public FlexTable createTable() {
 		if (!currentRow.cells.isEmpty()) nextRow();
 		FlexTable table = new FlexTable();
+		table.setStyleName(styleName);
 		table.setCellSpacing(cellSpacing);
 		table.setCellPadding(cellPadding);
 		if (centered) table.getElement().setAttribute("align", "center");
@@ -196,6 +198,11 @@ public class TableBuilder {
 		return this;
 	}
 
+	public TableBuilder addSpacer(int width, int height) {
+		add(Gwt.createSpacer(width, height));
+		return this;
+	}
+
 	public TableBuilder add(Widget... widgets) {
 		for (Widget widget : widgets) {
 			add(widget);
@@ -241,6 +248,11 @@ public class TableBuilder {
 	public void setCentered(boolean centered) {
 		this.centered = centered;
 		if (centered) setWidth(null);
+	}
+
+	public TableBuilder setStyleName(String styleName) {
+		this.styleName = styleName;
+		return this;
 	}
 
 	private static class Row {

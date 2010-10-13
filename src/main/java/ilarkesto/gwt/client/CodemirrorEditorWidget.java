@@ -1,7 +1,6 @@
 package ilarkesto.gwt.client;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.logging.Log;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -14,8 +13,6 @@ public class CodemirrorEditorWidget extends AWidget {
 	private TextArea textArea = new MyTextArea();
 	private JavaScriptObject editor;
 	private String height = "200px";
-
-	public CodemirrorEditorWidget() {}
 
 	private native JavaScriptObject createEditor(String textAreaId, String height, String text)
 	/*-{
@@ -31,12 +28,15 @@ public class CodemirrorEditorWidget extends AWidget {
 		    tabMode: "spaces",
 		    content: text		
 		});
+		editor.ensureWindowLoaded = function() {
+			if (this.editor == null) alert("Waiting for internal frame to load. This is a Codemirror and GWT-HostedMode bug.");
+		}
 		return editor;
 	}-*/;
 
 	@Override
 	protected Widget onInitialization() {
-		Log.DEBUG("--------------------------------- onInitialization() -------------------------------");
+		// Log.DEBUG("--------------------------------- onInitialization() -------------------------------");
 		return textArea;
 	}
 
@@ -53,7 +53,7 @@ public class CodemirrorEditorWidget extends AWidget {
 	}
 
 	public void focus() {
-		// if (editor != null) editorFocus(editor);
+		if (editor != null) focus(editor);
 	}
 
 	public void addKeyPressHandler(KeyPressHandler listener) {
@@ -125,6 +125,7 @@ public class CodemirrorEditorWidget extends AWidget {
 
 	private native void focus(JavaScriptObject editor)
 	/*-{
+	    editor.ensureWindowLoaded();
 		editor.focus();
 	}-*/;
 
@@ -144,8 +145,10 @@ public class CodemirrorEditorWidget extends AWidget {
 
 		@Override
 		protected void onDetach() {
+			editor = null;
 			super.onDetach();
-			Log.DEBUG("------------------------------------> onDetach() <---------------------------------");
 		}
+
 	}
+
 }

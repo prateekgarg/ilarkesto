@@ -60,6 +60,8 @@ public abstract class AViewEditWidget extends AWidget {
 		}
 	}
 
+	protected void onEditorClose() {}
+
 	protected void focusEditor() {}
 
 	public void switchToEditMode() {
@@ -91,6 +93,7 @@ public abstract class AViewEditWidget extends AWidget {
 		if (isViewMode()) return;
 		Log.DEBUG("Switching to view mode: " + toString());
 		viewMode = true;
+		onEditorClose();
 		if (currentEditor == this) currentEditor = null;
 		if (modeSwitchHandler != null) modeSwitchHandler.onViewerActivated(this);
 		if (globalModeSwitchHandler != null) globalModeSwitchHandler.onViewerActivated(this);

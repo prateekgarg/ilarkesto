@@ -40,15 +40,27 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected void onViewerUpdate() {
-		if (editor != null) {
-			editor = null;
-			editorWrapper.clear();
-		}
 		setViewerText(model.getValue());
 	}
 
 	@Override
 	protected void onEditorUpdate() {
+		if (editor == null) {
+			editor = new CodemirrorEditorWidget();
+			// editor.addFocusListener(new EditorFocusListener());
+			editor.addKeyPressHandler(new EditorKeyboardListener());
+			editor.ensureDebugId("richtext-id");
+			editor.setStyleName("ARichtextViewEditWidget-editor");
+			// editor.setWidth("97%");
+			if (editorHeight != null) editor.setHeight(editorHeight);
+			editor.initialize();
+
+			String text = model.getValue();
+			String template = model.getTemplate();
+			if (template != null && Str.isBlank(text)) text = template;
+			editor.setText(text);
+			editorWrapper.setWidget(editor);
+		}
 		editor.focus();
 		editor.update();
 		bottomToolbar.update();
@@ -92,22 +104,7 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected final Widget onEditorInitialization() {
-		String text = model.getValue();
-		String template = model.getTemplate();
-		if (template != null && Str.isBlank(text)) text = template;
-
-		editor = new CodemirrorEditorWidget();
-		// editor.addFocusListener(new EditorFocusListener());
-		editor.addKeyPressHandler(new EditorKeyboardListener());
-		editor.ensureDebugId("richtext-id");
-		editor.setStyleName("ARichtextViewEditWidget-editor");
-		// editor.setWidth("97%");
-		if (editorHeight != null) editor.setHeight(editorHeight);
-		editor.initialize();
-		editor.setText(text);
-
 		editorWrapper = new SimplePanel();
-		editorWrapper.setWidget(editor);
 
 		editorToolbar = new ToolbarWidget();
 		armToolbar(editorToolbar);
@@ -153,6 +150,13 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		if (initializer != null) initializer.initialize(this);
 
 		return editorPanel;
+	}
+
+	@Override
+	protected void onEditorClose() {
+		super.onEditorClose();
+		editor = null;
+		editorWrapper.clear();
 	}
 
 	@Override
