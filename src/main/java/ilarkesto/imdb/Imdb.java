@@ -18,7 +18,7 @@ import com.meterware.httpunit.WebResponse;
 
 public class Imdb {
 
-	private static final String TITLE_URL_PREFIX = "http://www.imdb.com/title/";
+	private static final String TITLE_URL_PREFIX = "http://akas.imdb.com/title/";
 
 	private static Log log = Log.get(Imdb.class);
 
@@ -42,7 +42,7 @@ public class Imdb {
 			for (WebLink link : links) {
 				String linkUrl = link.getURLString();
 				if (Str.isBlank(linkUrl)) continue;
-				linkUrl = Str.removePrefix(linkUrl, "http://www.imdb.com");
+				linkUrl = Str.removePrefix(linkUrl, "http://akas.imdb.com");
 				if (linkUrl.startsWith("/title/")) {
 					String id = Str.removePrefix(linkUrl, "/title/");
 					return Str.removeSuffix(id, "/");
@@ -61,11 +61,16 @@ public class Imdb {
 		String title = parseTitle(response);
 		Integer year = parseYear(response);
 		String coverId = parseCoverId(response);
+		String trailerId = null; // TODO
 		String tagline = parseInfoContent(response, "Tagline");
 		String plot = parseInfoContent(response, "Plot");
 		String awards = parseInfoContent(response, "Awards");
 
-		return new ImdbRecord(imdbId, title, year, coverId);
+		url = getPageUrlDe(imdbId);
+		response = HttpUnit.loadPage(url);
+		String titleDe = parseTitle(response);
+
+		return new ImdbRecord(imdbId, title, titleDe, year, coverId, trailerId);
 	}
 
 	private static String parseInfoContent(WebResponse response, String label) {
@@ -139,11 +144,15 @@ public class Imdb {
 	}
 
 	public static String getTitleSearchUrl(String title) {
-		return "http://www.imdb.com/find?s=tt&q=" + Str.encodeUrlParameter(title);
+		return "http://akas.imdb.com/find?s=tt&q=" + Str.encodeUrlParameter(title);
 	}
 
 	public static String getPageUrl(String imdbId) {
 		return TITLE_URL_PREFIX + imdbId + "/";
+	}
+
+	public static String getPageUrlDe(String imdbId) {
+		return "http://www.imdb.de/title/" + imdbId + "/";
 	}
 
 	public static void downloadCover(String coverId, File destinationFile) {

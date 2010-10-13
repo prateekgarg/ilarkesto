@@ -8,10 +8,16 @@ public class ImdbTest extends ATest {
 
 	@Test
 	public void loadRecord() {
-		ImdbRecord r = Imdb.loadRecord("tt0266697");
-		assertEquals(r.getTitle(), "Kill Bill: Vol. 1");
-		assertEquals(r.getYear(), Integer.valueOf(2003));
-		assertEquals(r.getCoverId(), "MV5BMTM3Mjk3MzUwN15BMl5BanBnXkFtZTcwMTgzMTYyMQ@@");
+		ImdbRecord killbill = Imdb.loadRecord("tt0266697");
+		assertEquals(killbill.getTitle(), "Kill Bill: Vol. 1");
+		assertEquals(killbill.getYear(), Integer.valueOf(2003));
+		assertEquals(killbill.getCoverId(), "MV5BMTM3Mjk3MzUwN15BMl5BanBnXkFtZTcwMTgzMTYyMQ@@");
+
+		ImdbRecord greek = Imdb.loadRecord("tt1226229");
+		assertEquals(greek.getTitle(), "Get Him to the Greek");
+		assertEquals(greek.getTitleDe(), "M\u00E4nnertrip");
+		assertEquals(greek.getYear(), Integer.valueOf(2010));
+		assertEquals(greek.getCoverId(), "MV5BMjIyMzQ0MjExNV5BMl5BanBnXkFtZTcwMzkyMzgxMw@@");
 	}
 
 	@Test
