@@ -1,5 +1,8 @@
 package ilarkesto.gwt.client;
 
+import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.TextArea;
@@ -8,24 +11,40 @@ import com.google.gwt.user.client.ui.Widget;
 // http://codemirror.net/manual.html
 public class CodemirrorEditorWidget extends AWidget {
 
-	private TextArea textArea;
+	private TextArea textArea = new MyTextArea();
 	private JavaScriptObject editor;
 	private String height = "200px";
 
 	public CodemirrorEditorWidget() {}
 
+	private native JavaScriptObject createEditor(String textAreaId, String height, String text)
+	/*-{
+		var editor = new $wnd.CodeMirror($wnd.CodeMirror.replace(textAreaId), {
+			parserfile: ["parsewiki.js"],
+			path: "codemirror/js/",
+			stylesheet: "codemirror/css/wikicolors.css",
+			height: height,
+		    continuousScanning: 1000,
+		    lineNumbers: false,
+		    readOnly: false,
+		    textWrapping: true,
+		    tabMode: "spaces",
+		    content: text		
+		});
+		return editor;
+	}-*/;
+
 	@Override
 	protected Widget onInitialization() {
-		textArea = new TextArea();
-		textArea.setWidth("100%");
-		textArea.getElement().setId("CodeMirror" + System.currentTimeMillis());
+		Log.DEBUG("--------------------------------- onInitialization() -------------------------------");
 		return textArea;
 	}
 
-	@Override
-	protected void onAttach() {
-		super.onAttach();
-		if (editor == null) editor = createEditor(textArea.getElement().getId(), height, textArea.getText());
+	private void createEditor() {
+		if (editor == null) {
+			String text = textArea.getText();
+			editor = createEditor(textArea.getElement().getId(), height, Str.isBlank(text) ? "\n" : text);
+		}
 	}
 
 	public void setText(String text) {
@@ -65,23 +84,6 @@ public class CodemirrorEditorWidget extends AWidget {
 		if (editor == null) return null;
 		return selection(editor);
 	}
-
-	private native JavaScriptObject createEditor(String textAreaId, String height, String text)
-	/*-{
-		var editor = new $wnd.CodeMirror($wnd.CodeMirror.replace(textAreaId), {
-			parserfile: ["parsewiki.js"],
-			path: "codemirror/js/",
-			stylesheet: "codemirror/css/wikicolors.css",
-			height: height,
-		    continuousScanning: 1000,
-		    lineNumbers: false,
-		    readOnly: false,
-		    textWrapping: true,
-		    tabMode: "spaces",
-		    content: text		
-		});
-		return editor;
-	}-*/;
 
 	private native String selection(JavaScriptObject editor)
 	/*-{
@@ -126,4 +128,24 @@ public class CodemirrorEditorWidget extends AWidget {
 		editor.focus();
 	}-*/;
 
+	private class MyTextArea extends TextArea {
+
+		public MyTextArea() {
+			setWidth("100%");
+			getElement().setId("CodeMirror" + System.currentTimeMillis());
+			setVisible(false);
+		}
+
+		@Override
+		protected void onAttach() {
+			super.onAttach();
+			createEditor();
+		}
+
+		@Override
+		protected void onDetach() {
+			super.onDetach();
+			Log.DEBUG("------------------------------------> onDetach() <---------------------------------");
+		}
+	}
 }

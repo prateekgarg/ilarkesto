@@ -49,22 +49,8 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected void onEditorUpdate() {
-		String text = model.getValue();
-		String template = model.getTemplate();
-		if (template != null && Str.isBlank(text)) text = template;
-
-		editor = new CodemirrorEditorWidget();
-		// editor.addFocusListener(new EditorFocusListener());
-		editor.addKeyPressHandler(new EditorKeyboardListener());
-		editor.ensureDebugId("richtext-id");
-		editor.setStyleName("ARichtextViewEditWidget-editor");
-		// editor.setWidth("97%");
-		if (editorHeight != null) editor.setHeight(editorHeight);
-		editor.initialize();
-		editor.setText(text);
 		editor.focus();
 		editor.update();
-		editorWrapper.setWidget(editor);
 		bottomToolbar.update();
 	}
 
@@ -106,11 +92,25 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected final Widget onEditorInitialization() {
+		String text = model.getValue();
+		String template = model.getTemplate();
+		if (template != null && Str.isBlank(text)) text = template;
+
+		editor = new CodemirrorEditorWidget();
+		// editor.addFocusListener(new EditorFocusListener());
+		editor.addKeyPressHandler(new EditorKeyboardListener());
+		editor.ensureDebugId("richtext-id");
+		editor.setStyleName("ARichtextViewEditWidget-editor");
+		// editor.setWidth("97%");
+		if (editorHeight != null) editor.setHeight(editorHeight);
+		editor.initialize();
+		editor.setText(text);
+
+		editorWrapper = new SimplePanel();
+		editorWrapper.setWidget(editor);
 
 		editorToolbar = new ToolbarWidget();
 		armToolbar(editorToolbar);
-
-		editorWrapper = new SimplePanel();
 
 		bottomToolbar = new ToolbarWidget();
 		bottomToolbar.addButton(new AAction() {
