@@ -98,7 +98,7 @@ public class Date implements Comparable<Date>, Serializable, IsSerializable {
 	}
 
 	public String getWeekdayLabel() {
-		return Gwt.DTF_WEEKDAY_SHORT.format(toJavaDate());
+		return Gwt.formatWeekdayShort(toJavaDate());
 	}
 
 	public int getWeekday() {

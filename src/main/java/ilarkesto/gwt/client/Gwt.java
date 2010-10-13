@@ -7,6 +7,7 @@ import ilarkesto.gwt.client.undo.UndoManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,10 +39,30 @@ public class Gwt {
 	private static String defaultRichtextSyntaxInfo;
 	private static UndoManager undoManager = new UndoManager();
 
-	public static DateTimeFormat DTF_WEEKDAY_SHORT = DateTimeFormat.getFormat("EEE");
-	public static DateTimeFormat DTF_DAY = DateTimeFormat.getFormat("dd.");
-	public static DateTimeFormat DTF_WEEKDAY_MONTH_DAY = DateTimeFormat.getFormat("EEEE, MMMM d.");
-	public static DateTimeFormat DTF_HOUR_MINUTE = DateTimeFormat.getFormat("HH:mm");
+	private static DateTimeFormat dtfWeekdayShort;
+	private static DateTimeFormat dtfDay;
+	private static DateTimeFormat dtfWeekdayMonthDay;
+	private static DateTimeFormat dtfHourMinute;
+
+	public static String formatWeekdayMonthDay(Date date) {
+		if (dtfWeekdayMonthDay == null) dtfWeekdayMonthDay = DateTimeFormat.getFormat("EEEE, MMMM d.");
+		return dtfWeekdayMonthDay.format(date);
+	}
+
+	public static String formatHourMinute(Date date) {
+		if (dtfHourMinute == null) dtfHourMinute = DateTimeFormat.getFormat("HH:mm");
+		return dtfHourMinute.format(date);
+	}
+
+	public static String formatDay(Date date) {
+		if (dtfDay == null) dtfDay = DateTimeFormat.getFormat("dd.");
+		return dtfDay.format(date);
+	}
+
+	public static String formatWeekdayShort(Date date) {
+		if (dtfWeekdayShort == null) dtfWeekdayShort = DateTimeFormat.getFormat("EEE");
+		return dtfWeekdayShort.format(date);
+	}
 
 	public static TextBox createTextBox(String id, String value, int width) {
 		return createTextBox(id, id, value, width + "px");
