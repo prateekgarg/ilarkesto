@@ -28,9 +28,21 @@ public class CodemirrorEditorWidget extends AWidget {
 		    tabMode: "spaces",
 		    content: text		
 		});
+		
 		editor.ensureWindowLoaded = function() {
 			if (this.editor == null) alert("Waiting for internal frame to load. This is a temporary workaround.");
 		}
+		
+		editor.execute = function(f) {
+			if (this.editor == null) {
+				setTimeout(function() {
+					editor.execute(f);
+				}, 100);
+			} else {
+				f();
+			}
+		}
+		
 		return editor;
 	}-*/;
 
@@ -130,8 +142,9 @@ public class CodemirrorEditorWidget extends AWidget {
 
 	private native void focus(JavaScriptObject editor)
 	/*-{
-	    editor.ensureWindowLoaded();
-		editor.focus();
+	    editor.execute( function() {
+			editor.focus();
+	    });
 	}-*/;
 
 	private class MyTextArea extends TextArea {
