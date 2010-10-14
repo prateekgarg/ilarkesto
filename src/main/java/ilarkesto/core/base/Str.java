@@ -17,6 +17,17 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String getFirstParagraph(String s) {
+		return getFirstParagraph(s, "\n\n");
+	}
+
+	public static String getFirstParagraph(String s, String paragraphEndIndicator) {
+		if (s == null) return null;
+		int idx = s.indexOf(paragraphEndIndicator);
+		if (idx <= 0) return s;
+		return s.substring(0, idx);
+	}
+
 	public static String appendIfNotBlank(String s, String suffix) {
 		if (isBlank(s)) return s;
 		return s + suffix;
