@@ -592,6 +592,7 @@ public class Str extends ilarkesto.core.base.Str {
 	}
 
 	public static String encodeUrlParameter(String s) {
+		if (s == null) return "";
 		StringBuilder sb = new StringBuilder();
 		int len = s.length();
 		for (int i = 0; i < len; i++) {
