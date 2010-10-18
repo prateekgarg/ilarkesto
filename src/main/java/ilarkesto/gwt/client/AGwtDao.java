@@ -87,7 +87,7 @@ public abstract class AGwtDao extends AComponent {
 		onEntityPropertyChangedLocaly(entity, property, value);
 	}
 
-	public final AGwtEntity getEntity(String id) {
+	public final AGwtEntity getEntity(String id) throws EntityDoesNotExistException {
 		for (Map<String, ? extends AGwtEntity> entityMap : getEntityMaps()) {
 			AGwtEntity entity = entityMap.get(id);
 			if (entity != null) return entity;
