@@ -134,7 +134,7 @@ public final class EmailAddress {
 	public static final Set<EmailAddress> parseList(String s) {
 		if (s == null) return null;
 		Set<EmailAddress> result = new HashSet<EmailAddress>();
-		StringTokenizer st = new StringTokenizer(s, ",;");
+		StringTokenizer st = new StringTokenizer(s, ";");
 		while (st.hasMoreTokens()) {
 			result.add(new EmailAddress(st.nextToken()));
 		}
@@ -154,7 +154,7 @@ public final class EmailAddress {
 			if (first) {
 				first = false;
 			} else {
-				sb.append(", ");
+				sb.append("; ");
 			}
 			sb.append(ea);
 		}
