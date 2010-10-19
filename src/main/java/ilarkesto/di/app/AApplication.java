@@ -9,6 +9,7 @@ import ilarkesto.concurrent.ATask;
 import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.Context;
+import ilarkesto.integration.xstream.XStreamSerializer;
 import ilarkesto.io.ExclusiveFileLock;
 import ilarkesto.io.ExclusiveFileLock.FileLockedException;
 import ilarkesto.io.IO;
@@ -19,7 +20,6 @@ import ilarkesto.persistence.EntityStore;
 import ilarkesto.persistence.FileEntityStore;
 import ilarkesto.persistence.Serializer;
 import ilarkesto.persistence.TransactionService;
-import ilarkesto.persistence.xstream.XStreamSerializer;
 import ilarkesto.properties.FilePropertiesStore;
 
 import java.io.File;

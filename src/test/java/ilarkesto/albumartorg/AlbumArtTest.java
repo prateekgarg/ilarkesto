@@ -1,6 +1,6 @@
 package ilarkesto.albumartorg;
 
-import ilarkesto.albumartorg.AlbumArt;
+import ilarkesto.integration.albumartorg.AlbumArt;
 import ilarkesto.testng.ATest;
 
 import org.testng.annotations.Test;

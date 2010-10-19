@@ -1,5 +1,7 @@
 package ilarkesto.imdb;
 
+import ilarkesto.integration.imdb.Imdb;
+import ilarkesto.integration.imdb.ImdbRecord;
 import ilarkesto.testng.ATest;
 
 import org.testng.annotations.Test;

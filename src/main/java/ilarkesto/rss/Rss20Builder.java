@@ -2,7 +2,7 @@ package ilarkesto.rss;
 
 import ilarkesto.base.Utl;
 import ilarkesto.base.time.DateAndTime;
-import ilarkesto.xml.JDom;
+import ilarkesto.integration.jdom.JDom;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
