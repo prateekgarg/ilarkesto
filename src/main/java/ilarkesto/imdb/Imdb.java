@@ -57,18 +57,26 @@ public class Imdb {
 		if (imdbId == null) return null;
 		String url = getPageUrl(imdbId);
 		log.info("Loading IMDB record:", imdbId);
-		WebResponse response = HttpUnit.loadPage(url);
-		String title = parseTitle(response);
-		Integer year = parseYear(response);
-		String coverId = parseCoverId(response);
-		String trailerId = null; // TODO
-		String tagline = parseInfoContent(response, "Tagline");
-		String plot = parseInfoContent(response, "Plot");
-		String awards = parseInfoContent(response, "Awards");
+		WebResponse akasPage = HttpUnit.loadPage(url);
+		String title;
+		Integer year;
+		String coverId;
+		String trailerId;
+		try {
+			title = parseTitle(akasPage);
+			year = parseYear(akasPage);
+			coverId = parseCoverId(akasPage);
+			trailerId = null;
+			String tagline = parseInfoContent(akasPage, "Tagline");
+			String plot = parseInfoContent(akasPage, "Plot");
+			String awards = parseInfoContent(akasPage, "Awards");
+		} catch (Exception ex) {
+			throw new RuntimeException("Parsing IMDB page failed: " + url, ex);
+		}
 
 		url = getPageUrlDe(imdbId);
-		response = HttpUnit.loadPage(url);
-		String titleDe = parseTitle(response);
+		WebResponse dePage = HttpUnit.loadPage(url);
+		String titleDe = parseTitle(dePage);
 
 		return new ImdbRecord(imdbId, title, titleDe, year, coverId, trailerId);
 	}

@@ -21,11 +21,19 @@ public abstract class ACollectionTask<E> extends ATask {
 		index = 0;
 		for (E element : elements) {
 			this.element = element;
-			perform(element);
+			try {
+				perform(element);
+			} catch (Throwable ex) {
+				onElementError(element, ex);
+			}
 			if (isAbortRequested()) break;
 			index++;
 		}
 		cleanup();
+	}
+
+	protected void onElementError(E element, Throwable ex) {
+		throw new RuntimeException("Processing element failed: " + element, ex);
 	}
 
 	public final int getIndex() {
