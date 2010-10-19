@@ -11,6 +11,14 @@ import com.meterware.httpunit.WebTable;
 
 public class HttpUnit {
 
+	public static String getTitle(WebResponse response) {
+		try {
+			return response.getTitle();
+		} catch (SAXException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public static WebTable getTable(String tableId, WebResponse response) {
 		try {
 			return response.getTableWithID(tableId);
