@@ -1,4 +1,4 @@
-package ilarkesto.net;
+package ilarkesto.integration.httpunit;
 
 import org.xml.sax.SAXException;
 
@@ -7,8 +7,17 @@ import com.meterware.httpunit.HTMLElement;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import com.meterware.httpunit.WebTable;
 
 public class HttpUnit {
+
+	public static WebTable getTable(String tableId, WebResponse response) {
+		try {
+			return response.getTableWithID(tableId);
+		} catch (SAXException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
 	public static HTMLElement getFirstElementWithAttribute(WebResponse response, String name, String value) {
 		HTMLElement[] elements;

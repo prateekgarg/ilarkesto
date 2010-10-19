@@ -2,8 +2,8 @@ package ilarkesto.integration.imdb;
 
 import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.integration.httpunit.HttpUnit;
 import ilarkesto.io.IO;
-import ilarkesto.net.HttpUnit;
 
 import java.io.File;
 import java.io.IOException;
