@@ -104,10 +104,13 @@ public class Imdb {
 			throw new RuntimeException(ex);
 		}
 		if (title == null) return null;
+
 		int idx = title.lastIndexOf(" (");
 		if (idx < 1) return null;
-		String year = title.substring(idx + 2, idx + 6);
-		return Integer.parseInt(year);
+		String s = Str.cutFromTo(title.substring(idx), "(", ")");
+		if (s == null) return null;
+		s = Str.removePrefix(s, "Video").trim();
+		return Integer.parseInt(s);
 	}
 
 	private static String parseTitle(WebResponse response) {
