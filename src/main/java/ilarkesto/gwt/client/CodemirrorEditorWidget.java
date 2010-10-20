@@ -1,6 +1,6 @@
 package ilarkesto.gwt.client;
 
-import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -14,19 +14,16 @@ public class CodemirrorEditorWidget extends AWidget {
 	private JavaScriptObject editor;
 	private String height = "200px";
 
-	private native JavaScriptObject createEditor(String textAreaId, String height, String text)
+	private native JavaScriptObject createEditor(String textAreaId, String height)
 	/*-{
 		var editor = new $wnd.CodeMirror($wnd.CodeMirror.replace(textAreaId), {
 			parserfile: ["parsewiki.js"],
 			path: "codemirror/js/",
 			stylesheet: "codemirror/css/wikicolors.css",
 			height: height,
-		    continuousScanning: 1000,
-		    lineNumbers: false,
-		    readOnly: false,
-		    textWrapping: true,
-		    tabMode: "spaces",
-		    content: text		
+			lineNumbers: false,
+			enterMode: "flat",
+		    tabMode: "spaces"
 		});
 		
 		editor.ensureWindowLoaded = function() {
@@ -43,25 +40,34 @@ public class CodemirrorEditorWidget extends AWidget {
 			}
 		}
 		
+		editor.execute();
+		
 		return editor;
 	}-*/;
 
 	@Override
 	protected Widget onInitialization() {
-		// Log.DEBUG("--------------------------------- onInitialization() -------------------------------");
 		return textArea;
 	}
 
 	private void createEditor() {
 		if (editor == null) {
 			String text = textArea.getText();
-			editor = createEditor(textArea.getElement().getId(), height, Str.isBlank(text) ? "\n" : text);
+			editor = createEditor(textArea.getElement().getId(), height);
+			setText(prepareText(text));
 		}
+	}
+
+	private String prepareText(String s) {
+		return s;
+		// if (s == null) return "\n";
+		// if (s.endsWith("\n")) return s;
+		// return s + "\n";
 	}
 
 	public void setText(String text) {
 		textArea.setText(text);
-		if (editor != null) setCode(editor, text);
+		if (editor != null) setCode(editor, prepareText(text));
 	}
 
 	public void focus() {
@@ -111,8 +117,9 @@ public class CodemirrorEditorWidget extends AWidget {
 
 	private native void setCode(JavaScriptObject editor, String text)
 	/*-{
-	    editor.ensureWindowLoaded();
-		editor.setCode(text);
+		editor.execute( function() {
+			editor.setCode(text);
+		});
 	}-*/;
 
 	private native void wrapLine(JavaScriptObject editor, String prefix, String suffix)
@@ -157,12 +164,14 @@ public class CodemirrorEditorWidget extends AWidget {
 
 		@Override
 		protected void onAttach() {
+			Log.DEBUG("-------- onAttach()");
 			super.onAttach();
 			createEditor();
 		}
 
 		@Override
 		protected void onDetach() {
+			Log.DEBUG("-------- onDetach()");
 			textArea.setText(editorGetCode(editor));
 			editor = null;
 			super.onDetach();
