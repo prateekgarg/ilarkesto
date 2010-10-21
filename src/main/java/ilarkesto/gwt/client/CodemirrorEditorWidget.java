@@ -55,14 +55,14 @@ public class CodemirrorEditorWidget extends AWidget {
 			String text = textArea.getText();
 			editor = createEditor(textArea.getElement().getId(), height);
 			setText(prepareText(text));
+			focus(editor);
 		}
 	}
 
 	private String prepareText(String s) {
-		return s;
-		// if (s == null) return "\n";
-		// if (s.endsWith("\n")) return s;
-		// return s + "\n";
+		if (s == null) return "\n";
+		if (s.endsWith("\n")) return s;
+		return s + "\n";
 	}
 
 	public void setText(String text) {
@@ -71,7 +71,7 @@ public class CodemirrorEditorWidget extends AWidget {
 	}
 
 	public void focus() {
-		if (editor != null) focus(editor);
+		// if (editor != null) focus(editor);
 	}
 
 	public void addKeyPressHandler(KeyPressHandler listener) {
