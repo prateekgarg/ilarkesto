@@ -30,14 +30,19 @@ public class CodemirrorEditorWidget extends AWidget {
 			if (this.editor == null) alert("Waiting for internal frame to load. This is a temporary workaround.");
 		}
 		
-		editor.execute = function(f) {
+		editor.execute = function(funct) {
+			if (funct == null) return;
 			if (this.editor == null) {
 				setTimeout(function() {
-					editor.execute(f);
+					editor.execute(funct);
 				}, 100);
 			} else {
-				f();
+				funct();
 			}
+		}
+		
+		editor.isReady = function() {
+			return this.editor != null;
 		}
 		
 		editor.execute();
@@ -79,7 +84,7 @@ public class CodemirrorEditorWidget extends AWidget {
 	}
 
 	public String getText() {
-		if (editor == null) return textArea.getText();
+		if (!isReady()) return textArea.getText();
 		String text = editorGetCode(editor);
 		textArea.setText(text);
 		return text;
@@ -99,9 +104,18 @@ public class CodemirrorEditorWidget extends AWidget {
 	}
 
 	public String getSelectedText() {
-		if (editor == null) return null;
+		if (!isReady()) return null;
 		return selection(editor);
 	}
+
+	private boolean isReady() {
+		return editor != null && isReady(editor);
+	}
+
+	private native boolean isReady(JavaScriptObject editor)
+	/*-{
+		return editor.isReady();
+	}-*/;
 
 	private native String selection(JavaScriptObject editor)
 	/*-{
@@ -124,27 +138,29 @@ public class CodemirrorEditorWidget extends AWidget {
 
 	private native void wrapLine(JavaScriptObject editor, String prefix, String suffix)
 	/*-{
-	    editor.ensureWindowLoaded();
-	    cursorPosition = editor.cursorPosition(true);
-	    selection = editor.selection();
-	    if (selection==null) selection = "";
-	    line = editor.lineContent(cursorPosition.line); 
-		editor.setLineContent(cursorPosition.line, prefix + line + suffix);
-		from = cursorPosition.character+prefix.length;
-		to = cursorPosition.character+prefix.length+selection.length;
-		editor.selectLines(cursorPosition.line, from, cursorPosition.line, to);
+	 	editor.execute( function() {
+		    cursorPosition = editor.cursorPosition(true);
+		    selection = editor.selection();
+		    if (selection==null) selection = "";
+		    line = editor.lineContent(cursorPosition.line); 
+			editor.setLineContent(cursorPosition.line, prefix + line + suffix);
+			from = cursorPosition.character+prefix.length;
+			to = cursorPosition.character+prefix.length+selection.length;
+			editor.selectLines(cursorPosition.line, from, cursorPosition.line, to);
+		});
 	}-*/;
 
 	private native void wrapSelection(JavaScriptObject editor, String prefix, String suffix)
 	/*-{
-	    editor.ensureWindowLoaded();
-	    cursorPosition = editor.cursorPosition(true);
-	    selection = editor.selection(); 
-	    if (selection==null) selection = "";
-		editor.replaceSelection(prefix + selection + suffix);
-		from = cursorPosition.character+prefix.length;
-		to = cursorPosition.character+prefix.length+selection.length;
-		editor.selectLines(cursorPosition.line, from, cursorPosition.line, to);
+	 	editor.execute( function() {
+		    cursorPosition = editor.cursorPosition(true);
+		    selection = editor.selection(); 
+		    if (selection==null) selection = "";
+			editor.replaceSelection(prefix + selection + suffix);
+			from = cursorPosition.character+prefix.length;
+			to = cursorPosition.character+prefix.length+selection.length;
+			editor.selectLines(cursorPosition.line, from, cursorPosition.line, to);
+		});
 	}-*/;
 
 	private native void focus(JavaScriptObject editor)
