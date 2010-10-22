@@ -17,6 +17,15 @@ public class Soundunwound {
 
 	private static Log log = Log.get(Soundunwound.class);
 
+	public static String extractId(String url) {
+		if (Str.isBlank(url)) return null;
+		String id = url;
+		id = id.substring(id.lastIndexOf('/') + 1);
+		int idx = id.indexOf("?");
+		if (idx > 0) id = id.substring(0, idx);
+		return id;
+	}
+
 	public static String determineIdByTitle(String title, boolean guess) {
 		log.info("Determining Soundunwound-ID by title:", title);
 		WebResponse response = HttpUnit.loadPage(getTitleSearchUrl(title));
