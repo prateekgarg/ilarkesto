@@ -30,7 +30,13 @@ public class Soundunwound {
 		log.info("Determining Soundunwound-ID by title:", title);
 		WebResponse response = HttpUnit.loadPage(getTitleSearchUrl(title));
 		WebTable table = HttpUnit.getTable("releases", response);
-		if (table == null) return null;
+		if (table == null) {
+			if (guess) {
+				int idx = title.lastIndexOf(' ');
+				if (idx > 0) return determineIdByTitle(title.substring(0, idx), guess);
+			}
+			return null;
+		}
 		int rows = table.getRowCount();
 		if (rows == 0) return null;
 		if (rows > 1 && !guess) return null;

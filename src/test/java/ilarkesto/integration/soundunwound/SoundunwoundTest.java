@@ -12,6 +12,11 @@ public class SoundunwoundTest extends ATest {
 	}
 
 	@Test
+	public void determineIdByTitleGuess() {
+		assertEquals(Soundunwound.determineIdByTitle("Kaiser Chiefs - Yours Truly Angry Mob [2007]", true), "6929991");
+	}
+
+	@Test
 	public void loadRecord() {
 		SoundunwoundRecord r = Soundunwound.loadRecord("7360478");
 		assertEquals(r.getArtist(), "Ohrbooten");
