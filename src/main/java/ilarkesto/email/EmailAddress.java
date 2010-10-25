@@ -1,8 +1,8 @@
 package ilarkesto.email;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public final class EmailAddress {
@@ -22,8 +22,8 @@ public final class EmailAddress {
 		if (idx >= 0) {
 			label = emailAddress.substring(0, idx).trim();
 			if (label.length() >= 2) {
-				if (label.startsWith("\"")) label = label.substring(1);
-				if (label.endsWith("\"")) label = label.substring(0, label.length() - 1);
+				if (label.startsWith("\"") || label.startsWith("'")) label = label.substring(1);
+				if (label.endsWith("\"") || label.endsWith("'")) label = label.substring(0, label.length() - 1);
 			}
 			if (label.length() == 0) label = null;
 		}
@@ -131,9 +131,9 @@ public final class EmailAddress {
 		if (idx2 >= email.length() - 1) throw new RuntimeException(msg);
 	}
 
-	public static final Set<EmailAddress> parseList(String s) {
+	public static final List<EmailAddress> parseList(String s) {
 		if (s == null) return null;
-		Set<EmailAddress> result = new HashSet<EmailAddress>();
+		List<EmailAddress> result = new ArrayList<EmailAddress>();
 		StringTokenizer st = new StringTokenizer(s, ";");
 		while (st.hasMoreTokens()) {
 			result.add(new EmailAddress(st.nextToken()));
