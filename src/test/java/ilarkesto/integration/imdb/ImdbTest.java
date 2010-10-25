@@ -1,4 +1,4 @@
-package ilarkesto.imdb;
+package ilarkesto.integration.imdb;
 
 import ilarkesto.integration.imdb.Imdb;
 import ilarkesto.integration.imdb.ImdbRecord;

@@ -1,4 +1,4 @@
-package ilarkesto.albumartorg;
+package ilarkesto.integration.albumartorg;
 
 import ilarkesto.integration.albumartorg.AlbumArt;
 import ilarkesto.testng.ATest;
