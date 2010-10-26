@@ -16,6 +16,7 @@ public class ButtonWidget extends AWidget {
 
 	@Override
 	protected Widget onInitialization() {
+		setStyleName("ButtonWidget");
 		button = new Button(action.getLabel(), action);
 		tooltip = Gwt.addHtmlTooltip(button, "");
 		return button;

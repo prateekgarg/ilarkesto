@@ -95,6 +95,11 @@ public abstract class AWidget extends Composite implements Updatable {
 		return Gwt.getSimpleName(getClass());
 	}
 
+	@Override
+	public void setStyleName(String style) {
+		wrapper.setStyleName(style);
+	}
+
 	private class Wrapper extends SimplePanel {
 
 		// private Widget content;

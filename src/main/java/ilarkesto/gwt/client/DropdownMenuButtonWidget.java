@@ -12,14 +12,13 @@ import com.google.gwt.user.client.ui.Widget;
 public class DropdownMenuButtonWidget extends AWidget {
 
 	private LinkedHashMap<String, List<AAction>> actionGroups;
-	// private List<AAction> actions;
 	private MenuBar menu;
-	private MenuItem popup;
 	private String icon;
 	private String label;
 
 	@Override
 	protected Widget onInitialization() {
+		setStyleName("DropdownMenuButtonWidget");
 		actionGroups = new LinkedHashMap<String, List<AAction>>();
 
 		menu = new MenuBar(true);
@@ -28,11 +27,10 @@ public class DropdownMenuButtonWidget extends AWidget {
 		String title = "<img src='dropdown.png' alt='Dropdown Menu' width='16' height='16'>";
 		if (icon != null) title = "<img src='" + icon + "' width='16' height='16' alt='ico'>" + title;
 		if (label != null) title = "<div style='float: left; margin-top: 4px;'>" + label + "</div> " + title;
-		popup = menuBar.addItem(title, true, menu);
+		menuBar.addItem(title, true, menu);
 		menuBar.setPopupPosition(MenuBar.PopupPosition.LEFT);
 
 		Widget wrapper = TableBuilder.row(false, 0, menuBar);
-		wrapper.setStyleName("DropdownMenuButtonWidget");
 		return wrapper;
 	}
 
