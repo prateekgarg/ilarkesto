@@ -233,7 +233,9 @@ public abstract class AViewEditWidget extends AWidget {
 
 		@Override
 		public void onClick(ClickEvent event) {
-			if (isEditable()) switchToEditMode();
+			if (event.getNativeEvent().getEventTarget().toString().startsWith("[object HTML")) {
+				if (isEditable()) switchToEditMode();
+			}
 			event.stopPropagation();
 		}
 

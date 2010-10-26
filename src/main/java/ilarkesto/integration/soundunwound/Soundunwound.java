@@ -3,12 +3,12 @@ package ilarkesto.integration.soundunwound;
 import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.httpunit.HttpUnit;
+import ilarkesto.io.IO;
 
-import org.xml.sax.SAXException;
+import java.io.File;
 
 import com.meterware.httpunit.HTMLElement;
 import com.meterware.httpunit.TableCell;
-import com.meterware.httpunit.WebImage;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
@@ -17,15 +17,30 @@ public class Soundunwound {
 
 	private static Log log = Log.get(Soundunwound.class);
 
+	public static String extractId(String url) {
+		if (Str.isBlank(url)) return null;
+		String id = url;
+		id = id.substring(id.lastIndexOf('/') + 1);
+		int idx = id.indexOf("?");
+		if (idx > 0) id = id.substring(0, idx);
+		return id;
+	}
+
 	public static String determineIdByTitle(String title, boolean guess) {
 		log.info("Determining Soundunwound-ID by title:", title);
 		WebResponse response = HttpUnit.loadPage(getTitleSearchUrl(title));
 		WebTable table = HttpUnit.getTable("releases", response);
-		if (table == null) return null;
+		if (table == null) {
+			if (guess) {
+				int idx = title.lastIndexOf(' ');
+				if (idx > 0) return determineIdByTitle(title.substring(0, idx), guess);
+			}
+			return null;
+		}
 		int rows = table.getRowCount();
 		if (rows == 0) return null;
 		if (rows > 1 && !guess) return null;
-		TableCell cell = table.getTableCell(1, 2);
+		TableCell cell = table.getTableCell(0, 1);
 		if (cell == null) return null;
 		for (WebLink link : cell.getLinks()) {
 			String url = link.getURLString();
@@ -73,47 +88,21 @@ public class Soundunwound {
 	}
 
 	private static Integer parseYear(WebResponse response) {
-		// TODO
-		String title;
-		try {
-			title = response.getTitle();
-		} catch (SAXException ex) {
-			throw new RuntimeException(ex);
-		}
-		if (title == null) return null;
-		int idx = title.lastIndexOf(" (");
-		if (idx < 1) return null;
-		String year = title.substring(idx + 2, idx + 6);
-		return Integer.parseInt(year);
+		HTMLElement div = HttpUnit.getElementWithId("overviewSection", response);
+		if (div == null) return null;
+		String s = Str.cutFrom(div.getText(), "First released:");
+		if (s == null) return null;
+		s = s.trim();
+		int idx = s.lastIndexOf(' ');
+		if (idx > 0) s = s.substring(idx + 1);
+		return Integer.parseInt(s);
 	}
 
 	private static String parseCoverId(WebResponse response) {
-		// TODO
-		HTMLElement img;
-		try {
-			img = response.getElementWithID("primary-poster");
-		} catch (SAXException ex) {
-			throw new RuntimeException(ex);
-		}
-		if (img == null) {
-			TableCell td;
-			try {
-				td = (TableCell) response.getElementWithID("img_primary");
-			} catch (SAXException ex1) {
-				throw new RuntimeException(ex1);
-			}
-			WebImage[] images = td.getImages();
-			if (images != null && images.length > 0) img = images[0];
-		}
-
-		if (img == null) return null;
-		String url = img.getAttribute("src");
-		if (url == null) return null;
-		if (!url.startsWith("http://ia.media-imdb.com/images/M/")) return null;
-		if (!url.contains("._")) return null;
-		String id = Str.removePrefix(url, "http://ia.media-imdb.com/images/M/");
-		id = id.substring(0, id.indexOf("._"));
-		return id;
+		HTMLElement img = HttpUnit.getElementWithId("entity-main-image", response);
+		String s = img.getAttribute("src");
+		s = Str.cutFromTo(s, "http://ecx.images-amazon.com/images/I/", ".");
+		return s;
 	}
 
 	public static String getTitleSearchUrl(String title) {
@@ -124,9 +113,15 @@ public class Soundunwound {
 		return "http://www.soundunwound.com/music/-/-/" + id;
 	}
 
-	public static String getCoverUrl(String coverId) {
+	public static String getCoverUrl(String coverId, int width) {
 		if (coverId == null) return null;
-		return "http://ia.media-imdb.com/images/M/" + coverId + "._V1._SX510_SY755_.jpg";
+		return "http://ecx.images-amazon.com/images/I/" + coverId + "._SL" + width + "_.jpg";
+	}
+
+	public static void downloadCover(String coverId, int width, File destinationFile) {
+		String url = getCoverUrl(coverId, width);
+		log.info("Downloading Soundunwound cover:", url);
+		IO.downloadUrlToFile(url, destinationFile.getPath());
 	}
 
 }
