@@ -95,11 +95,17 @@ public class Soundunwound {
 		s = s.trim();
 		int idx = s.lastIndexOf(' ');
 		if (idx > 0) s = s.substring(idx + 1);
-		return Integer.parseInt(s);
+		try {
+			return Integer.parseInt(s);
+		} catch (NumberFormatException ex) {
+			log.info("Parsing year from " + response.getURL() + " failed: " + s);
+			return null;
+		}
 	}
 
 	private static String parseCoverId(WebResponse response) {
 		HTMLElement img = HttpUnit.getElementWithId("entity-main-image", response);
+		if (img == null) return null;
 		String s = img.getAttribute("src");
 		s = Str.cutFromTo(s, "http://ecx.images-amazon.com/images/I/", ".");
 		return s;
