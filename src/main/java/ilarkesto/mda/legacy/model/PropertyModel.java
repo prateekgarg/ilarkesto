@@ -30,8 +30,19 @@ public abstract class PropertyModel {
 
 	private boolean fireModified = true;
 
+	private boolean virtual;
+
 	public PropertyModel setTooltip(String tooltip) {
 		this.tooltip = tooltip;
+		return this;
+	}
+
+	public boolean isVirtual() {
+		return virtual;
+	}
+
+	public PropertyModel setVirtual(boolean virtual) {
+		this.virtual = virtual;
 		return this;
 	}
 
