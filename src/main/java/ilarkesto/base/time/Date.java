@@ -165,6 +165,16 @@ public final class Date implements Comparable<Date> {
 		return getPeriodTo(today());
 	}
 
+	public int getPeriodToInYears(Date other) {
+		int years = other.year - year;
+		if (month > other.month) {
+			years--;
+		} else if (month == other.month && day > other.day) {
+			years--;
+		}
+		return years;
+	}
+
 	public int getPeriodToInMonths(Date other) {
 		int years = other.year - year;
 		int months = other.month - month;
@@ -402,6 +412,7 @@ public final class Date implements Comparable<Date> {
 
 	// --- Comparable ---
 
+	@Override
 	public int compareTo(Date other) {
 		if (other == null) return 1;
 		if (year > other.year) return 1;

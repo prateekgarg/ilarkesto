@@ -32,6 +32,13 @@ public class HtmlRenderer {
 		out.flush();
 	}
 
+	public void flattrCompactStatic(String thingUrl) {
+		startA(thingUrl).setTargetBlank();
+		IMG("http://api.flattr.com/button/button-compact-static-100x17.png", "Flattr this", null, 100, 17);
+		endA();
+
+	}
+
 	public void flattrCompactJs(String url) {
 		SCRIPTjavascript(null, "var flattr_url = '" + url + "';\n" + "var flattr_btn='compact';");
 		SCRIPTjavascript("http://api.flattr.com/button/load.js", null);
