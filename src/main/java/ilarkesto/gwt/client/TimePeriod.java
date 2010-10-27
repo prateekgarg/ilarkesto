@@ -54,27 +54,27 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable, IsSeria
 		if (m >= (MONTH * 2)) {
 			int i = toMonths();
 			sb.append(i);
-			sb.append(i == 1 ? " month" : " months");
+			sb.append(i == 1 || i == -1 ? " month" : " months");
 		} else if (m >= (WEEK * 2)) {
 			int i = toWeeks();
 			sb.append(i);
-			sb.append(i == 1 ? " week" : " weeks");
+			sb.append(i == 1 || i == -1 ? " week" : " weeks");
 		} else if (m >= DAY) {
 			int i = toDays();
 			sb.append(i);
-			sb.append(i == 1 ? " day" : " days");
+			sb.append(i == 1 || i == -1 ? " day" : " days");
 		} else if (m >= ((HOUR * 2) - (MINUTE - 20))) {
 			long l = toHours();
 			sb.append(l);
-			sb.append(l == 1 ? " hour" : " hours");
+			sb.append(l == 1 || l == -1 ? " hour" : " hours");
 		} else if (m >= MINUTE) {
 			long l = toMinutes();
 			sb.append(l);
-			sb.append(l == 1 ? " minute" : " minutes");
+			sb.append(l == 1 || l == -1 ? " minute" : " minutes");
 		} else if (m >= SECOND) {
 			long l = toSeconds();
 			sb.append(l);
-			sb.append(l == 1 ? " second" : " seconds");
+			sb.append(l == 1 || l == -1 ? " second" : " seconds");
 		} else {
 			sb.append(m);
 			sb.append(" millis");
