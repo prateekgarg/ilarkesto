@@ -84,16 +84,16 @@ public class DatobModel extends BeanModel {
 		return propertyModel;
 	}
 
-	public SimplePropertyModel addReference(String name, EntityModel type) {
+	public ReferencePropertyModel addReference(String name, EntityModel type) {
 		String className = type.getPackageName() + "." + type.getName();
-		SimplePropertyModel propertyModel = new SimplePropertyModel(this, name, type);
+		ReferencePropertyModel propertyModel = new ReferencePropertyModel(this, name, type);
 		propertyModel.setAbstract(type.isAbstract());
 		properties.add(propertyModel);
 		if (!"User".equals(type.getName()) && !AEntity.class.getName().equals(className) && !type.isAbstract()
 				&& !type.equals(this))
-			addDependency(type.getPackageName() + "." + type.getName() + "Dao", Str.lowercaseFirstLetter((type
-					.getName()))
-					+ "Dao");
+			addDependency(type.getPackageName() + "." + type.getName() + "Dao",
+				Str.lowercaseFirstLetter((type.getName())) + "Dao");
+		propertyModel.createBackReference(Str.lowercaseFirstLetter(getName()));
 		return propertyModel;
 	}
 
@@ -103,9 +103,8 @@ public class DatobModel extends BeanModel {
 		propertyModel.setAbstract(type.isAbstract());
 		properties.add(propertyModel);
 		if (!"User".equals(type.getName()) && !AEntity.class.getName().equals(className))
-			addDependency(type.getPackageName() + "." + type.getName() + "Dao", Str.lowercaseFirstLetter((type
-					.getName()))
-					+ "Dao");
+			addDependency(type.getPackageName() + "." + type.getName() + "Dao",
+				Str.lowercaseFirstLetter((type.getName())) + "Dao");
 		return propertyModel;
 	}
 
@@ -115,9 +114,8 @@ public class DatobModel extends BeanModel {
 		propertyModel.setAbstract(type.isAbstract());
 		properties.add(propertyModel);
 		if (!"User".equals(type.getName()) && !AEntity.class.getName().equals(className))
-			addDependency(type.getPackageName() + "." + type.getName() + "Dao", Str.lowercaseFirstLetter((type
-					.getName()))
-					+ "Dao");
+			addDependency(type.getPackageName() + "." + type.getName() + "Dao",
+				Str.lowercaseFirstLetter((type.getName())) + "Dao");
 		return propertyModel;
 	}
 }

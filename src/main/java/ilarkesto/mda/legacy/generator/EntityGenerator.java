@@ -8,12 +8,16 @@ import ilarkesto.base.Str;
 import ilarkesto.base.time.Date;
 import ilarkesto.base.time.DateAndTime;
 import ilarkesto.base.time.Time;
+import ilarkesto.mda.legacy.model.BackReferenceModel;
+import ilarkesto.mda.legacy.model.BeanModel;
 import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
+import ilarkesto.mda.legacy.model.ReferencePropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.search.Searchable;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -31,7 +35,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln();
 			comment(AEntity.class.getSimpleName());
 			ln();
-			s("    public final " + bean.getDaoName() + " getDao() {").ln();
+			s("    public final " + bean.getDaoClass() + " getDao() {").ln();
 			s("        return " + daoName + ";").ln();
 			s("    }").ln();
 		}
@@ -110,7 +114,31 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("    }");
 		}
 
+		for (BackReferenceModel br : bean.getBackReferences()) {
+			writeBackReference(br);
+		}
+
 		super.writeContent();
+	}
+
+	private void writeBackReference(BackReferenceModel br) {
+		ln();
+		ReferencePropertyModel ref = br.getReference();
+		BeanModel refEntity = ref.getBean();
+		if (ref.isUnique()) {
+			ln("    public final " + refEntity.getBeanClass() + " get" + Str.uppercaseFirstLetter(br.getName())
+					+ "() {");
+			ln("        return " + Str.lowercaseFirstLetter(refEntity.getName()) + "Dao.get"
+					+ Str.uppercaseFirstLetter(br.getName()) + "By" + Str.uppercaseFirstLetter(ref.getName()) + "(("
+					+ bean.getName() + ")this);");
+			ln("    }");
+		} else {
+			ln("    public final java.util.Set<" + refEntity.getBeanClass() + "> get"
+					+ Str.uppercaseFirstLetter(br.getName()) + "s() {");
+			ln("        return " + Str.lowercaseFirstLetter(refEntity.getName()) + "Dao.get" + refEntity.getName()
+					+ "sBy" + Str.uppercaseFirstLetter(ref.getName()) + "((" + bean.getName() + ")this);");
+			ln("    }");
+		}
 	}
 
 	@Override
@@ -137,7 +165,17 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		super.writeDependencies();
 		String daoName = Str.lowercaseFirstLetter(bean.getDaoName());
 		if (!bean.isAbstract() && !bean.containsDependency(daoName)) {
-			dependency(bean.getDaoName(), daoName, true, false);
+			dependency(bean.getDaoClass(), daoName, true, false);
+		}
+		Set<String> refDaos = new HashSet<String>();
+		for (BackReferenceModel br : bean.getBackReferences()) {
+			EntityModel refEntity = br.getReference().getEntity();
+			String refDaoName = refEntity.getDaoName();
+			if (refDaoName.equals(daoName)) continue;
+			if (refDaos.contains(refDaoName)) continue;
+			refDaos.add(refDaoName);
+			if (bean.containsDependency(refDaoName)) continue;
+			dependency(refEntity.getDaoClass(), refDaoName, true, false);
 		}
 	}
 

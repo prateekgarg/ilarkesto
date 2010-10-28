@@ -20,6 +20,7 @@ public final class EntityModel extends DatobModel {
 
 	public void addBackReference(BackReferenceModel backReference) {
 		backReferences.add(backReference);
+		EntityModel entity = backReference.getReference().getEntity();
 	}
 
 	public List<BackReferenceModel> getBackReferences() {
@@ -48,7 +49,11 @@ public final class EntityModel extends DatobModel {
 	}
 
 	public String getDaoName() {
-		return getName() + "Dao";
+		return Str.lowercaseFirstLetter(getName()) + "Dao";
+	}
+
+	public String getDaoClass() {
+		return getBeanClass() + "Dao";
 	}
 
 	public String getAbstractBaseDaoClassName() {

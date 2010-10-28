@@ -60,7 +60,7 @@ public abstract class BeanModel extends AModel {
 	}
 
 	public CompositeModel addDaoAsComposite(EntityModel entity) {
-		return addComposite(entity.getPackageName() + "." + entity.getDaoName(), entity.getDaoName());
+		return addComposite(entity.getDaoClass(), entity.getDaoName());
 	}
 
 	public CompositeModel addComposite(BeanModel bean) {

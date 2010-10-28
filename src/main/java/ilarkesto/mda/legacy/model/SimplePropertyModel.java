@@ -3,22 +3,11 @@ package ilarkesto.mda.legacy.model;
 public class SimplePropertyModel extends PropertyModel {
 
 	private String type;
-	private EntityModel referencedEntity;
 	private boolean optionRestricted;
 
 	public SimplePropertyModel(BeanModel entityModel, String name, boolean reference, boolean valueObject, String type) {
 		super(entityModel, name, reference, valueObject);
 		this.type = type;
-	}
-
-	public SimplePropertyModel(BeanModel entityModel, String name, EntityModel referencedEntity) {
-		this(entityModel, name, true, false, referencedEntity.getPackageName() + "." + referencedEntity.getName());
-		this.referencedEntity = referencedEntity;
-	}
-
-	public SimplePropertyModel addBackReference(EntityModel entity, String name) {
-		entity.addBackReference(new BackReferenceModel(name, this));
-		return this;
 	}
 
 	public SimplePropertyModel setOptionRestricted(boolean optioned) {
@@ -32,7 +21,7 @@ public class SimplePropertyModel extends PropertyModel {
 	}
 
 	public EntityModel getReferencedEntity() {
-		return referencedEntity;
+		return null;
 	}
 
 	@Override

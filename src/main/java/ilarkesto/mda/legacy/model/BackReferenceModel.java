@@ -2,15 +2,15 @@ package ilarkesto.mda.legacy.model;
 
 public class BackReferenceModel extends AModel {
 
-	private SimplePropertyModel property;
+	private ReferencePropertyModel reference;
 
-	public BackReferenceModel(String name, SimplePropertyModel property) {
+	public BackReferenceModel(String name, ReferencePropertyModel reference) {
 		super(name);
-		this.property = property;
+		this.reference = reference;
 	}
 
-	public SimplePropertyModel getProperty() {
-		return property;
+	public ReferencePropertyModel getReference() {
+		return reference;
 	}
 
 }

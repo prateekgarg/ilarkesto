@@ -7,6 +7,7 @@ import ilarkesto.base.time.Time;
 import ilarkesto.core.logging.Log;
 import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
+import ilarkesto.mda.legacy.model.ReferencePropertyModel;
 import ilarkesto.mda.legacy.model.SetPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.UniqueFieldConstraintException;
@@ -112,7 +113,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 			} else {
 				if (p.isReference()) {
-					if (p.isMaster()) {
+					ReferencePropertyModel pRef = (ReferencePropertyModel) p;
+					if (pRef.isMaster()) {
 						ln("        if (!is" + Str.uppercaseFirstLetter(p.getNameSingular()) + "Set()) {");
 						ln("            repairMissingMaster();");
 						ln("            return;");
@@ -571,11 +573,12 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		// --- repairDeadXxxReference ---
 		if (p.isReference()) {
+			ReferencePropertyModel pRef = (ReferencePropertyModel) p;
 			ln();
 			ln("    protected void repairDead" + Str.uppercaseFirstLetter(p.getNameSingular())
 					+ "Reference(String entityId) {");
 			ln("        if (" + getFieldName(p) + " == null || entityId.equals(" + getFieldName(p) + ")) {");
-			if (p.isMaster()) {
+			if (pRef.isMaster()) {
 				ln("            repairMissingMaster();");
 			} else {
 				ln("            set" + pNameUpper + "(null);");

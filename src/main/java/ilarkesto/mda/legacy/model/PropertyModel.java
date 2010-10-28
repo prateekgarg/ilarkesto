@@ -91,19 +91,6 @@ public abstract class PropertyModel {
 		return reference;
 	}
 
-	private boolean master;
-
-	public PropertyModel setMaster(boolean master) {
-		if (master && (!isReference() || isCollection()))
-			throw new RuntimeException("Only a simple reference property can be a master");
-		this.master = master;
-		return setMandatory(master);
-	}
-
-	public boolean isMaster() {
-		return master;
-	}
-
 	private boolean valueObject;
 
 	public boolean isValueObject() {
@@ -130,18 +117,22 @@ public abstract class PropertyModel {
 		return _abstract;
 	}
 
-	public BeanModel getEntity() {
-		return entityModel;
+	public BeanModel getBean() {
+		return beanModel;
+	}
+
+	public EntityModel getEntity() {
+		return (EntityModel) getBean();
 	}
 
 	// --- dependencies ---
 
-	private BeanModel entityModel;
+	private BeanModel beanModel;
 
 	private String name;
 
-	public PropertyModel(BeanModel entityModel, String name, boolean reference, boolean valueObject) {
-		this.entityModel = entityModel;
+	public PropertyModel(BeanModel beanModel, String name, boolean reference, boolean valueObject) {
+		this.beanModel = beanModel;
 		this.name = name;
 		this.reference = reference;
 		this.valueObject = valueObject;
