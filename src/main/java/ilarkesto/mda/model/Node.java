@@ -202,7 +202,8 @@ public class Node implements Comparable<Node> {
 
 	@Override
 	public int compareTo(Node o) {
-		return value.compareTo(o.value);
+		int typeRet = type.compareTo(o.type);
+		return typeRet == 0 ? value.compareTo(o.value) : typeRet;
 	}
 
 	@Override
