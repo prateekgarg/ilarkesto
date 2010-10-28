@@ -97,14 +97,15 @@ public class DatobModel extends BeanModel {
 		return propertyModel;
 	}
 
-	public SetPropertyModel addSetReference(String name, BeanModel type) {
+	public ReferenceSetPropertyModel addSetReference(String name, EntityModel type) {
 		String className = type.getPackageName() + "." + type.getName();
-		SetPropertyModel propertyModel = new SetPropertyModel(this, name, true, false, className);
+		ReferenceSetPropertyModel propertyModel = new ReferenceSetPropertyModel(this, name, type);
 		propertyModel.setAbstract(type.isAbstract());
 		properties.add(propertyModel);
 		if (!"User".equals(type.getName()) && !AEntity.class.getName().equals(className))
 			addDependency(type.getPackageName() + "." + type.getName() + "Dao",
 				Str.lowercaseFirstLetter((type.getName())) + "Dao");
+		propertyModel.createBackReference(Str.lowercaseFirstLetter(getName()));
 		return propertyModel;
 	}
 

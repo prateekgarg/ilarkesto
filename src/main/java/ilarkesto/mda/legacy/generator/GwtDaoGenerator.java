@@ -152,7 +152,16 @@ public class GwtDaoGenerator extends AClassGenerator {
 				}
 				ln();
 				if (p.isCollection()) {
-
+					String singularNameUpper = Str.uppercaseFirstLetter(p.getNameSingular());
+					ln("    public final List<" + type + "> get" + name + "sBy" + singularNameUpper + "("
+							+ p.getContentType().replace(".server.", ".client."), p.getNameSingular() + ") {");
+					ln("        List<" + type + "> ret = new ArrayList<" + type + ">();");
+					ln("        for (" + type + " entity : " + mapVar + ".values()) {");
+					ln("            if (entity.contains" + singularNameUpper + "(" + p.getNameSingular()
+							+ ")) ret.add(entity);");
+					ln("        }");
+					ln("        return ret;");
+					ln("    }");
 				} else {
 					if (p.isUnique()) {
 						ln("    public final " + type + " get" + name + "By" + pNameUpper + "(" + pType, pName + ") {");

@@ -16,19 +16,22 @@ import ilarkesto.gwt.client.editor.AOptionEditorModel;
 import ilarkesto.gwt.client.editor.ATextEditorModel;
 import ilarkesto.gwt.client.editor.ATimeEditorModel;
 import ilarkesto.mda.legacy.model.ApplicationModel;
-import ilarkesto.mda.legacy.model.DatobModel;
+import ilarkesto.mda.legacy.model.BackReferenceModel;
+import ilarkesto.mda.legacy.model.BeanModel;
+import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PredicateModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.StringPropertyModel;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class GwtEntityGenerator extends ABeanGenerator<DatobModel> {
+public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 
 	private ApplicationModel application;
 
-	public GwtEntityGenerator(DatobModel datobModel, ApplicationModel application) {
+	public GwtEntityGenerator(EntityModel datobModel, ApplicationModel application) {
 		super(datobModel);
 		this.application = application;
 	}
@@ -42,10 +45,44 @@ public class GwtEntityGenerator extends ABeanGenerator<DatobModel> {
 		properties();
 		updatePropertiesMethod();
 		storePropertiesMethod();
-		if (bean.isSearchable()) writeSearchable();
+		backReferences();
+		if (bean.isSearchable()) searchable();
+
 	}
 
-	private void writeSearchable() {
+	private void backReferences() {
+		Set<String> backRefs = new HashSet<String>();
+		for (BackReferenceModel br : bean.getBackReferences()) {
+			if (backRefs.contains(br.getName())) continue;
+			backRefs.add(br.getName());
+			backReference(br);
+		}
+	}
+
+	private void backReference(BackReferenceModel br) {
+		ln();
+		PropertyModel ref = br.getReference();
+		BeanModel refEntity = ref.getBean();
+		if (refEntity instanceof EntityModel) {
+			if (!((EntityModel) refEntity).isGwtSupport()) return;
+		}
+		String by = Str.uppercaseFirstLetter(ref.getName());
+		if (ref.isCollection()) by = Str.removeSuffix(by, "s");
+		if (ref.isUnique()) {
+			ln("    public final " + refEntity.getBeanClass().replace(".server.", ".client.") + " get"
+					+ Str.uppercaseFirstLetter(br.getName()) + "() {");
+			ln("        return getDao().get" + Str.uppercaseFirstLetter(br.getName()) + "By" + by + "(("
+					+ bean.getName() + ")this);");
+			ln("    }");
+		} else {
+			ln("    public final java.util.List<" + refEntity.getBeanClass().replace(".server.", ".client.") + "> get"
+					+ Str.uppercaseFirstLetter(br.getName()) + "s() {");
+			ln("        return getDao().get" + refEntity.getName() + "sBy" + by + "((" + bean.getName() + ")this);");
+			ln("    }");
+		}
+	}
+
+	private void searchable() {
 		ln();
 		ln("    @Override");
 		ln("    public boolean matchesKey(String key) {");
@@ -271,8 +308,19 @@ public class GwtEntityGenerator extends ABeanGenerator<DatobModel> {
 				ln("        " + varName + ".remove(id);");
 				ln("        propertyChanged(\"" + p.getName() + "Ids\", this." + p.getName() + "Ids);");
 				ln("    }");
+				ln();
+				ln("    public final boolean contains" + nameSingularUpper + "(" + contentType + " " + nameSingular
+						+ ") {");
+				ln("        return " + varName + ".contains(" + nameSingular + ".getId());");
+				ln("    }");
+				ln();
 			} else {
 				// data collection
+				String type = p.getType().replace(".server.", ".client.");
+				String typeName = type.substring(type.lastIndexOf('.') + 1, type.length() - 1);
+				String contentType = p.getContentType().replace(".server.", ".client.");
+				String nameSingular = p.getNameSingular();
+				String nameSingularUpper = Str.uppercaseFirstLetter(nameSingular);
 				ln("    private " + p.getType() + " " + p.getName() + " = new " + p.getCollectionImpl() + "<"
 						+ p.getContentType() + ">();");
 				ln();
@@ -288,6 +336,12 @@ public class GwtEntityGenerator extends ABeanGenerator<DatobModel> {
 						+ p.getName() + ");");
 				ln("        propertyChanged(\"" + p.getName() + "\", this." + p.getName() + ");");
 				ln("    }");
+				ln();
+				ln("    public final boolean contains" + nameSingularUpper + "(" + contentType + " " + nameSingular
+						+ ") {");
+				ln("        return " + name + ".contains(" + nameSingular + ");");
+				ln("    }");
+				ln();
 			}
 		} else {
 			// simple (not collection)

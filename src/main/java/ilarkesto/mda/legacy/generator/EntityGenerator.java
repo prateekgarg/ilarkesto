@@ -9,10 +9,8 @@ import ilarkesto.base.time.Date;
 import ilarkesto.base.time.DateAndTime;
 import ilarkesto.base.time.Time;
 import ilarkesto.mda.legacy.model.BackReferenceModel;
-import ilarkesto.mda.legacy.model.BeanModel;
 import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
-import ilarkesto.mda.legacy.model.ReferencePropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.search.Searchable;
@@ -114,7 +112,10 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("    }");
 		}
 
+		Set<String> backRefs = new HashSet<String>();
 		for (BackReferenceModel br : bean.getBackReferences()) {
+			if (backRefs.contains(br.getName())) continue;
+			backRefs.add(br.getName());
 			writeBackReference(br);
 		}
 
@@ -123,20 +124,21 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 
 	private void writeBackReference(BackReferenceModel br) {
 		ln();
-		ReferencePropertyModel ref = br.getReference();
-		BeanModel refEntity = ref.getBean();
+		PropertyModel ref = br.getReference();
+		EntityModel refEntity = ref.getEntity();
+		String by = Str.uppercaseFirstLetter(ref.getName());
+		if (ref.isCollection()) by = Str.removeSuffix(by, "s");
 		if (ref.isUnique()) {
 			ln("    public final " + refEntity.getBeanClass() + " get" + Str.uppercaseFirstLetter(br.getName())
 					+ "() {");
 			ln("        return " + Str.lowercaseFirstLetter(refEntity.getName()) + "Dao.get"
-					+ Str.uppercaseFirstLetter(br.getName()) + "By" + Str.uppercaseFirstLetter(ref.getName()) + "(("
-					+ bean.getName() + ")this);");
+					+ Str.uppercaseFirstLetter(br.getName()) + "By" + by + "((" + bean.getName() + ")this);");
 			ln("    }");
 		} else {
 			ln("    public final java.util.Set<" + refEntity.getBeanClass() + "> get"
 					+ Str.uppercaseFirstLetter(br.getName()) + "s() {");
 			ln("        return " + Str.lowercaseFirstLetter(refEntity.getName()) + "Dao.get" + refEntity.getName()
-					+ "sBy" + Str.uppercaseFirstLetter(ref.getName()) + "((" + bean.getName() + ")this);");
+					+ "sBy" + by + "((" + bean.getName() + ")this);");
 			ln("    }");
 		}
 	}

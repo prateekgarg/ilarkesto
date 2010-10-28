@@ -3,7 +3,7 @@ package ilarkesto.mda.legacy.model;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class SetPropertyModel extends ACollectionPropertyModel {
+public class SetPropertyModel extends ACollectionPropertyModel {
 
 	public SetPropertyModel(BeanModel entityModel, String name, boolean reference, Class contentType) {
 		super(entityModel, name, reference, false, contentType);
