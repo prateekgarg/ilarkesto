@@ -172,20 +172,30 @@ public class Google {
 		contact.addPostalAddress(createPostalAddress(address, rel, primary));
 	}
 
-	public static void setPhone(ContactEntry contact, String phoneNumber, PhoneRel rel, boolean primary) {
+	public static void setPhone(ContactEntry contact, String phoneNumber, PhoneRel rel) {
+		phoneNumber = phoneNumber.toLowerCase();
+		for (PhoneNumber phone : contact.getPhoneNumbers()) {
+			String number = phone.getPhoneNumber().toLowerCase();
+			if (number.equals(phoneNumber) && rel.href.equals(phone.getRel())) {
+				// number already exists
+				return;
+			}
+		}
+		contact.addPhoneNumber(createPhoneNumber(phoneNumber, rel));
+	}
+
+	public static void setPrimaryPhone(ContactEntry contact, String phoneNumber, PhoneRel rel) {
 		boolean updated = false;
 		phoneNumber = phoneNumber.toLowerCase();
 		for (PhoneNumber phone : contact.getPhoneNumbers()) {
 			String number = phone.getPhoneNumber().toLowerCase();
 			if (number.equals(phoneNumber) && rel.href.equals(phone.getRel())) {
-				phone.setPrimary(primary);
-				updated = true;
-			} else if (primary) {
+				phone.setPrimary(true);
+			} else {
 				phone.setPrimary(false);
 			}
 		}
-		if (updated) return;
-		contact.addPhoneNumber(createPhoneNumber(phoneNumber, rel, primary));
+		if (!updated) throw new RuntimeException("Phone '" + phoneNumber + "' not found in: " + toString(contact));
 	}
 
 	public static void setEmail(ContactEntry contact, String emailAddress, EmailRel rel, boolean primary) {
@@ -328,11 +338,10 @@ public class Google {
 		return email;
 	}
 
-	public static PhoneNumber createPhoneNumber(String number, PhoneRel rel, boolean primary) {
+	public static PhoneNumber createPhoneNumber(String number, PhoneRel rel) {
 		PhoneNumber phoneNumber = new PhoneNumber();
 		phoneNumber.setPhoneNumber(number);
 		phoneNumber.setRel(rel.href);
-		phoneNumber.setPrimary(primary);
 		return phoneNumber;
 	}
 
