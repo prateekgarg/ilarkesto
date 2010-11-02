@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -43,6 +44,14 @@ public class Gwt {
 	private static DateTimeFormat dtfDay;
 	private static DateTimeFormat dtfWeekdayMonthDay;
 	private static DateTimeFormat dtfHourMinute;
+
+	public static boolean contains(HasWidgets container, Widget widget) {
+		Iterator<Widget> iterator = container.iterator();
+		while (iterator.hasNext()) {
+			if (iterator.next() == widget) return true;
+		}
+		return false;
+	}
 
 	public static String formatWeekdayMonthDay(Date date) {
 		if (dtfWeekdayMonthDay == null) dtfWeekdayMonthDay = DateTimeFormat.getFormat("EEEE, MMMM d.");
