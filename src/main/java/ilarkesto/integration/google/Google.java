@@ -172,16 +172,18 @@ public class Google {
 		contact.addPostalAddress(createPostalAddress(address, rel, primary));
 	}
 
-	public static void setPhone(ContactEntry contact, String phoneNumber, PhoneRel rel) {
+	public static PhoneNumber setPhone(ContactEntry contact, String phoneNumber, PhoneRel rel) {
 		phoneNumber = phoneNumber.toLowerCase();
 		for (PhoneNumber phone : contact.getPhoneNumbers()) {
 			String number = phone.getPhoneNumber().toLowerCase();
 			if (number.equals(phoneNumber) && rel.href.equals(phone.getRel())) {
 				// number already exists
-				return;
+				return phone;
 			}
 		}
-		contact.addPhoneNumber(createPhoneNumber(phoneNumber, rel));
+		PhoneNumber phone = createPhoneNumber(phoneNumber, rel);
+		contact.addPhoneNumber(phone);
+		return phone;
 	}
 
 	public static void setPrimaryPhone(ContactEntry contact, String phoneNumber, PhoneRel rel) {
@@ -191,6 +193,7 @@ public class Google {
 			String number = phone.getPhoneNumber().toLowerCase();
 			if (number.equals(phoneNumber) && rel.href.equals(phone.getRel())) {
 				phone.setPrimary(true);
+				updated = true;
 			} else {
 				phone.setPrimary(false);
 			}
