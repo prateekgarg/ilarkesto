@@ -419,14 +419,14 @@ public class Gwt {
 	}
 
 	public static void scrollTo(Widget w) {
-		if (w != null) {
-			scrollTo(w.getAbsoluteTop() - 32); // rahmen abziehen :-S
-		}
+		if (w == null) return;
+		w.getElement().scrollIntoView();
 	}
 
-	public static native void scrollTo(int posY) /*-{
-													$wnd.scrollTo(0, posY);
-													}-*/;
+	public static native void scrollTo(int posY)
+	/*-{
+		$wnd.scrollTo(0, posY);
+	}-*/;
 
 	public static final Widget createEmptyDiv() {
 		return new SimplePanel();
