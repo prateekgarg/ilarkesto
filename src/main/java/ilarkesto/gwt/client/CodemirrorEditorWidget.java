@@ -1,7 +1,5 @@
 package ilarkesto.gwt.client;
 
-import ilarkesto.core.logging.Log;
-
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.TextArea;
@@ -180,14 +178,14 @@ public class CodemirrorEditorWidget extends AWidget {
 
 		@Override
 		protected void onAttach() {
-			Log.DEBUG("-------- onAttach()");
+			// Log.DEBUG("-------- onAttach()");
 			super.onAttach();
 			createEditor();
 		}
 
 		@Override
 		protected void onDetach() {
-			Log.DEBUG("-------- onDetach()");
+			// Log.DEBUG("-------- onDetach()");
 			textArea.setText(editorGetCode(editor));
 			editor = null;
 			super.onDetach();
