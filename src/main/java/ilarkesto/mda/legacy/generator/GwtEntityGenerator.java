@@ -201,6 +201,11 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln("        @Override");
 				ln("        public boolean isRichtext() { return true; }");
 			}
+			if (sProperty.isMasked()) {
+				ln();
+				ln("        @Override");
+				ln("        public boolean isMasked() { return true; }");
+			}
 			if (sProperty.isMaxLengthSet()) {
 				ln();
 				ln("        @Override");

@@ -18,4 +18,8 @@ public abstract class ATextEditorModel extends AEditorModel<String> {
 		return null;
 	}
 
+	public boolean isMasked() {
+		return false;
+	}
+
 }

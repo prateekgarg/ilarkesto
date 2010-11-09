@@ -40,7 +40,11 @@ public class TextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected void onViewerUpdate() {
-		setViewerText(model.getValue());
+		String value = model.getValue();
+		if (model.isMasked() && !Str.isBlank(value)) {
+			value = "*****";
+		}
+		setViewerText(value);
 	}
 
 	@Override
@@ -116,8 +120,10 @@ public class TextEditorWidget extends AViewEditWidget {
 
 	private class EditorFocusListener implements FocusListener {
 
+		@Override
 		public void onFocus(Widget sender) {}
 
+		@Override
 		public void onLostFocus(Widget sender) {
 			submitEditor();
 		}

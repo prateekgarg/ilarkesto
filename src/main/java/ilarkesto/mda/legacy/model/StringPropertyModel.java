@@ -5,9 +5,19 @@ public class StringPropertyModel extends SimplePropertyModel {
 	private boolean richtext;
 	private Integer maxLenght;
 	private boolean templateAvailable;
+	private boolean masked;
 
 	public StringPropertyModel(BeanModel entityModel, String name) {
 		super(entityModel, name, false, false, String.class.getName());
+	}
+
+	public StringPropertyModel setMasked(boolean masked) {
+		this.masked = masked;
+		return this;
+	}
+
+	public boolean isMasked() {
+		return masked;
 	}
 
 	public StringPropertyModel setRichtext(boolean multiline) {
