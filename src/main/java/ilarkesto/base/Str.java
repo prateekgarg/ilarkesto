@@ -255,21 +255,6 @@ public class Str extends ilarkesto.core.base.Str {
 		return false;
 	}
 
-	/**
-	 * Removes a suffix from a string, if it exists.
-	 */
-	public static String removeSuffix(String s, String suffixToRemove) {
-		if (s == null) return null;
-		if (!s.endsWith(suffixToRemove)) return s;
-		return s.substring(0, s.length() - suffixToRemove.length());
-	}
-
-	public static String removePrefix(String s, String prefixToRemove) {
-		if (s == null) return null;
-		if (!s.startsWith(prefixToRemove)) return s;
-		return s.substring(prefixToRemove.length());
-	}
-
 	public static String activateLinksInHtml(String s) {
 		return activateLinksInHtml(s, 640);
 	}
