@@ -145,6 +145,14 @@ public final class EmailAddress {
 		return emailAddress == null ? null : emailAddress.getAddress();
 	}
 
+	public static final List<String> toStringList(Collection<EmailAddress> addresses) {
+		List<String> ret = new ArrayList<String>(addresses.size());
+		for (EmailAddress address : addresses) {
+			ret.add(address.toString());
+		}
+		return ret;
+	}
+
 	public static final String toString(Collection<EmailAddress> addresses) {
 		if (addresses == null) return null;
 		StringBuilder sb = new StringBuilder();

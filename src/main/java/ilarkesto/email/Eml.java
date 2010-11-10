@@ -431,11 +431,25 @@ public class Eml {
 		return msg;
 	}
 
+	public static Address[] parseAddresses(Collection<String> addresses) {
+		Address[] ret = new Address[addresses.size()];
+		int i = 0;
+		for (String address : addresses) {
+			try {
+				ret[i] = InternetAddress.parse(address)[0];
+			} catch (AddressException ex) {
+				throw new RuntimeException("Parsing email address failed: " + address, ex);
+			}
+			i++;
+		}
+		return ret;
+	}
+
 	public static MimeMessage createTextMessageWithAttachments(Session session, String subject, String text,
-			String from, String to, Attachment... attachments) {
+			String from, Collection<String> tos, Attachment... attachments) {
 		try {
 			return createTextMessageWithAttachments(session, subject, text, InternetAddress.parse(from)[0],
-				InternetAddress.parse(to), attachments);
+				parseAddresses(tos), attachments);
 		} catch (AddressException ex) {
 			throw new RuntimeException(ex);
 		}
