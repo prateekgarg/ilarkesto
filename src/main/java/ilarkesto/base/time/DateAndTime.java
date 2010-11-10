@@ -74,6 +74,13 @@ public final class DateAndTime implements Comparable<DateAndTime> {
 	}
 
 	/**
+	 * Assume instance as in system default time zone and convert to UTC.
+	 */
+	public DateAndTime toUtc() {
+		return toUtc(TimeZone.getDefault());
+	}
+
+	/**
 	 * Assume instance as in UTC and convert to given time zone.
 	 */
 	public DateAndTime toTimezone(TimeZone timeZone) {
@@ -212,6 +219,7 @@ public final class DateAndTime implements Comparable<DateAndTime> {
 		return date.equals(((DateAndTime) obj).date) && time.equals(((DateAndTime) obj).time);
 	}
 
+	@Override
 	public int compareTo(DateAndTime o) {
 		int i = date.compareTo(o.date);
 		if (i == 0) { return time.compareTo(o.time); }

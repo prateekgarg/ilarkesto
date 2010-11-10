@@ -2,11 +2,13 @@ package ilarkesto.webapp;
 
 import ilarkesto.base.Net;
 import ilarkesto.base.Str;
+import ilarkesto.base.time.DateAndTime;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,13 +25,50 @@ public abstract class Servlet {
 
 	public static final String ENCODING = IO.UTF_8;
 
+	public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy, HH:mm:";
+
 	private Servlet() {}
+
+	public static String getEtag(HttpServletRequest request) {
+		return request.getHeader("Etag");
+	}
 
 	public static String getWebappUrl(ServletConfig servletConfig, boolean ssl) {
 		String protocol = ssl ? "https" : "http";
 		String host = IO.getHostName();
 		String context = servletConfig.getServletContext().getServletContextName();
 		return protocol + "://" + host + "/" + context;
+	}
+
+	public static void writeCachingHeaders(HttpServletResponse httpResponse, DateAndTime lastModified) {
+		writeCachingHeaders(httpResponse, createEtag(lastModified), lastModified);
+	}
+
+	public static String createEtag(File file) {
+		return Long.toHexString(file.lastModified());
+	}
+
+	public static String createEtag(DateAndTime lastModified) {
+		return Long.toHexString(lastModified.toMillis());
+	}
+
+	public static void writeCachingHeaders(HttpServletResponse httpResponse, String eTag, DateAndTime lastModified) {
+		setLastModified(httpResponse, lastModified);
+		setEtag(httpResponse, eTag);
+	}
+
+	public static void setLastModified(HttpServletResponse httpResponse, DateAndTime lastModified) {
+		lastModified = lastModified.toUtc();
+		httpResponse.setHeader("Last-Modified", lastModified.toString(new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss"))
+				+ " GMT");
+	}
+
+	public static void setEtag(HttpServletResponse httpResponse, String eTag) {
+		httpResponse.setHeader("ETag", eTag);
+	}
+
+	public static void writeCachingHeaders(HttpServletResponse httpResponse, File file) {
+		writeCachingHeaders(httpResponse, new DateAndTime(file.lastModified()));
 	}
 
 	public static void preventCaching(HttpServletResponse httpResponse) {
