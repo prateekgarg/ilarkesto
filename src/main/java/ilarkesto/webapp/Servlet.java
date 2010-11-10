@@ -30,7 +30,7 @@ public abstract class Servlet {
 	private Servlet() {}
 
 	public static String getEtag(HttpServletRequest request) {
-		return request.getHeader("Etag");
+		return request.getHeader("If-None-Match");
 	}
 
 	public static String getWebappUrl(ServletConfig servletConfig, boolean ssl) {
