@@ -67,16 +67,6 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 			viewer.setText(".");
 			return;
 		}
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (Object item : items) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
-			}
-			sb.append(item);
-		}
 		viewer.setHTML(Utl.concatToHtml(items, "<br>"));
 	}
 
@@ -94,8 +84,10 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 
 	private class EditorFocusListener implements FocusListener {
 
+		@Override
 		public void onFocus(Widget sender) {}
 
+		@Override
 		public void onLostFocus(Widget sender) {
 			submitEditor();
 		}
