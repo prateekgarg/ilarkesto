@@ -1340,20 +1340,6 @@ public class Str extends ilarkesto.core.base.Str {
 		return sb.toString();
 	}
 
-	public static String concat(Collection strings, String delimiter) {
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (Object s : strings) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(delimiter);
-			}
-			sb.append(s);
-		}
-		return sb.toString();
-	}
-
 	public static String concat(String[] sa) {
 		return concat(sa, " ");
 	}

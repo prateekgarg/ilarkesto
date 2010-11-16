@@ -32,15 +32,19 @@ public class MultiSelectionWidget<I extends Object> extends AWidget {
 
 	public void add(I item) {
 		initialize();
+		CheckBox checkbox = createCheckbox(item);
+		items.put(item, checkbox);
+		table.setWidget(table.getRowCount(), 0, checkbox);
+	}
 
+	protected CheckBox createCheckbox(I item) {
 		CheckBox checkbox;
 		if (item instanceof HtmlLabelSupport) {
 			checkbox = new CheckBox(((HtmlLabelSupport) item).getHtmlLabel(), true);
 		} else {
 			checkbox = new CheckBox(item.toString());
 		}
-		items.put(item, checkbox);
-		table.setWidget(table.getRowCount(), 0, checkbox);
+		return checkbox;
 	}
 
 	public void setItems(Collection<I> items) {

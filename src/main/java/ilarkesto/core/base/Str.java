@@ -17,6 +17,20 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String concat(Collection strings, String delimiter) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (Object s : strings) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(delimiter);
+			}
+			sb.append(s);
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Removes a suffix from a string, if it exists.
 	 */

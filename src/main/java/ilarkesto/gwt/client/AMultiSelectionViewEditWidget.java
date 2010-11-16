@@ -1,10 +1,13 @@
 package ilarkesto.gwt.client;
 
+import ilarkesto.core.base.Str;
+import ilarkesto.core.base.ToHtmlSupport;
 import ilarkesto.core.base.Utl;
 
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -24,7 +27,13 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 
 	@Override
 	protected final Widget onEditorInitialization() {
-		editor = new MultiSelectionWidget<I>();
+		editor = new MultiSelectionWidget<I>() {
+
+			@Override
+			protected CheckBox createCheckbox(I item) {
+				return new CheckBox(toHtml(item), true);
+			}
+		};
 
 		ToolbarWidget toolbar = new ToolbarWidget();
 		toolbar.addButton(new AAction() {
@@ -62,20 +71,30 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 		return focusPanel;
 	}
 
-	public final void setViewerItems(Collection items) {
-		if (items.isEmpty()) {
-			viewer.setText(".");
-			return;
-		}
+	protected String toHtml(I item) {
+		if (item == null) return null;
+		if (item instanceof ToHtmlSupport) return ((ToHtmlSupport) item).toHtml();
+		return Str.toHtml(item.toString());
+	}
+
+	public final void setViewerItems(Collection items, String separatorHtml) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (Object item : items) {
 			if (first) {
 				first = false;
 			} else {
-				sb.append(", ");
+				sb.append(separatorHtml);
 			}
-			sb.append(item);
+			sb.append(Str.toHtml(item.toString()));
+		}
+		viewer.setHTML(sb.toString());
+	}
+
+	public final void setViewerItemsAsHtml(Collection<? extends ToHtmlSupport> items) {
+		if (items.isEmpty()) {
+			viewer.setText(".");
+			return;
 		}
 		viewer.setHTML(Utl.concatToHtml(items, "<br>"));
 	}
@@ -94,8 +113,10 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 
 	private class EditorFocusListener implements FocusListener {
 
+		@Override
 		public void onFocus(Widget sender) {}
 
+		@Override
 		public void onLostFocus(Widget sender) {
 			submitEditor();
 		}
