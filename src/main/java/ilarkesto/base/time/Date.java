@@ -253,6 +253,12 @@ public final class Date implements Comparable<Date> {
 		return new Date(gc);
 	}
 
+	public Date previousDay() {
+		GregorianCalendar gc = (GregorianCalendar) getGregorianCalendar().clone();
+		gc.add(GregorianCalendar.DAY_OF_YEAR, -1);
+		return new Date(gc);
+	}
+
 	// --- static ---
 
 	private static transient Date today;
