@@ -36,6 +36,14 @@ public class Str extends ilarkesto.core.base.Str {
 
 	private static final Object UIDLOCK = new Object();
 
+	public static String multiply(String s, int factor) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < factor; i++) {
+			sb.append(s);
+		}
+		return sb.toString();
+	}
+
 	public static String generateRandomParagraphs(int count, String prefix, String suffix, String separator) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < count; i++) {
