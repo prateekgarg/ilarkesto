@@ -520,6 +520,10 @@ public abstract class IO {
 		return IO.class.getClassLoader().getResource(resourceName);
 	}
 
+	public static URL getResource(Class relative, String resourceName) {
+		return relative.getResource(resourceName);
+	}
+
 	public static boolean existResource(String resourceName) {
 		return getResource(resourceName) != null;
 	}

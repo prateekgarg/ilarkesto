@@ -25,6 +25,14 @@ public class Utl extends ilarkesto.core.base.Utl {
 		}
 	}
 
+	public static File getFirstExistingFile(String... paths) {
+		for (String path : paths) {
+			File file = new File(path);
+			if (file.exists()) return file;
+		}
+		return null;
+	}
+
 	public static <T> T getElement(Collection<T> collection, int index) {
 		int i = 0;
 		for (T t : collection) {

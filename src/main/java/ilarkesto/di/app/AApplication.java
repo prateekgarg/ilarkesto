@@ -219,17 +219,16 @@ public abstract class AApplication {
 
 	public String getBuild() {
 		String date = getBuildProperties().getProperty("date");
-		if ("@build-date@".equals(date)) date = Time.now().toString();
+		if (date == null || "@build-date@".equals(date)) date = Time.now().toString();
 		return date;
 	}
 
 	protected Properties buildProperties;
 
-	public Properties getBuildProperties() {
+	public final Properties getBuildProperties() {
 		if (buildProperties == null) {
 			try {
-				buildProperties = IO.loadProperties(IO.getResource(getApplicationName() + ".build.properties"),
-					IO.UTF_8);
+				buildProperties = IO.loadProperties(IO.getResource(getClass(), "build.properties"), IO.UTF_8);
 			} catch (Throwable t) {
 				log.error(t);
 				buildProperties = new Properties();
