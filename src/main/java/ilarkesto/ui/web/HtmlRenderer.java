@@ -34,7 +34,7 @@ public class HtmlRenderer {
 
 	public void flattrCompactStatic(String thingUrl) {
 		startA(thingUrl).setTargetBlank();
-		IMG("http://api.flattr.com/button/button-compact-static-100x17.png", "Flattr this", null, 100, 17);
+		IMG("http://api.flattr.com/button/button-compact-static-100x17.png", "Flattr this", null, null, 100, 17);
 		endA();
 
 	}
@@ -372,7 +372,7 @@ public class HtmlRenderer {
 		if (icon != null) {
 			// tag.setStyle("background: transparent url(" + icon + ") 2px center no-repeat; padding: 2px 2px
 			// 2px 20px;");
-			IMG(icon, "icon", null, 12, 12);
+			IMG(icon, "icon", null, null, 12, 12);
 			nbsp();
 		}
 		text(text);
@@ -471,6 +471,10 @@ public class HtmlRenderer {
 		SCRIPT("text/javascript", "javascript", src, code);
 	}
 
+	public void SCRIPTdojo() {
+		SCRIPTjavascript("http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojo/dojo.xd.js", null);
+	}
+
 	public Tag startBODY() {
 		return startTag(BODY, true).setId("body");
 	}
@@ -516,8 +520,9 @@ public class HtmlRenderer {
 
 	private static final String IMG = "img";
 
-	public void IMG(String src, String alternatieText, String align, Integer width, Integer height) {
-		Tag tag = startTag(IMG).setSrc(src).setAlt(alternatieText).setBorder(0);
+	public void IMG(String src, String alternatieText, String id, String align, Integer width, Integer height) {
+		Tag tag = startTag(IMG).setSrc(src).setAlt(alternatieText).setTitle(alternatieText).setBorder(0);
+		if (id != null) tag.setId(id);
 		if (width != null) tag.setWidth(width);
 		if (height != null) tag.set("height", height);
 		if (align != null) tag.setAlign("top");
@@ -530,7 +535,7 @@ public class HtmlRenderer {
 
 	public void DIVclean() {
 		startDIV("clean");
-		IMG("dot.png", "", null, null, null);
+		IMG("dot.png", "", null, null, null, null);
 		endDIV();
 	}
 
@@ -904,6 +909,10 @@ public class HtmlRenderer {
 
 		public Tag setAlt(String value) {
 			return set("alt", value);
+		}
+
+		public Tag setTitle(String value) {
+			return set("title", value);
 		}
 
 		public Tag setHref(String value) {
