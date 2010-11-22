@@ -3,6 +3,7 @@ package ilarkesto.webapp;
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Url;
+import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
@@ -121,12 +122,12 @@ public abstract class AWebApplication extends AApplication {
 
 	@Override
 	protected String getProductionModeApplicationDataDir() {
-		File dirInHome = new File(Sys.getUsersHomePath() + "/webapp-data/" + getApplicationName());
-		if (!dirInHome.exists()) dirInHome = new File(Sys.getUsersHomePath() + "/webapps/" + getApplicationName());
+		File dirInHome = Utl.getFirstExistingFile(Sys.getUsersHomePath() + "/webapp-data/" + getApplicationName(),
+			Sys.getUsersHomePath() + "/webapps/" + getApplicationName());
+		if (dirInHome.exists()) return dirInHome.getAbsolutePath();
+
 		File dirInWorkdir = new File(Sys.getWorkDir() + "/webapp-data/" + getApplicationName());
 		if (!dirInWorkdir.exists()) dirInWorkdir = new File(Sys.getWorkDir() + "/webapps/" + getApplicationName());
-
-		if (dirInHome.exists()) return dirInHome.getAbsolutePath();
 
 		String dir = dirInWorkdir.getAbsolutePath();
 		if (IO.isDirWritable(dir)) return dir;
