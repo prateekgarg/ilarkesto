@@ -66,6 +66,11 @@ public class MultiSelectionWidget<I extends Object> extends AWidget {
 		}
 	}
 
+	public void addSelected(I item) {
+		CheckBox checkBox = items.get(item);
+		if (checkBox != null) checkBox.setValue(true);
+	}
+
 	public List<I> getSelected() {
 		List<I> ret = new LinkedList<I>();
 		for (Map.Entry<I, CheckBox> entry : items.entrySet()) {

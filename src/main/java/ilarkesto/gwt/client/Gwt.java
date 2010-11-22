@@ -117,6 +117,10 @@ public class Gwt {
 		return Window.confirm(message);
 	}
 
+	public static String prompt(String message, String value) {
+		return Window.prompt(message, value);
+	}
+
 	public static String escapeHtml(String maybeHtml) {
 		final Element div = DOM.createDiv();
 		DOM.setInnerText(div, maybeHtml);

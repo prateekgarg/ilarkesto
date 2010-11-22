@@ -63,12 +63,18 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 
 		FlowPanel container = new FlowPanel();
 		container.add(editor);
+		Widget w = getExtendedEditorContent();
+		if (w != null) container.add(w);
 		container.add(toolbar);
 
 		FocusPanel focusPanel = new FocusPanel(container);
 		focusPanel.addFocusListener(new EditorFocusListener());
 
 		return focusPanel;
+	}
+
+	protected Widget getExtendedEditorContent() {
+		return null;
 	}
 
 	protected String toHtml(I item) {
@@ -111,6 +117,10 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 		return editor.getSelected();
 	}
 
+	protected MultiSelectionWidget<I> getEditor() {
+		return editor;
+	}
+
 	private class EditorFocusListener implements FocusListener {
 
 		@Override
@@ -118,7 +128,7 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 
 		@Override
 		public void onLostFocus(Widget sender) {
-			submitEditor();
+			// submitEditor();
 		}
 
 	}
