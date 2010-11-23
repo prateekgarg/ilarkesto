@@ -60,7 +60,7 @@ public abstract class AApplication {
 		if (instance != null) { throw new RuntimeException("An Application already started: " + instance); }
 		instance = this;
 
-		log.info("\n\n     DATA DIR:", getApplicationDataDir(), "\n");
+		log.info("\n\n     DATA PATH:", getApplicationDataDir(), "\n\n");
 
 		context = Context.createRootContext("app:" + getApplicationName());
 		context.addBeanProvider(this);
@@ -173,19 +173,8 @@ public abstract class AApplication {
 	private String applicationDataDir;
 
 	public String getApplicationDataDir() {
-		if (applicationDataDir == null) {
-			applicationDataDir = isDevelopmentMode() ? getDevelopmentModeApplicationDataDir()
-					: getProductionModeApplicationDataDir();
-		}
+		if (applicationDataDir == null) applicationDataDir = Sys.getUsersHomePath() + "/." + getApplicationName();
 		return applicationDataDir;
-	}
-
-	protected String getDevelopmentModeApplicationDataDir() {
-		return new File("runtimedata").getAbsolutePath();
-	}
-
-	protected String getProductionModeApplicationDataDir() {
-		return new File(Sys.getUsersHomePath() + "/." + getApplicationName()).getAbsolutePath();
 	}
 
 	private String applicationTempDir;

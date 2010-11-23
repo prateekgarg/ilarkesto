@@ -12,6 +12,7 @@ import ilarkesto.logging.DefaultLogDataHandler;
 import ilarkesto.logging.JavaLogging;
 import ilarkesto.logging.Log4jLogging;
 
+import java.io.File;
 import java.util.Locale;
 
 public class ApplicationStarter {
@@ -32,7 +33,7 @@ public class ApplicationStarter {
 		try {
 			A application = applicationClass.newInstance();
 			if (beanProvider != null) beanProvider.autowire(application);
-			DefaultLogDataHandler.setLogFileToHomeOrWorkdir(application.getApplicationName());
+			DefaultLogDataHandler.setLogFile(new File(application.getApplicationDataDir() + "/application.log"));
 			JavaLogging.redirectToLoggers();
 			try {
 				Log4jLogging.redirectToLoggers();

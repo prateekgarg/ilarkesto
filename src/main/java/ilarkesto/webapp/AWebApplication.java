@@ -3,11 +3,9 @@ package ilarkesto.webapp;
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Url;
-import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
-import ilarkesto.io.IO;
 import ilarkesto.logging.DefaultLogDataHandler;
 
 import java.io.File;
@@ -118,25 +116,6 @@ public abstract class AWebApplication extends AApplication {
 		synchronized (webSessions) {
 			return new HashSet<AWebSession>(webSessions);
 		}
-	}
-
-	@Override
-	protected String getProductionModeApplicationDataDir() {
-		File dirInHome = Utl.getFirstExistingFile(Sys.getUsersHomePath() + "/webapp-data/" + getApplicationName(),
-			Sys.getUsersHomePath() + "/webapps/" + getApplicationName());
-		if (dirInHome.exists()) return dirInHome.getAbsolutePath();
-
-		File dirInWorkdir = new File(Sys.getWorkDir() + "/webapp-data/" + getApplicationName());
-		if (!dirInWorkdir.exists()) dirInWorkdir = new File(Sys.getWorkDir() + "/webapps/" + getApplicationName());
-
-		String dir = dirInWorkdir.getAbsolutePath();
-		if (IO.isDirWritable(dir)) return dir;
-
-		dir = dirInHome.getAbsolutePath();
-		if (!IO.isDirWritable(dir))
-			throw new RuntimeException("Can not write to homedirectory (" + Sys.getUsersHomePath()
-					+ ") and not to work directory (" + Sys.getWorkDir() + ")");
-		return dir;
 	}
 
 	public Set<AGwtConversation> getGwtConversations() {

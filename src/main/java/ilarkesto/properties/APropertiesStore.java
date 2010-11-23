@@ -11,6 +11,7 @@ import java.util.Properties;
 public abstract class APropertiesStore {
 
 	private Properties properties;
+	private Properties defaults;
 
 	protected abstract Properties load();
 
@@ -19,7 +20,10 @@ public abstract class APropertiesStore {
 	// --- String ---
 
 	public final String get(String name, String defaultValue) {
-		return getProperties().getProperty(name, defaultValue);
+		String value = getProperties().getProperty(name);
+		if (value != null) return value;
+		if (defaults != null) return defaults.getProperty(value, defaultValue);
+		return defaultValue;
 	}
 
 	public final String get(String name) {
@@ -121,6 +125,11 @@ public abstract class APropertiesStore {
 			properties = load();
 		}
 		return properties;
+	}
+
+	public void setDefaults(Properties defaults) {
+		if (properties != null) throw new IllegalStateException("Can not set defaults. Already loaded.");
+		this.defaults = defaults;
 	}
 
 }

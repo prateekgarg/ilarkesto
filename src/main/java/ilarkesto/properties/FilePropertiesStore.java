@@ -1,6 +1,5 @@
 package ilarkesto.properties;
 
-import ilarkesto.base.Sys;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
@@ -12,24 +11,33 @@ public class FilePropertiesStore extends APropertiesStore {
 	private static final Log LOG = Log.get(FilePropertiesStore.class);
 	private static final String CHARSET = IO.UTF_8;
 
+	private String label = getClass().getSimpleName();
+
 	@Override
 	protected Properties load() {
-		Properties p = new Properties();
+		Properties p;
 		if (file.exists()) {
 			p = IO.loadProperties(file, CHARSET);
 			LOG.info("Loaded properties:", file);
+		} else {
+			p = new Properties();
 		}
 		return p;
 	}
 
 	@Override
 	protected void save(Properties properties) {
-		IO.saveProperties(properties, getClass().getSimpleName(), file);
+		IO.saveProperties(properties, label, file);
 	}
 
 	@Override
 	public String toString() {
 		return file.getPath();
+	}
+
+	public FilePropertiesStore setLabel(String label) {
+		this.label = label;
+		return this;
 	}
 
 	// --- dependencies ---
@@ -46,14 +54,6 @@ public class FilePropertiesStore extends APropertiesStore {
 
 	public FilePropertiesStore(String path, boolean createFileIfNotExists) {
 		this(new File(path), createFileIfNotExists);
-	}
-
-	/**
-	 * Creates a properties file for the given class in the users home directory.
-	 */
-	public FilePropertiesStore(String appName, Class clazz, boolean createFileIfNotExists) {
-		this(Sys.getUsersHomePath() + "/." + appName + "/" + clazz.getSimpleName() + ".properties",
-				createFileIfNotExists);
 	}
 
 }
