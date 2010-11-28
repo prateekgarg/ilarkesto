@@ -1,14 +1,16 @@
 package ilarkesto.gwt.client.editor;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.gwt.client.AWidget;
 
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 public class TextOutputWidget extends AWidget {
 
-	private Label viewer;
+	private HTML viewer;
 	private AFieldModel model;
+	private boolean forceEmptyChar;
 
 	public TextOutputWidget(AFieldModel model) {
 		super();
@@ -17,7 +19,7 @@ public class TextOutputWidget extends AWidget {
 
 	@Override
 	protected Widget onInitialization() {
-		viewer = new Label();
+		viewer = new HTML();
 		getElement().setId(getId());
 		return viewer;
 	}
@@ -25,12 +27,22 @@ public class TextOutputWidget extends AWidget {
 	@Override
 	protected void onUpdate() {
 		Object value = model.getValue();
-		viewer.setText(value == null ? null : String.valueOf(value));
+		String text = value == null ? null : String.valueOf(value);
+		if (forceEmptyChar && Str.isBlank(text)) {
+			viewer.setHTML("&nbsp;");
+		} else {
+			viewer.setText(text);
+		}
 		viewer.setTitle(getTooltip());
 	}
 
 	public String getTooltip() {
 		return model.getTooltip();
+	}
+
+	public TextOutputWidget setForceEmptyChar(boolean forceEmptyChar) {
+		this.forceEmptyChar = forceEmptyChar;
+		return this;
 	}
 
 	@Override
