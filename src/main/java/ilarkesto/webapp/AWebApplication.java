@@ -57,7 +57,8 @@ public abstract class AWebApplication extends AApplication {
 		if (applicationName != null) return applicationName;
 		String name = super.getApplicationName();
 		name = Str.removeSuffix(name, "Web");
-		return name;
+		applicationName = name;
+		return applicationName;
 	}
 
 	private static final String WEB_SESSION_SESSION_ATTRIBUTE = "_webSession";
