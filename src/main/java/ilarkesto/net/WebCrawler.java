@@ -27,6 +27,12 @@ public class WebCrawler {
 
 	private Set<String> crawledUrls = new HashSet<String>();
 
+	public static void download(String url, String destinationDir) {
+		WebCrawler wc = new WebCrawler();
+		wc.activateDownloading(destinationDir);
+		wc.crawl(url);
+	}
+
 	public void crawl(String url) {
 		if (filter == null) filter = new HostFilter(url);
 		crawl(Utl.toList(url));

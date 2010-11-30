@@ -2,6 +2,8 @@ package ilarkesto.net;
 
 import ilarkesto.testng.ATest;
 
+import java.io.File;
+
 import org.testng.annotations.Test;
 
 public class WebCrawlerTest extends ATest {
@@ -27,10 +29,12 @@ public class WebCrawlerTest extends ATest {
 	@Test
 	public void crawl() {
 		WebCrawler wc = new WebCrawler();
-		wc.activateDownloading(OUTPUT_DIR + "/webcrawler");
-		// wc.crawl(new File("etc/WebCrawler.html").toURI().toString());
-		// wc.crawl("http://f-i.com");
-		wc.crawl("http://koczewski.de");
+		wc.crawl(new File("etc/WebCrawler.html").toURI().toString());
+	}
+
+	@Test
+	public void download() {
+		WebCrawler.download("http://koczewski.de", OUTPUT_DIR + "/webcrawler");
 	}
 
 }
