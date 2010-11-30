@@ -1,6 +1,5 @@
 package ilarkesto.net;
 
-import ilarkesto.base.Sys;
 import ilarkesto.testng.ATest;
 
 import org.testng.annotations.Test;
@@ -27,7 +26,6 @@ public class WebCrawlerTest extends ATest {
 
 	@Test
 	public void crawl() {
-		Sys.setHttpProxy("webproxy.is.finanzit.sko.de", 8081);
 		WebCrawler wc = new WebCrawler();
 		wc.activateDownloading(OUTPUT_DIR + "/webcrawler");
 		// wc.crawl(new File("etc/WebCrawler.html").toURI().toString());
