@@ -991,6 +991,20 @@ public abstract class IO {
 		close(in);
 	}
 
+	public static void downloadToFile(URLConnection connection, File file) {
+		InputStream is;
+		try {
+			is = connection.getInputStream();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		try {
+			copyDataToFile(is, file);
+		} finally {
+			close(is);
+		}
+	}
+
 	public static void copyDataToFile(InputStream is, File file) {
 		copyDataToFile(is, file, null);
 	}
