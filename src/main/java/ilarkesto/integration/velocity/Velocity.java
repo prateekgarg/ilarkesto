@@ -79,6 +79,7 @@ public class Velocity {
 	private static VelocityEngine createEngine(File templateDir) {
 		VelocityEngine velocityEngine = new VelocityEngine();
 		String encoding = IO.UTF_8;
+		velocityEngine.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, VelocityLogging.class.getName());
 		velocityEngine.setProperty(VelocityEngine.ENCODING_DEFAULT, encoding);
 		velocityEngine.setProperty(VelocityEngine.INPUT_ENCODING, encoding);
 		velocityEngine.setProperty(VelocityEngine.OUTPUT_ENCODING, encoding);
