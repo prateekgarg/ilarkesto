@@ -1,8 +1,7 @@
 package ilarkesto.auth;
 
-import ilarkesto.base.PermissionDeniedException;
 
-public class WrongPasswordException extends PermissionDeniedException {
+public class WrongPasswordException extends AuthenticationFailedException {
 
 	public WrongPasswordException() {
 		super("Wrong password.");
