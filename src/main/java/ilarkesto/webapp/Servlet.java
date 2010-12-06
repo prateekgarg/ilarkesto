@@ -33,9 +33,10 @@ public abstract class Servlet {
 		return request.getHeader("If-None-Match");
 	}
 
-	public static String getWebappUrl(ServletConfig servletConfig, boolean ssl) {
+	public static String getWebappUrl(ServletConfig servletConfig, int port, boolean ssl) {
 		String protocol = ssl ? "https" : "http";
 		String host = IO.getHostName();
+		if (port != 80) host += ":" + port;
 		String context = servletConfig.getServletContext().getServletContextName();
 		return protocol + "://" + host + "/" + context;
 	}
