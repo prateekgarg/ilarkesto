@@ -76,6 +76,13 @@ public class PanelBuilder {
 		return add(new JLabel(label));
 	}
 
+	public <C extends Component> Cell<C> addLn(String label, C component) {
+		add(label);
+		Cell<C> cell = add(component);
+		nl();
+		return cell;
+	}
+
 	public void nl() {
 		if (lastCell == null) return;
 		lastCell.constraints.gridwidth = GridBagConstraints.REMAINDER;
@@ -165,6 +172,7 @@ public class PanelBuilder {
 			if (component == null) throw new NullPointerException("component");
 			this.component = component;
 			constraints = (GridBagConstraints) defaultConstraints.clone();
+			setAnchorToNorthWest();
 		}
 
 		public Cell setAnchorToCenter() {
