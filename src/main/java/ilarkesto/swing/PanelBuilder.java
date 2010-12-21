@@ -77,7 +77,9 @@ public class PanelBuilder {
 	}
 
 	public <C extends Component> Cell<C> addLn(String label, C component) {
-		add(label);
+		Insets insets = new Insets(defaultConstraints.insets.top, defaultConstraints.insets.left,
+				defaultConstraints.insets.bottom, defaultConstraints.insets.right + 3);
+		add(label).setInsets(insets);
 		Cell<C> cell = add(component);
 		nl();
 		return cell;
@@ -173,6 +175,11 @@ public class PanelBuilder {
 			this.component = component;
 			constraints = (GridBagConstraints) defaultConstraints.clone();
 			setAnchorToNorthWest();
+		}
+
+		public Cell setInsets(Insets insets) {
+			constraints.insets = insets;
+			return this;
 		}
 
 		public Cell setAnchorToCenter() {

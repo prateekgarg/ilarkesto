@@ -92,6 +92,11 @@ public class Swing {
 		return EventQueue.isDispatchThread();
 	}
 
+	public static boolean isBlank(JTextField field) {
+		if (field == null) return true;
+		return Str.isBlank(field.getText());
+	}
+
 	public static JDialog showModalDialogWithoutBlocking(Component parent, String title, Component content) {
 		final JDialog dialog = new JDialog(getWindow(parent), title);
 		dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -148,7 +153,7 @@ public class Swing {
 	}
 
 	public static JComponent createMessageComponent(String message, int preferredWidth, Color color) {
-		if (!message.startsWith("<html")) message = "<html>" + Str.replaceForHtml(message);
+		if (message != null && !message.startsWith("<html")) message = "<html>" + Str.replaceForHtml(message);
 		JEditorPane editor = new JEditorPane("text/html", message);
 		if (color != null) editor.setForeground(color);
 		editor.setOpaque(false);
