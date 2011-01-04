@@ -5,8 +5,12 @@ import ilarkesto.base.Reflect;
 import ilarkesto.id.CountingIdGenerator;
 import ilarkesto.id.IdGenerator;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,11 +21,10 @@ public class MultiComplexFormField extends AFormField {
 	private Set<Object> value;
 	private AddButton addButton;
 	private Map<Object, RemoveButton> removeButtons = new HashMap<Object, RemoveButton>();
-	private boolean itemsEditable;
 	private Map<Object, EditButton> editButtons = new HashMap<Object, EditButton>();
 	private Factory itemFactory;
 	private Class<? extends BeanForm> elementFormClass;
-	private Object uiComponent;
+	private Comparator comparator;
 
 	public MultiComplexFormField(String name, Class<? extends BeanForm> elementFormClass) {
 		super(name);
@@ -46,10 +49,6 @@ public class MultiComplexFormField extends AFormField {
 	public MultiComplexFormField setItemFactory(Factory factory) {
 		this.itemFactory = factory;
 		return this;
-	}
-
-	public void setItemsEditable(boolean itemsEditable) {
-		this.itemsEditable = itemsEditable;
 	}
 
 	public AddButton getAddButton() {
@@ -103,30 +102,34 @@ public class MultiComplexFormField extends AFormField {
 		setValue(value);
 	}
 
-	public Set<Object> getValue() {
+	public Collection<Object> getValue() {
+		if (comparator != null) {
+			List list = new ArrayList(value);
+			Collections.sort(list, comparator);
+			return list;
+		}
 		return value;
 	}
 
+	@Override
 	public String getValueAsString() {
 		return value == null ? "0" : String.valueOf(value.size());
 	}
 
+	@Override
 	public void update(Map<String, String> data, Collection<FileItem> uploadedFiles) {
-	// nop
+		// nop
 	}
 
+	@Override
 	public void validate() throws ValidationException {
 		if (isRequired() && (value == null || value.size() == 0))
 			throw new ValidationException("Auswahl erforderlich!");
 	}
 
-	public MultiComplexFormField setUiComponent(Object uiComponent) {
-		this.uiComponent = uiComponent;
+	public MultiComplexFormField setComparator(Comparator comparator) {
+		this.comparator = comparator;
 		return this;
-	}
-
-	public Object getUiComponent() {
-		return uiComponent;
 	}
 
 	public class AddButton extends FormButton {
