@@ -109,7 +109,10 @@ public class Imdb {
 		if (idx < 1) return null;
 		String s = Str.cutFromTo(title.substring(idx), "(", ")");
 		if (s == null) return null;
-		s = Str.removePrefix(s, "Video").trim();
+		// s = Str.removePrefix(s, "Video");
+		// s = Str.removePrefix(s, "TV");
+		if (s.contains(" ")) s = Str.cutFrom(s, " ");
+		s = s.trim();
 		return Integer.parseInt(s);
 	}
 
