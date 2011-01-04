@@ -12,71 +12,87 @@ import javax.swing.JTextField;
 
 public class FileField extends JPanel {
 
-    public static void main(String[] args) {
-        FileField ff = createForDirectory();
-        Swing.showInJFrame(ff);
-    }
+	public static void main(String[] args) {
+		FileField ff = createForDirectory();
+		Swing.showInJFrame(ff);
+	}
 
-    private JFileChooser fileChooser;
-    private JTextField textField;
+	private JFileChooser fileChooser;
+	private JTextField textField;
+	private FileSelectionListener fileSelectionListener;
 
-    public FileField() {
-        super(new BorderLayout());
+	public FileField() {
+		super(new BorderLayout());
 
-        textField = new JTextField(30);
-        JButton selectFileButton = new JButton("...");
-        selectFileButton.addActionListener(new SelectActionListener());
+		textField = new JTextField(30);
+		JButton selectFileButton = new JButton("...");
+		selectFileButton.addActionListener(new SelectActionListener());
 
-        add(textField, BorderLayout.CENTER);
-        add(selectFileButton, BorderLayout.EAST);
+		add(textField, BorderLayout.CENTER);
+		add(selectFileButton, BorderLayout.EAST);
 
-        fileChooser = new JFileChooser();
-    }
+		fileChooser = new JFileChooser();
+	}
 
-    public static FileField createForDirectory() {
-        FileField f = new FileField();
-        f.fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        return f;
-    }
+	public void addFileSelectionListener(FileSelectionListener listener) {
+		if (fileSelectionListener != null) throw new IllegalStateException("fileSelectionListener already set");
+		fileSelectionListener = listener;
+	}
 
-    public static FileField createForFile() {
-        FileField f = new FileField();
-        f.fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        return f;
-    }
+	public static FileField createForDirectory() {
+		FileField f = new FileField();
+		f.fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		return f;
+	}
 
-    public void select() {
-        File file = getFile();
-        if (file != null) fileChooser.setSelectedFile(file);
-        if (JFileChooser.APPROVE_OPTION == fileChooser.showDialog(getFileChooser(), "OK")) {
-            setFile(fileChooser.getSelectedFile());
-        }
-    }
+	public static FileField createForFile() {
+		FileField f = new FileField();
+		f.fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		return f;
+	}
 
-    public void setFile(File file) {
-        textField.setText(file==null ? null : file.getPath());
-    }
+	public void select() {
+		File file = getFile();
+		if (file != null) fileChooser.setSelectedFile(file);
+		if (JFileChooser.APPROVE_OPTION == fileChooser.showDialog(getFileChooser(), "OK")) {
+			File selectedFile = fileChooser.getSelectedFile();
+			setFile(selectedFile);
+			if (selectedFile != null && fileSelectionListener != null)
+				fileSelectionListener.onFileSelected(selectedFile);
+		}
+	}
 
-    public File getFile() {
-        String path = getPath();
-        return path == null ? null : new File(path);
-    }
+	public void setFile(File file) {
+		textField.setText(file == null ? null : file.getPath());
+	}
 
-    public String getPath() {
-        String path = textField.getText().trim();
-        if (path.length() == 0) return null;
-        return path;
-    }
+	public File getFile() {
+		String path = getPath();
+		return path == null ? null : new File(path);
+	}
 
-    public JFileChooser getFileChooser() {
-        return fileChooser;
-    }
+	public String getPath() {
+		String path = textField.getText().trim();
+		if (path.length() == 0) return null;
+		return path;
+	}
 
-    class SelectActionListener implements ActionListener {
+	public JFileChooser getFileChooser() {
+		return fileChooser;
+	}
 
-        public void actionPerformed(ActionEvent e) {
-            select();
-        }
-    }
+	class SelectActionListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			select();
+		}
+	}
+
+	public static interface FileSelectionListener {
+
+		void onFileSelected(File file);
+
+	}
 
 }

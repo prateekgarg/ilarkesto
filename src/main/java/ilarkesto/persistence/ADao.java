@@ -16,6 +16,7 @@ import ilarkesto.search.Searchable;
 import ilarkesto.search.Searcher;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -125,10 +126,11 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		Set<String> ids = new HashSet<String>(entitiesIds);
 		List<E> result = (List<E>) transactionService.getByIds(entitiesIds);
 		if (result.size() != ids.size()) {
-			for (E entity : result) {
-				ids.remove(entity.getId());
+			result = new ArrayList<E>();
+			for (String id : ids) {
+				E entity = (E) transactionService.getById(id);
+				result.add(entity);
 			}
-			throw new EntityDoesNotExistException((String) ids.toArray()[0]);
 		}
 		return result;
 	}

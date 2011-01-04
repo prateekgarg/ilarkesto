@@ -486,6 +486,7 @@ public class HtmlRenderer {
 	// --- google analytics ---
 
 	public void googleAnalytics(String webPropertyId) {
+		if (webPropertyId == null) return;
 		html("<script type=\"text/javascript\">\r\n"
 				+ "var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");\r\n"
 				+ "document.write(unescape(\"%3Cscript src='\" + gaJsHost + \"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E\"));\r\n"
