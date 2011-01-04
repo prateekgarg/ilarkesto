@@ -56,7 +56,7 @@ public abstract class Env {
 	/**
 	 * Executes/opens the given file.
 	 */
-	public abstract void executeFile(File file);
+	public abstract void executeFile(File file, boolean block);
 
 	public abstract File getStartMenuDir();
 
@@ -220,20 +220,22 @@ public abstract class Env {
 			}
 			IO.writeFile(file.getPath(), script, Sys.getFileEncoding());
 			try {
-				executeFile(file);
+				executeFile(file, true);
 			} finally {
 				IO.delete(file);
 			}
 		}
 
 		@Override
-		public void executeFile(File file) {
+		public void executeFile(File file, boolean block) {
 			Proc proc = new Proc("CMD");
 			proc.addParameter("/C");
 			proc.addParameter(file.getAbsolutePath());
 			proc.start();
-			int returnCode = proc.getReturnCode();
-			if (returnCode != 0) throw new RuntimeException("ReturnCode: " + returnCode);
+			if (block) {
+				int returnCode = proc.getReturnCode();
+				if (returnCode != 0) throw new RuntimeException("ReturnCode: " + returnCode);
+			}
 		}
 
 		@Override
@@ -344,7 +346,7 @@ public abstract class Env {
 		}
 
 		@Override
-		public void executeFile(File file) {
+		public void executeFile(File file, boolean block) {
 			throw new RuntimeException("Not implemented yet.");
 		}
 

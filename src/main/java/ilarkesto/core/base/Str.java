@@ -17,6 +17,27 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String toStringHelper(Object thiz, Object... properties) {
+		return toStringHelper(getSimpleName(thiz.getClass()), properties);
+	}
+
+	public static String toStringHelper(String name, Object... properties) {
+		return concat(name + "(", ")", ", ", properties);
+	}
+
+	public static String concat(String prefix, String suffix, String delimiter, Object... objects) {
+		StringBuilder sb = new StringBuilder();
+		if (prefix != null) sb.append(prefix);
+		for (int i = 0; i < objects.length; i++) {
+			sb.append(objects[i]);
+			if (delimiter != null && i < objects.length - 1) {
+				sb.append(delimiter);
+			}
+		}
+		if (suffix != null) sb.append(suffix);
+		return sb.toString();
+	}
+
 	public static String concat(Collection strings, String delimiter) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;

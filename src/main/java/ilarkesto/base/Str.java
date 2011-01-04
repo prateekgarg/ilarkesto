@@ -1337,7 +1337,7 @@ public class Str extends ilarkesto.core.base.Str {
 		return result;
 	}
 
-	public static String concat(String[] sa, String delimiter) {
+	public static String concat(Object[] sa, String delimiter) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < sa.length; i++) {
 			sb.append(sa[i]);
@@ -1348,7 +1348,7 @@ public class Str extends ilarkesto.core.base.Str {
 		return sb.toString();
 	}
 
-	public static String concat(String[] sa) {
+	public static String concat(Object[] sa) {
 		return concat(sa, " ");
 	}
 
