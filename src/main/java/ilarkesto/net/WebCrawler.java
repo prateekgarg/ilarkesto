@@ -121,10 +121,21 @@ public class WebCrawler {
 		return false;
 	}
 
-	private String normalizeUrl(String url) {
+	static String normalizeUrl(String url) {
 		int idx = url.indexOf('#');
 		if (idx >= 0) url = url.substring(0, idx);
-		// TODO ../
+
+		url = url.replace("/./", "/");
+
+		while (url.contains("/../")) {
+			int index = url.indexOf("/../");
+			int from = index - 1;
+			while (url.charAt(from) != '/') {
+				from--;
+			}
+			url = url.substring(0, from) + url.substring(index + 3);
+		}
+
 		return url;
 	}
 
@@ -136,6 +147,7 @@ public class WebCrawler {
 			url = normalizeUrl(url);
 			if (Str.isBlank(url)) continue;
 			url = concatUrlWithRelative(sourceUrl, url);
+			url = normalizeUrl(url);
 			urls.add(url);
 		}
 		return urls;
@@ -229,7 +241,7 @@ public class WebCrawler {
 				throw new RuntimeException(ex);
 			}
 			this.host = u.getProtocol() + "://" + u.getHost();
-			System.out.println("------------------> host: " + host);
+			// System.out.println("------------------> host: " + host);
 		}
 
 		@Override

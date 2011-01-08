@@ -9,6 +9,14 @@ import org.testng.annotations.Test;
 public class WebCrawlerTest extends ATest {
 
 	@Test
+	public void normalizeUrl() {
+		assertEquals(WebCrawler.normalizeUrl("http://koczewski.de/#a"), "http://koczewski.de/");
+		assertEquals(WebCrawler.normalizeUrl("http://koczewski.de/./index.html"), "http://koczewski.de/index.html");
+		assertEquals(WebCrawler.normalizeUrl("http://koczewski.de/test/../index.html"),
+			"http://koczewski.de/index.html");
+	}
+
+	@Test
 	public void getBaseUrl() {
 		assertEquals("http://koczewski.de/", WebCrawler.getBaseUrl("http://koczewski.de"));
 		assertEquals("http://koczewski.de/", WebCrawler.getBaseUrl("http://koczewski.de/"));
