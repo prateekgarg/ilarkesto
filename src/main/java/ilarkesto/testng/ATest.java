@@ -8,6 +8,10 @@ public class ATest extends Assert {
 
 	public static final String OUTPUT_DIR = "test-output";
 
+	public static <T> void assertContains(String string, String substring) {
+		assertTrue(string.contains(substring), "<" + string + "> expected to contain <" + substring + ">");
+	}
+
 	public static <T> void assertContains(Collection<T> collection, T element) {
 		assertTrue(collection.contains(element), "Collection expected to contain <" + element + ">");
 	}
