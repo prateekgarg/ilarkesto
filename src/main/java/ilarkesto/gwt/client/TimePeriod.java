@@ -36,6 +36,10 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable, IsSeria
 		return new TimePeriod(millis + summand.millis);
 	}
 
+	public TimePeriod addDays(int days) {
+		return new TimePeriod(millis + DAY);
+	}
+
 	public TimePeriod multiplyBy(int factor) {
 		return new TimePeriod(millis * factor);
 	}
