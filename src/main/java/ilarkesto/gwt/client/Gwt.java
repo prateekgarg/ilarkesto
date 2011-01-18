@@ -7,6 +7,7 @@ import ilarkesto.gwt.client.undo.UndoManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -407,6 +408,7 @@ public class Gwt {
 	}
 
 	public static Set<String> getIdsAsSet(Collection<? extends AGwtEntity> entities) {
+		if (entities == null) return Collections.emptySet();
 		Set<String> ret = new HashSet<String>(entities.size());
 		for (AGwtEntity entity : entities) {
 			ret.add(entity.getId());

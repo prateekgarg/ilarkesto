@@ -125,6 +125,7 @@ public class ObjectMappedFlowPanel<O extends Object, W extends Widget> extends C
 		return newWidget;
 	}
 
+	@Override
 	public void clear() {
 		panel.clear();
 		objectList.clear();
