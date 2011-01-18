@@ -41,7 +41,7 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 		executeNextAction();
 	}
 
-	public void insertAnimated(int index, W widget, Integer height, Runnable runAfter) {
+	public void insertAnimated(int index, W widget, Integer height, InsertCallback runAfter) {
 		if (animationsDisabled) {
 			insert(index, widget);
 			return;
@@ -58,6 +58,7 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 		}
 	}
 
+	@Override
 	public boolean remove(final Widget widget) {
 		if (actionRunning) {
 			execute(new RemoveAction(widget));
@@ -75,6 +76,7 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 		execute(new RemoveAction(widget));
 	}
 
+	@Override
 	public void clear() {
 		panel.clear();
 	}
@@ -133,13 +135,13 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 		private int index;
 		private boolean animated;
 		private Integer animationHeight;
-		private Runnable runAfter;
+		private InsertCallback callback;
 
-		public InsertAction(int index, Widget widget, Integer animationHeight, Runnable runAfter) {
+		public InsertAction(int index, Widget widget, Integer animationHeight, InsertCallback callback) {
 			this.index = index;
 			this.widget = widget;
 			this.animationHeight = animationHeight;
-			this.runAfter = runAfter;
+			this.callback = callback;
 			this.animated = true;
 		}
 
@@ -166,7 +168,7 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 				@Override
 				public void completionEvent(AObservableAnimation source) {
 					actionRunning = false;
-					if (runAfter != null) runAfter.run();
+					if (callback != null) callback.onInserted(index);
 					executeNextAction();
 				}
 			});
@@ -178,6 +180,12 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 	public static interface MoveObserver {
 
 		void onMoved();
+	}
+
+	public static interface InsertCallback {
+
+		void onInserted(int index);
+
 	}
 
 }

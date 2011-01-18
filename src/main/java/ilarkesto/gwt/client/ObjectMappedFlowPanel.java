@@ -1,6 +1,7 @@
 package ilarkesto.gwt.client;
 
 import ilarkesto.gwt.client.animation.AnimatingFlowPanel;
+import ilarkesto.gwt.client.animation.AnimatingFlowPanel.InsertCallback;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,17 +79,17 @@ public class ObjectMappedFlowPanel<O extends Object, W extends Widget> extends C
 		assert objectList.equals(newObjects);
 	}
 
-	private W insert(int index, O object, boolean animate, Runnable runAfter) {
+	private W insert(int index, O object, boolean animate, InsertCallback callback) {
 		assert object != null;
 		assert !objectList.contains(object);
 		assert objectHeights != null;
 		assert panel != null;
 		W widget = createWidget(object);
 		if (animate) {
-			panel.insertAnimated(index, widget, objectHeights.get(object), runAfter);
+			panel.insertAnimated(index, widget, objectHeights.get(object), callback);
 		} else {
 			panel.insert(index, widget);
-			if (runAfter != null) runAfter.run();
+			if (callback != null) callback.onInserted(index);
 		}
 		objectList.add(index, object);
 		assert objectList.contains(object);
@@ -113,12 +114,12 @@ public class ObjectMappedFlowPanel<O extends Object, W extends Widget> extends C
 		return widget;
 	}
 
-	public W move(int toIndex, O object, boolean animate, Runnable runAfterMoved) {
+	public W move(int toIndex, O object, boolean animate, InsertCallback callback) {
 		assert toIndex >= 0 && toIndex <= objectList.size();
 		assert objectList.contains(object);
 
 		W oldWidget = remove(object, animate);
-		W newWidget = insert(toIndex, object, animate, runAfterMoved);
+		W newWidget = insert(toIndex, object, animate, callback);
 		if (moveObserver != null) moveObserver.moved(object, oldWidget, newWidget);
 
 		assert objectList.size() == widgetMap.size();
