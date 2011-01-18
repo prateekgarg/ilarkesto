@@ -83,15 +83,15 @@ public abstract class Servlet {
 		httpResponse.setDateHeader("Expires", 0);
 	}
 
-	public static void serveFile(File file, HttpServletResponse httpResponse) throws IOException {
+	public static void serveFile(File file, HttpServletResponse httpResponse, boolean setFilename) throws IOException {
 		httpResponse.setContentType("application/octet-stream");
 		httpResponse.setContentLength((int) file.length());
-		Servlet.setFilename(file.getName(), httpResponse);
+		if (setFilename) Servlet.setFilename(file.getName(), httpResponse);
 		IO.copyFile(file, httpResponse.getOutputStream());
 	}
 
 	public static void setFilename(String fileName, HttpServletResponse httpResponse) {
-		httpResponse.setHeader("Content-Disposition", "inline; filename=" + fileName + ";");
+		httpResponse.setHeader("Content-Disposition", "inline; filename=" + Str.encodeUrlParameter(fileName) + ";");
 	}
 
 	public static final String getContextPath(ServletConfig servletConfig) {
