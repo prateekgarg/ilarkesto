@@ -25,6 +25,7 @@ public interface NodeTypes {
 	public static final String Dependency = "Dependency";
 	public static final String Inject = "Inject";
 	public static final String Parameter = "Parameter";
+	public static final String Dispensable = "Dispensable";
 	public static final String InitializationProcedure = "InitializationProcedure";
 
 	public static final String JavaClass = "JavaClass";
@@ -39,4 +40,3 @@ public interface NodeTypes {
 	public static final String DE = "DE";
 
 }
-

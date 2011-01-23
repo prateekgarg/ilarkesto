@@ -54,6 +54,11 @@ public class Node implements Comparable<Node> {
 		return getChild(type, value) != null;
 	}
 
+	public boolean containsChild(String type, boolean value) {
+		Node child = getChildByType(type);
+		return child == null ? false : child.isValue(String.valueOf(value));
+	}
+
 	public Node getChildRecursive(String type, String value) {
 		for (Node child : getChildrenByType(type)) {
 			if (value.equals(child.getValue())) return child;

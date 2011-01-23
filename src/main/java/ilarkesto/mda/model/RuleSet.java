@@ -18,7 +18,7 @@ public class RuleSet implements NodeTypes {
 		addChildTypeRuleByParentType(Package, Entity, Datastruct, JavaClass, Component, Event, ServiceCall);
 		addChildTypeRuleByParentType(TextBundle, Text);
 		addChildTypeRuleByParentType(Text, EN, DE);
-		addChildTypeRuleByParentType(ServiceCall, Parameter);
+		addChildTypeRuleByParentType(ServiceCall, Parameter, Dispensable);
 		addChildTypeRuleByParentType(Entity, TextProperty, IntegerProperty, FloatProperty, BooleanProperty,
 			DateProperty, TimeProperty, DateAndTimeProperty, ReferenceProperty);
 		addChildTypeRuleByParentType(Component, Dependency, InitializationProcedure);

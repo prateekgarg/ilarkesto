@@ -60,6 +60,14 @@ public class GwtServiceCallGenerator extends AJavaClassGenerator implements Node
 				+ "(serviceCaller.getConversationNumber(), " + callParameters + "new DefaultCallback(returnHandler))");
 		out.endMethod();
 
+		Node dispensable = call.getChildByType(Dispensable);
+		if (dispensable != null) {
+			out.annotationOverride();
+			out.beginMethod("boolean", "isDispensable", null);
+			out.returnStatement(dispensable.getValue());
+			out.endMethod();
+		}
+
 		out.toStringMethod('\"' + call.getValue() + '\"');
 
 		out.endClass();
