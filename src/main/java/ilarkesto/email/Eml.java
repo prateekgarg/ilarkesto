@@ -557,8 +557,12 @@ public class Eml {
 
 		Transport trans = session.getTransport("smtp");
 		Properties properties = session.getProperties();
-		trans.connect(properties.getProperty("mail.smtp.host"), properties.getProperty("mail.smtp.auth.user"),
-			properties.getProperty("mail.smtp.auth.password"));
+		String host = properties.getProperty("mail.smtp.host");
+		String port = properties.getProperty("mail.smtp.port");
+		if (port == null) port = "25";
+		String user = properties.getProperty("mail.smtp.auth.user");
+		String password = properties.getProperty("mail.smtp.auth.password");
+		trans.connect(host, Integer.parseInt(port), user, password);
 		trans.sendMessage(message, recipients);
 		trans.close();
 	}
