@@ -34,7 +34,7 @@ public abstract class AWebApplication extends AApplication {
 	@Override
 	protected void onStart() {
 		if (!isDevelopmentMode()) Sys.setHeadless(true);
-		DefaultLogDataHandler.setLogFile(new File(getApplicationDataDir() + "/log.txt"));
+		DefaultLogDataHandler.setLogFile(new File(getApplicationDataDir() + "/error.log"));
 		LOG.info("Initializing web application");
 		onStartWebApplication();
 	}

@@ -34,6 +34,7 @@ public class DefaultLogDataHandler implements LogRecordHandler {
 		System.err.println("Initializing logging system");
 		sysoutThread = new Thread(new Runnable() {
 
+			@Override
 			public void run() {
 				while (true) {
 					try {
@@ -87,6 +88,7 @@ public class DefaultLogDataHandler implements LogRecordHandler {
 		if (record.level.isWarnOrWorse()) appendToFile(record.toString());
 	}
 
+	@Override
 	public void flush() {
 		while (!queue.isEmpty()) {
 			try {
@@ -129,15 +131,15 @@ public class DefaultLogDataHandler implements LogRecordHandler {
 		if (logFile == null) {
 			File runtimedataDir = new File("runtimedata");
 			if (runtimedataDir.exists() && runtimedataDir.isDirectory()) {
-				setLogFile(new File("runtimedata/warn+error.log"));
+				setLogFile(new File("runtimedata/error.log"));
 			} else {
-				setLogFile(new File("warn+error.log"));
+				setLogFile(new File("error.log"));
 			}
 		}
 		if (logFile == null) return;
 		synchronized (logFile) {
 			try {
-				BufferedWriter out = new BufferedWriter(new FileWriter(logFile, true));
+				BufferedWriter out = new BufferedWriter(new FileWriter(logFile, logFile.length() < 1048576));
 				out.write("--------------------------------------------------------------------------------\n");
 				out.write(LOG_TIME_FORMAT.format(new Date()));
 				out.write(" -> ");
