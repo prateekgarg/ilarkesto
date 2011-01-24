@@ -112,6 +112,7 @@ public class Imdb {
 		// s = Str.removePrefix(s, "Video");
 		// s = Str.removePrefix(s, "TV");
 		s = Str.removeSuffix(s, "?");
+		s = Str.removeSuffix(s, "-");
 		while (s.contains(" ")) {
 			s = Str.cutFrom(s, " ");
 		}
