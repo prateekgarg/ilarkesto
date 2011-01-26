@@ -111,13 +111,13 @@ public class Imdb {
 		if (s == null) return null;
 		// s = Str.removePrefix(s, "Video");
 		// s = Str.removePrefix(s, "TV");
-		s = Str.removeSuffix(s, "?");
-		s = Str.removeSuffix(s, "-");
-		while (s.contains(" ")) {
+		// s = Str.removeSuffix(s, "?");
+		// s = Str.removeSuffix(s, "–");
+		while (s.contains(" ") && !(s.startsWith("20") || s.startsWith("19"))) {
 			s = Str.cutFrom(s, " ");
 		}
 		s = s.trim();
-		return Integer.parseInt(s);
+		return Integer.parseInt(s.substring(0, 4));
 	}
 
 	private static String parseTitle(WebResponse response) {
