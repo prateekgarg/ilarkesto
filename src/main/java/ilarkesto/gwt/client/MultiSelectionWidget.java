@@ -1,5 +1,6 @@
 package ilarkesto.gwt.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,6 +54,10 @@ public class MultiSelectionWidget<I extends Object> extends AWidget {
 		for (I item : items) {
 			add(item);
 		}
+	}
+
+	public List<I> getItems() {
+		return new ArrayList(items.keySet());
 	}
 
 	public void clear() {
