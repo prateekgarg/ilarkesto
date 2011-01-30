@@ -291,9 +291,14 @@ public abstract class AApplication {
 				backupDirOld.getParentFile().delete();
 			}
 			entityStore.setBackupDir(backupDir.getPath());
+			entityStore.setVersion(getDataVersion());
 			Context.get().autowire(entityStore);
 		}
 		return entityStore;
+	}
+
+	protected int getDataVersion() {
+		return -1;
 	}
 
 	private XStreamSerializer beanSerializer;

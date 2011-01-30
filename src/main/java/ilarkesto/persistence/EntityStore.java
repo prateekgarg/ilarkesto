@@ -7,6 +7,8 @@ import java.util.Set;
 
 public interface EntityStore extends IdentifiableResolver<AEntity> {
 
+	void setVersion(long version);
+
 	void setAlias(String alias, Class cls);
 
 	void load(Class<? extends AEntity> cls, String alias);

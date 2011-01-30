@@ -1,6 +1,7 @@
 package ilarkesto.persistence;
 
 import ilarkesto.base.time.Date;
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.fp.Predicate;
 import ilarkesto.io.IO;
@@ -18,13 +19,24 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 public class FileEntityStore implements EntityStore {
 
 	private static final Log LOG = Log.get(FileEntityStore.class);
 
+	private boolean versionSaved;
+	private boolean versionChecked;
+
 	// --- dependencies ---
+
+	private long version;
+
+	@Override
+	public void setVersion(long version) {
+		this.version = version;
+	}
 
 	private Serializer beanSerializer;
 
@@ -52,8 +64,9 @@ public class FileEntityStore implements EntityStore {
 
 	// --- ---
 
+	@Override
 	public synchronized void save(AEntity entity) {
-		// entity.setLastModified(DateAndTime.now());
+		if (!versionSaved) saveVersion();
 
 		String alias = aliases.get(entity.getClass());
 		File tmpFile = new File(dir + "/tmp/" + entity.getId() + ".xml");
@@ -90,6 +103,7 @@ public class FileEntityStore implements EntityStore {
 		LOG.debug("Entity saved:", entity, "->", file.getPath());
 	}
 
+	@Override
 	public synchronized void delete(AEntity entity) {
 		String alias = aliases.get(entity.getClass());
 		File file = new File(dir + "/" + alias + "/" + entity.getId() + ".xml");
@@ -123,6 +137,7 @@ public class FileEntityStore implements EntityStore {
 		return null;
 	}
 
+	@Override
 	public synchronized AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : data.entrySet()) {
 			if (typeFilter != null && !typeFilter.test(daoEntry.getKey())) continue;
@@ -146,6 +161,7 @@ public class FileEntityStore implements EntityStore {
 		return result;
 	}
 
+	@Override
 	public synchronized Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		Set<AEntity> result = new HashSet<AEntity>();
 		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : data.entrySet()) {
@@ -161,6 +177,7 @@ public class FileEntityStore implements EntityStore {
 		return result;
 	}
 
+	@Override
 	public synchronized int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		int result = 0;
 		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : data.entrySet()) {
@@ -180,12 +197,16 @@ public class FileEntityStore implements EntityStore {
 
 	private Map<Class<AEntity>, Map<String, AEntity>> data = new HashMap<Class<AEntity>, Map<String, AEntity>>();
 
+	@Override
 	public void setAlias(String alias, Class cls) {
 		aliases.put(cls, alias);
 		beanSerializer.setAlias(alias, cls);
 	}
 
+	@Override
 	public void load(Class<? extends AEntity> cls, String alias) {
+		if (!versionChecked) checkVersion();
+
 		aliases.put(cls, alias);
 
 		Map<String, AEntity> entities = new HashMap<String, AEntity>();
@@ -249,6 +270,36 @@ public class FileEntityStore implements EntityStore {
 
 		// LOG.debug("Backing up", src.getPath(), "to", dst.getPath());
 		IO.copyFile(src.getPath(), dst.getPath());
+	}
+
+	private synchronized void checkVersion() {
+		versionChecked = true;
+		if (version <= 0) return;
+		File propertiesFile = getPropertiesFile();
+		if (!propertiesFile.exists()) return;
+		Properties properties = IO.loadProperties(propertiesFile, IO.UTF_8);
+		String s = properties.getProperty("version");
+		if (Str.isBlank(s)) return;
+		long dataVersion = Long.parseLong(s);
+		if (dataVersion > version)
+			throw new IllegalStateException("Data stored in " + dir
+					+ " was created by a newer version of the application. "
+					+ "You have probably downgraded. Since data formats changed, this is not possible. "
+					+ "Application version is " + version + ", data version is " + dataVersion + ".");
+	}
+
+	private synchronized void saveVersion() {
+		versionSaved = true;
+		if (version <= 0) return;
+		File propertiesFile = getPropertiesFile();
+		Properties properties = propertiesFile.exists() ? IO.loadProperties(propertiesFile, IO.UTF_8)
+				: new Properties();
+		properties.setProperty("version", String.valueOf(version));
+		IO.saveProperties(properties, getClass().getName(), propertiesFile);
+	}
+
+	private File getPropertiesFile() {
+		return new File(dir + "/store.properties");
 	}
 
 }
