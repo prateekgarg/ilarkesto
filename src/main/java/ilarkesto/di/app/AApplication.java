@@ -283,7 +283,14 @@ public abstract class AApplication {
 		if (entityStore == null) {
 			entityStore = new FileEntityStore();
 			entityStore.setDir(getApplicationDataDir() + "/entities");
-			entityStore.setBackupDir(getApplicationDataDir() + "/backup/entities");
+			File backupDir = new File(getApplicationDataDir() + "/backup/entities");
+			File backupDirOld = new File(getApplicationDataDir() + "/entities-rescue");
+			if (backupDirOld.exists()) {
+				backupDirOld.renameTo(backupDir);
+				backupDirOld.delete();
+				backupDirOld.getParentFile().delete();
+			}
+			entityStore.setBackupDir(backupDir.getPath());
 			Context.get().autowire(entityStore);
 		}
 		return entityStore;
