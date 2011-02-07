@@ -1,11 +1,16 @@
 package ilarkesto.ui.web;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class CssRenderer {
 
 	private PrintWriter out;
 	private Style style;
+
+	public CssRenderer() {
+		this(new PrintWriter(new StringWriter()));
+	}
 
 	public CssRenderer(PrintWriter out) {
 		this.out = out;
@@ -128,6 +133,11 @@ public class CssRenderer {
 		if (style == null) return;
 		out.println(" }");
 		style = null;
+	}
+
+	@Override
+	public String toString() {
+		return out.toString();
 	}
 
 	public class Style {
@@ -504,6 +514,14 @@ public class CssRenderer {
 
 		public Style fontFamilyMonospace() {
 			return fontFamily("monospace");
+		}
+
+		public Style fontFamilySerif() {
+			return fontFamily("serif");
+		}
+
+		public Style fontFamilySansSerif() {
+			return fontFamily("sans-serif");
 		}
 
 		public Style fontFamily(String value) {

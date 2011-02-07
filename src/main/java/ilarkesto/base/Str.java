@@ -873,6 +873,7 @@ public class Str extends ilarkesto.core.base.Str {
 		boolean inside = false;
 		int len = s.length();
 		String href = null;
+		char cPrev = (char) -1;
 		for (int i = 0; i < len; i++) {
 			char c = s.charAt(i);
 			if (inside) {
@@ -922,20 +923,23 @@ public class Str extends ilarkesto.core.base.Str {
 				} else {
 					tag.append(c);
 				}
+				cPrev = c;
 				continue;
 			} else {
 				// outside html tag
 				if (c == '<') {
 					inside = true;
 					tag = new StringBuilder();
+					cPrev = c;
 					continue;
 				}
-				if (c == '\n' || c == '\r') {
+				if (c == '\n' || c == '\r' || (Character.isWhitespace(c) && Character.isWhitespace(cPrev))) {
 					// skip
 				} else {
 					sb.append(c);
 				}
 			}
+			cPrev = c;
 		}
 
 		s = sb.toString();

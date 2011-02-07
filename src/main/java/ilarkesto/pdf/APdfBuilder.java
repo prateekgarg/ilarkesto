@@ -16,6 +16,10 @@ public abstract class APdfBuilder extends APdfContainerElement {
 		LEFT, RIGHT, CENTER, JUSTIFIED
 	}
 
+	public abstract APdfBuilder newPage();
+
+	public abstract boolean isNewPage();
+
 	public APdfBuilder setDefaultFontStyle(FontStyle defaultFontStyle) {
 		this.defaultFontStyle = defaultFontStyle;
 		return this;
@@ -49,7 +53,13 @@ public abstract class APdfBuilder extends APdfContainerElement {
 
 	protected static final int dpi = 72;
 
-	public static float mmToPoints(double mm) {
+	public static float mmToPoints(Float mm) {
+		if (mm == null) return 0;
+		return (mm / 25.4f) * dpi;
+	}
+
+	public static float mmToPoints(Double mm) {
+		if (mm == null) return 0;
 		return (float) ((mm / 25.4f) * dpi);
 	}
 

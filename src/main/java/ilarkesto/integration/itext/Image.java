@@ -22,6 +22,7 @@ public class Image extends AImage implements ItextElement {
 		super(parent, file);
 	}
 
+	@Override
 	public com.lowagie.text.Image getITextElement() {
 		com.lowagie.text.Image image;
 		try {
@@ -41,10 +42,10 @@ public class Image extends AImage implements ItextElement {
 			} else {
 				height = image.height();
 			}
-			image.setIndentationLeft(0);
-			image.setIndentationRight(0);
-			image.setSpacingAfter(0);
-			image.setSpacingBefore(0);
+			image.setIndentationLeft(APdfBuilder.mmToPoints(marginLeft));
+			image.setIndentationRight(APdfBuilder.mmToPoints(marginRight));
+			image.setSpacingBefore(APdfBuilder.mmToPoints(marginTop));
+			image.setSpacingAfter(APdfBuilder.mmToPoints(marginBottom));
 		} catch (BadElementException ex) {
 			throw new RuntimeException(ex);
 		} catch (MalformedURLException ex) {
@@ -69,9 +70,9 @@ public class Image extends AImage implements ItextElement {
 	public static int convertAlign(Align align) {
 		switch (align) {
 			case LEFT:
-				return com.lowagie.text.Image.LEFT;
+				return com.lowagie.text.Image.ALIGN_RIGHT | com.lowagie.text.Image.ALIGN_TOP;
 			case RIGHT:
-				return com.lowagie.text.Image.RIGHT;
+				return com.lowagie.text.Image.ALIGN_RIGHT | com.lowagie.text.Image.ALIGN_TOP;
 		}
 		throw new RuntimeException("Unsupported align: " + align);
 	}

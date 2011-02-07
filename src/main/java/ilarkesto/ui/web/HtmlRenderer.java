@@ -419,6 +419,7 @@ public class HtmlRenderer {
 			"width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no");
 		endShortTag();
 		META("Content-Language", language);
+		META("Content-Type", "text/html; charset=" + encoding);
 		startTag(TITLE);
 		text(title);
 		endTag(TITLE);
@@ -526,7 +527,7 @@ public class HtmlRenderer {
 		if (id != null) tag.setId(id);
 		if (width != null) tag.setWidth(width);
 		if (height != null) tag.set("height", height);
-		if (align != null) tag.setAlign("top");
+		if (align != null) tag.setAlign(align);
 		endShortTag();
 	}
 

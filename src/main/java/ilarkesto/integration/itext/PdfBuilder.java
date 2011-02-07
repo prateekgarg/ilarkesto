@@ -35,6 +35,12 @@ public class PdfBuilder extends APdfBuilder {
 	}
 
 	private Collection<ItextElement> elements = new ArrayList<ItextElement>();
+	private boolean newPage = true;
+
+	@Override
+	public boolean isNewPage() {
+		return newPage;
+	}
 
 	public void write(File file) {
 		file.getParentFile().mkdirs();
@@ -59,7 +65,11 @@ public class PdfBuilder extends APdfBuilder {
 		document.open();
 		for (ItextElement element : elements) {
 			try {
-				document.add(element.getITextElement());
+				if (element instanceof PageBreak) {
+					document.newPage();
+				} else {
+					document.add(element.getITextElement());
+				}
 			} catch (DocumentException ex) {
 				throw new RuntimeException(ex);
 			}
@@ -68,10 +78,18 @@ public class PdfBuilder extends APdfBuilder {
 	}
 
 	@Override
+	public APdfBuilder newPage() {
+		elements.add(new PageBreak(this));
+		newPage = true;
+		return this;
+	}
+
+	@Override
 	public AParagraph paragraph() {
 		Paragraph p = new Paragraph(this);
 		p.setDefaultFontStyle(defaultFontStyle);
 		elements.add(p);
+		newPage = false;
 		return p;
 	}
 
@@ -80,6 +98,7 @@ public class PdfBuilder extends APdfBuilder {
 		Table t = new Table(this);
 		t.setCellWidths(cellWidths);
 		elements.add(t);
+		newPage = false;
 		return t;
 	}
 
@@ -88,6 +107,7 @@ public class PdfBuilder extends APdfBuilder {
 		Table t = new Table(this);
 		t.setColumnCount(columnCount);
 		elements.add(t);
+		newPage = false;
 		return t;
 	}
 
@@ -95,6 +115,7 @@ public class PdfBuilder extends APdfBuilder {
 	public AImage image(byte[] data) {
 		Image i = new Image(this, data);
 		elements.add(i);
+		newPage = false;
 		return i;
 	}
 
@@ -102,6 +123,7 @@ public class PdfBuilder extends APdfBuilder {
 	public AImage image(File file) {
 		Image i = new Image(this, file);
 		elements.add(i);
+		newPage = false;
 		return i;
 	}
 
