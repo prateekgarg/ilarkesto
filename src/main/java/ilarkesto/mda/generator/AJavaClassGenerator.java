@@ -41,6 +41,10 @@ public abstract class AJavaClassGenerator {
 		if (component != null)
 			return getModulePackage(module) + "." + component.getSuperparentByType(NodeTypes.Package).getValue() + "."
 					+ component.getValue();
+		Node entity = module.getChildRecursive(NodeTypes.Entity, name);
+		if (entity != null)
+			return getModulePackage(module) + "." + entity.getSuperparentByType(NodeTypes.Package).getValue() + "."
+					+ entity.getValue();
 		throw new RuntimeException("Can not determine type for dependency: " + dependency);
 	}
 
