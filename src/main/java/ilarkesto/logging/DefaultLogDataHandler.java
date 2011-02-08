@@ -47,9 +47,7 @@ public class DefaultLogDataHandler implements LogRecordHandler {
 						LogRecord record = queue.poll(Long.MAX_VALUE, TimeUnit.SECONDS);
 						System.err.println(record.toString());
 					} catch (InterruptedException ignored) {
-						// retry
-					} finally {
-						// no clean up to do
+						shutdown = true;
 					}
 				}
 			}

@@ -1,5 +1,6 @@
 package ilarkesto.base;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,6 +68,10 @@ public final class Sys {
 	 */
 	public static void setHeadless(boolean value) {
 		setProperty("java.awt.headless", value);
+	}
+
+	public static boolean isHeadless() {
+		return GraphicsEnvironment.isHeadless();
 	}
 
 	public static void setHttpProxy(String host, int port) {

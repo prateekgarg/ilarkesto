@@ -96,18 +96,22 @@ public abstract class AApplication {
 	}
 
 	public final void shutdown() {
-		new Thread(new Runnable() {
+		Thread thread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				synchronized (getApplicationLock()) {
 					if (instance == null) throw new RuntimeException("Application not started yet.");
 					log.info("Shutdown initiated:", getApplicationName());
+
 					getTaskManager().shutdown(10000);
 					Set<ATask> tasks = getTaskManager().getRunningTasks();
 					if (!tasks.isEmpty()) {
 						log.warn("Aborting tasks on shutdown failed:", tasks);
 					}
+
+					if (context != null) context.destroy();
+
 					if (exclusiveFileLock != null) exclusiveFileLock.release();
 					Log.flush();
 					onShutdown();
@@ -115,7 +119,9 @@ public abstract class AApplication {
 				}
 			}
 
-		}).start();
+		});
+		thread.setName(getApplicationName() + " shutdown");
+		thread.start();
 	}
 
 	public final <T> T autowire(T bean) {
