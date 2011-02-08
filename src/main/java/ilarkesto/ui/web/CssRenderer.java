@@ -529,7 +529,11 @@ public class CssRenderer {
 		}
 
 		public Style fontSize(int value) {
-			return attr("font-size", value + "px");
+			return fontSize(value + "px");
+		}
+
+		public Style fontSize(String value) {
+			return attr("font-size", value);
 		}
 
 		public Style marginBottom(int value) {

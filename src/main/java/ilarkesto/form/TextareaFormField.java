@@ -16,9 +16,17 @@ public class TextareaFormField extends TextFormField {
 		if (s.startsWith("<html")) {
 			String plain = Str.removeHtmlTags(s).trim();
 			if (plain.length() == 0 && !s.toLowerCase().contains("<img")) s = plain;
-			if (s.length() > 0) s = "<html>" + Str.cutHtmlAndHeaderAndBody(s);
+			if (s.length() > 0) s = "<html>" + cleanupEditorsHtml(s);
 		}
 		return super.preProcessValue(s);
+	}
+
+	private String cleanupEditorsHtml(String s) {
+		if (s == null) return null;
+		if (s.length() == 0) return s;
+		s = Str.cutHtmlAndHeaderAndBody(s);
+		s = s.replace("<title></title>", "");
+		return s;
 	}
 
 	@Override
