@@ -119,8 +119,14 @@ public abstract class JDom {
 		}
 	}
 
-	public static Element addTextElement(Element parent, String name, String text) {
-		return addElement(parent, name).setText(text);
+	public static Element addTextElement(Element parent, String name, Object text) {
+		Element element = addElement(parent, name);
+		return setText(element, text);
+	}
+
+	public static Element setText(Element element, Object text) {
+		element.setText(text == null ? null : text.toString());
+		return element;
 	}
 
 	public static Element addElement(Element parent, String name) {
