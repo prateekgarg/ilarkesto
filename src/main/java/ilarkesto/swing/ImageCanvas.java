@@ -23,6 +23,8 @@ public class ImageCanvas extends Component {
 	private BufferedImage image;
 	private boolean autoScale;
 
+	private ImagePreloader preloader;
+
 	public ImageCanvas() {}
 
 	public ImageCanvas(BufferedImage image) {
@@ -42,10 +44,15 @@ public class ImageCanvas extends Component {
 		new ImageLoadThread(image).start();
 	}
 
+	public void preloadImage(File image) {
+		getPreloader().add(image);
+	}
+
 	@Override
 	public void paint(Graphics g) {
 		int width = getWidth();
 		int height = getHeight();
+		if (autoScale && preloader != null) preloader.setAutoScale(width, height);
 
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, width, height);
@@ -82,10 +89,19 @@ public class ImageCanvas extends Component {
 
 	public void setAutoScale(boolean autoScale) {
 		this.autoScale = autoScale;
+		if (autoScale && preloader != null) preloader.setAutoScale(getWidth(), getHeight());
 	}
 
 	public boolean isAutoScale() {
 		return autoScale;
+	}
+
+	public synchronized ImagePreloader getPreloader() {
+		if (preloader == null) {
+			preloader = new ImagePreloader();
+			if (autoScale) preloader.setAutoScale(getWidth(), getHeight());
+		}
+		return preloader;
 	}
 
 	class ImageLoadThread extends Thread {
@@ -100,7 +116,7 @@ public class ImageCanvas extends Component {
 		@Override
 		public void run() {
 			setName("ImageLoadThread:" + file.getPath());
-			final BufferedImage image = IO.loadImage(file);
+			final BufferedImage image = getPreloader().get(file);
 			Swing.invokeInEventDispatchThread(new Runnable() {
 
 				@Override
