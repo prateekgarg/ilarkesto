@@ -7,6 +7,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 public class ImageCanvas extends Component {
 
@@ -34,6 +35,11 @@ public class ImageCanvas extends Component {
 			setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 		}
 		repaint();
+	}
+
+	public void setImage(File image) {
+		setImage((BufferedImage) null);
+		new ImageLoadThread(image).start();
 	}
 
 	@Override
@@ -70,6 +76,10 @@ public class ImageCanvas extends Component {
 		return image;
 	}
 
+	public Color getBackgroundColor() {
+		return backgroundColor;
+	}
+
 	public void setAutoScale(boolean autoScale) {
 		this.autoScale = autoScale;
 	}
@@ -77,4 +87,28 @@ public class ImageCanvas extends Component {
 	public boolean isAutoScale() {
 		return autoScale;
 	}
+
+	class ImageLoadThread extends Thread {
+
+		private File file;
+
+		public ImageLoadThread(File file) {
+			super();
+			this.file = file;
+		}
+
+		@Override
+		public void run() {
+			setName("ImageLoadThread:" + file.getPath());
+			final BufferedImage image = IO.loadImage(file);
+			Swing.invokeInEventDispatchThread(new Runnable() {
+
+				@Override
+				public void run() {
+					setImage(image);
+				}
+			});
+		}
+	}
+
 }

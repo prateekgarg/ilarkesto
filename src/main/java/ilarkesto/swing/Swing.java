@@ -265,6 +265,11 @@ public class Swing {
 		return frame;
 	}
 
+	public static JFrame showInJFrame(Component component, double percentScreenWidth) {
+		component.setPreferredSize(getFractionFromScreen(percentScreenWidth, percentScreenWidth));
+		return showInJFrame(component);
+	}
+
 	public static JFrame showInJFrame(Component component) {
 		return showInJFrame(component, component.getClass().getSimpleName(), null, true);
 	}
