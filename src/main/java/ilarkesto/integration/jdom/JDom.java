@@ -14,6 +14,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -78,6 +79,14 @@ public abstract class JDom {
 		return getChildAttributeValue(doc.getRootElement(), childName, attributeName);
 	}
 
+	public static Document createDocument(File file) {
+		try {
+			return createDocument(file.toURI().toURL().toString());
+		} catch (MalformedURLException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public static Document createDocument(String xmlData) {
 		SAXBuilder builder = new SAXBuilder(false);
 		builder.setExpandEntities(false);
@@ -91,7 +100,7 @@ public abstract class JDom {
 	}
 
 	public static Document createDocumentFromUrl(final String url) {
-		log.debug("Downloading:", url);
+		log.debug("Loading from URL:", url);
 		try {
 			SAXBuilder builder = new SAXBuilder(false);
 			builder.setExpandEntities(false);
