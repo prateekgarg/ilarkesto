@@ -30,7 +30,6 @@ public class Paragraph extends AParagraph implements ItextElement {
 		for (AParagraphElement element : getElements()) {
 			if (element instanceof TextChunk) {
 				TextChunk textChunk = (TextChunk) element;
-				Chunk chunk = new Chunk(textChunk.getText());
 				FontStyle style = textChunk.getFontStyle();
 				Font font;
 				try {
@@ -46,6 +45,8 @@ public class Paragraph extends AParagraph implements ItextElement {
 					font.setStyle(Font.BOLD);
 				}
 				font.setSize(PdfBuilder.mmToPoints(style.getSize()));
+				String text = textChunk.getText();
+				Chunk chunk = new Chunk(text, font);
 				Color color = style.getColor();
 				if (color != null) font.setColor(color);
 				chunk.setFont(font);
