@@ -53,13 +53,7 @@ public abstract class APdfBuilder extends APdfContainerElement {
 
 	protected static final int dpi = 72;
 
-	public static float mmToPoints(Float mm) {
-		if (mm == null) return 0;
-		return (mm / 25.4f) * dpi;
-	}
-
-	public static float mmToPoints(Double mm) {
-		if (mm == null) return 0;
+	public static float mmToPoints(double mm) {
 		return (float) ((mm / 25.4f) * dpi);
 	}
 

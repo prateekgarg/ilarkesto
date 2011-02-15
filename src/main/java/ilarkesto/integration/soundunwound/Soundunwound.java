@@ -49,6 +49,9 @@ public class Soundunwound {
 			if (url.contains("releaseId=")) {
 				String id = Str.cutFromTo(url, "releaseId=", "&");
 				return id;
+			} else if (url.endsWith("?ref=SR")) {
+				String id = url.substring(url.lastIndexOf('/') + 1, url.length() - 7);
+				return id;
 			}
 		}
 		return null;
