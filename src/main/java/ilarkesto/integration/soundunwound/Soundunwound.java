@@ -28,7 +28,9 @@ public class Soundunwound {
 
 	public static String determineIdByTitle(String title, boolean guess) {
 		log.info("Determining Soundunwound-ID by title:", title);
-		WebResponse response = HttpUnit.loadPage(getTitleSearchUrl(title));
+		String titleSearchUrl = getTitleSearchUrl(title);
+		log.debug("Loading", titleSearchUrl);
+		WebResponse response = HttpUnit.loadPage(titleSearchUrl);
 		WebTable table = HttpUnit.getTable("releases", response);
 		if (table == null) {
 			if (guess) {
@@ -44,8 +46,8 @@ public class Soundunwound {
 		if (cell == null) return null;
 		for (WebLink link : cell.getLinks()) {
 			String url = link.getURLString();
-			if (url.startsWith("/music/-/") && url.endsWith("?ref=SR")) {
-				String id = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf("?"));
+			if (url.contains("releaseId=")) {
+				String id = Str.cutFromTo(url, "releaseId=", "&");
 				return id;
 			}
 		}
