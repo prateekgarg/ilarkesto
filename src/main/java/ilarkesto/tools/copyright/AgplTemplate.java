@@ -24,7 +24,7 @@ public class AgplTemplate implements CopyrightTemplate {
 		sb.append(" * You should have received a copy of the GNU General Public License along with Foobar. If not, see\n");
 		sb.append(" * <http://www.gnu.org/licenses/>.\n");
 		sb.append(" */\n");
-		return null;
+		return sb.toString();
 	}
 
 	@Override

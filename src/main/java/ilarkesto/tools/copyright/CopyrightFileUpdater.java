@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-
 package ilarkesto.tools.copyright;
 
 import ilarkesto.core.logging.Log;
@@ -26,7 +25,7 @@ public class CopyrightFileUpdater {
 	private static Log log = Log.get(CopyrightFileUpdater.class);
 
 	public static void main(String[] args) {
-		File dir = new File("src/main/java");
+		File dir = new File("src/main/java/ilarkesto/tools");
 		CopyrightFileProcessor processor = new CopyrightFileProcessor(new AgplTemplate(), "2011",
 				"Witoslaw Koczewsi <wi@koczewski.de>", "Artjom Kochtchi");
 		IO.process(dir, processor);
@@ -41,6 +40,8 @@ public class CopyrightFileUpdater {
 		public CopyrightFileProcessor(CopyrightTemplate template, String years, String... owners) {
 			super();
 			this.template = template;
+			this.years = years;
+			this.owners = owners;
 		}
 
 		@Override
