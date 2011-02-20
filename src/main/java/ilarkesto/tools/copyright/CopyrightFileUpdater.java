@@ -25,10 +25,12 @@ public class CopyrightFileUpdater {
 	private static Log log = Log.get(CopyrightFileUpdater.class);
 
 	public static void main(String[] args) {
-		File dir = new File("src/main/java/ilarkesto/tools");
+		File dir = new File("src/test/java");
+		// File dir = new File("../kunagi/src/test/java");
 		CopyrightFileProcessor processor = new CopyrightFileProcessor(new AgplTemplate(), "2011",
 				"Witoslaw Koczewsi <wi@koczewski.de>", "Artjom Kochtchi");
 		IO.process(dir, processor);
+		log.info(processor.getCount(), "files updated");
 	}
 
 	static class CopyrightFileProcessor implements FileProcessor {
@@ -36,6 +38,7 @@ public class CopyrightFileUpdater {
 		private CopyrightTemplate template;
 		private String years;
 		private String[] owners;
+		int count;
 
 		public CopyrightFileProcessor(CopyrightTemplate template, String years, String... owners) {
 			super();
@@ -52,7 +55,12 @@ public class CopyrightFileUpdater {
 			if (template.containsText(content)) return;
 			content = template.getText(years, owners) + content;
 			IO.writeFile(file, content, IO.UTF_8);
+			count++;
 			log.info("Copyrighted:", file);
+		}
+
+		public int getCount() {
+			return count;
 		}
 
 		@Override
