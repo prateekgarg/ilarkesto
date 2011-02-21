@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -45,11 +45,13 @@ public class Paragraph extends AParagraph implements ItextElement {
 			if (element instanceof TextChunk) {
 				TextChunk textChunk = (TextChunk) element;
 				FontStyle style = textChunk.getFontStyle();
+
 				Font font;
+				String fontname = style.getFont();
 				try {
-					font = new Font(BaseFont.createFont(style.getFont(), BaseFont.CP1252, BaseFont.EMBEDDED));
+					font = new Font(BaseFont.createFont(fontname, BaseFont.IDENTITY_H, BaseFont.EMBEDDED));
 				} catch (Exception ex) {
-					throw new RuntimeException(ex);
+					throw new RuntimeException("Loading font failed: " + fontname, ex);
 				}
 				if (style.isItalic() && style.isBold()) {
 					font.setStyle(Font.BOLDITALIC);
@@ -59,12 +61,13 @@ public class Paragraph extends AParagraph implements ItextElement {
 					font.setStyle(Font.BOLD);
 				}
 				font.setSize(PdfBuilder.mmToPoints(style.getSize()));
-				String text = textChunk.getText();
-				Chunk chunk = new Chunk(text, font);
 				Color color = style.getColor();
 				if (color != null) font.setColor(color);
-				chunk.setFont(font);
+
+				String text = textChunk.getText();
+				Chunk chunk = new Chunk(text, font);
 				p.add(chunk);
+
 				float size = (style.getSize() * 1.1f) + 1f;
 				if (size > maxSize) maxSize = PdfBuilder.mmToPoints(size);
 			} else if (element instanceof Image) {
