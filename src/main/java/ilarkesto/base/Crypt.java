@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -354,6 +354,7 @@ public abstract class Crypt {
 	}
 
 	public static final String crypt(String salt, String original) {
+		if (original == null) original = "";
 		while (salt.length() < 2)
 			salt += "A";
 
@@ -365,8 +366,8 @@ public abstract class Crypt {
 		buffer.setCharAt(0, charZero);
 		buffer.setCharAt(1, charOne);
 
-		int Eswap0 = con_salt[(int) charZero];
-		int Eswap1 = con_salt[(int) charOne] << 4;
+		int Eswap0 = con_salt[charZero];
+		int Eswap1 = con_salt[charOne] << 4;
 
 		byte key[] = new byte[8];
 
@@ -374,7 +375,7 @@ public abstract class Crypt {
 			key[i] = (byte) 0;
 
 		for (int i = 0; i < key.length && i < original.length(); i++) {
-			int iChar = (int) original.charAt(i);
+			int iChar = original.charAt(i);
 
 			key[i] = (byte) (iChar << 1);
 		}
@@ -392,7 +393,7 @@ public abstract class Crypt {
 			for (int j = 0, c = 0; j < 6; j++) {
 				c <<= 1;
 
-				if (((int) b[y] & u) != 0) c |= 1;
+				if ((b[y] & u) != 0) c |= 1;
 
 				u >>>= 1;
 
