@@ -427,8 +427,13 @@ public class CssRenderer {
 		}
 
 		public Style borderRadius(int value) {
-			attr("-webkit-border-radius", value + "px");
-			return attr("-moz-border-radius", value + "px");
+			attr("border-radius", value + "px");
+			attr("-moz-border-radius", value + "px");
+			attr("-webkit-border-top-left-radius", value + "px");
+			attr("-webkit-border-top-right-radius", value + "px");
+			attr("-webkit-border-bottom-left-radius", value + "px");
+			attr("-webkit-border-bottom-right-radius", value + "px");
+			return this;
 		}
 
 		public Style columnWidth(int value) {
