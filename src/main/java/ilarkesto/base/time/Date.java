@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -24,9 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.StringTokenizer;
 
-public final class Date implements Comparable<Date> {
+public final class Date extends ilarkesto.core.time.Date {
 
 	public static final transient SimpleDateFormat FORMAT_DAY_MONTH_SHORTYEAR = new SimpleDateFormat("dd.MM.yy");
 	public static final transient SimpleDateFormat FORMAT_DAY_MONTH_YEAR = new SimpleDateFormat("dd.MM.yyyy");
@@ -46,89 +45,37 @@ public final class Date implements Comparable<Date> {
 
 	public static final transient SimpleDateFormat FORMAT_WEEKDAY = new SimpleDateFormat("EEEE");
 
-	private int year;
-
-	private int month;
-
-	private int day;
-
 	public Date() {
-		this(System.currentTimeMillis());
+		super();
 	}
 
-	public Date(GregorianCalendar calendar) {
-		set(calendar);
-	}
-
-	public Date(java.util.Date date) {
-		set(date);
+	public Date(java.util.Date javaDate) {
+		super(javaDate);
 	}
 
 	public Date(long millis) {
-		set(new java.util.Date(millis));
+		super(millis);
 	}
 
 	public Date(int year, int month, int day) {
-		set(year, month, day);
+		super(year, month, day);
 	}
 
 	public Date(String date) {
-		try {
-			parse(date);
-		} catch (ParseException ex) {
-			throw new RuntimeException(ex);
-		}
+		super(date);
 	}
 
-	private void set(java.util.Date date) {
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.setTime(date);
-		set(calendar);
+	public Date(GregorianCalendar calendar) {
+		this(calendar.getTime());
 	}
 
-	private void set(GregorianCalendar calendar) {
-		set(calendar.get(GregorianCalendar.YEAR), calendar.get(GregorianCalendar.MONTH) + 1,
-			calendar.get(GregorianCalendar.DAY_OF_MONTH));
-	}
-
-	private void set(int year, int month, int day) {
-		this.year = year;
-		this.month = month;
-		this.day = day;
-	}
-
-	private void parse(String date) throws ParseException {
-		StringTokenizer tokenizer = new StringTokenizer(date.trim(), "-");
-		if (!tokenizer.hasMoreTokens()) throw new ParseException(date, 0);
-		int y = Integer.parseInt(tokenizer.nextToken());
-		int m = 1;
-		if (tokenizer.hasMoreTokens()) m = Integer.parseInt(tokenizer.nextToken());
-		int d = 1;
-		if (tokenizer.hasMoreTokens()) d = Integer.parseInt(tokenizer.nextToken());
-		set(y, m, d);
-	}
-
-	public int getDay() {
-		return day;
-	}
-
-	public int getMonth() {
-		return month;
-	}
-
-	public int getYear() {
-		return year;
+	@Override
+	protected Date newDate(java.util.Date javaDate) {
+		return new Date(javaDate);
 	}
 
 	public GregorianCalendar getGregorianCalendar() {
 		return new GregorianCalendar(year, month - 1, day);
-	}
-
-	public Date addDays(int count) {
-		GregorianCalendar c = new GregorianCalendar();
-		c.setTime(toJavaDate());
-		c.add(GregorianCalendar.DAY_OF_YEAR, count);
-		return new Date(c);
 	}
 
 	public Date getFirstDateOfMonth() {
@@ -220,15 +167,7 @@ public final class Date implements Comparable<Date> {
 	}
 
 	private String toInt() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(year);
-		sb.append("-");
-		if (month < 10) sb.append('0');
-		sb.append(month);
-		sb.append("-");
-		if (day < 10) sb.append('0');
-		sb.append(day);
-		return sb.toString();
+		return toString();
 	}
 
 	public String toLongInt() {
@@ -253,24 +192,19 @@ public final class Date implements Comparable<Date> {
 		return toLongInt();
 	}
 
-	public java.util.Date toJavaDate() {
-		return getGregorianCalendar().getTime();
+	@Override
+	public Date addDays(int days) {
+		return (Date) super.addDays(days);
 	}
 
-	public long toMillis() {
-		return getGregorianCalendar().getTimeInMillis();
+	@Override
+	public Date prevDay() {
+		return addDays(-1);
 	}
 
+	@Override
 	public Date nextDay() {
-		GregorianCalendar gc = (GregorianCalendar) getGregorianCalendar().clone();
-		gc.add(GregorianCalendar.DAY_OF_YEAR, 1);
-		return new Date(gc);
-	}
-
-	public Date previousDay() {
-		GregorianCalendar gc = (GregorianCalendar) getGregorianCalendar().clone();
-		gc.add(GregorianCalendar.DAY_OF_YEAR, -1);
-		return new Date(gc);
+		return addDays(1);
 	}
 
 	// --- static ---
@@ -347,31 +281,6 @@ public final class Date implements Comparable<Date> {
 
 	// --- Object ---
 
-	@Override
-	public String toString() {
-		return toInt();
-	}
-
-	private transient int hashCode;
-
-	@Override
-	public int hashCode() {
-		if (hashCode == 0) {
-			hashCode = 23;
-			hashCode = hashCode * 37 + year;
-			hashCode = hashCode * 37 + month;
-			hashCode = hashCode * 37 + day;
-		}
-		return hashCode;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) return false;
-		Date other = (Date) obj;
-		return other.day == day && other.month == month && other.year == year;
-	}
-
 	public boolean equalsIgnoreYear(Date d) {
 		if (d == null) return false;
 		return d.day == day && d.month == month;
@@ -382,28 +291,8 @@ public final class Date implements Comparable<Date> {
 		return d.year == year && d.month == month;
 	}
 
-	public boolean isBefore(Date other) {
-		return compareTo(other) < 0;
-	}
-
-	public boolean isBeforeOrSame(Date other) {
-		return compareTo(other) <= 0;
-	}
-
-	public boolean isAfter(Date other) {
-		return compareTo(other) > 0;
-	}
-
-	public boolean isAfterOrSame(Date other) {
-		return compareTo(other) >= 0;
-	}
-
 	public boolean isWeekend() {
 		return getWeekday() == Weekday.SATURDAY || getWeekday() == Weekday.SUNDAY;
-	}
-
-	public boolean isToday() {
-		return equals(today());
 	}
 
 	public boolean isTomorrow() {
@@ -428,20 +317,6 @@ public final class Date implements Comparable<Date> {
 
 	public boolean isPastOrToday() {
 		return isBeforeOrSame(today());
-	}
-
-	// --- Comparable ---
-
-	@Override
-	public int compareTo(Date other) {
-		if (other == null) return 1;
-		if (year > other.year) return 1;
-		if (year < other.year) return -1;
-		if (month > other.month) return 1;
-		if (month < other.month) return -1;
-		if (day > other.day) return 1;
-		if (day < other.day) return -1;
-		return 0;
 	}
 
 }
