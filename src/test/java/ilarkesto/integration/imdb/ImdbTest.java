@@ -21,17 +21,21 @@ import org.testng.annotations.Test;
 public class ImdbTest extends ATest {
 
 	@Test
-	public void loadRecord() {
+	public void loadRecordKillbill() {
 		ImdbRecord killbill = Imdb.loadRecord("tt0266697");
 		assertEquals(killbill.getTitle(), "Kill Bill: Vol. 1");
 		assertEquals(killbill.getYear(), Integer.valueOf(2003));
 		assertEquals(killbill.getCoverId(), "MV5BMTU1NDg1Mzg4M15BMl5BanBnXkFtZTYwMDExOTc3");
+	}
 
+	@Test
+	public void loadRecordGreek() {
 		ImdbRecord greek = Imdb.loadRecord("tt1226229");
 		assertEquals(greek.getTitle(), "Get Him to the Greek");
 		// assertEquals(greek.getTitleDe(), "M&#xE4;nnertrip");
 		assertEquals(greek.getYear(), Integer.valueOf(2010));
-		assertEquals(greek.getCoverId(), "MV5BMTU1NDg1Mzg4M15BMl5BanBnXkFtZTYwMDExOTc3");
+		assertEquals(greek.getCoverId(), "MV5BMjIyMzQ0MjExNV5BMl5BanBnXkFtZTcwMzkyMzgxMw@@");
+		// assertEquals(greek.getCoverId(), "MV5BMTM3Mjk3MzUwN15BMl5BanBnXkFtZTcwMTgzMTYyMQ@@");
 	}
 
 	@Test
