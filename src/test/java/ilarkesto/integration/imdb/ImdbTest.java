@@ -31,7 +31,7 @@ public class ImdbTest extends ATest {
 		assertEquals(greek.getTitle(), "Get Him to the Greek");
 		// assertEquals(greek.getTitleDe(), "M&#xE4;nnertrip");
 		assertEquals(greek.getYear(), Integer.valueOf(2010));
-		assertEquals(greek.getCoverId(), "MV5BMjIyMzQ0MjExNV5BMl5BanBnXkFtZTcwMzkyMzgxMw@@");
+		assertEquals(greek.getCoverId(), "MV5BMTU1NDg1Mzg4M15BMl5BanBnXkFtZTYwMDExOTc3");
 	}
 
 	@Test
