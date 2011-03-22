@@ -14,7 +14,7 @@
  */
 package ilarkesto.base.time;
 
-import ilarkesto.core.time.Tm;
+import ilarkesto.base.Tm;
 
 import java.text.DateFormat;
 import java.text.ParseException;

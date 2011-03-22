@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -49,6 +49,15 @@ public class Str extends ilarkesto.core.base.Str {
 	private static long lastId;
 
 	private static final Object UIDLOCK = new Object();
+
+	public static String[] tokenize(String s, String delimiter) {
+		StringTokenizer tok = new StringTokenizer(s, delimiter);
+		LinkedList<String> ll = new LinkedList<String>();
+		while (tok.hasMoreTokens()) {
+			ll.add(tok.nextToken());
+		}
+		return toStringArray(ll);
+	}
 
 	public static String multiply(String s, int factor) {
 		StringBuilder sb = new StringBuilder();
@@ -1304,33 +1313,12 @@ public class Str extends ilarkesto.core.base.Str {
 		return ret;
 	}
 
-	public static String[] toStringArray(Collection<String> c) {
-		return toStringArray(c.toArray());
-	}
-
-	public static String[] toStringArray(Object[] oa) {
-		String[] sa = new String[oa.length];
-		for (int i = 0; i < oa.length; i++) {
-			sa[i] = oa[i] == null ? null : oa[i].toString();
-		}
-		return sa;
-	}
-
 	public static boolean equals(String[] sa1, String[] sa2) {
 		if (sa1.length != sa2.length) return false;
 		for (int i = 0; i < sa1.length; i++) {
 			if (!sa1[i].equals(sa2[i])) return false;
 		}
 		return true;
-	}
-
-	public static String[] tokenize(String s, String delimiter) {
-		StringTokenizer tok = new StringTokenizer(s, delimiter);
-		LinkedList<String> ll = new LinkedList<String>();
-		while (tok.hasMoreTokens()) {
-			ll.add(tok.nextToken());
-		}
-		return toStringArray(ll);
 	}
 
 	public static List<String> tokenizeString(String s) {

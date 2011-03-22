@@ -26,16 +26,6 @@ public final class Tm extends ilarkesto.core.time.Tm {
 
 	private Tm() {}
 
-	public static final long SECOND = 1000;
-
-	public static final long MINUTE = SECOND * 60;
-
-	public static final long HOUR = MINUTE * 60;
-
-	public static final long DAY = HOUR * 24;
-
-	public static final long WEEK = DAY * 7;
-
 	public static final String[] MONTHS_DE = new String[] { "Januar", "Februar", "M\u00E4rz", "April", "Mai", "Juni",
 			"Juli", "August", "September", "Oktober", "November", "Dezember" };
 
@@ -64,6 +54,16 @@ public final class Tm extends ilarkesto.core.time.Tm {
 	public static final SimpleDateFormat TIME_SHORT_DE = new SimpleDateFormat("HH:mm");
 
 	public static final TimeZone TZ_BERLIN = TimeZone.getTimeZone("Europe/Berlin");
+
+	public static Date toUtc(Date date) {
+		return toUtc(date, TimeZone.getDefault());
+	}
+
+	public static Date toUtc(Date date, TimeZone timeZone) {
+		long millis = date.getTime();
+		int offset = timeZone.getOffset(millis);
+		return new Date(millis - offset);
+	}
 
 	public static boolean isSameDay(Date day1, Date day2) {
 		return getDayBegin(day1).equals(getDayBegin(day2));

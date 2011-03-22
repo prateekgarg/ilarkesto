@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
+ * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
@@ -12,14 +12,22 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.gwt.client.editor;
+package ilarkesto.core.time;
 
-import ilarkesto.core.time.Date;
+import ilarkesto.testng.ATest;
 
-public abstract class ADateEditorModel extends AEditorModel<Date> {
+import org.testng.annotations.Test;
 
-	public boolean isMandatory() {
-		return false;
+public class TimePeriodTest extends ATest {
+
+	@Test
+	public void constructorMillis() {
+		assertEquals(new TimePeriod("1").toMillis(), 1);
+	}
+
+	@Test
+	public void constructorTime() {
+		assertEquals(new TimePeriod("0:0:0:1").toMillis(), 1);
 	}
 
 }

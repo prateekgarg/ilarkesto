@@ -17,11 +17,11 @@ package ilarkesto.base.time;
 import ilarkesto.base.Str;
 import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
+import ilarkesto.core.time.Weekday;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
@@ -104,14 +104,6 @@ public final class Date extends ilarkesto.core.time.Date {
 		c.setTime(toJavaDate());
 		c.add(GregorianCalendar.YEAR, count);
 		return new Date(c);
-	}
-
-	public Weekday getWeekday() {
-		return Weekday.get(getGregorianCalendar().get(Calendar.DAY_OF_WEEK));
-	}
-
-	public int getWeek() {
-		return getGregorianCalendar().get(GregorianCalendar.WEEK_OF_YEAR);
 	}
 
 	public int getDaysInMonth() {

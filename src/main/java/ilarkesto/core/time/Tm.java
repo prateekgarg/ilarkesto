@@ -15,9 +15,29 @@
 package ilarkesto.core.time;
 
 import java.util.Date;
-import java.util.TimeZone;
 
 public class Tm {
+
+	public static final long SECOND = 1000;
+	public static final long MINUTE = SECOND * 60;
+	public static final long HOUR = MINUTE * 60;
+	public static final long DAY = HOUR * 24;
+	public static final long WEEK = DAY * 7;
+
+	public static final long MONTH = DAY * 30;
+	public static final long YEAR = MONTH * 12;
+
+	private static TmLocalizer tmLocalizer;
+	private static TmLocalizerDe tmLocalizerDe;
+
+	public static TmLocalizer getLocalizer(String language) {
+		if (language.equals("de")) {
+			if (tmLocalizerDe == null) tmLocalizerDe = new TmLocalizerDe();
+			return tmLocalizerDe;
+		}
+		if (tmLocalizer == null) tmLocalizer = new TmLocalizer();
+		return tmLocalizer;
+	}
 
 	@SuppressWarnings("deprecation")
 	public static Date createDate(int year, int month, int day, int min, int sec) {
@@ -38,16 +58,6 @@ public class Tm {
 		return date;
 	}
 
-	public static Date toUtc(Date date) {
-		return toUtc(date, TimeZone.getDefault());
-	}
-
-	public static Date toUtc(Date date, TimeZone timeZone) {
-		long millis = date.getTime();
-		int offset = timeZone.getOffset(millis);
-		return new Date(millis - offset);
-	}
-
 	public static Date createDate(long millis) {
 		return new Date(millis);
 	}
@@ -58,6 +68,11 @@ public class Tm {
 	}
 
 	@SuppressWarnings("deprecation")
+	public static int getWeekday(Date date) {
+		return date.getDay();
+	}
+
+	@SuppressWarnings("deprecation")
 	public static int getDay(Date date) {
 		return date.getDate();
 	}
@@ -65,6 +80,21 @@ public class Tm {
 	@SuppressWarnings("deprecation")
 	public static int getYear(Date date) {
 		return date.getYear() + 1900;
+	}
+
+	@SuppressWarnings("deprecation")
+	public static int getHour(Date date) {
+		return date.getHours();
+	}
+
+	@SuppressWarnings("deprecation")
+	public static int getMinute(Date date) {
+		return date.getMinutes();
+	}
+
+	@SuppressWarnings("deprecation")
+	public static int getSecond(Date date) {
+		return date.getSeconds();
 	}
 
 	public static long getNowAsMillis() {

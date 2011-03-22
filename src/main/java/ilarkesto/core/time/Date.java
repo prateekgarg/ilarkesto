@@ -15,6 +15,8 @@
 package ilarkesto.core.time;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Date implements Comparable<Date>, Serializable {
 
@@ -58,6 +60,40 @@ public class Date implements Comparable<Date>, Serializable {
 
 	protected Date newDate(java.util.Date javaDate) {
 		return new Date(javaDate);
+	}
+
+	// ---
+
+	public final int getWeek() {
+		java.util.Date jFirstJan = new Date(year, 1, 1).toJavaDate();
+		int jFirstJanWeekday = Tm.getWeekday(jFirstJan);
+		int firstMonday = jFirstJanWeekday < 1 ? 2 : (jFirstJanWeekday > 1 ? 9 - jFirstJanWeekday : 1);
+		TimePeriod firstMondayTillNow = new Date(year, 1, firstMonday).getPeriodTo(this);
+
+		int weeks = -1;
+		if (firstMonday == 1) {
+			weeks = firstMondayTillNow.toWeeks() + 1;
+		} else {
+			java.util.Date jFirstMondayDate = Tm.createDate(year, 1, firstMonday);
+			java.util.Date jThis = toJavaDate();
+			if (jThis.before(jFirstMondayDate)) {
+				weeks = 1;
+			} else if (jThis.after(jFirstMondayDate)) {
+				weeks = firstMondayTillNow.toWeeks() + (firstMondayTillNow.toDays() % 7 >= 0 ? 2 : 1);
+			} else {
+				weeks = 2;
+			}
+		}
+
+		return weeks;
+	}
+
+	public TimePeriod getPeriodTo(Date other) {
+		return new TimePeriod(other.toMillis() - toMillis());
+	}
+
+	public Weekday getWeekday() {
+		return Weekday.get(Tm.getWeekday(toJavaDate()));
 	}
 
 	public Date addDays(int days) {
@@ -171,8 +207,50 @@ public class Date implements Comparable<Date>, Serializable {
 		return sb.toString();
 	}
 
+	// --- static ---
+
 	public static Date today() {
 		return new Date();
+	}
+
+	public static Date latest(Date... dates) {
+		Date latest = null;
+		for (Date date : dates) {
+			if (latest == null || date.isAfter(latest)) latest = date;
+		}
+		return latest;
+	}
+
+	public static Date earliest(Date... dates) {
+		Date earliest = null;
+		for (Date date : dates) {
+			if (earliest == null || date.isBefore(earliest)) earliest = date;
+		}
+		return earliest;
+	}
+
+	public static Date tomorrow() {
+		return today().nextDay();
+	}
+
+	public static Date inDays(int numberOfDays) {
+		return today().addDays(numberOfDays);
+	}
+
+	public static Date beforeDays(int numberOfDays) {
+		return today().addDays(-numberOfDays);
+	}
+
+	public static List<Date> getDaysInMonth(int year, int month) {
+		List<Date> dates = new ArrayList<Date>();
+		Date d = new Date(year, month, 1);
+
+		while (d.getMonth() == month) {
+			dates.add(d);
+			d = d.nextDay();
+		}
+
+		return dates;
 	}
 
 }

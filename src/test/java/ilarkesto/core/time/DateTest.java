@@ -16,12 +16,43 @@ package ilarkesto.core.time;
 
 import ilarkesto.testng.ATest;
 
+import java.util.GregorianCalendar;
+
 import org.testng.annotations.Test;
 
 public class DateTest extends ATest {
 
 	private static final Date BIRTHDAY = new Date(1979, 8, 3);
-	private static final Date ARMAGEDDON = new Date(2012, 12, 21);
+
+	@Test
+	public void addDays() {
+		assertEquals(BIRTHDAY.addDays(1), new Date(1979, 8, 4));
+		assertEquals(BIRTHDAY.addDays(-1), new Date(1979, 8, 2));
+		assertEquals(BIRTHDAY.addDays(0), BIRTHDAY);
+
+		assertEquals(new Date(2010, 12, 31).addDays(10), new Date(2011, 1, 10));
+
+		assertEquals(new Date(2011, 2, 28).addDays(1), new Date(2011, 3, 1));
+		assertEquals(new Date(2008, 2, 28).addDays(1), new Date(2008, 2, 29));
+	}
+
+	@Test
+	public void addDaysWithCalendar() {
+		Date date = new Date(2010, 1, 1);
+		for (int i = -10000; i < 10000; i++) {
+			assertAddDays(date, i);
+		}
+	}
+
+	private void assertAddDays(Date begin, int days) {
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTimeInMillis(begin.toMillis());
+		assertEquals(begin, new Date(calendar.getTime()));
+
+		calendar.add(GregorianCalendar.DAY_OF_YEAR, days);
+
+		assertEquals(begin.addDays(days), new Date(calendar.getTime()));
+	}
 
 	@Test
 	public void isToday() {
