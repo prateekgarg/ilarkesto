@@ -25,6 +25,11 @@ public class DateTest extends ATest {
 	private static final Date BIRTHDAY = new Date(1979, 8, 3);
 
 	@Test
+	public void getWeekday() {
+		assertEquals(BIRTHDAY.getWeekday(), Weekday.FRIDAY);
+	}
+
+	@Test
 	public void addDays() {
 		assertEquals(BIRTHDAY.addDays(1), new Date(1979, 8, 4));
 		assertEquals(BIRTHDAY.addDays(-1), new Date(1979, 8, 2));
