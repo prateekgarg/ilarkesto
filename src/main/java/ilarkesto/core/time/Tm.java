@@ -69,7 +69,7 @@ public class Tm {
 
 	@SuppressWarnings("deprecation")
 	public static int getWeekday(Date date) {
-		return date.getDay();
+		return date.getDay() + 1;
 	}
 
 	@SuppressWarnings("deprecation")

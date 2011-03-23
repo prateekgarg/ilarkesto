@@ -16,6 +16,7 @@ package ilarkesto.core.time;
 
 import ilarkesto.testng.ATest;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -31,6 +32,12 @@ public class TmTest extends ATest {
 	public void init() {
 		birthday = Tm.createDate(1979, 8, 3);
 		armageddon = Tm.createDate(2012, 12, 21);
+	}
+
+	@Test
+	public void getWeekday() {
+		assertEquals(Tm.getWeekday(birthday), Calendar.FRIDAY);
+		assertEquals(Tm.getWeekday(armageddon), Calendar.FRIDAY);
 	}
 
 	@Test
