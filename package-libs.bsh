@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "Packaging libs..."
+cd lib
+zip -r9 ../ilarkesto-lib.zip *
