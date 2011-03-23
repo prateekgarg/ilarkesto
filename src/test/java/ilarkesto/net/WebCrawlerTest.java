@@ -56,7 +56,7 @@ public class WebCrawlerTest extends ATest {
 
 	@Test
 	public void download() {
-		WebCrawler.download("http://koczewski.de", OUTPUT_DIR + "/webcrawler");
+		WebCrawler.download("http://servisto.de", OUTPUT_DIR + "/webcrawler");
 	}
 
 }
