@@ -520,7 +520,7 @@ public class BeanMap<T> extends AbstractMap<String, Object> implements Cloneable
 						if (readMethod != null) {
 							readMethods.put(name, readMethod);
 						}
-						if (writeMethods != null) {
+						if (writeMethod != null) {
 							writeMethods.put(name, writeMethod);
 						}
 						types.put(name, aType);
