@@ -136,8 +136,32 @@ public class Date implements Comparable<Date>, Serializable {
 		return compareTo(other) <= 0;
 	}
 
+	public final boolean isPast() {
+		return isBefore(today());
+	}
+
 	public final boolean isAfterOrSame(Date other) {
 		return compareTo(other) >= 0;
+	}
+
+	public final boolean isTomorrow() {
+		return equals(today().addDays(1));
+	}
+
+	public final boolean isYesterday() {
+		return equals(today().addDays(-1));
+	}
+
+	public final boolean isFuture() {
+		return isAfter(today());
+	}
+
+	public final boolean isFutureOrToday() {
+		return isAfterOrSame(today());
+	}
+
+	public final boolean isPastOrToday() {
+		return isBeforeOrSame(today());
 	}
 
 	public final java.util.Date toJavaDate() {
