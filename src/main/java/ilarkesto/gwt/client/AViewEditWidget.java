@@ -254,7 +254,7 @@ public abstract class AViewEditWidget extends AWidget {
 			if (event.getNativeEvent().getEventTarget().toString().startsWith("[object HTML")) {
 				if (isEditable()) switchToEditMode();
 			}
-			event.stopPropagation();
+			// event.stopPropagation();
 		}
 
 	}
