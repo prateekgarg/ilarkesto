@@ -31,6 +31,7 @@ import java.util.Collection;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class PdfBuilder extends APdfBuilder {
@@ -86,7 +87,8 @@ public class PdfBuilder extends APdfBuilder {
 				if (element instanceof PageBreak) {
 					document.newPage();
 				} else {
-					document.add(element.getITextElement());
+					Element iTextElement = element.getITextElement();
+					if (iTextElement != null) document.add(iTextElement);
 				}
 			} catch (DocumentException ex) {
 				throw new RuntimeException(ex);

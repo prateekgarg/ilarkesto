@@ -14,6 +14,7 @@
  */
 package ilarkesto.integration.itext;
 
+import ilarkesto.core.logging.Log;
 import ilarkesto.pdf.AImage;
 import ilarkesto.pdf.AParagraph;
 import ilarkesto.pdf.AParagraphElement;
@@ -32,6 +33,8 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
 public class Paragraph extends AParagraph implements ItextElement {
+
+	private static Log log = Log.get(Paragraph.class);
 
 	public Paragraph(APdfElement parent) {
 		super(parent);
@@ -72,7 +75,13 @@ public class Paragraph extends AParagraph implements ItextElement {
 				if (size > maxSize) maxSize = PdfBuilder.mmToPoints(size);
 			} else if (element instanceof Image) {
 				Image image = (Image) element;
-				com.lowagie.text.Image itextImage = image.getITextElement();
+				com.lowagie.text.Image itextImage;
+				try {
+					itextImage = image.getITextElement();
+				} catch (Exception ex) {
+					log.warn("Including image failed:", image, ex);
+					continue;
+				}
 
 				if (image.getAlign() != null) {
 					itextImage.setAlignment(Image.convertAlign(image.getAlign()) | com.lowagie.text.Image.TEXTWRAP);
