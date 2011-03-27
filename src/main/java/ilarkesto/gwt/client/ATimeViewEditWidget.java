@@ -19,8 +19,8 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Time;
 
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -41,7 +41,7 @@ public abstract class ATimeViewEditWidget extends AViewEditWidget {
 	protected final Widget onEditorInitialization() {
 		editor = new TextBox();
 		editor.addFocusListener(new EditorFocusListener());
-		editor.addKeyPressHandler(new EditorKeyboardListener());
+		editor.addKeyDownHandler(new EditorKeyboardListener());
 		return editor;
 	}
 
@@ -66,11 +66,11 @@ public abstract class ATimeViewEditWidget extends AViewEditWidget {
 		}
 	}
 
-	private class EditorKeyboardListener implements KeyPressHandler {
+	private class EditorKeyboardListener implements KeyDownHandler {
 
 		@Override
-		public void onKeyPress(KeyPressEvent event) {
-			char keyCode = event.getCharCode();
+		public void onKeyDown(KeyDownEvent event) {
+			int keyCode = event.getNativeKeyCode();
 
 			if (keyCode == KeyCodes.KEY_ENTER) {
 				submitEditor();

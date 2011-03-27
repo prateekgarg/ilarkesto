@@ -64,7 +64,7 @@ public class DateEditorWidget extends AViewEditWidget {
 		editor.addValueChangeHandler(new DateChangeHandler());
 
 		editorWrapper = new FocusPanel();
-		editorWrapper.addKeyPressHandler(new CancelKeyPressHandler());
+		editorWrapper.addKeyDownHandler(new CancelKeyHandler());
 		editorWrapper.add(editor);
 		editorWrapper.setFocus(true);
 

@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -17,8 +17,8 @@ package ilarkesto.gwt.client;
 import ilarkesto.core.base.Str;
 
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -79,7 +79,7 @@ public abstract class AIntegerViewEditWidget extends AViewEditWidget {
 		editor.setMaxLength(10);
 		editor.setWidth("50px");
 		editor.addFocusListener(new EditorFocusListener());
-		editor.addKeyPressHandler(new EditorKeyboardListener());
+		editor.addKeyDownHandler(new EditorKeyboardListener());
 		return editor;
 	}
 
@@ -140,11 +140,11 @@ public abstract class AIntegerViewEditWidget extends AViewEditWidget {
 		onMinusClicked();
 	}
 
-	private class EditorKeyboardListener implements KeyPressHandler {
+	private class EditorKeyboardListener implements KeyDownHandler {
 
 		@Override
-		public void onKeyPress(KeyPressEvent event) {
-			char keyCode = event.getCharCode();
+		public void onKeyDown(KeyDownEvent event) {
+			int keyCode = event.getNativeKeyCode();
 
 			if (isCancelKey(keyCode)) {
 				editor.cancelKey();
@@ -157,16 +157,16 @@ public abstract class AIntegerViewEditWidget extends AViewEditWidget {
 			}
 		}
 
-		private boolean isCancelKey(char keyCode) {
+		private boolean isCancelKey(int keyCode) {
 			boolean chancelKey = true;
 
-			chancelKey &= Character.isDigit(keyCode) == false;
-			chancelKey &= keyCode != (char) KeyCodes.KEY_ENTER;
-			chancelKey &= (keyCode != (char) KeyCodes.KEY_TAB);
-			chancelKey &= (keyCode != (char) KeyCodes.KEY_BACKSPACE);
-			chancelKey &= (keyCode != (char) KeyCodes.KEY_DELETE);
-			chancelKey &= (keyCode != (char) KeyCodes.KEY_ESCAPE);
-			chancelKey |= (Character.valueOf(keyCode) == 46); // 46 = "."
+			chancelKey &= Character.isDigit((char) keyCode) == false;
+			chancelKey &= keyCode != KeyCodes.KEY_ENTER;
+			chancelKey &= (keyCode != KeyCodes.KEY_TAB);
+			chancelKey &= (keyCode != KeyCodes.KEY_BACKSPACE);
+			chancelKey &= (keyCode != KeyCodes.KEY_DELETE);
+			chancelKey &= (keyCode != KeyCodes.KEY_ESCAPE);
+			chancelKey |= (keyCode == 46); // 46 = "."
 
 			return chancelKey;
 		}

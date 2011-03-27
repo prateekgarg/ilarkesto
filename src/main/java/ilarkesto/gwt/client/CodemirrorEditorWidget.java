@@ -15,7 +15,7 @@
 package ilarkesto.gwt.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -94,7 +94,7 @@ public class CodemirrorEditorWidget extends AWidget {
 		// if (editor != null) focus(editor);
 	}
 
-	public void addKeyPressHandler(KeyPressHandler listener) {
+	public void addKeyDownHandler(KeyDownHandler listener) {
 		// TODO
 	}
 
