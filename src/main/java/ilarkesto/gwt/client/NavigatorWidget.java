@@ -67,18 +67,21 @@ public class NavigatorWidget<K extends Object> extends AWidget {
 	private Widget createItemWidget(final MenuItem item) {
 		final ImageAnchor a = new ImageAnchor(null, item.getLabel());
 		String href = getHref(item);
-		if (href != null) a.setHref(href);
-		a.addClickHandler(new ClickHandler() {
+		if (href != null) {
+			a.setHref(href);
+		} else {
+			a.addClickHandler(new ClickHandler() {
 
-			@Override
-			public void onClick(ClickEvent event) {
-				log.debug("Item clicked:", item.getLabel());
-				event.stopPropagation();
-				item.select();
-				a.setFocus(false);
-				update();
-			}
-		});
+				@Override
+				public void onClick(ClickEvent event) {
+					log.debug("Item clicked:", item.getLabel());
+					event.stopPropagation();
+					item.select();
+					a.setFocus(false);
+					update();
+				}
+			});
+		}
 
 		FlowPanel itemPanel = new FlowPanel();
 		itemPanel.setStyleName("NavigatorWidget-item");
