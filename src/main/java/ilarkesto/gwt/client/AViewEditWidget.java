@@ -251,13 +251,25 @@ public abstract class AViewEditWidget extends AWidget {
 
 		@Override
 		public void onClick(ClickEvent event) {
-			if (event.getNativeEvent().getEventTarget().toString().startsWith("[object HTML")) {
-				if (isEditable()) switchToEditMode();
-			}
+			if (isRightTarget(event) && isEditable()) switchToEditMode();
 			event.stopPropagation();
 		}
 
+		private boolean isRightTarget(ClickEvent event) {
+			String eventTarget = event.getNativeEvent().getEventTarget().toString();
+			showIfIe(eventTarget);
+			return eventTarget.startsWith("[object HTML");
+		}
+
 	}
+
+	public static native void showIfIe(String text)
+	/*-{
+	    var agent = navigator.userAgent.toLowerCase();
+		if (agent.indexOf('msie')>=0 {
+			alert('ie-text:'+text+':'+agent);
+		}
+	}-*/;
 
 	protected class SubmitEditorFocusListener implements FocusListener {
 
