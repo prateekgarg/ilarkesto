@@ -266,7 +266,7 @@ public abstract class AViewEditWidget extends AWidget {
 	public static native void showIfIe(String text)
 	/*-{
 	    var agent = navigator.userAgent.toLowerCase();
-		if (agent.indexOf('msie')>=0 {
+		if (agent.indexOf('msie')>=0) {
 			alert('ie-text:'+text+':'+agent);
 		}
 	}-*/;
