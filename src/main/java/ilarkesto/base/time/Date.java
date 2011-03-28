@@ -17,7 +17,6 @@ package ilarkesto.base.time;
 import ilarkesto.base.Str;
 import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
-import ilarkesto.core.time.Weekday;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -281,34 +280,6 @@ public final class Date extends ilarkesto.core.time.Date {
 	public boolean equalsIgnoreDay(Date d) {
 		if (d == null) return false;
 		return d.year == year && d.month == month;
-	}
-
-	public boolean isWeekend() {
-		return getWeekday() == Weekday.SATURDAY || getWeekday() == Weekday.SUNDAY;
-	}
-
-	public boolean isTomorrow() {
-		return equals(today().addDays(1));
-	}
-
-	public boolean isYesterday() {
-		return equals(today().addDays(-1));
-	}
-
-	public boolean isFuture() {
-		return isAfter(today());
-	}
-
-	public boolean isFutureOrToday() {
-		return isAfterOrSame(today());
-	}
-
-	public boolean isPast() {
-		return isBefore(today());
-	}
-
-	public boolean isPastOrToday() {
-		return isBeforeOrSame(today());
 	}
 
 }
