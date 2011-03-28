@@ -258,7 +258,8 @@ public abstract class AViewEditWidget extends AWidget {
 		private boolean isRightTarget(ClickEvent event) {
 			String eventTarget = event.getNativeEvent().getEventTarget().toString();
 			// showIfIe(eventTarget);
-			return eventTarget.startsWith("[object HTML") || eventTarget.startsWith("[object]");
+			if (Gwt.isMsie()) return eventTarget.equals("[object]");
+			return eventTarget.startsWith("[object HTML");
 		}
 
 	}
