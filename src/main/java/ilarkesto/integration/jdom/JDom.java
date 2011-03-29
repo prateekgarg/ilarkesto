@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
@@ -102,8 +103,7 @@ public abstract class JDom {
 	}
 
 	public static Document createDocument(String xmlData) {
-		SAXBuilder builder = new SAXBuilder(false);
-		builder.setExpandEntities(false);
+		SAXBuilder builder = createSaxBuilder();
 		try {
 			return builder.build(new StringReader(xmlData));
 		} catch (JDOMException ex) {
@@ -113,26 +113,37 @@ public abstract class JDom {
 		}
 	}
 
+	public static Document createDocumentFromStream(InputStream in) {
+		SAXBuilder builder = createSaxBuilder();
+		try {
+			return builder.build(in);
+		} catch (Exception ex) {
+			throw new RuntimeException("Loading XML from InputStream failed.", ex);
+		}
+	}
+
 	public static Document createDocumentFromUrl(final String url) {
 		log.debug("Loading from URL:", url);
+		SAXBuilder builder = createSaxBuilder();
 		try {
-			SAXBuilder builder = new SAXBuilder(false);
-			builder.setExpandEntities(false);
-			builder.setValidation(false);
-			builder.setEntityResolver(DUMMY_ENTITY_RESOLVER);
 			return builder.build(new URL(url));
 		} catch (Exception ex) {
 			throw new RuntimeException("Loading XML from URL failed: " + url, ex);
 		}
 	}
 
+	private static SAXBuilder createSaxBuilder() {
+		SAXBuilder builder = new SAXBuilder(false);
+		builder.setExpandEntities(false);
+		builder.setValidation(false);
+		builder.setEntityResolver(DUMMY_ENTITY_RESOLVER);
+		return builder;
+	}
+
 	public static Document createDocumentFromUrl(String url, String username, String password) {
 		log.debug("Downloading:", url);
+		SAXBuilder builder = createSaxBuilder();
 		try {
-			SAXBuilder builder = new SAXBuilder(false);
-			builder.setExpandEntities(false);
-			builder.setValidation(false);
-			builder.setEntityResolver(DUMMY_ENTITY_RESOLVER);
 			BufferedInputStream is = new BufferedInputStream(IO.openUrlInputStream(url, username, password));
 			Document doc = builder.build(is);
 			IO.close(is);

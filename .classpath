@@ -31,7 +31,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar" sourcepath="lib/commons-io-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-collect-1.0-rc1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/oacurl-1.0.0.jar" sourcepath="lib/src/oacurl-1.0.0.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/velocity-1.6.4.jar" sourcepath="lib/src/velocity-1-6.4.src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar" sourcepath="lib/src/commons-collections-3.2.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="lib/src/commons-lang-2.5-sources.jar"/>
@@ -42,5 +41,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/ilarkesto/lib/javadoc/gwt-dnd-3.0.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/scribe-1.1.2.jar" sourcepath="lib/src/scribe-1.1.2-src.zip"/>
 	<classpathentry kind="output" path="OUTPUT_DIR"/>
 </classpath>

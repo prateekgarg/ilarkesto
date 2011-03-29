@@ -1,0 +1,75 @@
+package ilarkesto.integration.oauth;
+
+import ilarkesto.auth.LoginData;
+import ilarkesto.auth.LoginDataProvider;
+import ilarkesto.core.logging.Log;
+
+import java.util.Scanner;
+
+import org.scribe.builder.ServiceBuilder;
+import org.scribe.builder.api.Api;
+import org.scribe.model.OAuthRequest;
+import org.scribe.model.Response;
+import org.scribe.model.Token;
+import org.scribe.model.Verb;
+import org.scribe.model.Verifier;
+import org.scribe.oauth.OAuthService;
+
+public class OAuth {
+
+	private static Log log = Log.get(OAuth.class);
+
+	public static String loadUrlAsString(OAuthService service, LoginDataProvider accessToken, String url) {
+		Response response = loadUrl(service, accessToken, url);
+		return response.getBody();
+	}
+
+	public static Response loadUrl(OAuthService service, LoginDataProvider accessToken, String url) {
+		log.info("Requesting", url);
+		LoginData loginData = accessToken.getLoginData();
+		Token token = new Token(loginData.getLogin(), loginData.getPassword());
+		OAuthRequest request = new OAuthRequest(Verb.GET, url);
+		service.signRequest(token, request);
+		Response response = request.send();
+		int code = response.getCode();
+		if (code != 200) throw new RuntimeException("Loading OAuth URL failed: " + url + "\n" + response.getBody());
+		return response;
+	}
+
+	public static OAuthService createService(Class<? extends Api> api, LoginDataProvider apiKey) {
+		LoginData loginData = apiKey.getLoginData();
+		return createService(api, loginData.getLogin(), loginData.getPassword());
+	}
+
+	public static OAuthService createService(Class<? extends Api> api, String apiKey, String apiSecret) {
+		ServiceBuilder builder = new ServiceBuilder();
+		builder.provider(api);
+		builder.apiKey(apiKey).apiSecret(apiSecret);
+		OAuthService service = builder.build();
+		return service;
+	}
+
+	public static Token createRequestToken(OAuthService service) {
+		return service.getRequestToken();
+	}
+
+	public static String getAuthorizationUrl(OAuthService service, Token requestToken) {
+		return service.getAuthorizationUrl(requestToken);
+	}
+
+	public static LoginData createAccessToken(OAuthService service, Token requestToken, String pin) {
+		Verifier verifier = new Verifier(pin);
+		Token accessToken = service.getAccessToken(requestToken, verifier);
+		return new LoginData(accessToken.getToken(), accessToken.getSecret());
+	}
+
+	public static LoginData createAccessTokenByPinFromStdIn(OAuthService service) {
+		Token requestToken = createRequestToken(service);
+		String url = getAuthorizationUrl(service, requestToken);
+		System.out.println("\n    Authenticate here: " + url);
+		System.out.print("    Input PIN: ");
+		String pin = new Scanner(System.in).nextLine();
+		System.out.println();
+		return createAccessToken(service, requestToken, pin);
+	}
+}
