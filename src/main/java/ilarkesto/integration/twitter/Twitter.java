@@ -37,7 +37,7 @@ public class Twitter {
 	private OAuthService oauthService;
 
 	public Twitter(LoginData oauthApiKey) {
-		oauthService = OAuth.createService(TwitterApi.class, oauthApiKey);
+		oauthService = OAuth.createService(TwitterApi.class, oauthApiKey, null);
 	}
 
 	public synchronized Document loadUrlAsXml(LoginDataProvider oauthAccessToken, String url) {

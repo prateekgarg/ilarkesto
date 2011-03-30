@@ -36,15 +36,17 @@ public class OAuth {
 		return response;
 	}
 
-	public static OAuthService createService(Class<? extends Api> api, LoginDataProvider apiKey) {
+	public static OAuthService createService(Class<? extends Api> api, LoginDataProvider apiKey, String callbackUri) {
 		LoginData loginData = apiKey.getLoginData();
-		return createService(api, loginData.getLogin(), loginData.getPassword());
+		return createService(api, loginData.getLogin(), loginData.getPassword(), callbackUri);
 	}
 
-	public static OAuthService createService(Class<? extends Api> api, String apiKey, String apiSecret) {
+	public static OAuthService createService(Class<? extends Api> api, String apiKey, String apiSecret,
+			String callbackUri) {
 		ServiceBuilder builder = new ServiceBuilder();
 		builder.provider(api);
 		builder.apiKey(apiKey).apiSecret(apiSecret);
+		if (callbackUri != null) builder.callback(callbackUri);
 		OAuthService service = builder.build();
 		return service;
 	}
