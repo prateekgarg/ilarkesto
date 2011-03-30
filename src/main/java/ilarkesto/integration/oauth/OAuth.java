@@ -2,6 +2,7 @@ package ilarkesto.integration.oauth;
 
 import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
+import ilarkesto.core.json.JsonObject;
 import ilarkesto.core.logging.Log;
 
 import java.util.Scanner;
@@ -18,6 +19,11 @@ import org.scribe.oauth.OAuthService;
 public class OAuth {
 
 	private static Log log = Log.get(OAuth.class);
+
+	public static JsonObject loadUrlAsJson(OAuthService service, LoginDataProvider accessToken, String url) {
+		String json = loadUrlAsString(service, accessToken, url);
+		return new JsonObject(json);
+	}
 
 	public static String loadUrlAsString(OAuthService service, LoginDataProvider accessToken, String url) {
 		Response response = loadUrl(service, accessToken, url);

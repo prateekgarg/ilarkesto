@@ -8,6 +8,12 @@ import org.testng.annotations.Test;
 public class JsonTest extends ATest {
 
 	@Test
+	public void parseString() {
+		assertEquals(Json.parseString("\\t"), "\t");
+		assertEquals(Json.parseString("a \\n \\\\ \\/"), "a \n \\ /");
+	}
+
+	@Test
 	public void toStringBasics() {
 		JsonObject jo = new JsonObject();
 		assertEquals(jo.toString(), "{}");

@@ -4,6 +4,7 @@ import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
+import ilarkesto.core.json.JsonObject;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.oauth.OAuth;
 import ilarkesto.io.IO;
@@ -57,14 +58,16 @@ public class Facebook {
 		oauthService = OAuth.createService(FacebookApi.class, oauthApiKey, callbackUri);
 	}
 
-	public String loadMe(String oauthAccessToken) {
-		return OAuth.loadUrlAsString(oauthService, new LoginData(oauthAccessToken, null),
+	public Person loadMe(String oauthAccessToken) {
+		JsonObject json = OAuth.loadUrlAsJson(oauthService, new LoginData(oauthAccessToken, null),
 			"https://graph.facebook.com/me");
+		return new Person(json);
 	}
 
-	public String loadMeFeed(String oauthAccessToken) {
-		return OAuth.loadUrlAsString(oauthService, new LoginData(oauthAccessToken, null),
+	public Feed loadMeFeed(String oauthAccessToken) {
+		JsonObject json = OAuth.loadUrlAsJson(oauthService, new LoginData(oauthAccessToken, null),
 			"https://graph.facebook.com/me/feed");
+		return new Feed(json);
 	}
 
 	public String createAccessToken(String code) {

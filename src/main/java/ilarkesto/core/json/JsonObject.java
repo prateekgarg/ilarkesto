@@ -1,6 +1,8 @@
 package ilarkesto.core.json;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,10 @@ public class JsonObject {
 		return elements.get(name);
 	}
 
+	public boolean contains(String name) {
+		return elements.containsKey(name);
+	}
+
 	public String getString(String name) {
 		return (String) get(name);
 	}
@@ -56,6 +62,16 @@ public class JsonObject {
 
 	public Long getLong(String name) {
 		return (Long) get(name);
+	}
+
+	public Date getDate(String name, DateFormat format) {
+		String s = getString(name);
+		if (s == null) return null;
+		try {
+			return format.parse(s);
+		} catch (java.text.ParseException ex) {
+			throw new RuntimeException("Parsing date with format \"" + format.toString() + "\" failed: " + s, ex);
+		}
 	}
 
 	public List<String> getArrayOfStrings(String name) {
@@ -165,7 +181,7 @@ public class JsonObject {
 			if (valueEndIdx < 0) throw new ParseException("Unclosed element string value", json, idx);
 			String value = json.substring(idx, valueEndIdx);
 			idx = valueEndIdx + 1;
-			return value;
+			return Json.parseString(value);
 		} else if (json.charAt(idx) == '{') {
 			JsonObject value = new JsonObject(json, idx);
 			idx = value.idx;

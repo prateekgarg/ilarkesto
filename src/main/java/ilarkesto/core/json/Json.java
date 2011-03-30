@@ -35,6 +35,18 @@ public class Json {
 		s = s.replace("\t", "\\\t");
 		s = s.replace("\r", "\\\r");
 		s = s.replace("\n", "\\\n");
+		s = s.replace("/", "\\/");
+		s = s.replace("\\", "\\\\");
+		return s;
+	}
+
+	public static String parseString(String s) {
+		s = s.replace("\\\\", "\\");
+		s = s.replace("\\\"", "\"");
+		s = s.replace("\\t", "\t");
+		s = s.replace("\\r", "\r");
+		s = s.replace("\\n", "\n");
+		s = s.replace("\\/", "/");
 		return s;
 	}
 
