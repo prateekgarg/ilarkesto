@@ -16,19 +16,18 @@ public class Facebook {
 
 	public static void main(String[] args) {
 
-		Facebook facebook = new Facebook("192988147405004", new LoginData("2a66c6df5ed07c971c8bc474949b69f3",
-				"2b8df464b6d63511b087f6451876d7ea"));
+		Facebook facebook = new Facebook("192988147405004", new LoginData("2a66c6df5ed07c971c8bc474949b69f3", ""));
 
 		String url = facebook.getUserOAuthUrl("https://servisto.de/organizanto/oauth?user=123",
 			Utl.toList(PERMISSION_READ_STREAM, PERMISSION_USER_ACTIVITIES, PERMISSION_OFFLINE_ACCESS));
 		System.out.println(url);
 
-		// String code = "4ab947cef8509ebfa0070b4d-1379241478|UmYaQlG6q2UnMqLbwTbOwTKoSGk";
+		// String code = "";
 		// LoginData accessToken = facebook.createAccessToken(code);
 		// System.out.println(accessToken.getLogin());
 		// System.out.println(accessToken.getPassword());
 
-		String accessToken = "192988147405004|4ab947cef8509ebfa0070b4d-1379241478|HQF9eHDUrPz-N6j1tj2FOAnd2Pc";
+		String accessToken = "";
 		facebook.loadFeed(accessToken);
 	}
 
