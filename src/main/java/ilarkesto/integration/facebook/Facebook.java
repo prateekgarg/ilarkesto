@@ -6,8 +6,11 @@ import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.oauth.OAuth;
+import ilarkesto.io.IO;
 
+import java.io.File;
 import java.util.Collection;
+import java.util.Properties;
 
 import org.scribe.builder.api.FacebookApi;
 import org.scribe.oauth.OAuthService;
@@ -15,11 +18,14 @@ import org.scribe.oauth.OAuthService;
 public class Facebook {
 
 	public static void main(String[] args) {
+		Properties properties = IO.loadProperties(new File("../organizanto/runtimedata/config.properties"), IO.UTF_8);
+		String apisecret = properties.getProperty("facebook.oauth.apisecret");
+		String callbackUri = "https://servisto.de/organizanto/facebookcallback";
 
-		Facebook facebook = new Facebook("192988147405004", new LoginData("2a66c6df5ed07c971c8bc474949b69f3", ""));
+		Facebook facebook = new Facebook(new LoginData("2a66c6df5ed07c971c8bc474949b69f3", apisecret), callbackUri);
 
-		String url = facebook.getUserOAuthUrl("https://servisto.de/organizanto/oauth?user=123",
-			Utl.toList(PERMISSION_READ_STREAM, PERMISSION_USER_ACTIVITIES, PERMISSION_OFFLINE_ACCESS));
+		String url = facebook.getUserOAuthUrl(Utl.toList(PERMISSION_READ_STREAM, PERMISSION_USER_ACTIVITIES,
+			PERMISSION_OFFLINE_ACCESS));
 		System.out.println(url);
 
 		// String code = "";
@@ -27,7 +33,8 @@ public class Facebook {
 		// System.out.println(accessToken.getLogin());
 		// System.out.println(accessToken.getPassword());
 
-		String accessToken = "";
+		String accessToken = facebook.createAccessToken("");
+		System.out.println(accessToken);
 		facebook.loadFeed(accessToken);
 	}
 
@@ -38,11 +45,13 @@ public class Facebook {
 	private static Log log = Log.get(Facebook.class);
 
 	private OAuthService oauthService;
-	private String applicationId;
+	private String callbackUri;
+	private LoginDataProvider oauthApiKey;
 
-	public Facebook(String applicationId, LoginDataProvider oauthApiKey) {
-		this.applicationId = applicationId;
-		oauthService = OAuth.createService(FacebookApi.class, oauthApiKey, "https://servisto.de/organizanto/oauth");
+	public Facebook(LoginDataProvider oauthApiKey, String callbackUri) {
+		this.oauthApiKey = oauthApiKey;
+		this.callbackUri = callbackUri;
+		oauthService = OAuth.createService(FacebookApi.class, oauthApiKey, callbackUri);
 	}
 
 	public void loadFeed(String oauthAccessToken) {
@@ -55,13 +64,17 @@ public class Facebook {
 		return OAuth.createAccessToken(oauthService, null, code).getLogin();
 	}
 
-	public String getUserOAuthUrl(String redirectUri, Collection<String> permissions) {
+	public String getUserOAuthUrl(Collection<String> permissions) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("https://www.facebook.com/dialog/oauth");
-		sb.append("?client_id=").append(applicationId);
+		sb.append("?client_id=").append(oauthApiKey.getLoginData().getLogin());
 		if (!permissions.isEmpty()) sb.append("&scope=").append(Str.concat(permissions, ","));
-		sb.append("&redirect_uri=").append(Str.encodeUrlParameter(redirectUri));
+		sb.append("&redirect_uri=").append(Str.encodeUrlParameter(callbackUri));
 		return sb.toString();
+	}
+
+	public String getCallbackUri() {
+		return callbackUri;
 	}
 
 }
