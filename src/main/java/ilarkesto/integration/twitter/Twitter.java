@@ -34,14 +34,15 @@ public class Twitter {
 	static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.US);
 	private static final Log log = Log.get(Twitter.class);
 
+	private LoginDataProvider oauthApiKey;
 	private OAuthService oauthService;
 
-	public Twitter(LoginData oauthApiKey) {
-		oauthService = OAuth.createService(TwitterApi.class, oauthApiKey, null);
+	public Twitter(LoginDataProvider oauthApiKey) {
+		this.oauthApiKey = oauthApiKey;
 	}
 
 	public synchronized Document loadUrlAsXml(LoginDataProvider oauthAccessToken, String url) {
-		Response response = OAuth.loadUrl(oauthService, oauthAccessToken, url);
+		Response response = OAuth.loadUrl(getOauthService(), oauthAccessToken, url);
 		Document document = JDom.createDocumentFromStream(response.getStream());
 		return document;
 	}
@@ -82,7 +83,7 @@ public class Twitter {
 		return ret;
 	}
 
-	public void destroyOlderStatuses(LoginData oauthAccessToken, int maxAgeInDays) {
+	public void destroyOlderStatuses(LoginDataProvider oauthAccessToken, int maxAgeInDays) {
 		log.debug("Destroying statuses older then", maxAgeInDays, "days for", oauthAccessToken.getLoginData()
 				.getLogin());
 		for (TwitterStatus status : userTimeline(oauthAccessToken, null)) {
@@ -129,6 +130,11 @@ public class Twitter {
 			throw new RuntimeException("Destroying twitter status <" + status + "> failed. HTTP Code " + rc + ":\n"
 					+ response);
 		log.info("Deleted status:", status);
+	}
+
+	public OAuthService getOauthService() {
+		if (oauthService == null) oauthService = OAuth.createService(TwitterApi.class, oauthApiKey, null);
+		return oauthService;
 	}
 
 }

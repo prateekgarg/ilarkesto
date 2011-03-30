@@ -55,23 +55,22 @@ public class Facebook {
 	public Facebook(LoginDataProvider oauthApiKey, String callbackUri) {
 		this.oauthApiKey = oauthApiKey;
 		this.callbackUri = callbackUri;
-		oauthService = OAuth.createService(FacebookApi.class, oauthApiKey, callbackUri);
 	}
 
 	public Person loadMe(String oauthAccessToken) {
-		JsonObject json = OAuth.loadUrlAsJson(oauthService, new LoginData(oauthAccessToken, null),
+		JsonObject json = OAuth.loadUrlAsJson(getOauthService(), new LoginData(oauthAccessToken, null),
 			"https://graph.facebook.com/me");
 		return new Person(json);
 	}
 
 	public Feed loadMeFeed(String oauthAccessToken) {
-		JsonObject json = OAuth.loadUrlAsJson(oauthService, new LoginData(oauthAccessToken, null),
+		JsonObject json = OAuth.loadUrlAsJson(getOauthService(), new LoginData(oauthAccessToken, null),
 			"https://graph.facebook.com/me/feed");
 		return new Feed(json);
 	}
 
 	public String createAccessToken(String code) {
-		return OAuth.createAccessToken(oauthService, null, code).getLogin();
+		return OAuth.createAccessToken(getOauthService(), null, code).getLogin();
 	}
 
 	public String getUserOAuthUrl(Collection<String> permissions) {
@@ -85,6 +84,11 @@ public class Facebook {
 
 	public String getCallbackUri() {
 		return callbackUri;
+	}
+
+	private OAuthService getOauthService() {
+		if (oauthService == null) oauthService = OAuth.createService(FacebookApi.class, oauthApiKey, callbackUri);
+		return oauthService;
 	}
 
 }
