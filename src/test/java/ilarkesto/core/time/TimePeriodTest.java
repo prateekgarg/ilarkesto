@@ -21,6 +21,16 @@ import org.testng.annotations.Test;
 public class TimePeriodTest extends ATest {
 
 	@Test
+	public void toShortestString() {
+		assertEquals(new TimePeriod(Tm.SECOND * 20).toShortestString("en"), "20 seconds");
+		assertEquals(new TimePeriod(Tm.MINUTE).toShortestString("en"), "1 minute");
+		assertEquals(new TimePeriod(Tm.HOUR * 3).toShortestString("en"), "3 hours");
+		assertEquals(new TimePeriod(Tm.DAY * 7).toShortestString("en"), "7 days");
+		assertEquals(new TimePeriod(Tm.WEEK * 2).toShortestString("en"), "2 weeks");
+		assertEquals(new TimePeriod(Tm.MONTH * 11).toShortestString("en"), "11 months");
+	}
+
+	@Test
 	public void constructorMillis() {
 		assertEquals(new TimePeriod("1").toMillis(), 1);
 	}
