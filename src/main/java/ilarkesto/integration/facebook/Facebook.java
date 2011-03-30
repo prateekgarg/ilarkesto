@@ -15,6 +15,9 @@ import java.util.Properties;
 import org.scribe.builder.api.FacebookApi;
 import org.scribe.oauth.OAuthService;
 
+/**
+ * https://developers.facebook.com/docs/reference/api/
+ */
 public class Facebook {
 
 	public static void main(String[] args) {
@@ -33,9 +36,9 @@ public class Facebook {
 		// System.out.println(accessToken.getLogin());
 		// System.out.println(accessToken.getPassword());
 
-		String accessToken = facebook.createAccessToken("");
+		String accessToken = properties.getProperty("facebook.oauth.accesstoken");
 		System.out.println(accessToken);
-		facebook.loadFeed(accessToken);
+		System.out.println(facebook.loadMe(accessToken));
 	}
 
 	public static final String PERMISSION_READ_STREAM = "read_stream";
@@ -54,10 +57,14 @@ public class Facebook {
 		oauthService = OAuth.createService(FacebookApi.class, oauthApiKey, callbackUri);
 	}
 
-	public void loadFeed(String oauthAccessToken) {
-		String ret = OAuth.loadUrlAsString(oauthService, new LoginData(oauthAccessToken, null),
+	public String loadMe(String oauthAccessToken) {
+		return OAuth.loadUrlAsString(oauthService, new LoginData(oauthAccessToken, null),
+			"https://graph.facebook.com/me");
+	}
+
+	public String loadMeFeed(String oauthAccessToken) {
+		return OAuth.loadUrlAsString(oauthService, new LoginData(oauthAccessToken, null),
 			"https://graph.facebook.com/me/feed");
-		System.out.println(ret);
 	}
 
 	public String createAccessToken(String code) {
