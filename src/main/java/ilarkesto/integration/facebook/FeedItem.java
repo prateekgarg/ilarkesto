@@ -24,30 +24,34 @@ public class FeedItem extends Item {
 		String caption = getCaption();
 		String name = getName();
 		String description = getDescription();
+		String link = getBestLink();
 
 		if (!Str.isBlank(message)) {
 			sb.append(message);
 		}
 
-		if (!Str.isBlank(caption) || !Str.isBlank(name) || !Str.isBlank(description)) sb.append("\n\n");
+		if (!Str.isBlank(caption) || !Str.isBlank(name) || !Str.isBlank(description) || !Str.isBlank(link)) {
+			sb.append("\n\n [ ");
 
-		if (!Str.isBlank(caption)) {
-			sb.append(caption).append(": ");
-		}
+			if (!Str.isBlank(caption)) {
+				sb.append(caption).append(": ");
+			}
 
-		if (!Str.isBlank(name)) {
-			sb.append(name);
-		}
+			if (!Str.isBlank(name)) {
+				sb.append(name);
+			}
 
-		if (!Str.isBlank(description)) {
-			if (!Str.isBlank(name)) sb.append("\n");
-			sb.append(description);
-		}
+			if (!Str.isBlank(description)) {
+				if (!Str.isBlank(name)) sb.append("\n");
+				sb.append(description);
+			}
 
-		String link = getBestLink();
-		if (!Str.isBlank(link)) {
-			sb.append("\n\n");
-			sb.append(link);
+			if (!Str.isBlank(link)) {
+				if (!Str.isBlank(caption) || !Str.isBlank(name) || !Str.isBlank(description)) sb.append("\n\n");
+				sb.append(link);
+			}
+
+			sb.append(" ]");
 		}
 
 		return sb.toString();
