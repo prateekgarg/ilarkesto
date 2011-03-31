@@ -43,13 +43,12 @@ public class FeedItem extends Item {
 			}
 
 			if (!Str.isBlank(description)) {
-				if (!Str.isBlank(name)) sb.append("\n");
+				if (!Str.isBlank(name)) sb.append(" | ");
 				sb.append(description);
 			}
 
 			if (!Str.isBlank(link)) {
-				if (!Str.isBlank(caption) || !Str.isBlank(name) || !Str.isBlank(description)) sb.append("\n");
-				sb.append(" => ").append(link).append(" <=");
+				sb.append(" => ").append(link);
 			}
 
 			sb.append(" ]");
