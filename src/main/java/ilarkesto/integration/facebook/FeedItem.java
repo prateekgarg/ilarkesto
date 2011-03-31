@@ -31,7 +31,8 @@ public class FeedItem extends Item {
 		}
 
 		if (!Str.isBlank(caption) || !Str.isBlank(name) || !Str.isBlank(description) || !Str.isBlank(link)) {
-			sb.append("\n\n [ ");
+			if (!Str.isBlank(message)) sb.append("\n\n ");
+			sb.append("[ ");
 
 			if (!Str.isBlank(caption)) {
 				sb.append(caption).append(": ");
