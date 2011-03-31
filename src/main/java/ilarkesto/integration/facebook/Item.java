@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 
 public class Item {
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZZZZZ");
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
 
 	protected JsonObject data;
 

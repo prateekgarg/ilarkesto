@@ -3,7 +3,6 @@ package ilarkesto.integration.facebook;
 import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Str;
-import ilarkesto.base.Utl;
 import ilarkesto.core.json.JsonObject;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.oauth.OAuth;
@@ -28,9 +27,10 @@ public class Facebook {
 
 		Facebook facebook = new Facebook(new LoginData("2a66c6df5ed07c971c8bc474949b69f3", apisecret), callbackUri);
 
-		String url = facebook.getUserOAuthUrl(Utl.toList(PERMISSION_READ_STREAM, PERMISSION_USER_ACTIVITIES,
-			PERMISSION_OFFLINE_ACCESS));
-		System.out.println(url);
+		// String url = facebook.getUserOAuthUrl(Utl.toList(PERMISSION_READ_STREAM,
+		// PERMISSION_USER_ACTIVITIES,
+		// PERMISSION_OFFLINE_ACCESS));
+		// System.out.println(url);
 
 		// String code = "";
 		// LoginData accessToken = facebook.createAccessToken(code);
@@ -38,7 +38,7 @@ public class Facebook {
 		// System.out.println(accessToken.getPassword());
 
 		String accessToken = properties.getProperty("facebook.oauth.accesstoken");
-		System.out.println(accessToken);
+
 		System.out.println(facebook.loadMe(accessToken));
 	}
 
@@ -60,12 +60,14 @@ public class Facebook {
 	public Person loadMe(String oauthAccessToken) {
 		JsonObject json = OAuth.loadUrlAsJson(getOauthService(), new LoginData(oauthAccessToken, null),
 			"https://graph.facebook.com/me");
+		log.info("Loaded me:", json);
 		return new Person(json);
 	}
 
 	public Feed loadMeFeed(String oauthAccessToken) {
 		JsonObject json = OAuth.loadUrlAsJson(getOauthService(), new LoginData(oauthAccessToken, null),
 			"https://graph.facebook.com/me/feed");
+		log.info("Loaded me/feed:", json);
 		return new Feed(json);
 	}
 

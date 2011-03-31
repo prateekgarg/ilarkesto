@@ -11,9 +11,16 @@ public class Link extends FeedItem {
 
 	@Override
 	public String getBestText() {
+		StringBuilder sb = new StringBuilder();
 		String description = getDescription();
-		if (!Str.isBlank(description)) return description;
-		return getName();
+		if (!Str.isBlank(description)) {
+			sb.append(description);
+		} else {
+			sb.append(getName());
+		}
+		sb.append(" -> ");
+		sb.append(getBestLink());
+		return sb.toString();
 	}
 
 	@Override
