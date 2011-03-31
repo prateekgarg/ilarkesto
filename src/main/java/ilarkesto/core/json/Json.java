@@ -41,6 +41,13 @@ public class Json {
 	}
 
 	public static String parseString(String s) {
+		int idx = s.indexOf("\\u");
+		while (idx >= 0) {
+			String code = s.substring(idx + 2, idx + 6);
+			char ch = (char) Integer.parseInt(code, 16);
+			s = s.replace("\\u" + code, String.valueOf(ch));
+			idx = s.indexOf("\\u", idx);
+		}
 		s = s.replace("\\\\", "\\");
 		s = s.replace("\\\"", "\"");
 		s = s.replace("\\t", "\t");
