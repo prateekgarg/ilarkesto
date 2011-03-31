@@ -23,13 +23,13 @@ public class Item {
 		return data.getObject(name);
 	}
 
-	public Item getItem(String name) {
+	public final Item getItem(String name) {
 		JsonObject jsonObject = data.getObject(name);
 		if (jsonObject == null) return null;
 		return new Item(jsonObject);
 	}
 
-	public String getId() {
+	public final String getId() {
 		return data.getString("id");
 	}
 

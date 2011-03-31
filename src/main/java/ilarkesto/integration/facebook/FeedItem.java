@@ -1,5 +1,6 @@
 package ilarkesto.integration.facebook;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.json.JsonObject;
 
 import java.util.Date;
@@ -11,32 +12,98 @@ public class FeedItem extends Item {
 	}
 
 	public String getBestImage() {
-		return null;
+		String picture = getPicture();
+		if (!Str.isBlank(picture)) return picture;
+		return getIcon();
 	}
 
 	public String getBestText() {
-		return null;
+		StringBuilder sb = new StringBuilder();
+
+		String message = getMessage();
+		String caption = getCaption();
+		String name = getName();
+		String description = getDescription();
+
+		if (!Str.isBlank(message)) {
+			sb.append(message);
+		}
+
+		if (!Str.isBlank(caption) || !Str.isBlank(name) || !Str.isBlank(description)) sb.append("\n\n");
+
+		if (!Str.isBlank(caption)) {
+			sb.append(caption).append(": ");
+		}
+
+		if (!Str.isBlank(name)) {
+			sb.append(name);
+		}
+
+		if (!Str.isBlank(description)) {
+			if (!Str.isBlank(name)) sb.append("\n");
+			sb.append(description);
+		}
+
+		String link = getBestLink();
+		if (!Str.isBlank(link)) {
+			sb.append("\n\n");
+			sb.append(link);
+		}
+
+		return sb.toString();
 	}
 
 	public String getBestLink() {
-		return null;
+		return getLink();
 	}
 
-	public Person getFrom() {
+	public final String getCaption() {
+		return data.getString("caption");
+	}
+
+	public final String getName() {
+		return data.getString("name");
+	}
+
+	public final String getDescription() {
+		return data.getString("description");
+	}
+
+	public final String getIcon() {
+		return data.getString("icon");
+	}
+
+	public final String getLink() {
+		return data.getString("link");
+	}
+
+	public final String getPicture() {
+		return data.getString("picture");
+	}
+
+	public final String getMessage() {
+		return data.getString("message");
+	}
+
+	public final Person getFrom() {
 		if (!data.contains("from")) return null;
 		return new Person(data.getObject("from"));
 	}
 
-	public Date getCreatedTime() {
+	public final Date getCreatedTime() {
 		return data.getDate("created_time", DATE_FORMAT);
 	}
 
-	public Date getUpdatedTime() {
+	public final Date getUpdatedTime() {
 		return data.getDate("updated_time", DATE_FORMAT);
 	}
 
-	public String getType() {
-		return data.getString("status");
+	public final String getObjectId() {
+		return data.getString("object_id");
+	}
+
+	public final String getType() {
+		return data.getString("type");
 	}
 
 }
