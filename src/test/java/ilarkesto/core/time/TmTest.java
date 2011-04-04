@@ -35,6 +35,13 @@ public class TmTest extends ATest {
 	}
 
 	@Test
+	public void getDaysBetweenDates() {
+		assertEquals(Tm.getDaysBetweenDates(Tm.createDate(2011, 3, 1), Tm.createDate(2011, 3, 2)), 1);
+		assertEquals(Tm.getDaysBetweenDates(Tm.createDate(2011, 3, 1), Tm.createDate(2011, 3, 1)), 0);
+		assertEquals(Tm.getDaysBetweenDates(Tm.createDate(2011, 3, 1), Tm.createDate(2011, 3, 30)), 29);
+	}
+
+	@Test
 	public void getWeekday() {
 		assertEquals(Tm.getWeekday(birthday), Calendar.FRIDAY);
 		assertEquals(Tm.getWeekday(armageddon), Calendar.FRIDAY);
@@ -79,7 +86,7 @@ public class TmTest extends ATest {
 		assertEquals(cal.get(GregorianCalendar.YEAR), 2066);
 		assertEquals(cal.get(GregorianCalendar.MONTH), 9);
 		assertEquals(cal.get(GregorianCalendar.DAY_OF_MONTH), 23);
-		assertEquals(cal.get(GregorianCalendar.HOUR_OF_DAY), 0);
+		assertEquals(cal.get(GregorianCalendar.HOUR_OF_DAY), 12);
 		assertEquals(cal.get(GregorianCalendar.MINUTE), 0);
 	}
 
@@ -90,7 +97,7 @@ public class TmTest extends ATest {
 		assertEquals(cal.get(GregorianCalendar.YEAR), 1979);
 		assertEquals(cal.get(GregorianCalendar.MONTH), 7);
 		assertEquals(cal.get(GregorianCalendar.DAY_OF_MONTH), 3);
-		assertEquals(cal.get(GregorianCalendar.HOUR_OF_DAY), 0);
+		assertEquals(cal.get(GregorianCalendar.HOUR_OF_DAY), 12);
 		assertEquals(cal.get(GregorianCalendar.MINUTE), 0);
 	}
 

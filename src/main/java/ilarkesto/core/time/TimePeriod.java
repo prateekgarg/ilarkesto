@@ -206,23 +206,23 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable {
 	// --- static ---
 
 	public static TimePeriod seconds(int seconds) {
-		return new TimePeriod(seconds * 1000);
+		return new TimePeriod(seconds * Tm.SECOND);
 	}
 
 	public static TimePeriod minutes(int minutes) {
-		return seconds(minutes * 60);
+		return new TimePeriod(minutes * Tm.MINUTE);
 	}
 
 	public static TimePeriod hours(int hours) {
-		return minutes(hours * 60);
+		return new TimePeriod(hours * Tm.HOUR);
 	}
 
 	public static TimePeriod days(int days) {
-		return hours(days * 24);
+		return new TimePeriod(days * Tm.DAY);
 	}
 
 	public static TimePeriod weeks(int weeks) {
-		return days(weeks * 7);
+		return new TimePeriod(weeks * Tm.WEEK);
 	}
 
 }

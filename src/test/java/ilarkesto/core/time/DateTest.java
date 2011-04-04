@@ -25,6 +25,14 @@ public class DateTest extends ATest {
 	private static final Date BIRTHDAY = new Date(1979, 8, 3);
 
 	@Test
+	public void getPeriodTo() {
+		assertEquals(new Date(2011, 3, 1).getPeriodTo(new Date(2011, 3, 2)), TimePeriod.days(1));
+		assertEquals(new Date(2011, 3, 1).getPeriodTo(new Date(2011, 3, 1)), TimePeriod.days(0));
+		assertEquals(new Date(2011, 3, 1).getPeriodTo(new Date(2011, 3, 20)), TimePeriod.days(19));
+		assertEquals(new Date(2011, 3, 1).getPeriodTo(new Date(2011, 3, 30)), TimePeriod.days(29));
+	}
+
+	@Test
 	public void getWeekday() {
 		assertEquals(BIRTHDAY.getWeekday(), Weekday.FRIDAY);
 	}
@@ -39,6 +47,8 @@ public class DateTest extends ATest {
 
 		assertEquals(new Date(2011, 2, 28).addDays(1), new Date(2011, 3, 1));
 		assertEquals(new Date(2008, 2, 28).addDays(1), new Date(2008, 2, 29));
+
+		assertEquals(new Date(2011, 3, 1).addDays(28), new Date(2011, 3, 29));
 	}
 
 	@Test

@@ -40,12 +40,12 @@ public class Tm {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static Date createDate(int year, int month, int day, int min, int sec) {
-		return new Date(year - 1900, month - 1, day, min, sec);
+	public static Date createDate(int year, int month, int day, int hour, int min, int sec) {
+		return new Date(year - 1900, month - 1, day, hour, min, sec);
 	}
 
 	public static Date createDate(int year, int month, int day) {
-		return createDate(year, month, day, 0, 0);
+		return createDate(year, month, day, 12, 0, 0);
 	}
 
 	public static Date addDays(Date date, int days) {
@@ -56,6 +56,41 @@ public class Tm {
 	public static Date addDaysToDate(Date date, int days) {
 		date.setDate(date.getDate() + days);
 		return date;
+	}
+
+	public static int getDaysBetweenDates(Date start, Date finish) {
+		start = copyDate(start);
+		resetTime(start);
+		finish = copyDate(finish);
+		resetTime(finish);
+
+		long aTime = start.getTime();
+		long bTime = finish.getTime();
+
+		long adjust = 60 * 60 * 1000;
+		adjust = (bTime > aTime) ? adjust : -adjust;
+
+		return (int) ((bTime - aTime + adjust) / (24 * 60 * 60 * 1000));
+	}
+
+	public static Date copyDate(Date date) {
+		if (date == null) { return null; }
+		Date newDate = new Date();
+		newDate.setTime(date.getTime());
+		return newDate;
+	}
+
+	@SuppressWarnings("deprecation")
+	private static void resetTime(Date date) {
+		long msec = date.getTime();
+		msec = (msec / 1000) * 1000;
+		date.setTime(msec);
+
+		// Daylight savings time occurs at midnight in some time zones, so we reset
+		// the time to noon instead.
+		date.setHours(12);
+		date.setMinutes(0);
+		date.setSeconds(0);
 	}
 
 	public static Date createDate(long millis) {

@@ -89,7 +89,7 @@ public class Date implements Comparable<Date>, Serializable {
 	}
 
 	public TimePeriod getPeriodTo(Date other) {
-		return new TimePeriod(other.toMillis() - toMillis());
+		return new TimePeriod(Tm.DAY * Tm.getDaysBetweenDates(toJavaDate(), other.toJavaDate()));
 	}
 
 	public Weekday getWeekday() {
@@ -166,6 +166,14 @@ public class Date implements Comparable<Date>, Serializable {
 
 	public final java.util.Date toJavaDate() {
 		return Tm.createDate(year, month, day);
+	}
+
+	public final java.util.Date toJavaDate(Time time) {
+		return Tm.createDate(year, month, day, time.hour, time.minute, time.second);
+	}
+
+	public final long toMillis(Time time) {
+		return toJavaDate(time).getTime();
 	}
 
 	public final long toMillis() {
