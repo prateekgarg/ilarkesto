@@ -94,6 +94,15 @@ public class FeedItem extends Item {
 		return new Person(data.getObject("from"));
 	}
 
+	public final Person getTo() {
+		        if (!data.contains("to")) return null;
+		        return new Person(data.getObject("to"));
+	}
+
+	public final boolean isFromFeedOwner() {
+		return getTo() == null;
+	}
+
 	public final Date getCreatedTime() {
 		return data.getDate("created_time", DATE_FORMAT);
 	}
