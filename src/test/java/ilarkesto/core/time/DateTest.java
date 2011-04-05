@@ -25,6 +25,11 @@ public class DateTest extends ATest {
 	private static final Date BIRTHDAY = new Date(1979, 8, 3);
 
 	@Test
+	public void getWeek() {
+		assertEquals(new Date(2011, 4, 6).getWeek(), 14);
+	}
+
+	@Test
 	public void getPeriodTo() {
 		assertEquals(new Date(2011, 3, 1).getPeriodTo(new Date(2011, 3, 2)), TimePeriod.days(1));
 		assertEquals(new Date(2011, 3, 1).getPeriodTo(new Date(2011, 3, 1)), TimePeriod.days(0));

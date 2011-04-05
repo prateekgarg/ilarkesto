@@ -65,27 +65,7 @@ public class Date implements Comparable<Date>, Serializable {
 	// ---
 
 	public final int getWeek() {
-		java.util.Date jFirstJan = new Date(year, 1, 1).toJavaDate();
-		int jFirstJanWeekday = Tm.getWeekday(jFirstJan);
-		int firstMonday = jFirstJanWeekday < 1 ? 2 : (jFirstJanWeekday > 1 ? 9 - jFirstJanWeekday : 1);
-		TimePeriod firstMondayTillNow = new Date(year, 1, firstMonday).getPeriodTo(this);
-
-		int weeks = -1;
-		if (firstMonday == 1) {
-			weeks = firstMondayTillNow.toWeeks() + 1;
-		} else {
-			java.util.Date jFirstMondayDate = Tm.createDate(year, 1, firstMonday);
-			java.util.Date jThis = toJavaDate();
-			if (jThis.before(jFirstMondayDate)) {
-				weeks = 1;
-			} else if (jThis.after(jFirstMondayDate)) {
-				weeks = firstMondayTillNow.toWeeks() + (firstMondayTillNow.toDays() % 7 >= 0 ? 2 : 1);
-			} else {
-				weeks = 2;
-			}
-		}
-
-		return weeks;
+		return Tm.getWeek(toJavaDate());
 	}
 
 	public TimePeriod getPeriodTo(Date other) {

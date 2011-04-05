@@ -27,8 +27,36 @@ public class Tm {
 	public static final long MONTH = DAY * 30;
 	public static final long YEAR = MONTH * 12;
 
+	public static final int SUNDAY = 1;
+	public static final int MONDAY = 2;
+	public static final int TUESDAY = 3;
+	public static final int WEDNESDAY = 4;
+	public static final int THURSDAY = 5;
+	public static final int FRIDAY = 6;
+	public static final int SATURDAY = 7;
+
 	private static TmLocalizer tmLocalizer;
 	private static TmLocalizerDe tmLocalizerDe;
+
+	public static Date getDateOfFirstWeek(int year) {
+		Date january4th = createDate(year, 1, 4);
+		int weekday = getWeekday(january4th);
+		if (weekday == MONDAY) return january4th;
+		if (weekday == SUNDAY) return addDaysToDate(january4th, -6);
+		return addDaysToDate(january4th, 2 - weekday);
+	}
+
+	public static int getWeek(Date date) {
+		int year = getYear(date);
+		if (getMonth(date) == 12 && getDay(date) > 28) {
+			Date dateOfFirstWeek = getDateOfFirstWeek(year + 1);
+			if (getYear(dateOfFirstWeek) == year) return 1;
+		}
+
+		Date dateOfFirstWeek = getDateOfFirstWeek(year);
+		int days = getDaysBetweenDates(dateOfFirstWeek, date);
+		return (days / 7) + 1;
+	}
 
 	public static TmLocalizer getLocalizer(String language) {
 		if (language.equals("de")) {
@@ -70,7 +98,7 @@ public class Tm {
 		long adjust = 60 * 60 * 1000;
 		adjust = (bTime > aTime) ? adjust : -adjust;
 
-		return (int) ((bTime - aTime + adjust) / (24 * 60 * 60 * 1000));
+		return (int) ((bTime - aTime + adjust) / DAY);
 	}
 
 	public static Date copyDate(Date date) {

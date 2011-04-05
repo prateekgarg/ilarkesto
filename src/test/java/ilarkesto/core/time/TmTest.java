@@ -35,6 +35,24 @@ public class TmTest extends ATest {
 	}
 
 	@Test
+	public void getDateOfFirstWeek() {
+		assertEquals(Tm.getDateOfFirstWeek(2005), Tm.createDate(2005, 1, 3));
+		assertEquals(Tm.getDateOfFirstWeek(2006), Tm.createDate(2006, 1, 2));
+		assertEquals(Tm.getDateOfFirstWeek(2007), Tm.createDate(2007, 1, 1));
+		assertEquals(Tm.getDateOfFirstWeek(2008), Tm.createDate(2007, 12, 31));
+		assertEquals(Tm.getDateOfFirstWeek(2009), Tm.createDate(2008, 12, 29));
+		assertEquals(Tm.getDateOfFirstWeek(2010), Tm.createDate(2010, 1, 4));
+		assertEquals(Tm.getDateOfFirstWeek(2011), Tm.createDate(2011, 1, 3));
+		assertEquals(Tm.getDateOfFirstWeek(2012), Tm.createDate(2012, 1, 2));
+	}
+
+	@Test
+	public void getWeek() {
+		assertEquals(Tm.getWeek(Tm.createDate(2011, 4, 6)), 14);
+		assertEquals(Tm.getWeek(Tm.createDate(2007, 12, 31)), 1);
+	}
+
+	@Test
 	public void getDaysBetweenDates() {
 		assertEquals(Tm.getDaysBetweenDates(Tm.createDate(2011, 3, 1), Tm.createDate(2011, 3, 2)), 1);
 		assertEquals(Tm.getDaysBetweenDates(Tm.createDate(2011, 3, 1), Tm.createDate(2011, 3, 1)), 0);
