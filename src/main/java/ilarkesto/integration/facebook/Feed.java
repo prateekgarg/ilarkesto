@@ -28,7 +28,8 @@ public class Feed extends Item {
 		if ("status".equals(type)) return new Status(json);
 		if ("link".equals(type)) return new Link(json);
 		if ("photo".equals(type)) return new Photo(json);
-		if (type != null) log.warn("Unsupported feed item:", json);
+		if ("video".equals(type)) return new Video(json);
+		if (type != null) log.warn("Unsupported feed item:", type, json);
 		return new FeedItem(json);
 	}
 

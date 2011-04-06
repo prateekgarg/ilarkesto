@@ -10,40 +10,10 @@ public class Photo extends FeedItem {
 	}
 
 	@Override
-	public String getBestText() {
-		return getName();
-	}
-
-	@Override
-	public String getBestImage() {
-		String picture = getPicture();
-		if (!Str.isBlank(picture)) return picture;
-		return getIcon();
-	}
-
-	@Override
 	public String getBestLink() {
+		String link = getLink();
+		if (!Str.isBlank(link)) return link;
 		return getBestImage();
-	}
-
-	public String getPicture() {
-		return data.getString("picture");
-	}
-
-	public String getLink() {
-		return data.getString("link");
-	}
-
-	public String getName() {
-		return data.getString("name");
-	}
-
-	public String getIcon() {
-		return data.getString("icon");
-	}
-
-	public String getObjectId() {
-		return data.getString("object_id");
 	}
 
 }

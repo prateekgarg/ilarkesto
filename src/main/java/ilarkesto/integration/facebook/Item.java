@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 
 public class Item {
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZZZZZ");
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
 
 	protected JsonObject data;
 
@@ -23,13 +23,13 @@ public class Item {
 		return data.getObject(name);
 	}
 
-	public Item getItem(String name) {
+	public final Item getItem(String name) {
 		JsonObject jsonObject = data.getObject(name);
 		if (jsonObject == null) return null;
 		return new Item(jsonObject);
 	}
 
-	public String getId() {
+	public final String getId() {
 		return data.getString("id");
 	}
 

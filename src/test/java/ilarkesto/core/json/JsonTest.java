@@ -11,6 +11,7 @@ public class JsonTest extends ATest {
 	public void parseString() {
 		assertEquals(Json.parseString("\\t"), "\t");
 		assertEquals(Json.parseString("a \\n \\\\ \\/"), "a \n \\ /");
+		assertEquals(Json.parseString("\\u20ac"), "€");
 	}
 
 	@Test
