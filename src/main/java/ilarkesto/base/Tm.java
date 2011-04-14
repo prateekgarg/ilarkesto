@@ -54,6 +54,7 @@ public final class Tm extends ilarkesto.core.time.Tm {
 	public static final SimpleDateFormat TIME_SHORT_DE = new SimpleDateFormat("HH:mm");
 
 	public static final TimeZone TZ_BERLIN = TimeZone.getTimeZone("Europe/Berlin");
+	public static final TimeZone TZ_GMT = TimeZone.getTimeZone("GMT");
 
 	public static Date toUtc(Date date) {
 		return toUtc(date, TimeZone.getDefault());
