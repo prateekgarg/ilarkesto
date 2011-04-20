@@ -1,10 +1,10 @@
 package ilarkesto.integration.twitter;
 
 import ilarkesto.auth.LoginDataProvider;
-import ilarkesto.base.Tm;
 import ilarkesto.base.time.DateAndTime;
 
 import java.text.ParseException;
+import java.util.TimeZone;
 
 import org.jdom.Element;
 
@@ -24,9 +24,8 @@ public class TwitterStatus implements Comparable<TwitterStatus> {
 		this.login = login;
 		try {
 			String s = e.getChildText("created_at");
-			if (s.contains("+0000")) Tm.TZ_BERLIN.getOffset(System.currentTimeMillis());
 			createdAt = new DateAndTime(Twitter.DATE_TIME_FORMAT.parse(s));
-			createdAt = createdAt.addHours(Tm.TZ_BERLIN.getOffset(createdAt.toMillis()));
+			createdAt = createdAt.addHours(TimeZone.getDefault().getOffset(createdAt.toMillis()));
 		} catch (ParseException ex) {
 			throw new RuntimeException(ex);
 		}
