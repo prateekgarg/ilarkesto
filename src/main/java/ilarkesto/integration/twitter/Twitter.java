@@ -31,7 +31,7 @@ public class Twitter {
 		log.info(twitter.friendsTimeline(new LoginData("15586763-CP8HLDWt6OMzhwK8Ut6YiqhGL453YaVQi94clTqra", ""), 10));
 	}
 
-	static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy");
+	static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.US);
 	private static final Log log = Log.get(Twitter.class);
 
 	private LoginDataProvider oauthApiKey;
