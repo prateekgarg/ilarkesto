@@ -38,6 +38,13 @@ public class Tm {
 	private static TmLocalizer tmLocalizer;
 	private static TmLocalizerDe tmLocalizerDe;
 
+	public static Date getDateAndTime(Date date, long time) {
+		date = copyDate(date);
+		resetTime(date);
+		date.setTime(date.getTime() + time);
+		return date;
+	}
+
 	public static Date getDateOfFirstWeek(int year) {
 		Date january4th = createDate(year, 1, 4);
 		int weekday = getWeekday(january4th);

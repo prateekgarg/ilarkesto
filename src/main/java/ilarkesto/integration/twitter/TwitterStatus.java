@@ -4,6 +4,7 @@ import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.time.DateAndTime;
 
 import java.text.ParseException;
+import java.util.TimeZone;
 
 import org.jdom.Element;
 
@@ -22,7 +23,9 @@ public class TwitterStatus implements Comparable<TwitterStatus> {
 	public TwitterStatus(LoginDataProvider login, Element e) {
 		this.login = login;
 		try {
-			createdAt = new DateAndTime(Twitter.DATE_TIME_FORMAT.parse(e.getChildText("created_at")));
+			String s = e.getChildText("created_at");
+			createdAt = new DateAndTime(Twitter.DATE_TIME_FORMAT.parse(s));
+			createdAt = createdAt.addHours(TimeZone.getDefault().getOffset(createdAt.toMillis()));
 		} catch (ParseException ex) {
 			throw new RuntimeException(ex);
 		}

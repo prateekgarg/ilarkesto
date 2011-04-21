@@ -94,7 +94,7 @@ public class Time implements Comparable<Time>, Serializable {
 	}
 
 	public final java.util.Date getJavaDateOn(Date day) {
-		return Tm.createDate(day.toMillis() + toMillis());
+		return day.toJavaDate(this);
 	}
 
 	public final long toMillis() {
