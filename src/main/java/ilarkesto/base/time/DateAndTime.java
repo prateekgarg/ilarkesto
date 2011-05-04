@@ -98,9 +98,14 @@ public final class DateAndTime implements Comparable<DateAndTime> {
 	 * Assume instance as in UTC and convert to given time zone.
 	 */
 	public DateAndTime toTimezone(TimeZone timeZone) {
-		long millis = toMillis();
-		int offset = timeZone.getOffset(millis);
-		return new DateAndTime(millis + offset);
+		return new DateAndTime(Tm.toTimeZone(toJavaDate(), timeZone));
+	}
+
+	/**
+	 * Assume instance as in UTC and convert to the local time zone.
+	 */
+	public DateAndTime toLocalTimezone() {
+		return new DateAndTime(Tm.toLocalTime(toJavaDate()));
 	}
 
 	public DateAndTime addDays(int days) {

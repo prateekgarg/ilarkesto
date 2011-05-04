@@ -66,6 +66,16 @@ public final class Tm extends ilarkesto.core.time.Tm {
 		return new Date(millis - offset);
 	}
 
+	public static Date toTimeZone(Date date, TimeZone timeZone) {
+		long millis = date.getTime();
+		int offset = timeZone.getOffset(millis);
+		return new Date(millis + offset);
+	}
+
+	public static Date toLocalTime(Date date) {
+		return toTimeZone(date, TZ_GMT);
+	}
+
 	public static boolean isSameDay(Date day1, Date day2) {
 		return getDayBegin(day1).equals(getDayBegin(day2));
 	}

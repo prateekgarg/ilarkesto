@@ -104,7 +104,7 @@ public class TmTest extends ATest {
 		assertEquals(cal.get(GregorianCalendar.YEAR), 2066);
 		assertEquals(cal.get(GregorianCalendar.MONTH), 9);
 		assertEquals(cal.get(GregorianCalendar.DAY_OF_MONTH), 23);
-		assertEquals(cal.get(GregorianCalendar.HOUR_OF_DAY), 12);
+		assertEquals(cal.get(GregorianCalendar.HOUR_OF_DAY), 0);
 		assertEquals(cal.get(GregorianCalendar.MINUTE), 0);
 	}
 
@@ -115,7 +115,7 @@ public class TmTest extends ATest {
 		assertEquals(cal.get(GregorianCalendar.YEAR), 1979);
 		assertEquals(cal.get(GregorianCalendar.MONTH), 7);
 		assertEquals(cal.get(GregorianCalendar.DAY_OF_MONTH), 3);
-		assertEquals(cal.get(GregorianCalendar.HOUR_OF_DAY), 12);
+		assertEquals(cal.get(GregorianCalendar.HOUR_OF_DAY), 0);
 		assertEquals(cal.get(GregorianCalendar.MINUTE), 0);
 	}
 

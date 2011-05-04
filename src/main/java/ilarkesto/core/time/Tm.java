@@ -45,12 +45,22 @@ public class Tm {
 		return date;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static Date getDateOfFirstWeek(int year) {
-		Date january4th = createDate(year, 1, 4);
+		Date january4th = createDate(year, 1, 4, 12, 0, 0);
 		int weekday = getWeekday(january4th);
-		if (weekday == MONDAY) return january4th;
-		if (weekday == SUNDAY) return addDaysToDate(january4th, -6);
-		return addDaysToDate(january4th, 2 - weekday);
+		if (weekday == MONDAY) {
+			january4th.setHours(0);
+			return january4th;
+		}
+		if (weekday == SUNDAY) {
+			addDaysToDate(january4th, -6);
+			january4th.setHours(0);
+			return january4th;
+		}
+		addDaysToDate(january4th, 2 - weekday);
+		january4th.setHours(0);
+		return january4th;
 	}
 
 	public static int getWeek(Date date) {
@@ -80,17 +90,18 @@ public class Tm {
 	}
 
 	public static Date createDate(int year, int month, int day) {
-		return createDate(year, month, day, 12, 0, 0);
+		return createDate(year, month, day, 0, 0, 0);
 	}
 
 	public static Date addDays(Date date, int days) {
-		return addDaysToDate(new Date(date.getTime()), days);
+		date = new Date(date.getTime());
+		addDaysToDate(date, days);
+		return date;
 	}
 
 	@SuppressWarnings("deprecation")
-	public static Date addDaysToDate(Date date, int days) {
+	public static void addDaysToDate(Date date, int days) {
 		date.setDate(date.getDate() + days);
-		return date;
 	}
 
 	public static int getDaysBetweenDates(Date start, Date finish) {
