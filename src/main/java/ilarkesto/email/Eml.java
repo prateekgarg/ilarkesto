@@ -327,12 +327,12 @@ public class Eml {
 
 	public static String toString(Message message) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(getFromFormated(message));
-		sb.append(":");
 		try {
+			sb.append(getFromFormated(message));
+			sb.append(":");
 			sb.append(message.getSubject());
-		} catch (MessagingException ex) {
-			throw new RuntimeException(ex);
+		} catch (Throwable ex) {
+			message.toString();
 		}
 		return sb.toString();
 	}
