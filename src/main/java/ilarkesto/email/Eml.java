@@ -49,6 +49,7 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Header;
 import javax.mail.Message;
+import javax.mail.MessageRemovedException;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
@@ -288,6 +289,8 @@ public class Eml {
 		copyMessage(message, destination);
 		try {
 			message.setFlag(Flags.Flag.DELETED, true);
+		} catch (MessageRemovedException ex) {
+			// nop
 		} catch (MessagingException ex) {
 			throw new RuntimeException(ex);
 		}
