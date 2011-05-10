@@ -265,8 +265,9 @@ public class Str {
 	}
 
 	private static boolean isWrapperException(Throwable ex) {
-		if (ex.getClass().getName().equals(RuntimeException.class.getName())) return true;
-		if (ex.getClass().getName().equals("java.util.concurrent.ExecutionException")) return true;
+		if (getSimpleName(ex.getClass()).equals("RuntimeException")) return true;
+		if (getSimpleName(ex.getClass()).equals("ExecutionException")) return true;
+		if (getSimpleName(ex.getClass()).equals("UmbrellaException")) return true;
 		return false;
 	}
 
@@ -308,7 +309,8 @@ public class Str {
 			Throwable cause = ex.getCause();
 			String message = ex.getMessage();
 			if (cause != null && message != null && message.startsWith(cause.getClass().getName())) message = null;
-			while (isWrapperException(ex) && isBlank(message) && cause != null) {
+			while ((isWrapperException(ex) && isBlank(message) && cause != null)
+					|| getSimpleName(ex.getClass()).equals("UmbrellaException")) {
 				ex = cause;
 				cause = ex.getCause();
 				message = ex.getMessage();
@@ -319,8 +321,10 @@ public class Str {
 			} else {
 				sb.append("\nCaused by ");
 			}
-			sb.append(getSimpleName(ex.getClass()));
-			sb.append(": ");
+			if (!isWrapperException(ex)) {
+				sb.append(getSimpleName(ex.getClass()));
+				sb.append(": ");
+			}
 			sb.append(message);
 			ex = cause;
 		}
