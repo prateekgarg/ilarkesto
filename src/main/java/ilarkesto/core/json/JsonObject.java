@@ -93,8 +93,8 @@ public class JsonObject {
 	// --- formating ---
 
 	public String toFormatedString(int indentation) {
-		StringBuilder sb = new StringBuilder();
-		return sb.toString();
+		// TODO
+		return toString();
 	}
 
 	public String toFormatedString() {
