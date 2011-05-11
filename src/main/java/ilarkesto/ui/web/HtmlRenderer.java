@@ -891,6 +891,10 @@ public class HtmlRenderer {
 		}
 	}
 
+	public String getEncoding() {
+		return encoding;
+	}
+
 	public static final String VALIGN_TOP = "top";
 
 	public static final String ALIGN_RIGHT = "right";

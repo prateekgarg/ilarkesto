@@ -56,7 +56,7 @@ public class ApplicationStarter {
 			} catch (Throwable ex) {}
 			application.setArguments(arguments);
 			application.start();
-			LOG.info("Application started:", application);
+			LOG.info("Application started:", application.getApplicationName() + " " + application.getReleaseLabel());
 			LOG.info("********************************************************************************\n");
 			return application;
 		} catch (Throwable ex) {
