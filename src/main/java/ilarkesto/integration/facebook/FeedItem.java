@@ -95,8 +95,8 @@ public class FeedItem extends Item {
 	}
 
 	public final Person getTo() {
-		        if (!data.contains("to")) return null;
-		        return new Person(data.getObject("to"));
+		if (!data.contains("to")) return null;
+		return new Person(data.getObject("to"));
 	}
 
 	public final boolean isFromFeedOwner() {
@@ -117,6 +117,10 @@ public class FeedItem extends Item {
 
 	public final String getType() {
 		return data.getString("type");
+	}
+
+	public final boolean isTypePhoto() {
+		return "photo".equals(getType());
 	}
 
 }
