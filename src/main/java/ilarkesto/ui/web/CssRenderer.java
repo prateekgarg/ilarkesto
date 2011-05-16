@@ -290,6 +290,10 @@ public class CssRenderer {
 			return attr("text-align", value);
 		}
 
+		public Style textShadow(int xOff, int yOff, int blur, String color) {
+			return attr("text-shadow", xOff + "px " + yOff + "px " + blur + "px " + color);
+		}
+
 		public Style float_(String value) {
 			return attr("float", value);
 		}
