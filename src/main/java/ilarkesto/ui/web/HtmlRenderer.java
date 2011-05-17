@@ -572,17 +572,6 @@ public class HtmlRenderer {
 		return startTag(DIV, true);
 	}
 
-	public void startDIVwithHint(String clazz, String content) {
-		Tag tag = startDIV(clazz);
-		if (content == null) return;
-
-		String hintDivId = hintIdGenerator.generateId();
-		tag.setOnmouseover("showHint('" + hintDivId + "')").setOnmouseout("hideHint()");
-		startDIV("hint").setId(hintDivId).setStyle("display: none;");
-		text(content);
-		endDIV();
-	}
-
 	public void endDIV() {
 		endTag(DIV);
 	}
