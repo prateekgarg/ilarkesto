@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -22,6 +22,7 @@ import ilarkesto.io.IO;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -38,6 +39,7 @@ public class WebCrawler {
 
 	private Filter filter;
 	private Consumer consumer;
+	private String defaultEncoding = IO.UTF_8;
 
 	private Set<String> crawledUrls = new HashSet<String>();
 
@@ -99,16 +101,28 @@ public class WebCrawler {
 		if (Str.isBlank(type)) type = "application/unknown";
 		if (type.startsWith("text/html")) {
 			String encoding = connection.getContentEncoding();
-			if (Str.isBlank(encoding)) encoding = IO.UTF_8;
-			String html;
+			if (Str.isBlank(encoding)) encoding = defaultEncoding;
+			byte[] data;
 			try {
-				html = IO.readToString(connection.getInputStream(), encoding);
+				data = IO.readToByteArray(connection.getInputStream());
 			} catch (FileNotFoundException ex) {
 				log.debug("  not found:", url);
 				if (consumer != null) consumer.onNotFound(url);
 				return Collections.emptySet();
 			} catch (IOException ex) {
 				throw new RuntimeException("Loading URL failed: " + url, ex);
+			}
+			String html;
+			try {
+				html = new String(data, encoding);
+			} catch (UnsupportedEncodingException ex) {
+				throw new RuntimeException("Loading URL failed: " + url, ex);
+			}
+			String charset = Str.getCharsetFromHtml(html, encoding);
+			if (!encoding.equals(charset)) {
+				try {
+					html = new String(data, charset);
+				} catch (UnsupportedEncodingException ex) {}
 			}
 			if (consumer != null) consumer.onHtml(url, html);
 			return parseUrls(html, url);
@@ -186,12 +200,16 @@ public class WebCrawler {
 		this.filter = filter;
 	}
 
+	public void setDefaultEncoding(String defaultEncoding) {
+		this.defaultEncoding = defaultEncoding;
+	}
+
 	public void setConsumer(Consumer consumer) {
 		this.consumer = consumer;
 	}
 
 	public void activateDownloading(String destinationDir) {
-		setConsumer(new DownloadConsumer(destinationDir));
+		setConsumer(new DownloadConsumer(destinationDir, IO.UTF_8));
 	}
 
 	public Set<String> getCrawledUrls() {
@@ -285,9 +303,11 @@ public class WebCrawler {
 
 		private String destinationDir;
 		private boolean skipNonHtml;
+		private String encoding;
 
-		public DownloadConsumer(String destinationDir) {
+		public DownloadConsumer(String destinationDir, String encoding) {
 			super();
+			this.encoding = encoding;
 			this.destinationDir = destinationDir;
 		}
 
@@ -295,7 +315,8 @@ public class WebCrawler {
 		public void onHtml(String url, String html) {
 			File file = getFile(url);
 			log.info("Storing:", file);
-			IO.writeFile(file, html, IO.UTF_8);
+			if (encoding == null) encoding = Str.getCharsetFromHtml(html, IO.UTF_8);
+			IO.writeFile(file, html, encoding);
 		}
 
 		@Override
