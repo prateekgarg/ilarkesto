@@ -127,7 +127,7 @@ public class Autowire {
 					field.set(object, value);
 				} catch (Exception ex) {
 					throw new RuntimeException("Setting field " + object.getClass().getSimpleName() + "." + name
-							+ " failed.", ex);
+							+ " to " + value.getClass().getSimpleName() + ": <" + value + "> failed.", ex);
 				}
 			}
 		});
