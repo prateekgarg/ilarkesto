@@ -116,7 +116,7 @@ public class Autowire {
 				if (!availableBeanNames.contains(name)) return;
 				field.setAccessible(true);
 				Object value = beanProvider.getBean(name);
-				Class paramType = value.getClass();
+				Class paramType = field.getType();
 				try {
 					if (objectStringMapper != null && value instanceof String
 							&& objectStringMapper.isTypeSupported(paramType)) {
