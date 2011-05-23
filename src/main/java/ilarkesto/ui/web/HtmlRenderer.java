@@ -62,8 +62,8 @@ public class HtmlRenderer {
 
 	private static final String IFRAME = "iframe";
 
-	public void IFRAME(String src, String height) {
-		Tag tag = startTag(IFRAME).set("src", src).set("frameborder", 0).setWidth("100%").set("height", height);
+	public void IFRAME(String src, String id, String height) {
+		startTag(IFRAME).set("src", src).setId(id).set("frameborder", 0).setWidth("100%").set("height", height);
 		A(src, src);
 		endTag(IFRAME);
 	}
