@@ -48,6 +48,7 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 				return new CheckBox(toHtml(item), true);
 			}
 		};
+		editor.addKeyDownHandler(new CancelKeyHandler());
 
 		ToolbarWidget toolbar = new ToolbarWidget();
 		toolbar.addButton(new AAction() {
@@ -121,6 +122,7 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 
 	public void setEditorItems(Collection<I> items) {
 		editor.setItems(items);
+		editor.setFocus(true);
 	}
 
 	public void setEditorSelectedItems(Collection<I> items) {
