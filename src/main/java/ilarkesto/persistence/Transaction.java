@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -46,14 +46,14 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		if (currentlySaving == entity) return;
 		currentlySaving = entity;
 		if (entitiesToSave.contains(entity) || entitiesToDelete.contains(entity)) return;
-		LOG.debug("SAVE", Utl.toStringWithType(entity), "@", this);
+		LOG.debug("SAVE", toStringWithType(entity), "@", this);
 		entitiesToSave.add(entity);
 		currentlySaving = null;
 	}
 
 	public synchronized void deleteEntity(AEntity entity) {
 		if (entitiesToDelete.contains(entity)) return;
-		LOG.debug("DELETE", Utl.toStringWithType(entity), "@", this);
+		LOG.debug("DELETE", toStringWithType(entity), "@", this);
 		entitiesToDelete.add(entity);
 		entitiesToSave.remove(entity);
 	}
@@ -198,6 +198,14 @@ class Transaction implements IdentifiableResolver<AEntity> {
 			}
 		}
 		return sb.toString();
+	}
+
+	private String toStringWithType(Object o) {
+		try {
+			return Utl.toStringWithType(o);
+		} catch (Exception ex) {
+			return o.getClass().getSimpleName();
+		}
 	}
 
 	// --- dependencies ---

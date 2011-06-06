@@ -971,7 +971,6 @@ public class Str extends ilarkesto.core.base.Str {
 			cPrev = c;
 		}
 
-		s = sb.toString();
 		s = s.replace("&nbsp;", " ");
 		s = s.replace("&auml;", String.valueOf(ae));
 		s = s.replace("&uuml;", String.valueOf(ue));
@@ -985,6 +984,9 @@ public class Str extends ilarkesto.core.base.Str {
 		s = s.replace("&quot;", "\"");
 		s = s.replace("&lt;", "<");
 		s = s.replace("&gt;", ">");
+		s = s.replace("&bdquo;", "„");
+		s = s.replace("&ldquo;", "“");
+		s = s.replace("&ndash;", "–");
 		s = s.replace("<br>", "\n");
 
 		s = s.replace(" \n", "\n");
