@@ -38,6 +38,7 @@ import com.google.gdata.data.HtmlTextConstruct;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.TextConstruct;
+import com.google.gdata.data.ValueConstruct;
 import com.google.gdata.data.contacts.Birthday;
 import com.google.gdata.data.contacts.ContactEntry;
 import com.google.gdata.data.contacts.ContactFeed;
@@ -230,17 +231,24 @@ public class Google {
 
 	public static void setAddress(ContactEntry contact, String label, String street, String postcode, String city,
 			String countryCode, AddressRel rel, boolean primary) {
-		for (StructuredPostalAddress postalAddress : contact.getStructuredPostalAddresses()) {
-			if (Utl.equals(label, postalAddress.getLabel()) && Utl.equals(street, postalAddress.getStreet().getValue())
-					&& Utl.equals(postcode, postalAddress.getPostcode().getValue())
-					&& Utl.equals(city, postalAddress.getCity().getValue())
-					&& Utl.equals(countryCode, postalAddress.getCountry().getCode())
-					&& rel.href.equals(postalAddress.getRel())) {
-				postalAddress.setPrimary(primary);
+		for (StructuredPostalAddress a : contact.getStructuredPostalAddresses()) {
+			if (Utl.equals(label, a.getLabel()) && equals(street, a.getStreet()) && equals(postcode, a.getPostcode())
+					&& equals(city, a.getCity()) && equals(countryCode, a.getCountry()) && rel.href.equals(a.getRel())) {
+				a.setPrimary(primary);
 				return;
 			}
 		}
 		contact.addStructuredPostalAddress(createPostalAddress(label, street, postcode, city, countryCode, rel, primary));
+	}
+
+	private static boolean equals(String countryCode, Country country) {
+		if (country == null) return country == null;
+		return Utl.equals(countryCode, country.getCode());
+	}
+
+	private static boolean equals(String value, ValueConstruct vc) {
+		if (vc == null) return value == null;
+		return Utl.equals(value, vc.getValue());
 	}
 
 	public static Im setIcq(ContactEntry contact, String address, ImRel rel) {
