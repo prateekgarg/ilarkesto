@@ -54,7 +54,6 @@ import com.google.gdata.data.extensions.GivenName;
 import com.google.gdata.data.extensions.Name;
 import com.google.gdata.data.extensions.PhoneNumber;
 import com.google.gdata.data.extensions.PostCode;
-import com.google.gdata.data.extensions.PostalAddress;
 import com.google.gdata.data.extensions.Street;
 import com.google.gdata.data.extensions.StructuredPostalAddress;
 import com.google.gdata.util.AuthenticationException;
@@ -79,8 +78,12 @@ public class Google {
 		ContactGroupEntry testgroup = getContactGroupByTitle("testgroup", service, email);
 		List<ContactEntry> contacts = getContacts(service, testgroup, email);
 		ContactEntry contact = contacts.get(0);
+
 		Log.DEBUG(getEmails(contact));
 		Log.DEBUG(contact.getStructuredPostalAddresses().get(0).getCity());
+
+		setAddress(contact, "Testadresse", "Teststrasse 12", "12345", "Teststadt", "DE", AddressRel.HOME, false);
+		save(contact, service);
 
 		// ContactGroupEntry group = getContactGroupByTitle("testgroup", service, login.getLogin());
 		// if (group == null) {
@@ -187,7 +190,7 @@ public class Google {
 	}
 
 	public static void removeAddresses(ContactEntry contact) {
-		contact.removeExtension(PostalAddress.class);
+		contact.removeExtension(StructuredPostalAddress.class);
 	}
 
 	public static void setAddress(ContactEntry contact, String label, String street, String postcode, String city,
@@ -272,8 +275,6 @@ public class Google {
 			editUrl = new URL(entry.getEditLink().getHref());
 			return service.update(editUrl, entry);
 		} catch (Throwable ex) {
-			TextConstruct title = entry.getTitle();
-			String label = title == null ? "?" : title.getPlainText();
 			throw new RuntimeException("Saving failed: " + toString(entry), ex);
 		}
 	}
@@ -358,12 +359,12 @@ public class Google {
 	public static StructuredPostalAddress createPostalAddress(String label, String street, String postcode,
 			String city, String country, AddressRel rel, boolean primary) {
 		StructuredPostalAddress a = new StructuredPostalAddress();
-		a.setLabel(label);
+		a.setRel(rel.href);
+		if (rel == AddressRel.OTHER) a.setLabel(label);
 		a.setStreet(new Street(street));
 		a.setPostcode(new PostCode(postcode));
 		a.setCity(new City(city));
-		a.setCountry(new Country(country, null));
-		a.setRel(rel.href);
+		a.setCountry(new Country(country, country));
 		a.setPrimary(primary);
 		return a;
 	}
