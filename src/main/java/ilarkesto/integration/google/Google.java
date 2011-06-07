@@ -17,10 +17,12 @@ package ilarkesto.integration.google;
 import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Proc;
-import ilarkesto.base.Str;
 import ilarkesto.base.time.Date;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
+import ilarkesto.swing.LoginPanel;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,6 +44,8 @@ import com.google.gdata.data.contacts.ContactGroupEntry;
 import com.google.gdata.data.contacts.ContactGroupFeed;
 import com.google.gdata.data.contacts.GroupMembershipInfo;
 import com.google.gdata.data.contacts.Nickname;
+import com.google.gdata.data.extensions.City;
+import com.google.gdata.data.extensions.Country;
 import com.google.gdata.data.extensions.Email;
 import com.google.gdata.data.extensions.ExtendedProperty;
 import com.google.gdata.data.extensions.FamilyName;
@@ -49,7 +53,10 @@ import com.google.gdata.data.extensions.FullName;
 import com.google.gdata.data.extensions.GivenName;
 import com.google.gdata.data.extensions.Name;
 import com.google.gdata.data.extensions.PhoneNumber;
+import com.google.gdata.data.extensions.PostCode;
 import com.google.gdata.data.extensions.PostalAddress;
+import com.google.gdata.data.extensions.Street;
+import com.google.gdata.data.extensions.StructuredPostalAddress;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 
@@ -58,15 +65,23 @@ import com.google.gdata.util.ContentType;
 public class Google {
 
 	public static void main(String[] args) throws Throwable {
-		List<BuzzActivity> activities = getBuzzActivitiesConsumption();
-		System.out.println(Str.format(activities));
+		// List<BuzzActivity> activities = getBuzzActivitiesConsumption();
+		// System.out.println(Str.format(activities));
 
 		// for (BuzzActivity buzz : getBuzzActivitiesConsumption(login)) {
 		// System.out.println(buzz);
 		// }
 
-		// ContactsService service = createContactsService(login, "Test");
-		//
+		LoginData login = LoginPanel.showDialog(null, "Google login", new File("runtimedata/google-login.properties"));
+		if (login == null) return;
+		String email = login.getLogin();
+		ContactsService service = createContactsService(login, "Test");
+		ContactGroupEntry testgroup = getContactGroupByTitle("testgroup", service, email);
+		List<ContactEntry> contacts = getContacts(service, testgroup, email);
+		ContactEntry contact = contacts.get(0);
+		Log.DEBUG(getEmails(contact));
+		Log.DEBUG(contact.getStructuredPostalAddresses().get(0).getCity());
+
 		// ContactGroupEntry group = getContactGroupByTitle("testgroup", service, login.getLogin());
 		// if (group == null) {
 		// group = createContactGroup("testgroup", service, login.getLogin());
@@ -175,15 +190,19 @@ public class Google {
 		contact.removeExtension(PostalAddress.class);
 	}
 
-	public static void setAddress(ContactEntry contact, String label, String address, AddressRel rel, boolean primary) {
-		for (PostalAddress postalAddress : contact.getPostalAddresses()) {
-			String value = postalAddress.getValue();
-			if (address.equals(value) && rel.href.equals(postalAddress.getRel())) {
+	public static void setAddress(ContactEntry contact, String label, String street, String postcode, String city,
+			String countryCode, AddressRel rel, boolean primary) {
+		for (StructuredPostalAddress postalAddress : contact.getStructuredPostalAddresses()) {
+			if (Utl.equals(label, postalAddress.getLabel()) && Utl.equals(street, postalAddress.getStreet().getValue())
+					&& Utl.equals(postcode, postalAddress.getPostcode().getValue())
+					&& Utl.equals(city, postalAddress.getCity().getValue())
+					&& Utl.equals(countryCode, postalAddress.getCountry().getCode())
+					&& rel.href.equals(postalAddress.getRel())) {
 				postalAddress.setPrimary(primary);
 				return;
 			}
 		}
-		contact.addPostalAddress(createPostalAddress(address, label, rel, primary));
+		contact.addStructuredPostalAddress(createPostalAddress(label, street, postcode, city, countryCode, rel, primary));
 	}
 
 	public static PhoneNumber setPhone(ContactEntry contact, String phoneNumber, PhoneRel rel) {
@@ -213,6 +232,14 @@ public class Google {
 			}
 		}
 		if (!updated) throw new RuntimeException("Phone '" + phoneNumber + "' not found in: " + toString(contact));
+	}
+
+	public static List<String> getEmails(ContactEntry contact) {
+		List<String> ret = new ArrayList<String>();
+		for (Email email : contact.getEmailAddresses()) {
+			ret.add(email.getAddress().toLowerCase());
+		}
+		return ret;
 	}
 
 	public static void setEmail(ContactEntry contact, String emailAddress, EmailRel rel, boolean primary) {
@@ -328,13 +355,17 @@ public class Google {
 		return name;
 	}
 
-	public static PostalAddress createPostalAddress(String address, String label, AddressRel rel, boolean primary) {
-		PostalAddress postalAddress = new PostalAddress();
-		postalAddress.setValue(address);
-		postalAddress.setLabel(label);
-		postalAddress.setRel(rel.href);
-		postalAddress.setPrimary(primary);
-		return postalAddress;
+	public static StructuredPostalAddress createPostalAddress(String label, String street, String postcode,
+			String city, String country, AddressRel rel, boolean primary) {
+		StructuredPostalAddress a = new StructuredPostalAddress();
+		a.setLabel(label);
+		a.setStreet(new Street(street));
+		a.setPostcode(new PostCode(postcode));
+		a.setCity(new City(city));
+		a.setCountry(new Country(country, null));
+		a.setRel(rel.href);
+		a.setPrimary(primary);
+		return a;
 	}
 
 	public static Nickname createNickname(String name) {

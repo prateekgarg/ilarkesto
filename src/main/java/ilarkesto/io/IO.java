@@ -1392,11 +1392,15 @@ public abstract class IO {
 	}
 
 	public static Properties loadProperties(File f, String encoding) {
-		BufferedInputStream in;
 		try {
-			in = new BufferedInputStream(new FileInputStream(f));
-			Properties p = loadProperties(in, encoding);
-			in.close();
+			Properties p;
+			if (f.exists()) {
+				BufferedInputStream in = new BufferedInputStream(new FileInputStream(f));
+				p = loadProperties(in, encoding);
+				in.close();
+			} else {
+				p = new Properties();
+			}
 			properties.add(p);
 			propertiesFiles.add(f);
 			return p;
