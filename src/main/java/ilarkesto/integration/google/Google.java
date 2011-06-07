@@ -18,6 +18,7 @@ import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Proc;
 import ilarkesto.base.time.Date;
+import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.swing.LoginPanel;
@@ -51,6 +52,7 @@ import com.google.gdata.data.extensions.ExtendedProperty;
 import com.google.gdata.data.extensions.FamilyName;
 import com.google.gdata.data.extensions.FullName;
 import com.google.gdata.data.extensions.GivenName;
+import com.google.gdata.data.extensions.Im;
 import com.google.gdata.data.extensions.Name;
 import com.google.gdata.data.extensions.PhoneNumber;
 import com.google.gdata.data.extensions.PostCode;
@@ -81,8 +83,12 @@ public class Google {
 
 		Log.DEBUG(getEmails(contact));
 		Log.DEBUG(contact.getStructuredPostalAddresses().get(0).getCity());
+		for (Im im : contact.getImAddresses()) {
+			Log.DEBUG("--->", im.getAddress(), "|", im.getProtocol(), "|", im.getRel());
+		}
 
 		setAddress(contact, "Testadresse", "Teststrasse 12", "12345", "Teststadt", "DE", AddressRel.HOME, false);
+		setInstantMessaging(contact, "olga@koczewski.de", ImProtocol.JABBER, ImRel.HOME);
 		save(contact, service);
 
 		// ContactGroupEntry group = getContactGroupByTitle("testgroup", service, login.getLogin());
@@ -96,6 +102,31 @@ public class Google {
 	}
 
 	private static Log log = Log.get(Google.class);
+
+	public static enum ImProtocol {
+
+		AIM("http://schemas.google.com/g/2005#AIM"), MSN("http://schemas.google.com/g/2005#MSN"), YAHOO(
+				"http://schemas.google.com/g/2005#YAHOO"), SKYPE("http://schemas.google.com/g/2005#SKYPE"), QQ(
+				"http://schemas.google.com/g/2005#QQ"), GOOGLE_TALK("http://schemas.google.com/g/2005#GOOGLE_TALK"), ICQ(
+				"http://schemas.google.com/g/2005#ICQ"), JABBER("http://schemas.google.com/g/2005#JABBER");
+
+		String href;
+
+		private ImProtocol(String href) {
+			this.href = href;
+		}
+	}
+
+	public static enum ImRel {
+		HOME("http://schemas.google.com/g/2005#home"), WORK("http://schemas.google.com/g/2005#work"), OTHER(
+				"http://schemas.google.com/g/2005#other");
+
+		String href;
+
+		private ImRel(String href) {
+			this.href = href;
+		}
+	}
 
 	public static enum EmailRel {
 		HOME("http://schemas.google.com/g/2005#home"), WORK("http://schemas.google.com/g/2005#work"), OTHER(
@@ -193,6 +224,10 @@ public class Google {
 		contact.removeExtension(StructuredPostalAddress.class);
 	}
 
+	public static void removeInstantMessages(ContactEntry contact) {
+		contact.removeExtension(Im.class);
+	}
+
 	public static void setAddress(ContactEntry contact, String label, String street, String postcode, String city,
 			String countryCode, AddressRel rel, boolean primary) {
 		for (StructuredPostalAddress postalAddress : contact.getStructuredPostalAddresses()) {
@@ -206,6 +241,37 @@ public class Google {
 			}
 		}
 		contact.addStructuredPostalAddress(createPostalAddress(label, street, postcode, city, countryCode, rel, primary));
+	}
+
+	public static Im setIcq(ContactEntry contact, String address, ImRel rel) {
+		return setInstantMessaging(contact, address, ImProtocol.ICQ, rel);
+	}
+
+	public static Im setMsn(ContactEntry contact, String address, ImRel rel) {
+		return setInstantMessaging(contact, address, ImProtocol.MSN, rel);
+	}
+
+	public static Im setJabber(ContactEntry contact, String address, ImRel rel) {
+		return setInstantMessaging(contact, address, ImProtocol.JABBER, rel);
+	}
+
+	public static Im setGoogleTalk(ContactEntry contact, String address, ImRel rel) {
+		return setInstantMessaging(contact, address, ImProtocol.GOOGLE_TALK, rel);
+	}
+
+	public static Im setSkype(ContactEntry contact, String address, ImRel rel) {
+		return setInstantMessaging(contact, address, ImProtocol.SKYPE, rel);
+	}
+
+	public static Im setInstantMessaging(ContactEntry contact, String address, ImProtocol protocol, ImRel rel) {
+		address = address.toLowerCase();
+		for (Im im : contact.getImAddresses()) {
+			if (rel.href.equals(im.getRel()) && protocol.href.equals(im.getProtocol())
+					&& address.equals(im.getAddress())) return im;
+		}
+		Im im = createInstantMessaging(address, protocol, rel);
+		contact.addImAddress(im);
+		return im;
 	}
 
 	public static PhoneNumber setPhone(ContactEntry contact, String phoneNumber, PhoneRel rel) {
@@ -387,6 +453,14 @@ public class Google {
 		return email;
 	}
 
+	public static Im createInstantMessaging(String address, ImProtocol protocol, ImRel rel) {
+		Im im = new Im();
+		im.setRel(rel.href);
+		im.setAddress(address);
+		im.setProtocol(protocol.href);
+		return im;
+	}
+
 	public static PhoneNumber createPhoneNumber(String number, PhoneRel rel) {
 		PhoneNumber phoneNumber = new PhoneNumber();
 		phoneNumber.setPhoneNumber(number);
@@ -484,6 +558,14 @@ public class Google {
 	public static TextConstruct textConstruct(String s) {
 		if (s == null) return null;
 		return s.startsWith("<html") ? new HtmlTextConstruct(s) : new PlainTextConstruct(s);
+	}
+
+	public static boolean isGoogleTalkAddress(String email) {
+		if (Str.isBlank(email)) return false;
+		email = email.trim().toLowerCase();
+		if (email.endsWith("@googlemail.com")) return true;
+		if (email.endsWith("@gmail.com")) return true;
+		return false;
 	}
 
 }
