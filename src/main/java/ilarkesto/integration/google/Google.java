@@ -181,8 +181,8 @@ public class Google {
 		log.info("Loading Buzz activities:", url);
 		// String s = Oacurl.fetchString(url, null);
 		String s = oacurl(url);
+		log.info("   ", s);
 		List<BuzzActivity> activities = BuzzActivity.parseActivities(s);
-		log.info("   ", activities.size(), "loaded:", activities);
 		return activities;
 	}
 
