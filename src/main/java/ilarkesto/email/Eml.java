@@ -543,7 +543,7 @@ public class Eml {
 		p.setProperty("mail.mime.charset", charset);
 		p.setProperty("mail.transport.protocol", "smtp");
 		p.setProperty("mail.smtp.host", host);
-		if (port != null) p.put("mail.smtp.port", port);
+		if (port != null) p.put("mail.smtp.port", port.toString());
 		p.put("mail.smtp.starttls.enable", String.valueOf(tls));
 
 		boolean auth = user != null && password != null;
