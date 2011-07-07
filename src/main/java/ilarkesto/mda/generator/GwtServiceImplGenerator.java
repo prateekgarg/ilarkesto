@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -15,6 +15,7 @@
 package ilarkesto.mda.generator;
 
 import ilarkesto.base.Str;
+import ilarkesto.gwt.client.ErrorWrapper;
 import ilarkesto.gwt.server.AGwtServiceImpl;
 import ilarkesto.mda.model.Node;
 import ilarkesto.mda.model.NodeTypes;
@@ -34,8 +35,8 @@ public class GwtServiceImplGenerator extends AJavaClassGenerator implements Node
 	@Override
 	protected void printCode(JavaPrinter out) {
 		out.package_(getServerPackageName());
-		out.beginClass(true, "G" + module.getValue() + "ServiceImpl", AGwtServiceImpl.class.getName(), Arrays
-				.asList(getGwtPackageName() + "." + module.getValue() + "Service"));
+		out.beginClass(true, "G" + module.getValue() + "ServiceImpl", AGwtServiceImpl.class.getName(),
+			Arrays.asList(getGwtPackageName() + "." + module.getValue() + "Service"));
 
 		out.loggerByClassName(module.getValue() + "ServiceImpl");
 
@@ -54,6 +55,7 @@ public class GwtServiceImplGenerator extends AJavaClassGenerator implements Node
 		}
 
 		for (Node call : calls) {
+			out.annotationOverride();
 			List<String> params = getParameterTypesAndNames(call, "String");
 			params.add(0, "int conversationNumber");
 			out.beginMethod(getGwtPackageName() + ".DataTransferObject", Str.lowercaseFirstLetter(call.getValue()),
@@ -63,7 +65,16 @@ public class GwtServiceImplGenerator extends AJavaClassGenerator implements Node
 			}
 			out.statement("WebSession session = (WebSession) getSession()");
 			out.beginSynchronized("session");
-			out.statement("GwtConversation conversation = session.getGwtConversation(conversationNumber)");
+			out.statement("GwtConversation conversation = null");
+			out.beginTry();
+			out.statement("conversation = session.getGwtConversation(conversationNumber)");
+			out.beginCatchThrowable();
+			out.statement("log.info(\"Getting conversation failed:\", conversationNumber)");
+			out.statement(getGwtPackageName() + ".DataTransferObject dto = new " + getGwtPackageName()
+					+ ".DataTransferObject()");
+			out.statement("dto.addError(new " + ErrorWrapper.class.getName() + "(ex))");
+			out.returnStatement("dto");
+			out.endCatch();
 			out.statement("ilarkesto.di.Context context = ilarkesto.di.Context.get()");
 			out.statement("context.setName(\"gwt-srv:" + call.getValue() + "\")");
 			out.statement("context.bindCurrentThread()");
@@ -71,14 +82,11 @@ public class GwtServiceImplGenerator extends AJavaClassGenerator implements Node
 			List<String> parameterNames = getParameterNames(call);
 			parameterNames.add(0, "conversation");
 			out.statement("on" + call.getValue() + "(" + Str.concat(parameterNames, ", ") + ")");
+			out.statement("onServiceMethodExecuted(context)");
 			out.beginCatchThrowable();
 			out.statement("handleServiceMethodException(conversationNumber, \"" + call.getValue() + "\", ex)");
-			out.statement("throw new RuntimeException(ex)");
 			out.endCatch();
-			out.statement(getGwtPackageName() + ".DataTransferObject ret = (" + getGwtPackageName()
-					+ ".DataTransferObject) conversation.popNextData()");
-			out.statement("onServiceMethodExecuted(context)");
-			out.returnStatement("ret");
+			out.returnStatement("(" + getGwtPackageName() + ".DataTransferObject) conversation.popNextData()");
 			out.endSynchronized();
 			out.endMethod();
 		}

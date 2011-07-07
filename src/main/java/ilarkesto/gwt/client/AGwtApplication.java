@@ -14,6 +14,8 @@
  */
 package ilarkesto.gwt.client;
 
+import java.util.List;
+
 import ilarkesto.core.logging.Log;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -25,7 +27,7 @@ public abstract class AGwtApplication implements EntryPoint {
 
 	private static AGwtApplication singleton;
 
-	public abstract void handleServiceCallError(String serviceCall, Throwable ex);
+	public abstract void handleServiceCallError(String serviceCall, List<ErrorWrapper> errors);
 
 	protected abstract void handleUnexpectedError(Throwable ex);
 

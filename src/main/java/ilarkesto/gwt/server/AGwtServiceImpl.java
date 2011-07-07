@@ -14,9 +14,9 @@
  */
 package ilarkesto.gwt.server;
 
-import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.Context;
+import ilarkesto.gwt.client.ErrorWrapper;
 import ilarkesto.persistence.DaoService;
 import ilarkesto.webapp.AWebApplication;
 import ilarkesto.webapp.AWebSession;
@@ -52,11 +52,15 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 	}
 
 	protected final void handleServiceMethodException(int conversationNumber, String method, Throwable t) {
-		LOG.error("Service method failed:", method, "->", t);
+		LOG.info("Service method failed:", method, "->", t);
+
+		// reset modified entities
 		getWebApplication().getTransactionService().cancel();
+
 		try {
+			// send error to client
 			AGwtConversation conversation = getSession().getGwtConversation(conversationNumber);
-			conversation.getNextData().addError("Server error:" + Str.getRootCauseMessage(t));
+			conversation.getNextData().addError(new ErrorWrapper(t));
 		} catch (Throwable ex) {
 			LOG.info(ex);
 			return;
