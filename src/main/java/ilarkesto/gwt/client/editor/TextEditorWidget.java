@@ -97,7 +97,9 @@ public class TextEditorWidget extends AViewEditWidget {
 	}
 
 	public final String getEditorText() {
-		return editor.getText();
+		String text = editor.getText();
+		if (Str.isBlank(text)) return null;
+		return text;
 	}
 
 	protected Label getViewer() {

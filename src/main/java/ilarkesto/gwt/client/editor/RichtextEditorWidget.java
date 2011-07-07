@@ -235,7 +235,9 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 	public final String getEditorText() {
 		if (editor == null) return null;
-		return editor.getText();
+		String text = editor.getText();
+		if (Str.isBlank(text)) return null;
+		return text;
 	}
 
 	@Override

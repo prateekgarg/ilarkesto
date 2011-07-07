@@ -14,6 +14,8 @@
  */
 package ilarkesto.gwt.client;
 
+import ilarkesto.core.base.Str;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.TextArea;
@@ -101,6 +103,7 @@ public class CodemirrorEditorWidget extends AWidget {
 	public String getText() {
 		if (!isReady()) return textArea.getText();
 		String text = editorGetCode(editor);
+		if (Str.isBlank(text)) text = null;
 		textArea.setText(text);
 		return text;
 	}
