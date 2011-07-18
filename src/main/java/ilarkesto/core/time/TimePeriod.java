@@ -76,18 +76,34 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable {
 		this(0);
 	}
 
+	protected TimePeriod newTimePeriod(long millis) {
+		return new TimePeriod(millis);
+	}
+
 	// ---
 
+	public TimePeriod subtract(TimePeriod tp) {
+		return newTimePeriod(millis - tp.millis);
+	}
+
+	public TimePeriod add(TimePeriod tp) {
+		return newTimePeriod(millis + tp.millis);
+	}
+
 	public TimePeriod addDays(int days) {
-		return new TimePeriod(millis + Tm.DAY);
+		return newTimePeriod(millis + Tm.DAY);
 	}
 
 	public TimePeriod multiplyBy(int factor) {
-		return new TimePeriod(millis * factor);
+		return newTimePeriod(millis * factor);
+	}
+
+	public TimePeriod divide(int divisor) {
+		return newTimePeriod(millis / divisor);
 	}
 
 	public TimePeriod getPeriodTo(Time other) {
-		return new TimePeriod(other.toMillis() - toMillis());
+		return newTimePeriod(other.toMillis() - toMillis());
 	}
 
 	public TimePeriod abs() {

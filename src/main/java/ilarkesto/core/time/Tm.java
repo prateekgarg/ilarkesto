@@ -18,11 +18,11 @@ import java.util.Date;
 
 public class Tm {
 
-	public static final long SECOND = 1000;
-	public static final long MINUTE = SECOND * 60;
-	public static final long HOUR = MINUTE * 60;
-	public static final long DAY = HOUR * 24;
-	public static final long WEEK = DAY * 7;
+	public static final long SECOND = 1000l;
+	public static final long MINUTE = 60000l;
+	public static final long HOUR = 3600000l;
+	public static final long DAY = 86400000l;
+	public static final long WEEK = 604800000l;
 
 	public static final long MONTH = DAY * 30;
 	public static final long YEAR = MONTH * 12;

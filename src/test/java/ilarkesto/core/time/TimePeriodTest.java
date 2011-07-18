@@ -21,14 +21,34 @@ import org.testng.annotations.Test;
 public class TimePeriodTest extends ATest {
 
 	@Test
+	public void subtract() {
+		assertEquals(TimePeriod.hours(8).subtract(TimePeriod.hours(1)), new TimePeriod("7:00"));
+		assertEquals(TimePeriod.hours(8).subtract(TimePeriod.minutes(30)), new TimePeriod("7:30"));
+	}
+
+	@Test
+	public void getPeriodTo() {
+		Time begin = new Time("9:00");
+		Time end = new Time("17:30");
+
+		assertEquals(begin.getPeriodTo(end), new TimePeriod(8 * Tm.HOUR + 30 * Tm.MINUTE));
+	}
+
+	@Test
 	public void constructors() {
 		assertEquals(TimePeriod.seconds(1).toMillis(), 1000);
 		assertEquals(TimePeriod.minutes(1).toMillis(), 60000);
 		assertEquals(TimePeriod.hours(1).toMillis(), 3600000);
-		assertEquals(TimePeriod.days(1).toMillis(), 86400000);
-		assertEquals(TimePeriod.weeks(1).toMillis(), 604800000);
 
-		assertEquals(TimePeriod.days(30).toMillis(), 86400000l * 30l);
+		assertEquals(TimePeriod.days(1).toMillis(), 86400000);
+		assertEquals(TimePeriod.days(2).toMillis(), 86400000l * 2);
+		assertEquals(TimePeriod.days(5).toMillis(), 86400000l * 5);
+		assertEquals(TimePeriod.days(15).toMillis(), 86400000l * 15);
+		assertEquals(TimePeriod.days(24).toMillis(), 86400000l * 24);
+		assertEquals(TimePeriod.days(25).toMillis(), 86400000l * 25);
+		assertEquals(TimePeriod.days(30).toMillis(), 86400000l * 30);
+
+		assertEquals(TimePeriod.weeks(1).toMillis(), 604800000);
 	}
 
 	@Test

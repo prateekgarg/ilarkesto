@@ -31,23 +31,11 @@ public final class TimePeriod extends ilarkesto.core.time.TimePeriod {
 	}
 
 	@Override
-	public TimePeriod addDays(int days) {
-		return new TimePeriod(millis + Tm.DAY);
+	protected TimePeriod newTimePeriod(long millis) {
+		return new TimePeriod(millis);
 	}
 
-	@Override
-	public TimePeriod multiplyBy(int factor) {
-		return new TimePeriod(millis * factor);
-	}
-
-	public TimePeriod getPeriodTo(Time other) {
-		return new TimePeriod(other.toMillis() - toMillis());
-	}
-
-	@Override
-	public TimePeriod abs() {
-		return millis < 0 ? new TimePeriod(-millis) : this;
-	}
+	// ---
 
 	public boolean isGreaterThen(TimePeriod other) {
 		return millis > other.millis;
@@ -57,24 +45,28 @@ public final class TimePeriod extends ilarkesto.core.time.TimePeriod {
 		return millis < other.millis;
 	}
 
+	@Override
+	public TimePeriod multiplyBy(int factor) {
+		return (TimePeriod) super.multiplyBy(factor);
+	}
+
+	@Override
 	public TimePeriod divide(int divisor) {
-		return new TimePeriod(millis / divisor);
+		return (TimePeriod) super.divide(divisor);
 	}
 
-	public TimePeriod add(TimePeriod tp) {
-		return new TimePeriod(millis + tp.millis);
+	@Override
+	public TimePeriod subtract(ilarkesto.core.time.TimePeriod tp) {
+		return (TimePeriod) super.subtract(tp);
 	}
 
-	public TimePeriod subtract(TimePeriod tp) {
-		return new TimePeriod(millis - tp.millis);
+	@Override
+	public TimePeriod add(ilarkesto.core.time.TimePeriod tp) {
+		return (TimePeriod) super.add(tp);
 	}
 
 	public TimePeriod subtract(Time time) {
 		return new TimePeriod(millis - time.toMillis());
-	}
-
-	public TimePeriod multiplyBy(double factor) {
-		return new TimePeriod(Math.round(millis * factor));
 	}
 
 	public String toHoursAndMinutesString() {
@@ -89,23 +81,23 @@ public final class TimePeriod extends ilarkesto.core.time.TimePeriod {
 	}
 
 	public static TimePeriod seconds(int seconds) {
-		return new TimePeriod(seconds * 1000);
+		return new TimePeriod(seconds * Tm.SECOND);
 	}
 
 	public static TimePeriod minutes(int minutes) {
-		return seconds(minutes * 60);
+		return new TimePeriod(minutes * Tm.MINUTE);
 	}
 
 	public static TimePeriod hours(int hours) {
-		return minutes(hours * 60);
+		return new TimePeriod(hours * Tm.HOUR);
 	}
 
 	public static TimePeriod days(int days) {
-		return hours(days * 24);
+		return new TimePeriod(days * Tm.DAY);
 	}
 
 	public static TimePeriod weeks(int weeks) {
-		return days(weeks * 7);
+		return new TimePeriod(weeks * Tm.WEEK);
 	}
 
 }

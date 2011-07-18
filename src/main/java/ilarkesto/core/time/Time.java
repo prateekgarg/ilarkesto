@@ -14,6 +14,8 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.base.time.TimePeriod;
+
 import java.io.Serializable;
 
 public class Time implements Comparable<Time>, Serializable {
@@ -103,6 +105,10 @@ public class Time implements Comparable<Time>, Serializable {
 
 	public final long toSeconds() {
 		return second + (minute * 60) + (hour * 3600);
+	}
+
+	public TimePeriod getPeriodTo(Time other) {
+		return new TimePeriod(other.toMillis() - toMillis());
 	}
 
 	@Override
