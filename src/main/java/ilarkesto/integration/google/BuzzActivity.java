@@ -68,6 +68,7 @@ public class BuzzActivity {
 		Element eObject = JDom.getChild(eEntry, "activity:object");
 		String content = JDom.getChildText(eObject, "content");
 		content = Str.html2text(content);
+		content = Str.html2text(content);
 		a.setContent(content);
 
 		Element eAttachment = JDom.getChild(eObject, "buzz:attachment");
