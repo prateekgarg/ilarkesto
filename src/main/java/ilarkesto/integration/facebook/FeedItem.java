@@ -104,11 +104,11 @@ public class FeedItem extends Item {
 	}
 
 	public final Date getCreatedTime() {
-		return data.getDate("created_time", DATE_FORMAT);
+		return getDataDate("created_time");
 	}
 
 	public final Date getUpdatedTime() {
-		return data.getDate("updated_time", DATE_FORMAT);
+		return getDataDate("updated_time");
 	}
 
 	public final String getObjectId() {
@@ -121,6 +121,16 @@ public class FeedItem extends Item {
 
 	public final boolean isTypePhoto() {
 		return "photo".equals(getType());
+	}
+
+	private Date getDataDate(String name) {
+		String s = getString(name);
+		if (s == null) return null;
+		try {
+			return DATE_FORMAT.parse(s);
+		} catch (java.text.ParseException ex) {
+			throw new RuntimeException("Parsing date with format \"" + DATE_FORMAT.toString() + "\" failed: " + s, ex);
+		}
 	}
 
 }

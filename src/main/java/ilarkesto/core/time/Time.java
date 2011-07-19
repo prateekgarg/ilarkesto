@@ -14,8 +14,6 @@
  */
 package ilarkesto.core.time;
 
-import ilarkesto.base.time.TimePeriod;
-
 import java.io.Serializable;
 
 public class Time implements Comparable<Time>, Serializable {
