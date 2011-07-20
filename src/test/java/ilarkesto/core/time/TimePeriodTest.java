@@ -52,6 +52,12 @@ public class TimePeriodTest extends ATest {
 	}
 
 	@Test
+	public void toDecimalDays() {
+		assertEquals(TimePeriod.days(1).toDecimalDays(), 1.0f, 0.0001f);
+		assertEquals(TimePeriod.hours(12).toDecimalDays(), 0.5f, 0.0001f);
+	}
+
+	@Test
 	public void toDays() {
 		assertEquals(new TimePeriod(Tm.DAY).toDays(), 1);
 		assertEquals(new TimePeriod(Tm.DAY * 2).toDays(), 2);

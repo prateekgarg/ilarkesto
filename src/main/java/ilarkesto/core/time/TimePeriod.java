@@ -83,10 +83,12 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable {
 	// ---
 
 	public TimePeriod subtract(TimePeriod tp) {
+		if (tp == null) return this;
 		return newTimePeriod(millis - tp.millis);
 	}
 
 	public TimePeriod add(TimePeriod tp) {
+		if (tp == null) return this;
 		return newTimePeriod(millis + tp.millis);
 	}
 
@@ -140,6 +142,10 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable {
 
 	public final int toYears() {
 		return (int) (millis / Tm.YEAR);
+	}
+
+	public final float toDecimalDays() {
+		return (float) millis / (float) Tm.DAY;
 	}
 
 	public final boolean isNegative() {
