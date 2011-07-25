@@ -49,7 +49,7 @@ public class HyperlinkWidget extends AWidget {
 			((Hyperlink) hyperlink).setText(action.getLabel());
 		}
 		hyperlink.setTitle(action.getTooltip());
-		hyperlink.setVisible(action.isExecutable());
+		hyperlink.setVisible(action.isExecutable() && action.isPermitted());
 	}
 
 	@Override

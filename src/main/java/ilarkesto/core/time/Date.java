@@ -96,6 +96,10 @@ public class Date implements Comparable<Date>, Serializable {
 		}
 	}
 
+	public final boolean isSameMonthAndYear(Date other) {
+		return month == other.month && year == other.year;
+	}
+
 	public final boolean isSameOrAfter(Date other) {
 		return compareTo(other) >= 0;
 	}
