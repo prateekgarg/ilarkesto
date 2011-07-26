@@ -40,6 +40,8 @@ public final class Date extends ilarkesto.core.time.Date {
 	public static final transient SimpleDateFormat FORMAT_LONGMONTH_YEAR = new SimpleDateFormat("MMMM yyyy");
 
 	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH_DAY = new SimpleDateFormat("yyyy-MM-dd");
+	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH = new SimpleDateFormat("yyyy-MM");
+	public static final transient SimpleDateFormat FORMAT_YEAR_LONGMONTH = new SimpleDateFormat("yyyy-MMMM");
 	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH_DAY_NOSEP = new SimpleDateFormat("yyyyMMdd");
 
 	public static final transient SimpleDateFormat FORMAT_WEEKDAY = new SimpleDateFormat("EEEE");
