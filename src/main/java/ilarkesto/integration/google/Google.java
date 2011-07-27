@@ -350,8 +350,18 @@ public class Google {
 		return im;
 	}
 
+	public static Website setWebsite(ContactEntry contact, String url) {
+		Website.Rel rel = Website.Rel.HOME_PAGE;
+		if (url.contains("blogger.com") || url.contains("blogspot.com") || url.contains("wordpress"))
+			rel = Website.Rel.BLOG;
+		if (url.contains(".google.com/profiles/")) rel = Website.Rel.PROFILE;
+		if (url.startsWith("ftp://")) rel = Website.Rel.FTP;
+		return setWebsite(contact, url, rel);
+	}
+
 	public static Website setWebsite(ContactEntry contact, String url, Website.Rel rel) {
-		if (!url.startsWith("http://") && !url.startsWith("https://")) url = "http://" + url;
+		if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("ftp://"))
+			url = "http://" + url;
 		for (Website site : contact.getWebsites()) {
 			String href = site.getHref();
 			if (href.equals(url) && rel.equals(site.getRel())) {
