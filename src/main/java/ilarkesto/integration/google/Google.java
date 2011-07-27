@@ -299,10 +299,10 @@ public class Google {
 	public static void setAddress(ContactEntry contact, String street, String postcode, String city,
 			String countryCode, String label, AddressRel rel, boolean primary) {
 		for (StructuredPostalAddress a : contact.getStructuredPostalAddresses()) {
-			if (Utl.equals(label, a.getLabel()) && equals(street, a.getStreet()) && equals(postcode, a.getPostcode())
-					&& equals(city, a.getCity()) && equals(countryCode, a.getCountry())
-					&& Utl.equals(rel.href, a.getRel())) {
-				a.setPrimary(primary);
+			if (equals(street, a.getStreet()) && equals(postcode, a.getPostcode()) && equals(city, a.getCity())
+					&& equals(countryCode, a.getCountry())) {
+				// address already exists
+				updateAddress(a, label, street, postcode, city, countryCode, rel, primary);
 				return;
 			}
 		}
@@ -342,8 +342,7 @@ public class Google {
 	public static Im setInstantMessaging(ContactEntry contact, String address, ImProtocol protocol, ImRel rel) {
 		address = address.toLowerCase();
 		for (Im im : contact.getImAddresses()) {
-			if (rel.href.equals(im.getRel()) && protocol.href.equals(im.getProtocol())
-					&& address.equals(im.getAddress())) return im;
+			if (protocol.href.equals(im.getProtocol()) && address.equals(im.getAddress())) return im;
 		}
 		Im im = createInstantMessaging(address, protocol, rel);
 		contact.addImAddress(im);
@@ -364,8 +363,9 @@ public class Google {
 			url = "http://" + url;
 		for (Website site : contact.getWebsites()) {
 			String href = site.getHref();
-			if (href.equals(url) && rel.equals(site.getRel())) {
+			if (href.equals(url)) {
 				// site already exists
+				updateWebsite(site, url, rel);
 				return site;
 			}
 		}
@@ -376,18 +376,22 @@ public class Google {
 
 	private static Website createWebsite(String url, Rel rel) {
 		Website site = new Website();
+		updateWebsite(site, url, rel);
+		return site;
+	}
+
+	private static void updateWebsite(Website site, String url, Rel rel) {
 		site.setHref(url);
 		site.setRel(rel);
-		return site;
 	}
 
 	public static PhoneNumber setPhone(ContactEntry contact, String phoneNumber, String label, PhoneRel rel) {
 		phoneNumber = phoneNumber.toLowerCase();
 		for (PhoneNumber phone : contact.getPhoneNumbers()) {
 			String number = phone.getPhoneNumber().toLowerCase();
-			if (number.equals(phoneNumber) && Utl.equals(label, phone.getLabel())
-					&& Utl.equals(rel.href, phone.getRel())) {
+			if (number.equals(phoneNumber)) {
 				// number already exists
+				updatePhoneNumber(number, label, rel, phone);
 				return phone;
 			}
 		}
@@ -425,7 +429,7 @@ public class Google {
 		for (Email email : contact.getEmailAddresses()) {
 			String address = email.getAddress().toLowerCase();
 			if (address.equals(emailAddress)) {
-				email.setPrimary(primary);
+				updateEmail(email, address, label, rel, primary);
 				updated = true;
 			} else if (primary) {
 				email.setPrimary(false);
@@ -533,6 +537,12 @@ public class Google {
 	public static StructuredPostalAddress createPostalAddress(String label, String street, String postcode,
 			String city, String country, AddressRel rel, boolean primary) {
 		StructuredPostalAddress a = new StructuredPostalAddress();
+		updateAddress(a, label, street, postcode, city, country, rel, primary);
+		return a;
+	}
+
+	private static void updateAddress(StructuredPostalAddress a, String label, String street, String postcode,
+			String city, String country, AddressRel rel, boolean primary) {
 		if (label == null) {
 			a.setRel(rel.href);
 		} else {
@@ -543,7 +553,6 @@ public class Google {
 		a.setCity(new City(city));
 		a.setCountry(new Country(country, country));
 		a.setPrimary(primary);
-		return a;
 	}
 
 	public static Nickname createNickname(String name) {
@@ -558,6 +567,11 @@ public class Google {
 
 	public static Email createEmail(String address, String label, EmailRel rel, boolean primary) {
 		Email email = new Email();
+		updateEmail(email, address, label, rel, primary);
+		return email;
+	}
+
+	private static void updateEmail(Email email, String address, String label, EmailRel rel, boolean primary) {
 		if (label == null) {
 			email.setRel(rel.href);
 		} else {
@@ -565,7 +579,6 @@ public class Google {
 		}
 		email.setAddress(address);
 		email.setPrimary(primary);
-		return email;
 	}
 
 	public static Im createInstantMessaging(String address, ImProtocol protocol, ImRel rel) {
@@ -578,13 +591,17 @@ public class Google {
 
 	public static PhoneNumber createPhoneNumber(String number, String label, PhoneRel rel) {
 		PhoneNumber phoneNumber = new PhoneNumber();
+		updatePhoneNumber(number, label, rel, phoneNumber);
+		return phoneNumber;
+	}
+
+	private static void updatePhoneNumber(String number, String label, PhoneRel rel, PhoneNumber phoneNumber) {
 		phoneNumber.setPhoneNumber(number);
 		if (label == null) {
 			phoneNumber.setRel(rel.href);
 		} else {
 			phoneNumber.setLabel(label);
 		}
-		return phoneNumber;
 	}
 
 	public static ContactGroupEntry createContactGroup(String title, ContactsService service, String email) {
