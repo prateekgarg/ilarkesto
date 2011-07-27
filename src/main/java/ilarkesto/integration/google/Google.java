@@ -97,6 +97,7 @@ public class Google {
 			Log.DEBUG("--->", im.getAddress(), "|", im.getProtocol(), "|", im.getRel());
 		}
 
+		setEmail(contact, "olga@koczewski.de", "privat", EmailRel.HOME, false);
 		setPhone(contact, "12345", "Neue Nummer", null);
 		setAddress(contact, "Teststrasse 12", "12345", "Teststadt", "DE", "Testadresse", AddressRel.OTHER, false);
 		setInstantMessaging(contact, "olga@koczewski.de", ImProtocol.JABBER, ImRel.HOME);
@@ -545,7 +546,9 @@ public class Google {
 			String city, String country, AddressRel rel, boolean primary) {
 		if (label == null) {
 			a.setRel(rel.href);
+			a.setLabel(null);
 		} else {
+			a.setRel(null);
 			a.setLabel(label);
 		}
 		a.setStreet(new Street(street));
@@ -574,7 +577,9 @@ public class Google {
 	private static void updateEmail(Email email, String address, String label, EmailRel rel, boolean primary) {
 		if (label == null) {
 			email.setRel(rel.href);
+			email.setLabel(null);
 		} else {
+			email.setRel(null);
 			email.setLabel(label);
 		}
 		email.setAddress(address);
@@ -596,12 +601,14 @@ public class Google {
 	}
 
 	private static void updatePhoneNumber(String number, String label, PhoneRel rel, PhoneNumber phoneNumber) {
-		phoneNumber.setPhoneNumber(number);
 		if (label == null) {
 			phoneNumber.setRel(rel.href);
+			phoneNumber.setLabel(null);
 		} else {
+			phoneNumber.setRel(null);
 			phoneNumber.setLabel(label);
 		}
+		phoneNumber.setPhoneNumber(number);
 	}
 
 	public static ContactGroupEntry createContactGroup(String title, ContactsService service, String email) {
