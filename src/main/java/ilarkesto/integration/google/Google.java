@@ -18,6 +18,7 @@ import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Proc;
 import ilarkesto.base.Str;
+import ilarkesto.base.Sys;
 import ilarkesto.base.time.Date;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
@@ -51,6 +52,8 @@ import com.google.gdata.data.contacts.ContactGroupEntry;
 import com.google.gdata.data.contacts.ContactGroupFeed;
 import com.google.gdata.data.contacts.GroupMembershipInfo;
 import com.google.gdata.data.contacts.Nickname;
+import com.google.gdata.data.contacts.Website;
+import com.google.gdata.data.contacts.Website.Rel;
 import com.google.gdata.data.extensions.City;
 import com.google.gdata.data.extensions.Country;
 import com.google.gdata.data.extensions.Email;
@@ -78,6 +81,7 @@ public class Google {
 		// for (BuzzActivity buzz : getBuzzActivitiesConsumption(login)) {
 		// System.out.println(buzz);
 		// }
+		Sys.setHttpProxy("83.246.65.215", 80);
 
 		LoginData login = LoginPanel.showDialog(null, "Google login", new File("runtimedata/google-login.properties"));
 		if (login == null) return;
@@ -93,8 +97,10 @@ public class Google {
 			Log.DEBUG("--->", im.getAddress(), "|", im.getProtocol(), "|", im.getRel());
 		}
 
-		setAddress(contact, "Testadresse", "Teststrasse 12", "12345", "Teststadt", "DE", AddressRel.HOME, false);
+		setPhone(contact, "12345", "Neue Nummer", null);
+		setAddress(contact, "Teststrasse 12", "12345", "Teststadt", "DE", "Testadresse", AddressRel.OTHER, false);
 		setInstantMessaging(contact, "olga@koczewski.de", ImProtocol.JABBER, ImRel.HOME);
+		setWebsite(contact, "http://koczewski.de", Website.Rel.HOME_PAGE);
 		save(contact, service);
 
 		// ContactGroupEntry group = getContactGroupByTitle("testgroup", service, login.getLogin());
@@ -141,6 +147,17 @@ public class Google {
 		String href;
 
 		private EmailRel(String href) {
+			this.href = href;
+		}
+	}
+
+	public static enum WebsiteRel {
+		HOME("http://schemas.google.com/g/2005#home"), WORK("http://schemas.google.com/g/2005#work"), OTHER(
+				"http://schemas.google.com/g/2005#other");
+
+		String href;
+
+		private WebsiteRel(String href) {
 			this.href = href;
 		}
 	}
@@ -275,11 +292,16 @@ public class Google {
 		contact.removeExtension(Im.class);
 	}
 
-	public static void setAddress(ContactEntry contact, String label, String street, String postcode, String city,
-			String countryCode, AddressRel rel, boolean primary) {
+	public static void removeWebsites(ContactEntry contact) {
+		contact.removeExtension(Website.class);
+	}
+
+	public static void setAddress(ContactEntry contact, String street, String postcode, String city,
+			String countryCode, String label, AddressRel rel, boolean primary) {
 		for (StructuredPostalAddress a : contact.getStructuredPostalAddresses()) {
 			if (Utl.equals(label, a.getLabel()) && equals(street, a.getStreet()) && equals(postcode, a.getPostcode())
-					&& equals(city, a.getCity()) && equals(countryCode, a.getCountry()) && rel.href.equals(a.getRel())) {
+					&& equals(city, a.getCity()) && equals(countryCode, a.getCountry())
+					&& Utl.equals(rel.href, a.getRel())) {
 				a.setPrimary(primary);
 				return;
 			}
@@ -328,16 +350,38 @@ public class Google {
 		return im;
 	}
 
-	public static PhoneNumber setPhone(ContactEntry contact, String phoneNumber, PhoneRel rel) {
+	public static Website setWebsite(ContactEntry contact, String url, Website.Rel rel) {
+		if (!url.startsWith("http://") && !url.startsWith("https://")) url = "http://" + url;
+		for (Website site : contact.getWebsites()) {
+			String href = site.getHref();
+			if (href.equals(url) && rel.equals(site.getRel())) {
+				// site already exists
+				return site;
+			}
+		}
+		Website site = createWebsite(url, rel);
+		contact.addWebsite(site);
+		return site;
+	}
+
+	private static Website createWebsite(String url, Rel rel) {
+		Website site = new Website();
+		site.setHref(url);
+		site.setRel(rel);
+		return site;
+	}
+
+	public static PhoneNumber setPhone(ContactEntry contact, String phoneNumber, String label, PhoneRel rel) {
 		phoneNumber = phoneNumber.toLowerCase();
 		for (PhoneNumber phone : contact.getPhoneNumbers()) {
 			String number = phone.getPhoneNumber().toLowerCase();
-			if (number.equals(phoneNumber) && rel.href.equals(phone.getRel())) {
+			if (number.equals(phoneNumber) && Utl.equals(label, phone.getLabel())
+					&& Utl.equals(rel.href, phone.getRel())) {
 				// number already exists
 				return phone;
 			}
 		}
-		PhoneNumber phone = createPhoneNumber(phoneNumber, rel);
+		PhoneNumber phone = createPhoneNumber(phoneNumber, label, rel);
 		contact.addPhoneNumber(phone);
 		return phone;
 	}
@@ -479,8 +523,11 @@ public class Google {
 	public static StructuredPostalAddress createPostalAddress(String label, String street, String postcode,
 			String city, String country, AddressRel rel, boolean primary) {
 		StructuredPostalAddress a = new StructuredPostalAddress();
-		a.setRel(rel.href);
-		if (rel == AddressRel.OTHER) a.setLabel(label);
+		if (label == null) {
+			a.setRel(rel.href);
+		} else {
+			a.setLabel(label);
+		}
 		a.setStreet(new Street(street));
 		a.setPostcode(new PostCode(postcode));
 		a.setCity(new City(city));
@@ -515,10 +562,14 @@ public class Google {
 		return im;
 	}
 
-	public static PhoneNumber createPhoneNumber(String number, PhoneRel rel) {
+	public static PhoneNumber createPhoneNumber(String number, String label, PhoneRel rel) {
 		PhoneNumber phoneNumber = new PhoneNumber();
 		phoneNumber.setPhoneNumber(number);
-		phoneNumber.setRel(rel.href);
+		if (label == null) {
+			phoneNumber.setRel(rel.href);
+		} else {
+			phoneNumber.setLabel(label);
+		}
 		return phoneNumber;
 	}
 
