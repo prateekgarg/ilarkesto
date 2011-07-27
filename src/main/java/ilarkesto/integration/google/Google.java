@@ -18,7 +18,6 @@ import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Proc;
 import ilarkesto.base.Str;
-import ilarkesto.base.Sys;
 import ilarkesto.base.time.Date;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
@@ -81,7 +80,8 @@ public class Google {
 		// for (BuzzActivity buzz : getBuzzActivitiesConsumption(login)) {
 		// System.out.println(buzz);
 		// }
-		Sys.setHttpProxy("83.246.65.215", 80);
+
+		// Sys.setHttpProxy("83.246.65.215", 80);
 
 		LoginData login = LoginPanel.showDialog(null, "Google login", new File("runtimedata/google-login.properties"));
 		if (login == null) return;
@@ -99,7 +99,8 @@ public class Google {
 
 		setEmail(contact, "olga@koczewski.de", "privat", EmailRel.HOME, false);
 		setPhone(contact, "12345", "Neue Nummer", null);
-		setAddress(contact, "Teststrasse 12", "12345", "Teststadt", "DE", "Testadresse", AddressRel.OTHER, false);
+		removeAddresses(contact);
+		setAddress(contact, "Teststrasse 122", "12345", "Teststadt", "DE", "Testadresse xy", AddressRel.OTHER, false);
 		setInstantMessaging(contact, "olga@koczewski.de", ImProtocol.JABBER, ImRel.HOME);
 		setWebsite(contact, "http://koczewski.de", Website.Rel.HOME_PAGE);
 		save(contact, service);
@@ -278,23 +279,44 @@ public class Google {
 	}
 
 	public static void removeEmails(ContactEntry contact) {
-		contact.removeExtension(Email.class);
+		List<Email> all = new ArrayList<Email>(contact.getEmailAddresses());
+		for (Email item : all) {
+			contact.removeExtension(item);
+			contact.removeRepeatingExtension(item);
+		}
 	}
 
 	public static void removePhones(ContactEntry contact) {
-		contact.removeExtension(PhoneNumber.class);
+		List<PhoneNumber> all = new ArrayList<PhoneNumber>(contact.getPhoneNumbers());
+		for (PhoneNumber item : all) {
+			contact.removeExtension(item);
+			contact.removeRepeatingExtension(item);
+		}
 	}
 
 	public static void removeAddresses(ContactEntry contact) {
-		contact.removeExtension(StructuredPostalAddress.class);
+		List<StructuredPostalAddress> all = new ArrayList<StructuredPostalAddress>(
+				contact.getStructuredPostalAddresses());
+		for (StructuredPostalAddress item : all) {
+			contact.removeExtension(item);
+			contact.removeRepeatingExtension(item);
+		}
 	}
 
 	public static void removeInstantMessages(ContactEntry contact) {
-		contact.removeExtension(Im.class);
+		List<Im> all = new ArrayList<Im>(contact.getImAddresses());
+		for (Im item : all) {
+			contact.removeExtension(item);
+			contact.removeRepeatingExtension(item);
+		}
 	}
 
 	public static void removeWebsites(ContactEntry contact) {
-		contact.removeExtension(Website.class);
+		List<Website> all = new ArrayList<Website>(contact.getWebsites());
+		for (Website item : all) {
+			contact.removeExtension(item);
+			contact.removeRepeatingExtension(item);
+		}
 	}
 
 	public static void setAddress(ContactEntry contact, String street, String postcode, String city,

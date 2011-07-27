@@ -1,13 +1,13 @@
 /*
- * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
+ * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -39,6 +39,8 @@ import java.util.Set;
 public class FileEntityStore implements EntityStore {
 
 	private static final Log LOG = Log.get(FileEntityStore.class);
+
+	public static String CLUSTER_FILE_NAME = "cluster.xml";
 
 	private boolean versionSaved;
 	private boolean versionChecked;
@@ -230,18 +232,15 @@ public class FileEntityStore implements EntityStore {
 
 		File f = new File(dir + "/" + alias);
 		LOG.info("Loading entities:", alias);
-		// if (!f.exists()) {
-		// LOG.warn("Store directory does not exist. creating:", dir);
-		// if (!f.mkdirs()) throw new RuntimeException("Creating store directory failed: " + dir);
-		// }
-		int count = 0;
 		File[] files = f.listFiles();
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
+				File file = files[i];
+				if (file.getName().equals(CLUSTER_FILE_NAME)) continue;
 				try {
-					if (loadObject(files[i], entities, cls, alias)) count++;
+					loadObject(file, entities, cls, alias);
 				} catch (Throwable ex) {
-					throw new RuntimeException("Loading object from " + files[i] + " failed", ex);
+					throw new RuntimeException("Loading object from " + file + " failed", ex);
 				}
 			}
 		}
