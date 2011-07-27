@@ -409,7 +409,7 @@ public class Google {
 		return ret;
 	}
 
-	public static void setEmail(ContactEntry contact, String emailAddress, EmailRel rel, boolean primary) {
+	public static void setEmail(ContactEntry contact, String emailAddress, String label, EmailRel rel, boolean primary) {
 		boolean updated = false;
 		emailAddress = emailAddress.toLowerCase();
 		for (Email email : contact.getEmailAddresses()) {
@@ -422,7 +422,7 @@ public class Google {
 			}
 		}
 		if (updated) return;
-		contact.addEmailAddress(createEmail(emailAddress, rel, primary));
+		contact.addEmailAddress(createEmail(emailAddress, label, rel, primary));
 	}
 
 	public static void delete(BaseEntry entry) {
@@ -546,10 +546,14 @@ public class Google {
 		return new Birthday(date.toString());
 	}
 
-	public static Email createEmail(String address, EmailRel rel, boolean primary) {
+	public static Email createEmail(String address, String label, EmailRel rel, boolean primary) {
 		Email email = new Email();
+		if (label == null) {
+			email.setRel(rel.href);
+		} else {
+			email.setLabel(label);
+		}
 		email.setAddress(address);
-		email.setRel(rel.href);
 		email.setPrimary(primary);
 		return email;
 	}
