@@ -401,12 +401,12 @@ public class Google {
 		return phone;
 	}
 
-	public static void setPrimaryPhone(ContactEntry contact, String phoneNumber, PhoneRel rel) {
+	public static void setPrimaryPhone(ContactEntry contact, String phoneNumber) {
 		boolean updated = false;
 		phoneNumber = phoneNumber.toLowerCase();
 		for (PhoneNumber phone : contact.getPhoneNumbers()) {
 			String number = phone.getPhoneNumber().toLowerCase();
-			if (number.equals(phoneNumber) && rel.href.equals(phone.getRel())) {
+			if (number.equals(phoneNumber)) {
 				phone.setPrimary(true);
 				updated = true;
 			} else {
