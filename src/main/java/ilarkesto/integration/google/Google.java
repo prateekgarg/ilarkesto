@@ -354,7 +354,7 @@ public class Google {
 		Website.Rel rel = Website.Rel.HOME_PAGE;
 		if (url.contains("blogger.com") || url.contains("blogspot.com") || url.contains("wordpress"))
 			rel = Website.Rel.BLOG;
-		if (url.contains(".google.com/profiles/")) rel = Website.Rel.PROFILE;
+		if (url.contains(".google.com/profiles/") || url.contains("profiles.google.com/")) rel = Website.Rel.PROFILE;
 		if (url.startsWith("ftp://")) rel = Website.Rel.FTP;
 		return setWebsite(contact, url, rel);
 	}
