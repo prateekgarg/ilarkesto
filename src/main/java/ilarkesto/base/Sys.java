@@ -114,6 +114,18 @@ public final class Sys {
 		System.setProperty("http.nonProxyHosts", Str.isBlank(nonProxyHosts) ? "" : nonProxyHosts);
 	}
 
+	public static String getHttpProxyHost() {
+		String value = System.getProperty("http.proxyHost");
+		if (Str.isBlank(value)) return null;
+		return value;
+	}
+
+	public static Integer getHttpProxyPort() {
+		String value = System.getProperty("http.proxyPort");
+		if (Str.isBlank(value)) return null;
+		return Integer.parseInt(value);
+	}
+
 	public static String getJavaRuntimeVersion() {
 		return System.getProperty("java.runtime.version");
 	}
