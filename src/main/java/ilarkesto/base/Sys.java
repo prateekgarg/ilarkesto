@@ -109,9 +109,9 @@ public final class Sys {
 	}
 
 	public static void setHttpProxy(String host, Integer port, String nonProxyHosts) {
-		System.setProperty("http.proxyHost", Str.isBlank(host) ? null : host);
-		System.setProperty("http.proxyPort", port == null ? null : port.toString());
-		System.setProperty("http.nonProxyHosts", Str.isBlank(nonProxyHosts) ? null : nonProxyHosts);
+		System.setProperty("http.proxyHost", Str.isBlank(host) ? "" : host);
+		System.setProperty("http.proxyPort", port == null ? "" : port.toString());
+		System.setProperty("http.nonProxyHosts", Str.isBlank(nonProxyHosts) ? "" : nonProxyHosts);
 	}
 
 	public static String getJavaRuntimeVersion() {
