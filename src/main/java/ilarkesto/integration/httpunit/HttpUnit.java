@@ -73,6 +73,10 @@ public class HttpUnit {
 		return loadPage(url, Sys.getHttpProxyHost(), Sys.getHttpProxyPort());
 	}
 
+	public static WebConversation createWebConversation(boolean acceptCookies) {
+		return createWebConversation(acceptCookies, Sys.getHttpProxyHost(), Sys.getHttpProxyPort());
+	}
+
 	public static WebConversation createWebConversation(boolean acceptCookies, String proxyHost, Integer proxyPort) {
 		HttpUnitOptions.setScriptingEnabled(false);
 		WebConversation webConversation = new WebConversation();
