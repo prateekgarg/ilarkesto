@@ -1,18 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.base;
+
+import ilarkesto.io.IO;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -88,11 +90,11 @@ public final class Sys {
 		return GraphicsEnvironment.isHeadless();
 	}
 
-	public static void setHttpProxy(String host, int port) {
-		setHttpProxy(host, port, "localhost");
+	public static void setHttpProxy(String host, Integer port) {
+		setHttpProxy(host, port, Utl.toStringArray(IO.getLocalHostNames(true, true)));
 	}
 
-	public static void setHttpProxy(String host, int port, String... nonProxyHosts) {
+	public static void setHttpProxy(String host, Integer port, String... nonProxyHosts) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (String nonProxyHost : nonProxyHosts) {
@@ -106,10 +108,10 @@ public final class Sys {
 		setHttpProxy(host, port, sb.toString());
 	}
 
-	public static void setHttpProxy(String host, int port, String nonProxyHosts) {
-		System.setProperty("http.proxyHost", host);
-		System.setProperty("http.proxyPort", String.valueOf(port));
-		System.setProperty("http.nonProxyHosts", nonProxyHosts);
+	public static void setHttpProxy(String host, Integer port, String nonProxyHosts) {
+		System.setProperty("http.proxyHost", Str.isBlank(host) ? null : host);
+		System.setProperty("http.proxyPort", port == null ? null : port.toString());
+		System.setProperty("http.nonProxyHosts", Str.isBlank(nonProxyHosts) ? null : nonProxyHosts);
 	}
 
 	public static String getJavaRuntimeVersion() {

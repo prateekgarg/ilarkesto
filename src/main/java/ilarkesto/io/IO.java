@@ -48,20 +48,23 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.net.ssl.HostnameVerifier;
@@ -379,7 +382,8 @@ public abstract class IO {
 	}
 
 	public static String getHostName() {
-		String[] hostnames = getHostNames();
+		String[] hostnames = new String[0];
+		hostnames = getLocalHostNames(false, true).toArray(hostnames);
 		if (hostnames.length == 0) return null;
 		if (hostnames.length == 1) return hostnames[0];
 		for (int i = 0; i < hostnames.length; i++) {
@@ -388,24 +392,29 @@ public abstract class IO {
 		return hostnames[0];
 	}
 
-	public static String[] getHostNames() {
-		String localhostName;
+	public static Set<String> getLocalHostNames(boolean includeIps, boolean includeNames) {
+		if (!includeIps && !includeNames)
+			throw new IllegalArgumentException("includeIps=false && includeNames==false");
+		Set<String> ret = new HashSet<String>();
+		if (includeIps) ret.add("127.0.0.1");
+		if (includeNames) ret.add("localhost");
+		Enumeration<NetworkInterface> networks;
 		try {
-			localhostName = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException ex) {
-			throw new RuntimeException(ex);
+			networks = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException ex) {
+			return ret;
 		}
-		InetAddress ia[];
-		try {
-			ia = InetAddress.getAllByName(localhostName);
-		} catch (UnknownHostException ex) {
-			throw new RuntimeException(ex);
+		if (networks == null) return ret;
+		while (networks.hasMoreElements()) {
+			Enumeration<InetAddress> addresses = networks.nextElement().getInetAddresses();
+			if (addresses == null) continue;
+			while (addresses.hasMoreElements()) {
+				InetAddress address = addresses.nextElement();
+				if (includeIps) ret.add(address.getHostAddress());
+				if (includeNames) ret.add(address.getHostName());
+			}
 		}
-		String[] sa = new String[ia.length];
-		for (int i = 0; i < ia.length; i++) {
-			sa[i] = ia[i].getHostName();
-		}
-		return sa;
+		return ret;
 	}
 
 	public static URLConnection post(URL url, Map<String, String> parameters, String encoding, String username,
