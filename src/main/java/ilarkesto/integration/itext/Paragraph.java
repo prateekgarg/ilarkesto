@@ -130,6 +130,10 @@ public class Paragraph extends AParagraph implements ItextElement {
 
 	private static int convertAlign(Align align) {
 		switch (align) {
+			case LEFT:
+				return com.lowagie.text.Paragraph.ALIGN_LEFT;
+			case CENTER:
+				return com.lowagie.text.Paragraph.ALIGN_CENTER;
 			case RIGHT:
 				return com.lowagie.text.Paragraph.ALIGN_RIGHT;
 		}
