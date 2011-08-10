@@ -94,11 +94,16 @@ public class Utl extends ilarkesto.core.base.Utl {
 	}
 
 	public static String toStringWithType(Object o) {
-		return o == null ? "?: null" : o.getClass().getSimpleName() + ": " + o;
+		return o == null ? "?: null" : o.getClass().getSimpleName() + ": " + toString(o);
 	}
 
 	public static String toString(Object o) {
-		return o == null ? null : o.toString();
+		if (o == null) return null;
+		try {
+			return o.toString();
+		} catch (Throwable ex) {
+			return "<toString() error in" + o.getClass().getSimpleName() + ">";
+		}
 	}
 
 	public static String randomElement(String... elements) {
