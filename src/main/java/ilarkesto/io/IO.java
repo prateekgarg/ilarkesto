@@ -801,7 +801,7 @@ public abstract class IO {
 		}
 
 		if (observer != null && observer.isAbortRequested()) {
-			IO.delete(tempFile);
+			delete(tempFile);
 		} else {
 			move(tempFile, zipfile);
 		}
@@ -1057,7 +1057,7 @@ public abstract class IO {
 			throw new RuntimeException("Overwriting file '" + dst + "' failed.");
 		}
 		if (!tmp.renameTo(dst)) {
-			IO.delete(tmp);
+			delete(tmp);
 			throw new RuntimeException("Moving '" + tmp + "' to '" + dst + "' failed.");
 		}
 	}
@@ -1640,7 +1640,7 @@ public abstract class IO {
 			}
 			connection.connect();
 			int length = connection.getContentLength();
-			if (observer != null && length > -1) observer.totalSizeDetermined(length);
+			if (observer != null && length > 0) observer.totalSizeDetermined(length);
 			in = connection.getInputStream();
 		} catch (Throwable ex) {
 			throw new RuntimeException(ex);

@@ -28,6 +28,8 @@ public class ExclusiveFileLock {
 	private FileLock lock;
 
 	public ExclusiveFileLock(File file) throws FileLockedException {
+		file = file.getAbsoluteFile();
+
 		this.file = file;
 
 		IO.createDirectory(file.getParentFile());
