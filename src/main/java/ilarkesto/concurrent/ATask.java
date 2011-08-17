@@ -14,6 +14,7 @@
  */
 package ilarkesto.concurrent;
 
+import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
 
 public abstract class ATask {
@@ -105,8 +106,13 @@ public abstract class ATask {
 		} catch (InterruptedException ex) {
 			// all right
 		} catch (Throwable ex) {
-			LOG.error("Task execution failed:", this, ex);
-			throw new RuntimeException(ex);
+			Throwable rootCause = Utl.getRootCause(ex);
+			if (rootCause instanceof InterruptedException) {
+				// all right
+			} else {
+				LOG.error("Task execution failed:", this, ex);
+				throw new RuntimeException(ex);
+			}
 		} finally {
 			finished = true;
 			finishTime = System.currentTimeMillis();
