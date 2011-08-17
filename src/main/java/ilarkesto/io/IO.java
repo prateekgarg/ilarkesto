@@ -1555,7 +1555,7 @@ public abstract class IO {
 
 	public static String downloadUrlToString(String url, String username, String password) {
 		BufferedReader in = new BufferedReader(openUrlReader(url, username, password));
-		String s = IO.readToString(in);
+		String s = readToString(in);
 		close(in);
 		return s;
 	}
