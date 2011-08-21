@@ -26,7 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
+import com.thoughtworks.xstream.converters.SingleValueConverter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class XStreamSerializer extends Serializer {
@@ -49,8 +49,8 @@ public class XStreamSerializer extends Serializer {
 		registerConverter(EmailAddressConverter.class);
 	}
 
-	private final void registerConverter(Class<? extends AbstractSingleValueConverter> type) {
-		AbstractSingleValueConverter converter;
+	private final void registerConverter(Class<? extends SingleValueConverter> type) {
+		SingleValueConverter converter;
 		try {
 			converter = type.newInstance();
 		} catch (InstantiationException ex) {
