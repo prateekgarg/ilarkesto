@@ -1008,6 +1008,14 @@ public abstract class IO {
 		return image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 	}
 
+	public static Image quadratizeToWidth(BufferedImage image) {
+		int width = image.getWidth();
+		int height = image.getHeight();
+		if (height <= width) return image;
+		int top = (height - width) / 2;
+		return image.getSubimage(0, top, width, width);
+	}
+
 	public static void copyDataToFile(byte[] data, File file) {
 		ByteArrayInputStream in = new ByteArrayInputStream(data);
 		copyDataToFile(in, file);
