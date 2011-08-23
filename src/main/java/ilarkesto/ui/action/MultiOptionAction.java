@@ -67,6 +67,7 @@ public final class MultiOptionAction<T> extends AAction {
 		optionsField.setSelectableItems(singleOptions);
 		optionsField.setValue(getSelectedOptions());
 		optionsField.setItemTooltipProvider(new Option.OptionTooltipStringProvider<T>());
+		optionsField.setItemImageUrlProvider(new Option.OptionImageUrlStringProvider<T>());
 		form.addSubmitButton("select");
 		form.addAbortSubmitButton();
 		showFormDialog(form);

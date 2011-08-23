@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -31,6 +31,7 @@ public class MultiCheckboxFormField<T> extends AFormField {
 
 	private List<T> selectableItems;
 	private StringProvider<T> itemTooltipProvider;
+	private StringProvider<T> itemImageUrlProvider;
 
 	public MultiCheckboxFormField(String name) {
 		super(name);
@@ -43,6 +44,15 @@ public class MultiCheckboxFormField<T> extends AFormField {
 
 	public StringProvider<T> getItemTooltipProvider() {
 		return itemTooltipProvider;
+	}
+
+	public MultiCheckboxFormField<T> setItemImageUrlProvider(StringProvider<T> itemImageUrlProvider) {
+		this.itemImageUrlProvider = itemImageUrlProvider;
+		return this;
+	}
+
+	public StringProvider<T> getItemImageUrlProvider() {
+		return itemImageUrlProvider;
 	}
 
 	public List<T> getSelectableItems() {
@@ -72,10 +82,12 @@ public class MultiCheckboxFormField<T> extends AFormField {
 		return value;
 	}
 
+	@Override
 	public String getValueAsString() {
 		return value == null ? "0" : String.valueOf(value.size());
 	}
 
+	@Override
 	public void update(Map<String, String> data, Collection<FileItem> uploadedFiles) {
 		value = new HashSet<T>();
 		int index = 0;
@@ -85,6 +97,7 @@ public class MultiCheckboxFormField<T> extends AFormField {
 		}
 	}
 
+	@Override
 	public void validate() throws ValidationException {
 		if (isRequired() && (value == null || value.size() == 0))
 			throw new ValidationException("Hier ist eine Auswahl erforderlich.");

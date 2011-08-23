@@ -105,4 +105,12 @@ public final class Option<T> {
 		}
 	}
 
+	public static class OptionImageUrlStringProvider<T> implements StringProvider<Option<T>> {
+
+		@Override
+		public String getString(Option<T> o) {
+			return o.getImage();
+		}
+	}
+
 }

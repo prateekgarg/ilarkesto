@@ -333,19 +333,12 @@ public class HtmlRenderer {
 	}
 
 	public void INPUTcheckbox(String name, boolean checked) {
-		Tag tag = INPUT("checkbox", name, "true").setClass("inputCheckbox");
-		if (checked) {
-			tag.set("checked", "checked");
-		}
+		INPUTcheckbox(null, name, checked);
 	}
 
 	public void INPUTcheckbox(String name, boolean checked, String text) {
-		Tag tag = INPUT("checkbox", name, "true").setClass("inputCheckbox");
-		if (checked) {
-			tag.set("checked", "checked");
-		}
 		String id = "cb_" + name;
-		tag.setId(id);
+		INPUTcheckbox(id, name, checked);
 		LABEL(id, text);
 	}
 
