@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -121,6 +122,30 @@ public final class Proc {
 		new StreamGobbler(process.getErrorStream());
 	}
 
+	public synchronized void destroy() {
+		if (process == null) throw new RuntimeException("Process not started yet.");
+		process.destroy();
+	}
+
+	public PrintStream getInputPrintStream() {
+		if (inputPrintStream == null) {
+			inputPrintStream = new PrintStream(process.getOutputStream());
+		}
+		return inputPrintStream;
+	}
+
+	public void sendInput(String s) {
+		PrintStream out = getInputPrintStream();
+		out.print(s);
+		out.flush();
+	}
+
+	public void sendInputLine(String s) {
+		PrintStream out = getInputPrintStream();
+		out.println(s);
+		out.flush();
+	}
+
 	public Process getProcess() {
 		return process;
 	}
@@ -154,7 +179,18 @@ public final class Proc {
 	 */
 	public String getOutput() {
 		if (output == null) throw new RuntimeException("Process not started yet.");
-		return output.toString().trim();
+		synchronized (output) {
+			return output.toString().trim();
+		}
+	}
+
+	public String popOutput() {
+		if (output == null) throw new RuntimeException("Process not started yet.");
+		synchronized (output) {
+			String s = getOutput();
+			output = new StringBuffer();
+			return s;
+		}
 	}
 
 	private Process process;
@@ -162,6 +198,8 @@ public final class Proc {
 	private StringBuffer output;
 
 	private Integer returnCode;
+
+	private PrintStream inputPrintStream;
 
 	// --- static convinience methods ---
 
