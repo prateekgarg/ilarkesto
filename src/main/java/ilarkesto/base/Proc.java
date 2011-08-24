@@ -117,6 +117,7 @@ public final class Proc {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		output = new StringBuffer();
 		new StreamGobbler(process.getInputStream());
 		new StreamGobbler(process.getErrorStream());
@@ -124,7 +125,15 @@ public final class Proc {
 
 	public synchronized void destroy() {
 		if (process == null) throw new RuntimeException("Process not started yet.");
+		if (!isRunning()) return;
 		process.destroy();
+		getReturnCode();
+	}
+
+	public synchronized boolean isRunning() {
+		if (process == null) return false;
+		if (returnCode != null) return false;
+		return true;
 	}
 
 	public PrintStream getInputPrintStream() {
@@ -324,6 +333,15 @@ public final class Proc {
 		public String getCmdline() {
 			return cmdline;
 		}
+	}
+
+	private class ShutdownHook extends Thread {
+
+		@Override
+		public void run() {
+			Proc.this.destroy();
+		}
+
 	}
 
 }

@@ -48,15 +48,17 @@ public class VlcPlayer extends APlayer {
 
 	@Override
 	public synchronized void stop() {
-		sendCommand("quit");
-		vlcProc.destroy();
-		vlcProc = null;
+		if (isVlcRunning()) {
+			sendCommand("quit");
+			vlcProc.destroy();
+			vlcProc = null;
+		}
 		setState(new PlayerState(null, false));
 	}
 
 	@Override
 	public synchronized void pause() {
-		sendCommand("pause");
+		if (isVlcRunning()) sendCommand("pause");
 		setState(new PlayerState(state.getUrl(), false));
 	}
 
@@ -85,4 +87,7 @@ public class VlcPlayer extends APlayer {
 		log.debug("    VLC output:", vlcProc.popOutput());
 	}
 
+	public boolean isVlcRunning() {
+		return vlcProc != null && vlcProc.isRunning();
+	}
 }
