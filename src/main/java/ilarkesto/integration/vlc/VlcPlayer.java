@@ -12,14 +12,14 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.mediaplayer.vlc;
+package ilarkesto.integration.vlc;
 
 import ilarkesto.base.Proc;
 import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
-import ilarkesto.integration.mediaplayer.APlayer;
-import ilarkesto.integration.mediaplayer.PlayerState;
+import ilarkesto.media.player.APlayer;
+import ilarkesto.media.player.PlayerState;
 
 public class VlcPlayer extends APlayer {
 

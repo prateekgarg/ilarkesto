@@ -12,10 +12,10 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.mediaplayer;
+package ilarkesto.media.player;
 
 import ilarkesto.base.Utl;
-import ilarkesto.integration.mediaplayer.vlc.VlcPlayer;
+import ilarkesto.integration.vlc.VlcPlayer;
 
 import java.util.LinkedList;
 import java.util.List;
