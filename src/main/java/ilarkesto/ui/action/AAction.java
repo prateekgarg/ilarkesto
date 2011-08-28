@@ -48,8 +48,6 @@ public abstract class AAction extends ATask {
 
 	@Override
 	public final void perform() {
-		LOG.debug("--------------> startAction:", this);
-
 		ActionPerformer.registerAction(this);
 		try {
 			assertPermissions();
@@ -76,8 +74,6 @@ public abstract class AAction extends ATask {
 		if (!infoDisplayed && autoShowInfoDone) infoDone();
 
 		if (!ui.isViewSet() && isRootAction()) showReturnView();
-
-		LOG.debug("--------------> finishingAction:", this);
 
 		finish();
 	}
