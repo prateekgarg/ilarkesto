@@ -16,7 +16,7 @@ if [ "$1" = "stop" ]; then
   MEM_OPTS="-Xmx64m"
   FORCE_FLAG="-force"
 elif [ "$1" != "stop" ]; then
-  MEM_OPTS="-Xmx512m -XX:PermSize=64m -XX:MaxPermSize=128m"
+  MEM_OPTS="-Xmx256m -XX:PermSize=64m -XX:MaxPermSize=96m"
 fi
 
 if [ "$1" = "start" ]; then
