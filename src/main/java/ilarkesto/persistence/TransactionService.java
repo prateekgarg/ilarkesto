@@ -72,8 +72,11 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 	public boolean isPersistent(String id) {
 		if (id == null) return false;
 		Transaction transaction = getCurrentTransaction(false);
-		if (transaction == null) return entityStore.getById(id) != null;
-		return transaction.getById(id) != null;
+		if (transaction == null) {
+			AEntity entity = entityStore.getById(id);
+			return entity != null;
+		}
+		return transaction.isPersistent(id);
 	}
 
 	// --- delegations ---

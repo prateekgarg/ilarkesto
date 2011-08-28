@@ -43,6 +43,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 	private AEntity currentlySaving;
 
 	public synchronized void saveEntity(AEntity entity) {
+		if (entity == null) throw new NullPointerException("entity");
 		if (currentlySaving == entity) return;
 		currentlySaving = entity;
 		if (entitiesToSave.contains(entity) || entitiesToDelete.contains(entity)) return;
@@ -96,6 +97,18 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		entitiesRegistered.clear();
 
 		LOG.debug("Transaction committed:", this);
+	}
+
+	public synchronized boolean isPersistent(String id) {
+		AEntity result = entityStore.getById(id);
+		if (result != null) return true;
+
+		for (AEntity entity : entitiesToSave) {
+			if (id.equals(entity.getId())) return true;
+		}
+
+		// ignore registeredEntities!
+		return false;
 	}
 
 	public synchronized boolean isEmpty() {

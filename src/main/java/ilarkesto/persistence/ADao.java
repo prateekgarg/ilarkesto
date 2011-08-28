@@ -51,7 +51,8 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	@Override
 	public void onDatobModified(E entity, String comment) {
 		// don's save new entities
-		if (!isPersistent(entity)) return;
+		boolean persistent = isPersistent(entity);
+		if (!persistent) return;
 
 		LOG.info("Entity modified:", Utl.toStringWithType(entity), "->", comment);
 		saveEntity(entity);
