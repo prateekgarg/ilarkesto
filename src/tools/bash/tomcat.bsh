@@ -36,4 +36,5 @@ if [ "$1" = "stop" ]; then
   sleep 5
   /opt/tomcat/bin/catalina.sh $* $FORCE_FLAG
   rm $CATALINA_PID
+  pkill -9 java
 fi
