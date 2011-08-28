@@ -39,6 +39,10 @@ public class Utl extends ilarkesto.core.base.Utl {
 		}
 	}
 
+	public static Set<Thread> getAllThreads() {
+		return Thread.getAllStackTraces().keySet();
+	}
+
 	public static File getFirstExistingFile(String... paths) {
 		for (String path : paths) {
 			File file = new File(path);
