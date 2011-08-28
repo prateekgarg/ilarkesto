@@ -15,6 +15,7 @@
 package ilarkesto.base;
 
 import ilarkesto.core.logging.Log;
+import ilarkesto.io.IO;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -119,8 +120,8 @@ public final class Proc {
 		}
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		output = new StringBuffer();
-		new StreamGobbler(process.getInputStream());
-		new StreamGobbler(process.getErrorStream());
+		outputGobbler = new StreamGobbler(process.getInputStream());
+		errorGobbler = new StreamGobbler(process.getErrorStream());
 	}
 
 	public synchronized void destroy() {
@@ -172,12 +173,15 @@ public final class Proc {
 	public int getReturnCode() {
 		if (returnCode == null) {
 			if (process == null) throw new RuntimeException("Process not started yet.");
+			IO.closeQuiet(process.getOutputStream());
 			try {
 				process.waitFor();
 			} catch (InterruptedException ex) {
 				throw new RuntimeException("Command interrupted: " + command, ex);
 			}
 			returnCode = process.exitValue();
+			if (outputGobbler != null) outputGobbler.close();
+			if (errorGobbler != null) errorGobbler.close();
 			LOG.debug("    " + command + ":", "rc:", returnCode);
 		}
 		return returnCode;
@@ -244,7 +248,13 @@ public final class Proc {
 				}
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
+			} finally {
+				close();
 			}
+		}
+
+		public void close() {
+			IO.closeQuiet(is);
 		}
 	}
 
@@ -303,6 +313,10 @@ public final class Proc {
 	}
 
 	private File workingDir;
+
+	private StreamGobbler outputGobbler;
+
+	private StreamGobbler errorGobbler;
 
 	public Proc setWorkingDir(File workingDir) {
 		this.workingDir = workingDir;
