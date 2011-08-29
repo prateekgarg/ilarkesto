@@ -87,6 +87,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 			for (AEntity entity : new ArrayList<AEntity>(entitiesToDelete)) {
 				entityStore.delete(entity);
 				entitiesToDelete.remove(entity);
+				savedEntities.remove(entity);
 			}
 
 			for (AEntity entity : savedEntities) {
