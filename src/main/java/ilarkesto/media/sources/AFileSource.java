@@ -14,6 +14,8 @@
  */
 package ilarkesto.media.sources;
 
+import ilarkesto.async.AsFs;
+import ilarkesto.async.Callback;
 import ilarkesto.media.AMediaItem;
 import ilarkesto.media.MediaItemFilter;
 import ilarkesto.media.MediaSource;
@@ -30,9 +32,18 @@ public abstract class AFileSource implements MediaSource {
 		this.rootDir = rootDir;
 	}
 
+	protected abstract void onFilesFound(List<File> files, Callback<List<AMediaItem>> callback);
+
 	@Override
-	public List<AMediaItem> listItems(MediaItemFilter filter) {
-		return null; // TODO
+	public final void listItems(MediaItemFilter filter, final Callback<List<AMediaItem>> callback) {
+		AsFs.listFiles(rootDir, true, false, new Callback<List<File>>(callback) {
+
+			@Override
+			public void onSuccess(List<File> result) {
+				onFilesFound(result, callback);
+			}
+
+		});
 	}
 
 }

@@ -39,6 +39,38 @@ public class Utl extends ilarkesto.core.base.Utl {
 		}
 	}
 
+	public static String getFirstNonDefaultElementAsString(StackTraceElement[] elements) {
+		StackTraceElement element = getFirstNonDefaultElement(elements);
+		return element == null ? null : element.getClassName() + "." + element.getMethodName();
+	}
+
+	public static StackTraceElement getFirstNonDefaultElement(StackTraceElement[] elements) {
+		if (elements == null || elements.length == 0) return null;
+		for (StackTraceElement element : elements) {
+			String cls = element.getClassName();
+			if (cls.startsWith("java.")) continue;
+			if (cls.startsWith("sun.")) continue;
+			return element;
+		}
+		return elements[elements.length - 1];
+	}
+
+	public static String formatStackTrace(StackTraceElement[] elements, String separator) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (StackTraceElement element : elements) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(separator);
+			}
+			sb.append(element.getClassName()).append(".").append(element.getMethodName()).append("()");
+			int line = element.getLineNumber();
+			if (line >= 0) sb.append(":").append(line);
+		}
+		return sb.toString();
+	}
+
 	public static Set<Thread> getAllThreads() {
 		return Thread.getAllStackTraces().keySet();
 	}

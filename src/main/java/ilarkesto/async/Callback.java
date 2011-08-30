@@ -12,10 +12,12 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.fp;
+package ilarkesto.async;
 
-public interface Predicate<T> {
+public interface Callback<R> {
 
-	public boolean test(T e);
+	void onSuccess(R result);
+
+	void onError(Throwable error);
 
 }

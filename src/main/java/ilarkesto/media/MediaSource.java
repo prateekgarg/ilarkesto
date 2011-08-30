@@ -14,10 +14,12 @@
  */
 package ilarkesto.media;
 
+import ilarkesto.async.Callback;
+
 import java.util.List;
 
 public interface MediaSource {
 
-	List<AMediaItem> listItems(MediaItemFilter filter);
+	void listItems(MediaItemFilter filter, Callback<List<AMediaItem>> callback);
 
 }

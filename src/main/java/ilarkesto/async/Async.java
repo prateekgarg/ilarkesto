@@ -12,10 +12,23 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.fp;
+package ilarkesto.async;
 
-public interface Predicate<T> {
+public class Async {
 
-	public boolean test(T e);
+	private static AsyncEngine asyncEngine;
+
+	public static void start(Job job) {
+		getAsyncEngine().start(job);
+	}
+
+	public static AsyncEngine getAsyncEngine() {
+		if (asyncEngine == null) asyncEngine = new ExecutorAsyncEngine();
+		return asyncEngine;
+	}
+
+	public static void setAsyncEngine(AsyncEngine asyncEngine) {
+		Async.asyncEngine = asyncEngine;
+	}
 
 }

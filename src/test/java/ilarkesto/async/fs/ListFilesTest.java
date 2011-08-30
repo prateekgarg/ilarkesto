@@ -12,10 +12,32 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.fp;
+package ilarkesto.async.fs;
 
-public interface Predicate<T> {
+import ilarkesto.async.Callback;
+import ilarkesto.core.logging.Log;
+import ilarkesto.testng.ATest;
 
-	public boolean test(T e);
+import java.io.File;
+import java.util.List;
 
+import org.testng.annotations.Test;
+
+public class ListFilesTest extends ATest {
+
+	@Test
+	public void simple() {
+		new ListFiles("test-input/ListFiles", new Callback<List<File>>() {
+
+			@Override
+			public void onSuccess(List<File> result) {
+				Log.DEBUG(result);
+			}
+
+			@Override
+			public void onError(Throwable error) {
+				fail("listing files failed", error);
+			}
+		}).setIncludeDirs(true).setRecurse(true).start();
+	}
 }
