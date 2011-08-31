@@ -14,12 +14,21 @@
  */
 package ilarkesto.media.sources;
 
+import ilarkesto.async.Callback;
+import ilarkesto.media.AMediaItem;
+
 import java.io.File;
+import java.util.List;
 
 public class MoviesFileSource extends AFileSource {
 
 	public MoviesFileSource(File rootDir) {
 		super(rootDir);
+	}
+
+	@Override
+	protected void onFilesFound(List<File> files, Callback<List<AMediaItem>> callback) {
+		// TODO
 	}
 
 }
