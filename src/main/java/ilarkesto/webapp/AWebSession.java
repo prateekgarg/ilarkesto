@@ -28,19 +28,22 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class AWebSession {
 
 	private static final Log LOG = Log.get(AWebSession.class);
-	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(30);
+	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(1);
 
 	private Context context;
 	private String userAgent;
 	private boolean shitBrowser;
 	private String initialRemoteHost;
 	private boolean sessionInvalidated;
+	private DateAndTime sessionStartedTime;
 	private DateAndTime lastTouched;
 	private Set<AGwtConversation> gwtConversations = new HashSet<AGwtConversation>();
 	private int lastGwtConversationNumber = 0;
 
 	public AWebSession(Context parentContext, HttpServletRequest initialRequest) {
 		this.initialRemoteHost = initialRequest == null ? "localhost" : initialRequest.getRemoteHost();
+
+		sessionStartedTime = DateAndTime.now();
 
 		context = parentContext.createSubContext(toString());
 		context.addBeanProvider(this);
@@ -99,7 +102,9 @@ public abstract class AWebSession {
 	}
 
 	final boolean isTimeouted() {
-		return lastTouched.getPeriodToNow().isGreaterThen(getTimeout());
+		TimePeriod idle = lastTouched.getPeriodToNow();
+		TimePeriod maxIdle = getTimeout();
+		return idle.isGreaterThen(maxIdle);
 	}
 
 	public final DateAndTime getLastTouched() {
@@ -116,6 +121,10 @@ public abstract class AWebSession {
 
 	public final void setShitBrowser(boolean value) {
 		this.shitBrowser = value;
+	}
+
+	public DateAndTime getSessionStartedTime() {
+		return sessionStartedTime;
 	}
 
 	public final Context getContext() {

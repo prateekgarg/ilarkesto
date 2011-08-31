@@ -202,6 +202,14 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable {
 		return hours + (minutes > 9 ? ":" : ":0") + minutes;
 	}
 
+	public boolean isGreaterThen(TimePeriod other) {
+		return millis > other.millis;
+	}
+
+	public boolean isLessThen(TimePeriod other) {
+		return millis < other.millis;
+	}
+
 	@Override
 	public final int compareTo(TimePeriod o) {
 		if (millis == o.millis) return 0;

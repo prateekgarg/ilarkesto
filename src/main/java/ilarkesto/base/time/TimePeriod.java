@@ -20,8 +20,6 @@ public final class TimePeriod extends ilarkesto.core.time.TimePeriod {
 
 	public static final TimePeriod ZERO = new TimePeriod(0);
 
-	private long millis;
-
 	public TimePeriod(long millis) {
 		super(millis);
 	}
@@ -36,14 +34,6 @@ public final class TimePeriod extends ilarkesto.core.time.TimePeriod {
 	}
 
 	// ---
-
-	public boolean isGreaterThen(TimePeriod other) {
-		return millis > other.millis;
-	}
-
-	public boolean isLessThen(TimePeriod other) {
-		return millis < other.millis;
-	}
 
 	@Override
 	public TimePeriod multiplyBy(int factor) {
@@ -66,7 +56,7 @@ public final class TimePeriod extends ilarkesto.core.time.TimePeriod {
 	}
 
 	public TimePeriod subtract(Time time) {
-		return new TimePeriod(millis - time.toMillis());
+		return new TimePeriod(toMillis() - time.toMillis());
 	}
 
 	public String toHoursAndMinutesString() {
