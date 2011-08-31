@@ -247,8 +247,7 @@ public final class Proc {
 					}
 				}
 			} catch (IOException ex) {
-				if ("Stream closed".equals(ex.getMessage())) return;
-				throw new RuntimeException(ex);
+				return;
 			} finally {
 				close();
 			}
