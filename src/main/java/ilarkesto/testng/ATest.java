@@ -14,6 +14,8 @@
  */
 package ilarkesto.testng;
 
+import ilarkesto.core.logging.Log;
+
 import java.util.Collection;
 
 import org.testng.Assert;
@@ -22,6 +24,14 @@ public class ATest extends Assert {
 
 	public static final String OUTPUT_DIR = "test-output";
 	public static final String INPUT_DIR = "test-input";
+
+	protected Log log = Log.get(getClass());
+
+	public static void assertSize(Collection collection, int expectedSize) {
+		assertNotNull(collection, "Collection expected to be not null");
+		assertEquals(collection.size(), expectedSize, "Collection size expected to be <" + expectedSize + ">, but is <"
+				+ collection.size() + ">: <" + collection + ">");
+	}
 
 	public static <T> void assertContains(String string, String substring) {
 		assertTrue(string.contains(substring), "<" + string + "> expected to contain <" + substring + ">");

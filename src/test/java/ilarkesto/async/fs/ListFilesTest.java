@@ -15,29 +15,23 @@
 package ilarkesto.async.fs;
 
 import ilarkesto.async.Callback;
-import ilarkesto.core.logging.Log;
-import ilarkesto.testng.ATest;
+import ilarkesto.async.Job;
+import ilarkesto.testng.AAsyncJobTest;
 
 import java.io.File;
 import java.util.List;
 
-import org.testng.annotations.Test;
+public class ListFilesTest extends AAsyncJobTest<List<File>> {
 
-public class ListFilesTest extends ATest {
-
-	@Test
-	public void simple() {
-		new ListFiles("test-input/ListFiles", new Callback<List<File>>() {
-
-			@Override
-			public void onSuccess(List<File> result) {
-				Log.DEBUG(result);
-			}
-
-			@Override
-			public void onError(Throwable error) {
-				fail("listing files failed", error);
-			}
-		}).setIncludeDirs(true).setRecurse(true).start();
+	@Override
+	protected Job<List<File>> createJob(Callback<List<File>> callback) {
+		return new ListFiles("test-input/ListFiles", callback).setIncludeDirs(true).setRecurse(true);
 	}
+
+	@Override
+	protected void assertResult(List<File> result) {
+		log.info(result);
+		assertSize(result, 3);
+	}
+
 }
