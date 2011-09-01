@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class AWebSession {
 
 	private static final Log LOG = Log.get(AWebSession.class);
-	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(1);
+	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(30);
 
 	private Context context;
 	private String userAgent;
