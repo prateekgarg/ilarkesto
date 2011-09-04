@@ -58,7 +58,9 @@ public class Utl extends ilarkesto.core.base.Utl {
 	public static String formatStackTrace(StackTraceElement[] elements, String separator) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
-		for (StackTraceElement element : elements) {
+		int len = elements.length;
+		for (int i = len - 1; i >= 0; i--) {
+			StackTraceElement element = elements[i];
 			if (first) {
 				first = false;
 			} else {
