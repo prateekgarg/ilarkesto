@@ -18,6 +18,7 @@ import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.Context;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -29,10 +30,9 @@ public class TaskManager {
 
 	private static final Log LOG = Log.get(TaskManager.class);
 
-	private Set<ATask> runningTasks = new HashSet<ATask>();
-	private Set<ATask> scheduledTasks = new HashSet<ATask>();
-	private Set<TaskRunner> taskRunners = new HashSet<TaskRunner>();
-	private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5,
+	private Set<ATask> runningTasks = Collections.synchronizedSet(new HashSet<ATask>());
+	private Set<ATask> scheduledTasks = Collections.synchronizedSet(new HashSet<ATask>());
+	private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(0,
 		new DeamonThreadFactory());
 	private ExecutorService executorService = Executors.newCachedThreadPool(new DeamonThreadFactory());
 	private boolean shutdownInProgress;
@@ -128,14 +128,9 @@ public class TaskManager {
 
 		@Override
 		public void run() {
-			synchronized (taskRunners) {
-				taskRunners.add(this);
-			}
 			Context context = parentContext.createSubContext("task:" + task.toString());
 			// Thread.currentThread().setName(task.toString());
-			synchronized (runningTasks) {
-				runningTasks.add(task);
-			}
+			runningTasks.add(task);
 			// LOG.debug("Task started:", task);
 			try {
 				task.run();
@@ -147,16 +142,11 @@ public class TaskManager {
 				}
 			}
 			// LOG.debug("Task finished:", task);
-			synchronized (runningTasks) {
-				runningTasks.remove(task);
-			}
+			runningTasks.remove(task);
 			if (repeating) task.reset();
 			context.destroy();
 			synchronized (TaskManager.this) {
 				TaskManager.this.notifyAll();
-			}
-			synchronized (taskRunners) {
-				taskRunners.remove(this);
 			}
 		}
 
