@@ -52,6 +52,7 @@ public class TaskManager {
 				try {
 					this.wait(1000);
 				} catch (InterruptedException ex) {
+					LOG.info("    Waiting for running tasks aborted by InterruptedException");
 					return;
 				}
 			}
