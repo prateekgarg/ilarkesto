@@ -78,17 +78,19 @@ public final class Proc {
 				continue;
 			}
 		}
-		if (!rcOk) {
-			StringBuilder cmdline = new StringBuilder();
-			cmdline.append(command);
-			if (parameters != null) {
-				for (String parameter : parameters) {
-					cmdline.append(" ").append(parameter);
-				}
-			}
-			throw new UnexpectedReturnCodeException(rc, cmdline.toString(), getOutput());
-		}
+		if (!rcOk) { throw new UnexpectedReturnCodeException(rc, getCommandLine(), getOutput()); }
 		return getOutput();
+	}
+
+	public synchronized String getCommandLine() {
+		StringBuilder cmdline = new StringBuilder();
+		cmdline.append(command);
+		if (parameters != null) {
+			for (String parameter : parameters) {
+				cmdline.append(" ").append(parameter);
+			}
+		}
+		return cmdline.toString();
 	}
 
 	/**
