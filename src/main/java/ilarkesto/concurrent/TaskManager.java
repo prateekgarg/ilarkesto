@@ -48,13 +48,11 @@ public class TaskManager {
 		Set<ATask> tasks;
 		while ((!(tasks = getRunningTasks()).isEmpty()) && System.currentTimeMillis() < tryUntilTime) {
 			LOG.info("Waiting for running tasks:", tasks);
-			synchronized (this) {
-				try {
-					this.wait(1000);
-				} catch (InterruptedException ex) {
-					LOG.info("    Waiting for running tasks aborted by InterruptedException");
-					return;
-				}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException ex) {
+				LOG.info("    Waiting for running tasks aborted by InterruptedException");
+				return;
 			}
 		}
 		LOG.info("All tasks finished");
