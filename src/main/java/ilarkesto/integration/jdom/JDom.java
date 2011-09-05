@@ -146,7 +146,7 @@ public abstract class JDom {
 		try {
 			BufferedInputStream is = new BufferedInputStream(IO.openUrlInputStream(url, username, password));
 			Document doc = builder.build(is);
-			IO.close(is);
+			IO.closeQuiet(is);
 			return doc;
 		} catch (Exception ex) {
 			throw new RuntimeException("Loading XML from URL failed: " + url, ex);

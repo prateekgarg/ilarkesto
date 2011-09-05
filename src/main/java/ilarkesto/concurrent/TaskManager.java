@@ -32,7 +32,7 @@ public class TaskManager {
 
 	private Set<ATask> runningTasks = Collections.synchronizedSet(new HashSet<ATask>());
 	private Set<ATask> scheduledTasks = Collections.synchronizedSet(new HashSet<ATask>());
-	private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(0,
+	private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5,
 		new DeamonThreadFactory());
 	private ExecutorService executorService = Executors.newCachedThreadPool(new DeamonThreadFactory());
 	private boolean shutdownInProgress;
@@ -61,9 +61,7 @@ public class TaskManager {
 	}
 
 	public Set<ATask> getRunningTasks() {
-		synchronized (runningTasks) {
-			return new HashSet<ATask>(runningTasks);
-		}
+		return Utl.toSet(runningTasks.toArray(new ATask[runningTasks.size()]));
 	}
 
 	public void abortAllRunningTasks() {
