@@ -65,6 +65,7 @@ public class Str {
 	}
 
 	public static String concat(Collection strings, String delimiter) {
+		if (strings == null) return null;
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (Object s : strings) {

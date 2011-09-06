@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -69,9 +69,10 @@ public class GwtServiceCallGenerator extends AJavaClassGenerator implements Node
 		}
 
 		out.beginMethod("void", "execute", Arrays.asList("Runnable returnHandler"));
-		out.statement("serviceCaller.onServiceCall()");
+		out.statement("serviceCaller.onServiceCall(this)");
 		out.statement("serviceCaller.getService()." + Str.lowercaseFirstLetter(call.getValue())
-				+ "(serviceCaller.getConversationNumber(), " + callParameters + "new DefaultCallback(returnHandler))");
+				+ "(serviceCaller.getConversationNumber(), " + callParameters
+				+ "new DefaultCallback(this, returnHandler))");
 		out.endMethod();
 
 		Node dispensable = call.getChildByType(Dispensable);
