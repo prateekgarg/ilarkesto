@@ -17,6 +17,7 @@ package ilarkesto.gwt.client;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -258,6 +259,7 @@ public abstract class AViewEditWidget extends AWidget {
 		private boolean isRightTarget(ClickEvent event) {
 			String eventTarget = event.getNativeEvent().getEventTarget().toString();
 			// showIfIe(eventTarget);
+			if (!GWT.isProdMode() && Gwt.isWebkit()) return eventTarget.startsWith("<div ");
 			if (Gwt.isMsie()) return eventTarget.equals("[object]");
 			return eventTarget.startsWith("[object HTML");
 		}

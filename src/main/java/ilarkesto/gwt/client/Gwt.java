@@ -60,6 +60,10 @@ public class Gwt {
 	private static DateTimeFormat dtfWeekdayMonthDay;
 	private static DateTimeFormat dtfHourMinute;
 
+	public static boolean isWebkit() {
+		return isWebkitJs();
+	}
+
 	public static boolean isMsie() {
 		return GWT.isProdMode() ? isMsieJs() : false;
 	}
@@ -68,6 +72,12 @@ public class Gwt {
 	/*-{
 	    var agent = navigator.userAgent.toLowerCase();
 		return agent && agent.indexOf('msie') >= 0;
+	}-*/;
+
+	private static native boolean isWebkitJs()
+	/*-{
+	    var agent = navigator.userAgent.toLowerCase();
+		return agent && agent.indexOf('webkit') >= 0;
 	}-*/;
 
 	public static boolean contains(HasWidgets container, Widget widget) {
