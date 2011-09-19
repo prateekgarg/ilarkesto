@@ -146,6 +146,28 @@ public abstract class AIntegerViewEditWidget extends AViewEditWidget {
 		public void onKeyDown(KeyDownEvent event) {
 			int keyCode = event.getNativeKeyCode();
 
+			if (keyCode == 96) {
+				keyCode = '0';
+			} else if (keyCode == 97) {
+				keyCode = '1';
+			} else if (keyCode == 98) {
+				keyCode = '2';
+			} else if (keyCode == 99) {
+				keyCode = '3';
+			} else if (keyCode == 100) {
+				keyCode = '4';
+			} else if (keyCode == 101) {
+				keyCode = '5';
+			} else if (keyCode == 102) {
+				keyCode = '6';
+			} else if (keyCode == 103) {
+				keyCode = '7';
+			} else if (keyCode == 104) {
+				keyCode = '8';
+			} else if (keyCode == 105) {
+				keyCode = '9';
+			}
+
 			if (isCancelKey(keyCode)) {
 				editor.cancelKey();
 			}
