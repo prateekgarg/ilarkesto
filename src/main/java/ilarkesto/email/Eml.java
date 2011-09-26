@@ -191,7 +191,11 @@ public class Eml {
 
 	public static String getContentAsText(Part part) {
 		String result = getPlainTextContent(part);
-		if (result == null) result = Str.html2text(getHtmlTextContent(part));
+		if (result == null) {
+			result = Str.html2text(getHtmlTextContent(part));
+		} else {
+			if (result != null && result.startsWith("<!DOCTYPE HTML")) result = Str.html2text(result);
+		}
 		return result;
 	}
 
