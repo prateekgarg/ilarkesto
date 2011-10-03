@@ -67,6 +67,10 @@ public abstract class AAction implements Command, ClickHandler {
 		return null;
 	}
 
+	public String getTooltipAsHtml() {
+		return Str.toHtml(getTooltip());
+	}
+
 	public String getId() {
 		return Str.getSimpleName(getClass()).replace('$', '_');
 	}

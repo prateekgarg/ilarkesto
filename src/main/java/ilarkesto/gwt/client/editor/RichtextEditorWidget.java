@@ -127,7 +127,7 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		if (syntaxInfoHtml != null) {
 			Label syntaxInfo = new Label("Syntax Info");
 			syntaxInfo.getElement().getStyle().setMargin(5, Unit.PX);
-			Gwt.addHtmlTooltip(syntaxInfo, syntaxInfoHtml);
+			Gwt.addTooltipHtml(syntaxInfo, syntaxInfoHtml);
 			toolbar.add(syntaxInfo);
 		}
 	}

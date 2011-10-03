@@ -61,7 +61,7 @@ public abstract class AViewEditWidget extends AWidget {
 	protected final Widget onInitialization() {
 		masterWrapper = new FocusPanel();
 		masterWrapper.setStyleName("AViewEditWidget");
-		Gwt.addHtmlTooltip(masterWrapper, getTooltip());
+		Gwt.addTooltipHtml(masterWrapper, getTooltip());
 		return masterWrapper;
 	}
 
