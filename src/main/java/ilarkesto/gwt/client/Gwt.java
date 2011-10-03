@@ -141,11 +141,17 @@ public class Gwt {
 		return button;
 	}
 
-	public static HTML addHtmlTooltip(SourcesMouseEvents widget, String tooltip) {
-		HTML html = new HTML(tooltip);
+	public static HTML addTooltipHtml(SourcesMouseEvents widget, String tooltipHtml) {
+		HTML html = new HTML(tooltipHtml);
 		TooltipListener listener = new TooltipListener(html);
 		widget.addMouseListener(listener);
 		return html;
+	}
+
+	public static <W extends Widget> W addTooltip(SourcesMouseEvents widget, W tooltipWidget) {
+		TooltipListener listener = new TooltipListener(tooltipWidget);
+		widget.addMouseListener(listener);
+		return tooltipWidget;
 	}
 
 	public static boolean confirm(String message) {
