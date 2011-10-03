@@ -27,6 +27,10 @@ public class Utl {
 		return language;
 	}
 
+	public static <T> T getFirstElement(Collection<T> collection) {
+		return collection.iterator().next();
+	}
+
 	public static <T> List<T> toList(T... elements) {
 		if (elements == null) return null;
 		List<T> ret = new ArrayList<T>(elements.length);
