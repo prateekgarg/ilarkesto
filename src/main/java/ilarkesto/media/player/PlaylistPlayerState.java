@@ -14,24 +14,37 @@
  */
 package ilarkesto.media.player;
 
+import java.util.List;
 
-public class PlayerState {
+public class PlaylistPlayerState {
 
 	private boolean playing;
-	private String url;
+	private List<String> previousItems;
+	private String currentItem;
+	private List<String> nextItems;
 
-	public PlayerState(String url, boolean playing) {
+	public PlaylistPlayerState(boolean playing, List<String> previousItems, String currentItem, List<String> nextItems) {
 		super();
-		this.url = url;
 		this.playing = playing;
+		this.previousItems = previousItems;
+		this.currentItem = currentItem;
+		this.nextItems = nextItems;
 	}
 
 	public boolean isPlaying() {
 		return playing;
 	}
 
-	public String getUrl() {
-		return url;
+	public List<String> getPreviousItems() {
+		return previousItems;
+	}
+
+	public String getCurrentItem() {
+		return currentItem;
+	}
+
+	public List<String> getNextItems() {
+		return nextItems;
 	}
 
 }

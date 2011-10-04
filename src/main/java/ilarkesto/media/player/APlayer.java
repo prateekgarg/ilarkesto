@@ -50,4 +50,8 @@ public abstract class APlayer {
 		return state;
 	}
 
+	public void addObserver(PlayerObserver observer) {
+		observers.add(observer);
+	}
+
 }

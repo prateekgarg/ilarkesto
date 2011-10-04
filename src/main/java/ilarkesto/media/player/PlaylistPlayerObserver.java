@@ -14,24 +14,8 @@
  */
 package ilarkesto.media.player;
 
+public interface PlaylistPlayerObserver {
 
-public class PlayerState {
-
-	private boolean playing;
-	private String url;
-
-	public PlayerState(String url, boolean playing) {
-		super();
-		this.url = url;
-		this.playing = playing;
-	}
-
-	public boolean isPlaying() {
-		return playing;
-	}
-
-	public String getUrl() {
-		return url;
-	}
+	void onStateChanged(PlaylistPlayer player, PlaylistPlayerState state);
 
 }

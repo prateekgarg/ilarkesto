@@ -17,6 +17,7 @@ package ilarkesto.media.player;
 import ilarkesto.base.Utl;
 import ilarkesto.integration.vlc.VlcPlayer;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class PlaylistPlayer {
 	}
 
 	private APlayer player;
+	private PlaylistPlayerState state;
+	private List<PlaylistPlayerObserver> observers = new LinkedList<PlaylistPlayerObserver>();
 
 	private List<String> previousItems = new LinkedList<String>();
 	private String currentItem;
@@ -42,6 +45,72 @@ public class PlaylistPlayer {
 	public PlaylistPlayer(APlayer player) {
 		super();
 		this.player = player;
+		currentItem = player.getState().getUrl();
+		updateState();
+	}
+
+	// state changing methods
+
+	public synchronized void play() {
+		if (currentItem == null) moveToNextItem();
+		if (currentItem == null) {
+			if (previousItems.isEmpty()) {
+				player.stop();
+				updateState();
+				return;
+			}
+			player.stop();
+			updateState();
+			return;
+		}
+		player.play(currentItem);
+		updateState();
+	}
+
+	public void stop() {
+		player.stop();
+		updateState();
+	}
+
+	public void pause() {
+		player.pause();
+		updateState();
+	}
+
+	public void resume() {
+		player.resume();
+		updateState();
+	}
+
+	public void togglePause() {
+		player.togglePause();
+		updateState();
+	}
+
+	public synchronized void appendAsNext(String url) {
+		if (currentItem == null) {
+			currentItem = url;
+			updateState();
+			return;
+		}
+		nextItems.add(0, url);
+		updateState();
+	}
+
+	public synchronized void appendItem(String url) {
+		nextItems.add(url);
+		updateState();
+	}
+
+	//
+
+	public synchronized void playPrevious() {
+		moveToPreviousItem();
+		if (currentItem == null) {
+			stop();
+			return;
+		}
+		play();
 	}
 
 	public synchronized void play(String url) {
@@ -49,47 +118,9 @@ public class PlaylistPlayer {
 		playNext();
 	}
 
-	public synchronized void play() {
-		if (currentItem == null) moveToNextItem();
-		if (currentItem == null) {
-			if (previousItems.isEmpty()) {
-				player.stop();
-				return;
-			}
-			player.stop();
-			return;
-		}
-		player.play(currentItem);
-	}
-
 	public synchronized void playNext() {
 		moveToNextItem();
 		play();
-	}
-
-	public synchronized void playPrevious() {
-		moveToPreviousItem();
-		if (currentItem == null) {
-			player.stop();
-			return;
-		}
-		player.play(currentItem);
-	}
-
-	public void stop() {
-		player.stop();
-	}
-
-	public void pause() {
-		player.pause();
-	}
-
-	public void resume() {
-		player.resume();
-	}
-
-	public void togglePause() {
-		player.togglePause();
 	}
 
 	private synchronized void moveToPreviousItem() {
@@ -117,16 +148,25 @@ public class PlaylistPlayer {
 		nextItems.remove(0);
 	}
 
-	public synchronized void appendAsNext(String url) {
-		nextItems.add(0, url);
-	}
-
-	public synchronized void appendItem(String url) {
-		nextItems.add(url);
-	}
-
 	public APlayer getPlayer() {
 		return player;
+	}
+
+	public PlaylistPlayerState getState() {
+		return state;
+	}
+
+	protected final void updateState() {
+		PlayerState playerState = player.getState();
+		this.state = new PlaylistPlayerState(playerState.isPlaying(), new ArrayList<String>(previousItems),
+				currentItem, new ArrayList<String>(nextItems));
+		for (PlaylistPlayerObserver observer : observers) {
+			observer.onStateChanged(this, state);
+		}
+	}
+
+	public void addObserver(PlaylistPlayerObserver observer) {
+		observers.add(observer);
 	}
 
 }
