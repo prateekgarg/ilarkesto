@@ -73,7 +73,7 @@ public class VlcPlayer extends APlayer {
 		String command = Str.concat(s, " ");
 		log.info("Sending command:", command);
 		vlcProc.sendInputLine(command);
-		Utl.sleep(COMMAND_WAIT_TIME);
+		// Utl.sleep(COMMAND_WAIT_TIME);
 		log.debug("    VLC output:", vlcProc.popOutput());
 	}
 
