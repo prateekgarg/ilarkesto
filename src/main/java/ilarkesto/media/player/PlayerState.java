@@ -14,7 +14,6 @@
  */
 package ilarkesto.media.player;
 
-
 public class PlayerState {
 
 	private boolean playing;

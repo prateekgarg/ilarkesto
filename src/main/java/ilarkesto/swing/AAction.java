@@ -27,6 +27,8 @@ public abstract class AAction extends AbstractAction {
 		setIcon(iconResourceName);
 	}
 
+	public void update() {}
+
 	public void setIcon(String iconResourceName) {
 		setIcon(loadIconFromResource(iconResourceName));
 	}
@@ -41,6 +43,14 @@ public abstract class AAction extends AbstractAction {
 		if (url == null)
 			throw new RuntimeException("Resource not found: " + getClass().getPackage().getName() + "/" + resourceName);
 		return new ImageIcon(url);
+	}
+
+	// ---
+
+	public static void updateAll(AAction... actions) {
+		for (AAction action : actions) {
+			action.update();
+		}
 	}
 
 }

@@ -38,14 +38,15 @@ public class PlaylistPlayer {
 	private PlaylistPlayerState state;
 	private List<PlaylistPlayerObserver> observers = new LinkedList<PlaylistPlayerObserver>();
 
-	private List<String> previousItems = new LinkedList<String>();
-	private String currentItem;
-	private List<String> nextItems = new LinkedList<String>();
+	private List<PlaylistItem> previousItems = new LinkedList<PlaylistItem>();
+	private PlaylistItem currentItem;
+	private List<PlaylistItem> nextItems = new LinkedList<PlaylistItem>();
 
 	public PlaylistPlayer(APlayer player) {
 		super();
 		this.player = player;
-		currentItem = player.getState().getUrl();
+		String url = player.getState().getUrl();
+		if (url != null) currentItem = new PlaylistItem(url);
 		updateState();
 	}
 
@@ -63,7 +64,7 @@ public class PlaylistPlayer {
 			updateState();
 			return;
 		}
-		player.play(currentItem);
+		player.play(currentItem.getUrl());
 		updateState();
 	}
 
@@ -87,22 +88,80 @@ public class PlaylistPlayer {
 		updateState();
 	}
 
-	public synchronized void appendAsNext(String url) {
+	public void appendAsNext(String url) {
+		appendAsNext(new PlaylistItem(url));
+	}
+
+	public synchronized void appendAsNext(PlaylistItem item) {
 		if (currentItem == null) {
-			currentItem = url;
+			currentItem = item;
 			updateState();
 			return;
 		}
-		nextItems.add(0, url);
+		nextItems.add(0, item);
 		updateState();
 	}
 
 	public synchronized void appendItem(String url) {
-		nextItems.add(url);
+		appendItem(new PlaylistItem(url));
+	}
+
+	public synchronized void appendItem(PlaylistItem item) {
+		nextItems.add(item);
+		updateState();
+	}
+
+	public synchronized void remove(List<PlaylistItem> items) {
+		nextItems.removeAll(items);
+		updateState();
+	}
+
+	public synchronized void moveTo(int index, List<PlaylistItem> items) {
+		nextItems.removeAll(items);
+		if (index < 0) {
+			nextItems.addAll(0, items);
+		} else if (index >= nextItems.size()) {
+			nextItems.addAll(items);
+		} else {
+			nextItems.addAll(index, items);
+		}
 		updateState();
 	}
 
 	//
+
+	public synchronized void moveUp(List<PlaylistItem> items) {
+		if (items.isEmpty()) return;
+		int index = getTopIndexInNext(items);
+		if (index == Integer.MAX_VALUE) return;
+		index--;
+		moveTo(index, items);
+	}
+
+	public synchronized void moveDown(List<PlaylistItem> items) {
+		if (items.isEmpty()) return;
+		int index = getTopIndexInNext(items);
+		if (index == Integer.MAX_VALUE) return;
+		index++;
+		moveTo(index, items);
+	}
+
+	public synchronized void moveToTop(List<PlaylistItem> items) {
+		moveTo(0, items);
+	}
+
+	public synchronized void moveToBottom(List<PlaylistItem> items) {
+		moveTo(Integer.MAX_VALUE, items);
+	}
+
+	private int getTopIndexInNext(List<PlaylistItem> items) {
+		int top = Integer.MAX_VALUE;
+		for (PlaylistItem item : items) {
+			int index = nextItems.indexOf(item);
+			if (index < top) top = index;
+		}
+		return top;
+	}
 
 	public synchronized void playPrevious() {
 		moveToPreviousItem();
@@ -114,7 +173,11 @@ public class PlaylistPlayer {
 	}
 
 	public synchronized void play(String url) {
-		appendAsNext(url);
+		play(new PlaylistItem(url));
+	}
+
+	public synchronized void play(PlaylistItem item) {
+		appendAsNext(item);
 		playNext();
 	}
 
@@ -158,8 +221,8 @@ public class PlaylistPlayer {
 
 	protected final void updateState() {
 		PlayerState playerState = player.getState();
-		this.state = new PlaylistPlayerState(playerState.isPlaying(), new ArrayList<String>(previousItems),
-				currentItem, new ArrayList<String>(nextItems));
+		this.state = new PlaylistPlayerState(playerState.isPlaying(), new ArrayList<PlaylistItem>(previousItems),
+				currentItem, new ArrayList<PlaylistItem>(nextItems));
 		for (PlaylistPlayerObserver observer : observers) {
 			observer.onStateChanged(this, state);
 		}
