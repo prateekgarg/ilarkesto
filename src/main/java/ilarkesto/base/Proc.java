@@ -60,6 +60,11 @@ public final class Proc {
 		return proc.execute();
 	}
 
+	@Override
+	public String toString() {
+		return getCommandLine();
+	}
+
 	/**
 	 * Starts the process and waits until it ends. Returns output when return code is 0. Otherwise throws
 	 * Exception.
