@@ -14,14 +14,19 @@
  */
 package ilarkesto.async;
 
+import ilarkesto.core.base.Str;
+
 public abstract class AJob<R> implements Job<R> {
 
 	private Callback<R> callback;
 	private boolean executed;
 
-	public AJob(Callback<R> callback) {
-		super();
+	@Override
+	public final AJob<R> setCallback(Callback<R> callback) {
+		if (this.callback != null) throw new IllegalStateException("Callback is already set");
+		if (executed) throw new IllegalStateException("Job already executed: " + toString());
 		this.callback = callback;
+		return this;
 	}
 
 	@Override
@@ -34,6 +39,11 @@ public abstract class AJob<R> implements Job<R> {
 	public final void start() {
 		if (executed) throw new IllegalStateException("Job already executed: " + toString());
 		Async.start(this);
+	}
+
+	public final void start(Callback<R> callback) {
+		setCallback(callback);
+		start();
 	}
 
 	@Override
@@ -51,4 +61,12 @@ public abstract class AJob<R> implements Job<R> {
 		return getClass().getSimpleName();
 	}
 
+	protected final String toString(Object... params) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		if (params != null && params.length > 0) {
+			sb.append(Str.concat("(", ")", ",", params));
+		}
+		return sb.toString();
+	}
 }

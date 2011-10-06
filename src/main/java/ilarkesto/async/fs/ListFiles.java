@@ -15,7 +15,6 @@
 package ilarkesto.async.fs;
 
 import ilarkesto.async.AJob;
-import ilarkesto.async.Callback;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,13 +28,12 @@ public class ListFiles extends AJob<List<File>> {
 	private boolean recurse;
 	private boolean includeDirs;
 
-	public ListFiles(File rootDir, Callback<List<File>> callback) {
-		super(callback);
+	public ListFiles(File rootDir) {
 		this.rootDir = rootDir;
 	}
 
-	public ListFiles(String rootPath, Callback<List<File>> callback) {
-		this(new File(rootPath), callback);
+	public ListFiles(String rootPath) {
+		this(new File(rootPath));
 	}
 
 	@Override
@@ -71,7 +69,7 @@ public class ListFiles extends AJob<List<File>> {
 
 	@Override
 	public String toString() {
-		return super.toString() + ": " + rootDir;
+		return toString(rootDir);
 	}
 
 }

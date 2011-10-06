@@ -14,19 +14,14 @@
  */
 package ilarkesto.media;
 
-import java.util.List;
-
 public abstract class AMediaItem<M extends AMetadata> {
 
 	public abstract String getPlayUrl();
 
 	public abstract M getMetadata();
 
-	public abstract List<AMediaItem> getChildren();
-
-	public boolean containsChildren() {
-		List<AMediaItem> children = getChildren();
-		return children != null && !children.isEmpty();
+	public boolean isFolder() {
+		return false;
 	}
 
 	@Override

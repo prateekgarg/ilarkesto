@@ -12,34 +12,10 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.media;
+package ilarkesto.async;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
+public interface Operation<R> {
 
-public abstract class AFileMediaItem<M extends AMetadata> extends AMediaItem<M> {
-
-	protected File file;
-
-	public AFileMediaItem(File file) {
-		super();
-		this.file = file;
-	}
-
-	@Override
-	public boolean containsChildren() {
-		return file.isDirectory();
-	}
-
-	@Override
-	public List<AMediaItem> getChildren() {
-		return Collections.emptyList();
-	}
-
-	@Override
-	public String getPlayUrl() {
-		return "file://" + file.getAbsolutePath();
-	}
+	R run();
 
 }

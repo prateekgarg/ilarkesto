@@ -64,7 +64,7 @@ public class Str {
 		return sb.toString();
 	}
 
-	public static String concat(Collection strings, String delimiter) {
+	public static String concat(Iterable strings, String delimiter) {
 		if (strings == null) return null;
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;

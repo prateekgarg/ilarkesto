@@ -12,10 +12,17 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.async;
+package ilarkesto.media;
 
-public interface AsyncEngine {
+import java.util.List;
 
-	void start(Job job);
+public abstract class AFolderMediaItem<M extends AMetadata> extends AMediaItem<M> {
+
+	@Override
+	public final boolean isFolder() {
+		return true;
+	}
+
+	public abstract List<AMediaItem> getChildren();
 
 }

@@ -14,7 +14,6 @@
  */
 package ilarkesto.async.fs;
 
-import ilarkesto.async.Callback;
 import ilarkesto.async.Job;
 import ilarkesto.testng.AAsyncJobTest;
 
@@ -24,8 +23,8 @@ import java.util.List;
 public class ListFilesTest extends AAsyncJobTest<List<File>> {
 
 	@Override
-	protected Job<List<File>> createJob(Callback<List<File>> callback) {
-		return new ListFiles("test-input/ListFiles", callback).setIncludeDirs(true).setRecurse(true);
+	protected Job<List<File>> createJob() {
+		return new ListFiles("test-input/ListFiles").setIncludeDirs(true).setRecurse(true);
 	}
 
 	@Override

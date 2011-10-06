@@ -80,6 +80,14 @@ public class Swing {
 			" Geschafft, obwohl der Text so scheiss lang ist.\n Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheissGeschafft, obwohl der Text so scheiss lang ist.\\n Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheissGeschafft, obwohl der Text so scheiss lang ist.\\n Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheissGeschafft, obwohl der Text so scheiss lang ist.\\n Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss");
 	}
 
+	public static void setSystemLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Throwable ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public static Dimension getFractionFromScreen(double xFactor, double yFactor) {
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		return new Dimension((int) (screen.getWidth() * xFactor), (int) (screen.getHeight() * yFactor));

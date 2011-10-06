@@ -12,34 +12,10 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.media.sources.musicfiles;
+package ilarkesto.async;
 
-import ilarkesto.media.AFileMediaItem;
-import ilarkesto.media.metadata.SongMetadata;
+public interface AsyncWorker {
 
-import java.io.File;
-
-public class SongFileMediaItem extends AFileMediaItem<SongMetadata> {
-
-	public SongFileMediaItem(File file) {
-		super(file);
-	}
-
-	private SongMetadata metadata;
-
-	@Override
-	public SongMetadata getMetadata() {
-		if (metadata == null) {
-			metadata = new SongMetadata();
-			metadata.setTitle(file.getName());
-			// TODO
-		}
-		return metadata;
-	}
-
-	@Override
-	public boolean containsChildren() {
-		return false;
-	}
+	void start(Job job);
 
 }

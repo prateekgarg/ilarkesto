@@ -17,22 +17,22 @@ package ilarkesto.async;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class ExecutorAsyncEngine extends AAsyncEngine {
+public class ExecutorAsyncWorker extends AAsyncWorker {
 
 	private Executor jobExecutor;
 	private Executor callbackExecutor;
 
-	public ExecutorAsyncEngine(Executor jobExecutor, Executor callbackExecutor) {
+	public ExecutorAsyncWorker(Executor jobExecutor, Executor callbackExecutor) {
 		super();
 		this.jobExecutor = jobExecutor;
 		this.callbackExecutor = callbackExecutor;
 	}
 
-	public ExecutorAsyncEngine(Executor jobExecutor) {
+	public ExecutorAsyncWorker(Executor jobExecutor) {
 		this(jobExecutor, Executors.newSingleThreadExecutor());
 	}
 
-	public ExecutorAsyncEngine() {
+	public ExecutorAsyncWorker() {
 		this(Executors.newCachedThreadPool());
 	}
 

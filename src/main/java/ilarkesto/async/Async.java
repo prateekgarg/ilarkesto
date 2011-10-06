@@ -16,19 +16,19 @@ package ilarkesto.async;
 
 public class Async {
 
-	private static AsyncEngine asyncEngine;
+	private static AsyncWorker worker;
 
 	public static void start(Job job) {
-		getAsyncEngine().start(job);
+		getWorker().start(job);
 	}
 
-	public static AsyncEngine getAsyncEngine() {
-		if (asyncEngine == null) asyncEngine = new ExecutorAsyncEngine();
-		return asyncEngine;
+	public static AsyncWorker getWorker() {
+		if (worker == null) worker = new ExecutorAsyncWorker();
+		return worker;
 	}
 
-	public static void setAsyncEngine(AsyncEngine asyncEngine) {
-		Async.asyncEngine = asyncEngine;
+	public static void setWorker(AsyncWorker worker) {
+		Async.worker = worker;
 	}
 
 }

@@ -14,7 +14,7 @@
  */
 package ilarkesto.async;
 
-public abstract class AAsyncEngine implements AsyncEngine {
+public abstract class AAsyncWorker implements AsyncWorker {
 
 	public abstract void runJob(Runnable job);
 

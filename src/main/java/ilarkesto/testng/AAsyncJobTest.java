@@ -14,8 +14,8 @@
  */
 package ilarkesto.testng;
 
-import ilarkesto.async.AAsyncEngine;
-import ilarkesto.async.AsyncEngine;
+import ilarkesto.async.AAsyncWorker;
+import ilarkesto.async.AsyncWorker;
 import ilarkesto.async.Callback;
 import ilarkesto.async.Job;
 
@@ -23,7 +23,7 @@ import org.testng.annotations.Test;
 
 public abstract class AAsyncJobTest<R> extends ATest {
 
-	protected abstract Job<R> createJob(Callback<R> callback);
+	protected abstract Job<R> createJob();
 
 	protected abstract void assertResult(R result);
 
@@ -43,13 +43,14 @@ public abstract class AAsyncJobTest<R> extends ATest {
 
 		};
 
-		Job<R> job = createJob(callback);
+		Job<R> job = createJob();
+		job.setCallback(callback);
 
-		AsyncEngine engine = new TestAsyncEngine();
+		AsyncWorker engine = new TestAsyncEngine();
 		engine.start(job);
 	}
 
-	class TestAsyncEngine extends AAsyncEngine {
+	class TestAsyncEngine extends AAsyncWorker {
 
 		@Override
 		public void runJob(Runnable job) {

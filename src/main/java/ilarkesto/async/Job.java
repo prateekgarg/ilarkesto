@@ -22,4 +22,6 @@ public interface Job<R> {
 
 	void onError(Throwable error);
 
+	Job<R> setCallback(Callback<R> callback);
+
 }
