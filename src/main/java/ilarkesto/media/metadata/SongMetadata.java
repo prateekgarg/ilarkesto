@@ -26,6 +26,10 @@ public class SongMetadata extends AMetadata {
 		return get("title");
 	}
 
+	public void setTitle(String title) {
+		set("title", title);
+	}
+
 	public String getAlbum() {
 		return get("album");
 	}

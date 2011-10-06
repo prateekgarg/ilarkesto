@@ -14,6 +14,8 @@
  */
 package ilarkesto.media;
 
+import ilarkesto.core.base.Str;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,14 @@ public abstract class AMetadata {
 
 	protected String get(String key) {
 		return data.get(key);
+	}
+
+	protected void set(String key, String value) {
+		if (Str.isBlank(value)) {
+			data.remove(key);
+		} else {
+			data.put(key, value);
+		}
 	}
 
 	protected Integer getInteger(String key) {

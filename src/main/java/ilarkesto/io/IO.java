@@ -348,7 +348,7 @@ public abstract class IO {
 
 	public static String getFileExtension(String filename) {
 		int idx = filename.lastIndexOf('.');
-		if (idx < 0 || idx == filename.length() - 1) return filename;
+		if (idx < 0 || idx == filename.length() - 1) return null;
 		return filename.substring(idx + 1);
 	}
 

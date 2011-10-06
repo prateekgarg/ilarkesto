@@ -173,7 +173,7 @@ public class Eml {
 
 	public static InputStream getAttachment(Part part, String filename) {
 		try {
-			if (filename.equals(part.getFileName())) return part.getInputStream();
+			if (filename.equals(Str.decodeQuotedPrintable(part.getFileName()))) return part.getInputStream();
 			if (part.getContentType().toLowerCase().startsWith("multipart")) {
 				MimeMultipart multipart;
 				multipart = (MimeMultipart) part.getContent();
