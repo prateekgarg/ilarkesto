@@ -39,6 +39,16 @@ public final class Sys {
 		return !isDevelopmentMode();
 	}
 
+	public static long getAvailableMemory() {
+		Runtime runtime = Runtime.getRuntime();
+		long freeMemory = runtime.freeMemory();
+		long totalMemory = runtime.totalMemory();
+		long usedMemory = totalMemory - freeMemory;
+		long maxMemory = runtime.maxMemory();
+		long availableMemory = maxMemory - usedMemory;
+		return availableMemory;
+	}
+
 	public static void storeStartupTime() {
 		startupTime = System.currentTimeMillis();
 	}
@@ -84,6 +94,10 @@ public final class Sys {
 	 */
 	public static void setHeadless(boolean value) {
 		setProperty("java.awt.headless", value);
+	}
+
+	public static void setJmxRemote(boolean value) {
+		setProperty("com.sun.management.jmxremote", value);
 	}
 
 	public static boolean isHeadless() {
