@@ -194,7 +194,7 @@ public class Eml {
 		if (result == null) {
 			result = Str.html2text(getHtmlTextContent(part));
 		} else {
-			if (result != null && result.startsWith("<!DOCTYPE HTML")) result = Str.html2text(result);
+			if (result != null && result.trim().startsWith("<!DOCTYPE HTML")) result = Str.html2text(result);
 		}
 		return result;
 	}
