@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,52 @@ public final class Proc {
 		proc.getOutput();
 	}
 
-	private static final Log LOG = Log.get(Proc.class);
+	private static final Log log = Log.get(Proc.class);
+
+	private static List<Proc> runningProcs = new LinkedList<Proc>();
+
+	private File workingDir;
+	private Map<String, String> environment;
+	private String command;
+	private List<String> parameters;
+
+	private long startTime;
+	private StreamGobbler outputGobbler;
+	private StreamGobbler errorGobbler;
+	private PrintStream inputPrintStream;
+	private Process process;
+	private StringBuffer output;
+	private Integer returnCode;
+
+	private ShutdownHook shutdownHook;
+
+	public static List<Proc> getRunningProcs() {
+		synchronized (runningProcs) {
+			return new ArrayList<Proc>(runningProcs);
+		}
+	}
+
+	public synchronized void reset() {
+		cleanup();
+		process = null;
+		output = null;
+		returnCode = null;
+	}
+
+	private synchronized void cleanup() {
+		if (isRunning()) throw new IllegalStateException("Process still running: " + toString());
+		synchronized (runningProcs) {
+			runningProcs.remove(this);
+		}
+		if (shutdownHook != null) Runtime.getRuntime().removeShutdownHook(shutdownHook);
+		shutdownHook = null;
+		if (outputGobbler != null) outputGobbler.close();
+		outputGobbler = null;
+		if (errorGobbler != null) errorGobbler.close();
+		errorGobbler = null;
+		if (inputPrintStream != null) IO.closeQuiet(inputPrintStream);
+		inputPrintStream = null;
+	}
 
 	/**
 	 * Starts the process and waits until it ends. Returns output when return code is 0. Otherwise throws
@@ -108,7 +154,7 @@ public final class Proc {
 		String[] cmdarray = new String[paramLen + 1];
 		cmdarray[0] = command;
 		if (paramLen > 0) System.arraycopy(parameters.toArray(), 0, cmdarray, 1, paramLen);
-		if (LOG.isDebugEnabled()) {
+		if (log.isDebugEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			if (workingDir == null) {
 				sb.append(">");
@@ -118,14 +164,19 @@ public final class Proc {
 			for (String s : cmdarray) {
 				sb.append(" ").append(s);
 			}
-			LOG.debug(sb.toString());
+			log.debug(sb.toString());
 		}
+		startTime = System.currentTimeMillis();
 		try {
 			process = Runtime.getRuntime().exec(cmdarray, getEnvParameters(), workingDir);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
+		synchronized (runningProcs) {
+			runningProcs.add(this);
+		}
+		shutdownHook = new ShutdownHook();
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
 		output = new StringBuffer();
 		outputGobbler = new StreamGobbler(process.getInputStream());
 		errorGobbler = new StreamGobbler(process.getErrorStream());
@@ -136,6 +187,7 @@ public final class Proc {
 		if (!isRunning()) return;
 		process.destroy();
 		getReturnCode();
+		cleanup();
 	}
 
 	public synchronized boolean isRunning() {
@@ -167,6 +219,14 @@ public final class Proc {
 		return process;
 	}
 
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public long getRunTime() {
+		return System.currentTimeMillis() - startTime;
+	}
+
 	/**
 	 * Wait until the process is finishes.
 	 */
@@ -185,11 +245,11 @@ public final class Proc {
 				process.waitFor();
 			} catch (InterruptedException ex) {
 				throw new RuntimeException("Command interrupted: " + command, ex);
+			} finally {
+				cleanup();
 			}
 			returnCode = process.exitValue();
-			if (outputGobbler != null) outputGobbler.close();
-			if (errorGobbler != null) errorGobbler.close();
-			LOG.debug("    " + command + ":", "rc:", returnCode);
+			log.debug("    " + command + ":", "rc:", returnCode);
 		}
 		return returnCode;
 	}
@@ -213,14 +273,6 @@ public final class Proc {
 		}
 	}
 
-	private Process process;
-
-	private StringBuffer output;
-
-	private Integer returnCode;
-
-	private PrintStream inputPrintStream;
-
 	// --- static convinience methods ---
 
 	// public static int execAndGetReturnCode(String command, String... parameters) {
@@ -229,6 +281,57 @@ public final class Proc {
 	// proc.start();
 	// return proc.getReturnCode();
 	// }
+
+	public Proc addEnvironmentProperty(String name, String value) {
+		if (environment == null) environment = new HashMap<String, String>();
+		environment.put(name, value);
+		return this;
+	}
+
+	private String[] getEnvParameters() {
+		if (environment == null || environment.size() == 0) return null;
+		String[] env = new String[environment.size()];
+		int i = 0;
+		for (Map.Entry<String, String> entry : environment.entrySet()) {
+			env[i++] = entry.getKey() + "=" + entry.getValue();
+		}
+		return env;
+	}
+
+	public void setEnvironment(Map<String, String> environment) {
+		this.environment = environment;
+	}
+
+	public void addEnvironmentParameter(String name, String value) {
+		if (environment == null) environment = new HashMap<String, String>();
+		environment.put(name, value);
+	}
+
+	public Proc(String command) {
+		this.command = command;
+	}
+
+	public Proc setParameters(List<String> parameters) {
+		this.parameters = parameters;
+		return this;
+	}
+
+	public Proc addParameter(String parameter) {
+		if (parameters == null) parameters = new ArrayList<String>(1);
+		parameters.add(parameter);
+		return this;
+	}
+
+	public Proc addParameters(String... parameters) {
+		for (String parameter : parameters)
+			addParameter(parameter);
+		return this;
+	}
+
+	public Proc setWorkingDir(File workingDir) {
+		this.workingDir = workingDir;
+		return this;
+	}
 
 	// --- sub classes ---
 
@@ -248,7 +351,7 @@ public final class Proc {
 				InputStreamReader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr);
 				String line = null;
-				while ((line = br.readLine()) != null) {
+				while (isRunning() && (line = br.readLine()) != null) {
 					synchronized (output) {
 						output.append(line).append("\n");
 					}
@@ -263,71 +366,6 @@ public final class Proc {
 		public void close() {
 			IO.closeQuiet(is);
 		}
-	}
-
-	public Proc addEnvironmentProperty(String name, String value) {
-		if (environment == null) environment = new HashMap<String, String>();
-		environment.put(name, value);
-		return this;
-	}
-
-	private String[] getEnvParameters() {
-		if (environment == null || environment.size() == 0) return null;
-		String[] env = new String[environment.size()];
-		int i = 0;
-		for (Map.Entry<String, String> entry : environment.entrySet()) {
-			env[i++] = entry.getKey() + "=" + entry.getValue();
-		}
-		return env;
-	}
-
-	// --- dependencies ---
-
-	private Map<String, String> environment;
-
-	public void setEnvironment(Map<String, String> environment) {
-		this.environment = environment;
-	}
-
-	public void addEnvironmentParameter(String name, String value) {
-		if (environment == null) environment = new HashMap<String, String>();
-		environment.put(name, value);
-	}
-
-	private String command;
-
-	public Proc(String command) {
-		this.command = command;
-	}
-
-	private List<String> parameters;
-
-	public Proc setParameters(List<String> parameters) {
-		this.parameters = parameters;
-		return this;
-	}
-
-	public Proc addParameter(String parameter) {
-		if (parameters == null) parameters = new ArrayList<String>(1);
-		parameters.add(parameter);
-		return this;
-	}
-
-	public Proc addParameters(String... parameters) {
-		for (String parameter : parameters)
-			addParameter(parameter);
-		return this;
-	}
-
-	private File workingDir;
-
-	private StreamGobbler outputGobbler;
-
-	private StreamGobbler errorGobbler;
-
-	public Proc setWorkingDir(File workingDir) {
-		this.workingDir = workingDir;
-		return this;
 	}
 
 	public static class UnexpectedReturnCodeException extends RuntimeException {
