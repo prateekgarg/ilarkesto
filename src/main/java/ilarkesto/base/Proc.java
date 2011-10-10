@@ -244,11 +244,12 @@ public final class Proc {
 			try {
 				process.waitFor();
 			} catch (InterruptedException ex) {
-				throw new RuntimeException("Command interrupted: " + command, ex);
-			} finally {
+				process = null;
 				cleanup();
+				throw new RuntimeException("Command interrupted: " + command, ex);
 			}
 			returnCode = process.exitValue();
+			cleanup();
 			log.debug("    " + command + ":", "rc:", returnCode);
 		}
 		return returnCode;
