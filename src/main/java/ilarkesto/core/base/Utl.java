@@ -17,7 +17,10 @@ package ilarkesto.core.base;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class Utl {
 
@@ -25,6 +28,15 @@ public class Utl {
 
 	public static String getLanguage() {
 		return language;
+	}
+
+	public static void removeDuplicates(Collection collection) {
+		Set set = new HashSet(collection.size());
+		Iterator iterator = collection.iterator();
+		while (iterator.hasNext()) {
+			Object object = iterator.next();
+			if (!set.add(object)) iterator.remove();
+		}
 	}
 
 	public static <T> T getFirstElement(Collection<T> collection) {
