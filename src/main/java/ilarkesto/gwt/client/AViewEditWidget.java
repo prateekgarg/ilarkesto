@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public abstract class AViewEditWidget extends AWidget {
 
+	private static Log log = Log.get(AViewEditWidget.class);
 	private static AViewEditWidget currentEditor;
 	private static ModeSwitchHandler globalModeSwitchHandler;
 
@@ -86,7 +87,11 @@ public abstract class AViewEditWidget extends AWidget {
 		ensureEditorInitialized();
 		viewMode = false;
 		if (currentEditor != null) {
-			currentEditor.closeEditor();
+			try {
+				currentEditor.closeEditor();
+			} catch (Throwable ex) {
+				log.error(ex);
+			}
 		}
 		currentEditor = this;
 		updateEditor();

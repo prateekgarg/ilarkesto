@@ -15,6 +15,7 @@
 package ilarkesto.gwt.client.editor;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
 import ilarkesto.gwt.client.AAction;
 import ilarkesto.gwt.client.AViewEditWidget;
 import ilarkesto.gwt.client.CodemirrorEditorWidget;
@@ -27,6 +28,7 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.ui.AttachDetachException;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HTML;
@@ -35,6 +37,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class RichtextEditorWidget extends AViewEditWidget {
+
+	private static Log log = Log.get(RichtextEditorWidget.class);
 
 	private HTML viewer;
 	private SimplePanel editorWrapper;
@@ -102,7 +106,7 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected void focusEditor() {
-		editor.focus();
+		if (editor != null) editor.focus();
 	}
 
 	@Override
@@ -190,7 +194,11 @@ public class RichtextEditorWidget extends AViewEditWidget {
 	protected void onEditorClose() {
 		super.onEditorClose();
 		editor = null;
-		editorWrapper.clear();
+		try {
+			editorWrapper.clear();
+		} catch (AttachDetachException ex) {
+			log.error(ex);
+		}
 	}
 
 	@Override
