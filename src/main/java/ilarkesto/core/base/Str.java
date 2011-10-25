@@ -79,6 +79,21 @@ public class Str {
 		return sb.toString();
 	}
 
+	public static String concat(Collection strings, String delimiter) {
+		if (strings == null) return null;
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (Object s : strings) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(delimiter);
+			}
+			sb.append(s);
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Removes a suffix from a string, if it exists.
 	 */
