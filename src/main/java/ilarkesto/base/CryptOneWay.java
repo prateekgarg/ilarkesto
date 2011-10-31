@@ -19,6 +19,8 @@ package ilarkesto.base;
  */
 public abstract class CryptOneWay {
 
+	public static final String DEFAULT_SALT = "IN";
+
 	private static final int ITERATIONS = 16;
 
 	private static final int con_salt[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -346,11 +348,11 @@ public abstract class CryptOneWay {
 	}
 
 	public static final String crypt(String original) {
-		return crypt("IN", original);
+		return crypt(DEFAULT_SALT, original);
 	}
 
 	public static final String cryptWebPassword(String original) {
-		return crypt("IN", original);
+		return crypt(DEFAULT_SALT, original);
 	}
 
 	public static final String crypt(String salt, String original) {
