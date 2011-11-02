@@ -31,6 +31,95 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String encodeUrlParameter(String s) {
+		if (s == null) return "";
+		StringBuilder sb = new StringBuilder();
+		int len = s.length();
+		for (int i = 0; i < len; i++) {
+			char c = s.charAt(i);
+			switch (c) {
+				case '$':
+					sb.append("%24");
+					break;
+				case '&':
+					sb.append("%26");
+					break;
+				case '+':
+					sb.append("%2B");
+					break;
+				case ',':
+					sb.append("%2C");
+					break;
+				case '/':
+					sb.append("%2F");
+					break;
+				case ':':
+					sb.append("%3A");
+					break;
+				case ';':
+					sb.append("%3B");
+					break;
+				case '=':
+					sb.append("%3D");
+					break;
+				case '?':
+					sb.append("%3F");
+					break;
+				case '@':
+					sb.append("%40");
+					break;
+				case ' ':
+					sb.append("%20");
+					break;
+				case '"':
+					sb.append("%22");
+					break;
+				case '<':
+					sb.append("%3C");
+					break;
+				case '>':
+					sb.append("%3E");
+					break;
+				case '#':
+					sb.append("%23");
+					break;
+				case '%':
+					sb.append("%25");
+					break;
+				case '{':
+					sb.append("7B%");
+					break;
+				case '}':
+					sb.append("7D%");
+					break;
+				case '|':
+					sb.append("%7C");
+					break;
+				case '\\':
+					sb.append("%5C");
+					break;
+				case '^':
+					sb.append("%5E");
+					break;
+				case '~':
+					sb.append("%7E");
+					break;
+				case '[':
+					sb.append("%5B");
+					break;
+				case ']':
+					sb.append("%5D");
+					break;
+				case '`':
+					sb.append("%60");
+					break;
+				default:
+					sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
+
 	public static String[] toStringArray(Collection<String> c) {
 		return toStringArray(c.toArray());
 	}
