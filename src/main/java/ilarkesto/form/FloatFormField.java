@@ -15,7 +15,6 @@
 package ilarkesto.form;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -47,7 +46,7 @@ public class FloatFormField extends AFormField {
 	}
 
 	public FloatFormField setValue(Float value) {
-		this.value = value == null ? null : format.format(value);
+		this.value = value == null ? null : value.toString();
 		return this;
 	}
 
@@ -81,13 +80,14 @@ public class FloatFormField extends AFormField {
 
 	@Override
 	public String getValueAsString() {
-		return value;
+		if (value == null) return null;
+		return format.format(getValue());
 	}
 
 	public Float getValue() {
 		try {
-			return value == null ? null : format.parse(value).floatValue();
-		} catch (ParseException ex) {
+			return value == null ? null : Float.parseFloat(value);
+		} catch (NumberFormatException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
