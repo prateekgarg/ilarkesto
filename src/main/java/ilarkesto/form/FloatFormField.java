@@ -23,7 +23,8 @@ import org.apache.commons.fileupload.FileItem;
 public class FloatFormField extends AFormField {
 
 	private DecimalFormat format = new DecimalFormat("0.##");
-	private String value;
+	private String sValue;
+	private Float fValue;
 	private int width = 10;
 	private String suffix;
 
@@ -46,8 +47,36 @@ public class FloatFormField extends AFormField {
 	}
 
 	public FloatFormField setValue(Float value) {
-		this.value = value == null ? null : value.toString();
+		fValue = value;
+		updateSValue();
 		return this;
+	}
+
+	private void updateSValue() {
+		if (fValue == null) {
+			sValue = null;
+			return;
+		}
+		sValue = format.format(fValue);
+	}
+
+	private void updateFValue() {
+		if (sValue == null) {
+			fValue = null;
+			return;
+		}
+		Float f = parse(sValue);
+		if (f != null) fValue = f;
+	}
+
+	private Float parse(String s) {
+		s = s.replace(".", "");
+		s = s.replace(',', '.');
+		try {
+			return Float.parseFloat(s);
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 
 	public int getWidth() {
@@ -56,44 +85,33 @@ public class FloatFormField extends AFormField {
 
 	@Override
 	public void update(Map<String, String> data, Collection<FileItem> uploadedFiles) {
-		value = data.get(getName());
-		if (value != null) {
-			value = value.trim();
-		}
-		if (value != null && value.length() == 0) {
-			value = null;
-		}
+		sValue = data.get(getName());
+		if (sValue != null) sValue = sValue.trim();
+		if (sValue != null && sValue.length() == 0) sValue = null;
+		updateFValue();
 	}
 
 	@Override
 	public void validate() throws ValidationException {
-		if (value == null) {
+		if (sValue == null) {
 			if (isRequired()) throw new ValidationException("Eingabe erforderlich");
 		} else {
-			try {
-				format.parse(value);
-			} catch (Exception ex) {
-				throw new ValidationException("Hier wird eine Zahl erwartet");
-			}
+			if (parse(sValue) == null) throw new ValidationException("Zahl wurde nicht erkannt: " + sValue);
 		}
 	}
 
 	@Override
 	public String getValueAsString() {
-		if (value == null) return null;
-		return format.format(getValue());
+		return sValue;
 	}
 
 	public Float getValue() {
-		try {
-			return value == null ? null : Float.parseFloat(value.replace(".", "").replace(',', '.'));
-		} catch (NumberFormatException ex) {
-			throw new RuntimeException(ex);
-		}
+		return fValue;
 	}
 
 	public FloatFormField setFormat(DecimalFormat format) {
 		this.format = format;
+		updateSValue();
 		return this;
 	}
 
