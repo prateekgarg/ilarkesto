@@ -86,7 +86,7 @@ public class FloatFormField extends AFormField {
 
 	public Float getValue() {
 		try {
-			return value == null ? null : Float.parseFloat(value);
+			return value == null ? null : Float.parseFloat(value.replace(".", "").replace(',', '.'));
 		} catch (NumberFormatException ex) {
 			throw new RuntimeException(ex);
 		}
