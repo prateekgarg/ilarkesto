@@ -22,6 +22,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class TooltipPopup extends PopupPanel {
 
+	private static TooltipPopup lastTooltip;
+
 	/**
 	 * The delay, in milliseconds, to display the tooltip
 	 */
@@ -30,7 +32,7 @@ public class TooltipPopup extends PopupPanel {
 	/**
 	 * The delay, in milliseconds, to hide the tooltip, after it is displayed
 	 */
-	private int hideDelay = -1;
+	private int hideDelay = 5000;
 
 	/**
 	 * The timer to show the tool tip
@@ -78,6 +80,10 @@ public class TooltipPopup extends PopupPanel {
 
 	@Override
 	public void show() {
+		if (lastTooltip != null) {
+			lastTooltip.hide();
+			lastTooltip = this;
+		}
 
 		// Set delay to show if specified
 		if (this.showDelay > 0) {
