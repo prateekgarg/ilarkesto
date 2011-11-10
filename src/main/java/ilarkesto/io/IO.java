@@ -1701,7 +1701,7 @@ public abstract class IO {
 			try {
 				tempDir = File.createTempFile("dummy", ".tmp").getParentFile();
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				return null;
 			}
 		}
 		return tempDir;
