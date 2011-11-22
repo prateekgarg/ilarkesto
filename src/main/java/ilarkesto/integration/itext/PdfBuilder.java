@@ -14,6 +14,8 @@
  */
 package ilarkesto.integration.itext;
 
+import ilarkesto.base.Sys;
+import ilarkesto.core.logging.Log;
 import ilarkesto.pdf.AImage;
 import ilarkesto.pdf.AParagraph;
 import ilarkesto.pdf.APdfBuilder;
@@ -41,8 +43,10 @@ public class PdfBuilder extends APdfBuilder {
 		FontStyle fs = new FontStyle();
 		fs.setSize(20);
 		pdf.paragraph().setHeight(72).text("first", fs);
-		pdf.paragraph().setHeight(10).text("second");
-		pdf.paragraph().setHeight(10).text("third: ä ü ö ß Mirosław");
+		pdf.paragraph().setHeight(10).text("second", new FontStyle().setBold(true));
+		pdf.paragraph().setHeight(10).text("specials: ä ü ö ß ł 7° m³");
+		pdf.paragraph().setHeight(10).text("japanese: " + "日本語の文字");
+		pdf.paragraph().setHeight(10).text("chinese: \u5341\u950a\u57cb\u4f0f" + "這是美好一天");
 		pdf.paragraph().setHeight(1);
 		pdf.paragraph().text("--------------------------");
 		ATable table = pdf.table(50, 50);
@@ -50,7 +54,9 @@ public class PdfBuilder extends APdfBuilder {
 		table.cell().setBorder(Color.RED, 0.5f).paragraph().text("2 ABC\u00DC\u00DC\nABCDEF");
 		table.cell().paragraph().text("3 ABC");
 		table.cell().paragraph().text("4 ABC");
-		pdf.write(new FileOutputStream("g:/inbox/test.pdf"));
+		String path = "/inbox/test.pdf";
+		pdf.write(new FileOutputStream(Sys.getUsersHomePath() + path));
+		Log.DEBUG("PDF created:", path);
 	}
 
 	private Collection<ItextElement> elements = new ArrayList<ItextElement>();

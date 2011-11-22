@@ -22,13 +22,14 @@ import ilarkesto.pdf.APdfElement;
 import ilarkesto.pdf.FontStyle;
 import ilarkesto.pdf.TextChunk;
 
-import java.awt.Color;
 import java.io.File;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.FontSelector;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
@@ -47,31 +48,15 @@ public class Paragraph extends AParagraph implements ItextElement {
 		for (AParagraphElement element : getElements()) {
 			if (element instanceof TextChunk) {
 				TextChunk textChunk = (TextChunk) element;
-				FontStyle style = textChunk.getFontStyle();
+				FontStyle fontStyle = textChunk.getFontStyle();
 
-				Font font;
-				String fontname = style.getFont();
-				try {
-					font = new Font(BaseFont.createFont(fontname, BaseFont.IDENTITY_H, BaseFont.EMBEDDED));
-				} catch (Exception ex) {
-					throw new RuntimeException("Loading font failed: " + fontname, ex);
-				}
-				if (style.isItalic() && style.isBold()) {
-					font.setStyle(Font.BOLDITALIC);
-				} else if (style.isItalic()) {
-					font.setStyle(Font.ITALIC);
-				} else if (style.isBold()) {
-					font.setStyle(Font.BOLD);
-				}
-				font.setSize(PdfBuilder.mmToPoints(style.getSize()));
-				Color color = style.getColor();
-				if (color != null) font.setColor(color);
+				FontSelector fontSelector = createFontSelector(fontStyle.getFont(), fontStyle);
 
 				String text = textChunk.getText();
-				Chunk chunk = new Chunk(text, font);
-				p.add(chunk);
+				Phrase phrase = fontSelector.process(text);
+				p.add(phrase);
 
-				float size = (style.getSize() * 1.1f) + 1f;
+				float size = (fontStyle.getSize() * 1.1f) + 1f;
 				if (size > maxSize) maxSize = PdfBuilder.mmToPoints(size);
 			} else if (element instanceof Image) {
 				Image image = (Image) element;
@@ -112,6 +97,52 @@ public class Paragraph extends AParagraph implements ItextElement {
 		table.setWidthPercentage(100);
 		table.addCell(cell);
 		return table;
+	}
+
+	private int createStyle(FontStyle fontStyle) {
+		int style = Font.NORMAL;
+		if (fontStyle.isItalic() && fontStyle.isBold()) {
+			style = Font.BOLDITALIC;
+		} else if (fontStyle.isItalic()) {
+			style = Font.ITALIC;
+		} else if (fontStyle.isBold()) {
+			style = Font.BOLD;
+		}
+		return style;
+	}
+
+	public FontSelector createFontSelector(String preferredFont, FontStyle fontStyle) {
+		FontSelector selector = new FontSelector();
+		selector.addFont(createFont(preferredFont, fontStyle));
+
+		// fallback from ilarkesto.jar
+		selector.addFont(createFont("fonts/HDZB_36.ttf", fontStyle)); // embeddable chinese
+
+		// fallback from iTextAsian.jar
+		selector.addFont(createFont("STSong-Light", fontStyle)); // simplified chinese
+		selector.addFont(createFont("MHei-Medium", fontStyle)); // traditional chinese
+		selector.addFont(createFont("HeiseiMin-W3", fontStyle)); // japanese
+		selector.addFont(createFont("KozMinPro-Regular", fontStyle)); // japanese
+		selector.addFont(createFont("HYGoThic-Medium", fontStyle)); // korean
+
+		return selector;
+	}
+
+	private Font createFont(String name, FontStyle fontStyle) {
+		Font font;
+		try {
+			font = new Font(BaseFont.createFont(name, BaseFont.IDENTITY_H, BaseFont.EMBEDDED));
+		} catch (Exception ex) {
+			throw new RuntimeException("Loading font failed: " + name, ex);
+		}
+
+		if (fontStyle != null) {
+			font.setStyle(createStyle(fontStyle));
+			font.setSize(PdfBuilder.mmToPoints(fontStyle.getSize()));
+			font.setColor(fontStyle.getColor());
+		}
+
+		return font;
 	}
 
 	@Override
