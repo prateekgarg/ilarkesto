@@ -16,6 +16,7 @@ package ilarkesto.webapp;
 
 import ilarkesto.base.time.DateAndTime;
 import ilarkesto.base.time.TimePeriod;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.Context;
 import ilarkesto.gwt.server.AGwtConversation;
@@ -25,7 +26,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-public abstract class AWebSession {
+public abstract class AWebSession implements Comparable<AWebSession> {
 
 	private static final Log LOG = Log.get(AWebSession.class);
 	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(30);
@@ -161,6 +162,11 @@ public abstract class AWebSession {
 	@Override
 	public String toString() {
 		return "session:" + initialRemoteHost;
+	}
+
+	@Override
+	public int compareTo(AWebSession o) {
+		return Utl.compare(o.getLastTouched(), getLastTouched());
 	}
 
 }

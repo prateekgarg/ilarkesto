@@ -16,6 +16,7 @@ package ilarkesto.ui.web;
 
 import ilarkesto.base.Str;
 import ilarkesto.base.Url;
+import ilarkesto.base.Utl;
 import ilarkesto.id.CountingIdGenerator;
 import ilarkesto.id.IdGenerator;
 
@@ -803,25 +804,35 @@ public class HtmlRenderer {
 		return tag;
 	}
 
-	public void text(String text) {
+	public void text(Object text) {
 		text(text, false);
 	}
 
-	public void text(String text, boolean activateLinks) {
+	public void text(Object text, boolean activateLinks) {
 		closeStartingTag();
 		if (text != null) {
-			if (text.startsWith("<html>")) {
-				if (text.length() > 6) {
-					text = text.substring(6);
-					if (activateLinks) text = Str.activateLinksInHtml(text);
-					out.print(text);
+			String s;
+			if (text instanceof String) {
+				s = (String) text;
+			} else {
+				try {
+					s = text.toString();
+				} catch (Throwable ex) {
+					s = "<ERROR: " + Utl.getRootCause(ex).getMessage() + ">";
+				}
+			}
+			if (s.startsWith("<html>")) {
+				if (s.length() > 6) {
+					s = s.substring(6);
+					if (activateLinks) s = Str.activateLinksInHtml(s);
+					out.print(s);
 				}
 			} else {
-				text = Str.replaceForHtml(text);
+				s = Str.replaceForHtml(s);
 				// text = StringEscapeUtils.escapeHtml(text);
 				// text = text.replace("\n", "<BR/>");
-				if (activateLinks) text = Str.activateLinksInHtml(text);
-				out.print(text);
+				if (activateLinks) s = Str.activateLinksInHtml(s);
+				out.print(s);
 			}
 		}
 	}

@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class AGwtConversation {
+public abstract class AGwtConversation implements Comparable<AGwtConversation> {
 
 	private static final Log LOG = Log.get(AGwtConversation.class);
 	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(2);
@@ -170,4 +170,8 @@ public abstract class AGwtConversation {
 		return "#" + number + "@" + getSession();
 	}
 
+	@Override
+	public int compareTo(AGwtConversation o) {
+		return Utl.compare(o.getLastTouched(), getLastTouched());
+	}
 }
