@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -15,6 +15,7 @@
 package ilarkesto.core.logging;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log.Level;
 
 public class LogRecord {
@@ -24,7 +25,7 @@ public class LogRecord {
 	public final Object[] parameters;
 	public String context;
 
-	public LogRecord(String name, Level level, Object[] parameters) {
+	public LogRecord(String name, Level level, Object... parameters) {
 		super();
 		this.name = name;
 		this.level = level;
@@ -46,20 +47,7 @@ public class LogRecord {
 		sb.append(" ").append(nameFormated);
 
 		// text
-		StringBuilder text = new StringBuilder();
-		if (parameters == null) {
-			text.append(" <null>");
-		} else {
-			for (Object parameter : parameters) {
-				text.append(' ');
-				if (parameter instanceof Throwable) {
-					text.append("\n").append(Str.getStackTrace((Throwable) parameter));
-				} else {
-					text.append(Str.format(parameter));
-				}
-			}
-		}
-		sb.append(Str.fillUpRight(text.toString(), " ", 100));
+		sb.append(Str.fillUpRight(getParametersAsString(), " ", 100));
 
 		// context
 		if (context != null) sb.append(" | ").append(context);
@@ -68,6 +56,42 @@ public class LogRecord {
 		if ((level != Level.DEBUG) && (level != Level.INFO)) sb.append('\n');
 
 		return sb.toString();
+	}
+
+	public String getParametersAsString() {
+		StringBuilder textSb = new StringBuilder();
+		if (parameters == null) {
+			textSb.append(" <null>");
+		} else {
+			for (Object parameter : parameters) {
+				textSb.append(' ');
+				if (parameter instanceof Throwable) {
+					textSb.append("\n").append(Str.getStackTrace((Throwable) parameter));
+				} else {
+					textSb.append(Str.format(parameter));
+				}
+			}
+		}
+		String text = textSb.toString();
+		return text;
+	}
+
+	private transient int hashcode;
+
+	@Override
+	public int hashCode() {
+		if (hashcode == 0) hashcode = Utl.hashCode(level, name, parameters);
+		return hashcode;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof LogRecord)) return false;
+		LogRecord other = (LogRecord) obj;
+		if (level != other.level) return false;
+		if (!Utl.equals(name, other.name)) return false;
+		if (!Utl.equals(parameters, other.parameters)) return false;
+		return true;
 	}
 
 }

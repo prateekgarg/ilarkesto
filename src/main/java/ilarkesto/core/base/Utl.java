@@ -26,6 +26,19 @@ public class Utl {
 
 	public static String language = "en";
 
+	public static int hashCode(Object... objects) {
+		int hashCode = 23;
+		for (Object object : objects) {
+			if (object == null) continue;
+			if (object instanceof Object[]) {
+				hashCode = hashCode * 37 + hashCode((Object[]) object);
+			} else {
+				hashCode = hashCode * 37 + object.hashCode();
+			}
+		}
+		return hashCode;
+	}
+
 	public static String getLanguage() {
 		return language;
 	}
@@ -56,6 +69,15 @@ public class Utl {
 	public static boolean equals(Object a, Object b) {
 		if (a == null && b == null) return true;
 		if (a == null || b == null) return false;
+		if (a instanceof Object[] && b instanceof Object[]) {
+			Object[] aa = (Object[]) a;
+			Object[] ba = (Object[]) b;
+			if (aa.length != ba.length) return false;
+			for (int i = 0; i < aa.length; i++) {
+				if (!equals(aa[i], ba[i])) return false;
+			}
+			return true;
+		}
 		return a.equals(b);
 	}
 

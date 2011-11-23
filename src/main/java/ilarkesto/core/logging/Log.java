@@ -24,7 +24,7 @@ public class Log {
 	private static final Log ANONYMOUS = new Log("?");
 	private static final Map<String, Log> LOGGERS = new HashMap<String, Log>();
 	private static boolean debugEnabled = true;
-	private static LogRecordHandler logRecordHandler = new PrintStreamLogDataHandler(System.err);
+	private static LogRecordHandler logRecordHandler = new PrintStreamLogRecordHandler(System.err);
 
 	private String name;
 
@@ -116,12 +116,20 @@ public class Log {
 		ANONYMOUS.debug(s);
 	}
 
-	public static void setLogRecordHandler(LogRecordHandler logDataHandler) {
-		Log.logRecordHandler = logDataHandler;
+	public static void setLogRecordHandler(LogRecordHandler handler) {
+		Log.logRecordHandler = handler;
 	}
 
 	public static enum Level {
 		DEBUG, INFO, WARN, ERROR, FATAL;
+
+		public boolean isInfo() {
+			return this == INFO;
+		}
+
+		public boolean isWarn() {
+			return this == WARN;
+		}
 
 		public boolean isWarnOrWorse() {
 			return isErrorOrWorse() || (this == WARN);

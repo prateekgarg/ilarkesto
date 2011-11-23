@@ -27,6 +27,10 @@ public class ATest extends Assert {
 
 	protected Log log = Log.get(getClass());
 
+	public static void assertNotEquals(Object a, Object b) {
+		assertFalse(a.equals(b), "Objects expected not to be equal: <" + a + "> and <" + b + ">");
+	}
+
 	public static void assertSize(Collection collection, int expectedSize) {
 		assertNotNull(collection, "Collection expected to be not null");
 		assertEquals(collection.size(), expectedSize, "Collection size expected to be <" + expectedSize + ">, but is <"

@@ -26,25 +26,32 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultLogDataHandler implements LogRecordHandler {
+public class DefaultLogRecordHandler implements LogRecordHandler {
 
-	private static final Log LOG = Log.get(DefaultLogDataHandler.class);
+	private static final Log LOG = Log.get(DefaultLogRecordHandler.class);
 	public static final DateFormat LOG_TIME_FORMAT = new SimpleDateFormat("EEE, dd. MMMM yyyy, HH:mm");
-	public static final DefaultLogDataHandler INSTANCE = new DefaultLogDataHandler();
+	public static final DefaultLogRecordHandler INSTANCE = new DefaultLogRecordHandler();
 
 	private BlockingQueue<LogRecord> queue = new LinkedBlockingQueue<LogRecord>();
 	private File logFile;
 	private Thread sysoutThread;
 	private boolean shutdown = false;
 
+	private LinkedList<LogRecord> latestRecords = new LinkedList<LogRecord>();
+
+	private LinkedList<LogRecord> errorRecords = new LinkedList<LogRecord>();
+
 	public static void activate() {}
 
-	private DefaultLogDataHandler() {
+	private DefaultLogRecordHandler() {
 		System.err.println("Initializing logging system");
 		sysoutThread = new Thread(new Runnable() {
 
@@ -84,10 +91,26 @@ public class DefaultLogDataHandler implements LogRecordHandler {
 		INSTANCE.flush();
 		INSTANCE.shutdown = true;
 		if (INSTANCE.sysoutThread != null) INSTANCE.sysoutThread.interrupt();
+		INSTANCE.latestRecords.clear();
 	}
 
 	@Override
 	public void log(LogRecord record) {
+
+		synchronized (latestRecords) {
+			latestRecords.add(record);
+			if (latestRecords.size() > 256) latestRecords.remove(0);
+		}
+
+		if (record.level.isWarnOrWorse()) {
+			synchronized (errorRecords) {
+				if (!errorRecords.contains(record)) {
+					errorRecords.add(record);
+					if (errorRecords.size() > 256) errorRecords.remove(0);
+				}
+			}
+		}
+
 		record.context = Thread.currentThread().getName();
 		try {
 			queue.put(record);
@@ -159,6 +182,18 @@ public class DefaultLogDataHandler implements LogRecordHandler {
 			} catch (Exception e) {
 				System.err.println("Failed to write to logFile: " + logFile.getAbsolutePath() + ": " + Str.format(e));
 			}
+		}
+	}
+
+	public static List<LogRecord> getLatestRecords() {
+		synchronized (INSTANCE.latestRecords) {
+			return new ArrayList<LogRecord>(INSTANCE.latestRecords);
+		}
+	}
+
+	public static List<LogRecord> getErrors() {
+		synchronized (INSTANCE.errorRecords) {
+			return new ArrayList<LogRecord>(INSTANCE.errorRecords);
 		}
 	}
 

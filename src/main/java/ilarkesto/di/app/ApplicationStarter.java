@@ -23,7 +23,7 @@ import ilarkesto.di.BeanContainer;
 import ilarkesto.di.BeanProvider;
 import ilarkesto.di.MultiBeanProvider;
 import ilarkesto.io.IO;
-import ilarkesto.logging.DefaultLogDataHandler;
+import ilarkesto.logging.DefaultLogRecordHandler;
 import ilarkesto.logging.JavaLogging;
 import ilarkesto.logging.Log4jLogging;
 
@@ -38,7 +38,7 @@ public class ApplicationStarter {
 			String... arguments) {
 
 		Sys.storeStartupTime();
-		DefaultLogDataHandler.activate();
+		DefaultLogRecordHandler.activate();
 		Log.setDebugEnabled(Sys.isDevelopmentMode());
 		Utl.language = Locale.getDefault().getLanguage();
 		LOG.info("********************************************************************************");
@@ -49,7 +49,7 @@ public class ApplicationStarter {
 		try {
 			A application = applicationClass.newInstance();
 			if (beanProvider != null) beanProvider.autowire(application);
-			DefaultLogDataHandler.setLogFile(new File(application.getApplicationDataDir() + "/error.log"));
+			DefaultLogRecordHandler.setLogFile(new File(application.getApplicationDataDir() + "/error.log"));
 			JavaLogging.redirectToLoggers();
 			try {
 				Log4jLogging.redirectToLoggers();

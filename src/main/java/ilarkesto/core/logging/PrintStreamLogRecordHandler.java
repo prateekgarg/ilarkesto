@@ -16,11 +16,11 @@ package ilarkesto.core.logging;
 
 import java.io.PrintStream;
 
-public class PrintStreamLogDataHandler implements LogRecordHandler {
+public class PrintStreamLogRecordHandler implements LogRecordHandler {
 
 	private PrintStream out;
 
-	public PrintStreamLogDataHandler(PrintStream out) {
+	public PrintStreamLogRecordHandler(PrintStream out) {
 		super();
 		this.out = out;
 	}

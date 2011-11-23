@@ -27,7 +27,7 @@ import ilarkesto.integration.xstream.XStreamSerializer;
 import ilarkesto.io.ExclusiveFileLock;
 import ilarkesto.io.ExclusiveFileLock.FileLockedException;
 import ilarkesto.io.IO;
-import ilarkesto.logging.DefaultLogDataHandler;
+import ilarkesto.logging.DefaultLogRecordHandler;
 import ilarkesto.persistence.DaoListener;
 import ilarkesto.persistence.DaoService;
 import ilarkesto.persistence.EntityStore;
@@ -129,7 +129,7 @@ public abstract class AApplication {
 					if (exclusiveFileLock != null) exclusiveFileLock.release();
 					Log.flush();
 					onShutdown();
-					DefaultLogDataHandler.stopLogging();
+					DefaultLogRecordHandler.stopLogging();
 				}
 			}
 

@@ -20,7 +20,7 @@ import ilarkesto.base.Url;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
-import ilarkesto.logging.DefaultLogDataHandler;
+import ilarkesto.logging.DefaultLogRecordHandler;
 
 import java.io.File;
 import java.util.HashSet;
@@ -48,7 +48,7 @@ public abstract class AWebApplication extends AApplication {
 	@Override
 	protected void onStart() {
 		if (!isDevelopmentMode()) Sys.setHeadless(true);
-		DefaultLogDataHandler.setLogFile(new File(getApplicationDataDir() + "/error.log"));
+		DefaultLogRecordHandler.setLogFile(new File(getApplicationDataDir() + "/error.log"));
 		LOG.info("Initializing web application");
 		onStartWebApplication();
 	}
