@@ -807,6 +807,9 @@ public class Str extends ilarkesto.core.base.Str {
 
 	public static String html2text(String s) {
 		if (s == null) return null;
+
+		s = getHtmlBody(s);
+
 		StringBuilder sb = new StringBuilder();
 		StringBuilder tag = null;
 
@@ -882,6 +885,8 @@ public class Str extends ilarkesto.core.base.Str {
 			cPrev = c;
 		}
 
+		s = sb.toString();
+
 		s = s.replace("&nbsp;", " ");
 		s = s.replace("&auml;", String.valueOf(ae));
 		s = s.replace("&uuml;", String.valueOf(ue));
@@ -908,6 +913,26 @@ public class Str extends ilarkesto.core.base.Str {
 		s = s.replace("\n\n\n", "\n\n");
 
 		return s.trim();
+	}
+
+	public static String getHtmlBody(String s) {
+		if (s == null) return null;
+
+		// TODO convert encoding if not UTF-8
+
+		int idx = s.indexOf("<body");
+		if (idx < 0) s.indexOf("<BODY");
+		if (idx < 0) return s;
+
+		int startIdx = s.indexOf('>', idx);
+		if (startIdx < 0) return s;
+		startIdx++;
+
+		int endIdx = s.indexOf("</body>", startIdx);
+		if (endIdx < 0) endIdx = s.indexOf("</BODY>", startIdx);
+		if (endIdx < 0) return s.substring(startIdx);
+
+		return s.substring(startIdx, endIdx);
 	}
 
 	private static boolean isTag(String tag, String name) {
