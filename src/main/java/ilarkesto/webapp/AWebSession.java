@@ -21,6 +21,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.di.Context;
 import ilarkesto.gwt.server.AGwtConversation;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -137,10 +138,9 @@ public abstract class AWebSession implements Comparable<AWebSession> {
 	}
 
 	protected void onInvalidate() {
-		for (AGwtConversation conversation : gwtConversations) {
-			conversation.invalidate();
+		for (AGwtConversation conversation : new ArrayList<AGwtConversation>(gwtConversations)) {
+			destroyGwtConversation(conversation);
 		}
-		gwtConversations = new HashSet<AGwtConversation>();
 	}
 
 	public final void invalidate() {
