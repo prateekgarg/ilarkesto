@@ -442,6 +442,14 @@ public class HtmlRenderer {
 		endShortTag();
 	}
 
+	public void METAviewport(String width, Integer initialScale) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("width=").append(width);
+		sb.append(", initial-scale=").append(initialScale);
+		startTag(META, true).set("name", "viewport").set("content", sb.toString());
+		endShortTag();
+	}
+
 	public void METArefresh(int seconds, String url) {
 		StringBuilder content = new StringBuilder();
 		content.append(seconds);
@@ -1005,12 +1013,16 @@ public class HtmlRenderer {
 			return set("rowspan", value);
 		}
 
+		public Tag setDataRole(String value) {
+			return set("data-role", value);
+		}
+
 		private Tag set(String name, Character value) {
 			if (value == null) return this;
 			return set(name, value.toString());
 		}
 
-		public Tag set(String name, Integer value) {
+		public Tag set(String name, Object value) {
 			if (value == null) return this;
 			return set(name, String.valueOf(value));
 		}

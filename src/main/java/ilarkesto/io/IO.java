@@ -1562,7 +1562,9 @@ public abstract class IO {
 	}
 
 	public static String downloadUrlToString(String url, String username, String password) {
-		BufferedReader in = new BufferedReader(openUrlReader(url, username, password));
+		Reader urlReader = openUrlReader(url, username, password);
+		if (urlReader == null) return null;
+		BufferedReader in = new BufferedReader(urlReader);
 		String s = readToString(in);
 		close(in);
 		return s;
@@ -1622,6 +1624,8 @@ public abstract class IO {
 		if (encoding == null) encoding = UTF_8;
 		try {
 			return new InputStreamReader(connection.getInputStream(), encoding);
+		} catch (FileNotFoundException ex) {
+			return null;
 		} catch (UnsupportedEncodingException ex) {
 			throw new RuntimeException(ex);
 		} catch (IOException ex) {

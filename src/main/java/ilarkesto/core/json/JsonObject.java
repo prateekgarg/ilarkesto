@@ -62,6 +62,16 @@ public class JsonObject {
 		return (Long) get(name);
 	}
 
+	public Boolean getBoolean(String name) {
+		return (Boolean) get(name);
+	}
+
+	public boolean isTrue(String name) {
+		Boolean value = getBoolean(name);
+		if (value == null) return false;
+		return value.booleanValue();
+	}
+
 	public List<String> getArrayOfStrings(String name) {
 		return (List<String>) get(name);
 	}
