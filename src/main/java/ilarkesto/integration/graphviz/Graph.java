@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -23,11 +23,17 @@ public class Graph {
 	private List<Edge> edges = new ArrayList<Edge>();
 	private int nodeCount;
 
-	public Node node(String label) {
-		Node node = new Node("n" + ++nodeCount);
-		node.label(label);
+	public Node node(String name, String label) {
+		nodeCount++;
+		if (name == null) name = "n" + nodeCount;
+		Node node = new Node(name);
+		if (label != null) node.label(label);
 		nodes.add(node);
 		return node;
+	}
+
+	public Node node(String label) {
+		return node(null, label);
 	}
 
 	public Edge edge(Node from, Node to) {

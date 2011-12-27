@@ -52,6 +52,10 @@ public class Header extends AHtmlContainerElement {
 		html.endA();
 	}
 
+	public void addLink(String href, String text) {
+		addHtmlRenderer().A(href, text);
+	}
+
 	@Override
 	protected void renderHeader(HtmlRenderer html) {
 		Tag div = html.startDIV();

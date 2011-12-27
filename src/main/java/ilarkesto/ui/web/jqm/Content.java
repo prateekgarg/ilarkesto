@@ -15,8 +15,16 @@
 package ilarkesto.ui.web.jqm;
 
 import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlRenderer.Tag;
 
 public class Content extends AHtmlContainerElement {
+
+	private Integer maxWidth;
+
+	public Content setMaxWidth(Integer maxWidth) {
+		this.maxWidth = maxWidth;
+		return this;
+	}
 
 	public Listview addList() {
 		return addChild(new Listview());
@@ -24,7 +32,9 @@ public class Content extends AHtmlContainerElement {
 
 	@Override
 	protected void renderHeader(HtmlRenderer html) {
-		html.startDIV().setDataRole("content");
+		Tag div = html.startDIV();
+		div.setDataRole("content");
+		if (maxWidth != null) div.setStyle("max-width: " + maxWidth + "px", "margin: 0 auto");
 	}
 
 }
