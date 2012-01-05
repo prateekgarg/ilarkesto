@@ -88,6 +88,21 @@ public class JsonObject {
 		return value;
 	}
 
+	public List addToArray(String name, Object value) {
+		List array = getArray(name);
+		if (array == null) {
+			array = new ArrayList();
+			put(name, array);
+		}
+		array.add(value);
+		return array;
+	}
+
+	public Object remove(String name) {
+		if (name == null || name.length() == 0) throw new RuntimeException("name required");
+		return elements.remove(name);
+	}
+
 	// --- formating ---
 
 	public String toFormatedString(int indentation) {
