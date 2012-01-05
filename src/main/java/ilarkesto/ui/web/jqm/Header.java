@@ -52,8 +52,13 @@ public class Header extends AHtmlContainerElement {
 		html.endA();
 	}
 
-	public void addLink(String href, String text) {
-		addHtmlRenderer().A(href, text);
+	public void addLink(String href, String text, String target, DataIcon dataIcon) {
+		HtmlRenderer html = addHtmlRenderer();
+		Tag a = html.startA(href);
+		a.setTarget(target);
+		if (dataIcon != null) a.setDataIcon(dataIcon.getName());
+		html.text(text);
+		html.endA();
 	}
 
 	@Override

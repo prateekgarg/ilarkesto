@@ -14,31 +14,41 @@
  */
 package ilarkesto.ui.web.jqm;
 
+import ilarkesto.base.Url;
 import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
 
-public class Content extends AHtmlContainerElement {
+public class Form extends AHtmlContainerElement {
 
-	private Integer maxWidth;
+	private String id;
+	private String name;
+	private String action;
+	private String method = "POST";
 
-	public Content setMaxWidth(Integer maxWidth) {
-		this.maxWidth = maxWidth;
-		return this;
+	public Form(String id, String action) {
+		this.id = id;
+		this.action = action;
+
+		this.name = id;
 	}
 
-	public Form addForm(String id, String action) {
-		return addChild(new Form(id, action));
+	public void addSubmitButton(String label) {
+		addHtmlRenderer().INPUTsubmit("submit", label, null, null);
 	}
 
-	public Listview addList() {
-		return addChild(new Listview());
+	public TextInput addTextInput(String id, String label) {
+		return addChild(new TextInput(id, label));
 	}
 
 	@Override
 	protected void renderHeader(HtmlRenderer html) {
-		Tag div = html.startDIV();
-		div.setDataRole("content");
-		if (maxWidth != null) div.setStyle("max-width: " + maxWidth + "px", "margin: 0 auto");
+		html.startFORM(new Url(action), method, name, false).setId(id);
+		html.startFIELDSET();
+	}
+
+	@Override
+	protected void renderFooter(HtmlRenderer html) {
+		html.endFIELDSET();
+		html.endFORM();
 	}
 
 }

@@ -17,28 +17,44 @@ package ilarkesto.ui.web.jqm;
 import ilarkesto.ui.web.HtmlRenderer;
 import ilarkesto.ui.web.HtmlRenderer.Tag;
 
-public class Content extends AHtmlContainerElement {
+public class TextInput extends AElement {
 
-	private Integer maxWidth;
+	private InputType type = InputType.Text;
+	private String id;
+	private String name;
+	private String label;
+	private String value;
 
-	public Content setMaxWidth(Integer maxWidth) {
-		this.maxWidth = maxWidth;
-		return this;
-	}
+	public TextInput(String id, String label) {
+		super();
+		this.id = id;
+		this.label = label;
 
-	public Form addForm(String id, String action) {
-		return addChild(new Form(id, action));
-	}
-
-	public Listview addList() {
-		return addChild(new Listview());
+		this.name = id;
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag div = html.startDIV();
-		div.setDataRole("content");
-		if (maxWidth != null) div.setStyle("max-width: " + maxWidth + "px", "margin: 0 auto");
+	public void render(HtmlRenderer html) {
+		html.startDIV().setDataRole("fieldcontain");
+
+		html.LABEL(id, label);
+
+		Tag input = html.startINPUT(type.getName(), name);
+		input.setId(id);
+		input.setValue(value);
+		html.endINPUT();
+
+		html.endDIV();
+	}
+
+	public TextInput setValue(String value) {
+		this.value = value;
+		return this;
+	}
+
+	public TextInput setType(InputType type) {
+		this.type = type;
+		return this;
 	}
 
 }

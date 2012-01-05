@@ -230,6 +230,16 @@ public class HtmlRenderer {
 
 	private static final String BUTTON = "button";
 
+	private static final String FIELDSET = "fieldset";
+
+	public Tag startFIELDSET() {
+		return startTag(FIELDSET);
+	}
+
+	public void endFIELDSET() {
+		endTag(FIELDSET);
+	}
+
 	public Tag startFORM(Url actionUrl, String name, boolean multipart) {
 		return startFORM(actionUrl, "post", name, multipart);
 	}
@@ -261,6 +271,14 @@ public class HtmlRenderer {
 		if (selected) tag.set("selected", "true");
 		text(text);
 		endTag(OPTION);
+	}
+
+	public Tag startINPUT(String type, String name) {
+		return startTag(INPUT).set("type", type).setName(name);
+	}
+
+	public void endINPUT() {
+		endTag(INPUT);
 	}
 
 	public void INPUTreset(String value, String onclick) {
@@ -928,6 +946,10 @@ public class HtmlRenderer {
 			return set("id", value);
 		}
 
+		public Tag setValue(String value) {
+			return set("value", value);
+		}
+
 		public Tag setSrc(String value) {
 			return set("src", value);
 		}
@@ -1015,6 +1037,10 @@ public class HtmlRenderer {
 
 		public Tag setDataRole(String value) {
 			return set("data-role", value);
+		}
+
+		public Tag setDataIcon(String value) {
+			return set("data-icon", value);
 		}
 
 		private Tag set(String name, Character value) {

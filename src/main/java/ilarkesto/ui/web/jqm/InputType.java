@@ -14,31 +14,23 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+public enum InputType {
 
-public class Content extends AHtmlContainerElement {
+	Text("text"), Password("password"), Email("email"), Tel("tel"), Number("number");
 
-	private Integer maxWidth;
+	private String name;
 
-	public Content setMaxWidth(Integer maxWidth) {
-		this.maxWidth = maxWidth;
-		return this;
+	InputType(String name) {
+		this.name = name;
 	}
 
-	public Form addForm(String id, String action) {
-		return addChild(new Form(id, action));
-	}
-
-	public Listview addList() {
-		return addChild(new Listview());
+	public String getName() {
+		return name;
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag div = html.startDIV();
-		div.setDataRole("content");
-		if (maxWidth != null) div.setStyle("max-width: " + maxWidth + "px", "margin: 0 auto");
+	public String toString() {
+		return name;
 	}
 
 }

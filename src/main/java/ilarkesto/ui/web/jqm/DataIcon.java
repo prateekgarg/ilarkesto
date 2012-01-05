@@ -14,31 +14,26 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+// http://jquerymobile.com/demos/1.0/docs/buttons/buttons-icons.html
+public enum DataIcon {
 
-public class Content extends AHtmlContainerElement {
+	Delete("delete"), ArrowLeft("arrow-l"), ArrowRight("arrow-r"), ArrowUp("arrow-u"), ArrowDown("arrow-d"), Plus(
+			"plus"), Minus("minus"), Check("check"), Gear("gear"), Refresh("refresh"), Forward("forward"), Back("back"), Grid(
+			"grid"), Star("star"), Alert("alert"), Info("info"), Home("home"), Search("search");
 
-	private Integer maxWidth;
+	private String name;
 
-	public Content setMaxWidth(Integer maxWidth) {
-		this.maxWidth = maxWidth;
-		return this;
+	DataIcon(String name) {
+		this.name = name;
 	}
 
-	public Form addForm(String id, String action) {
-		return addChild(new Form(id, action));
-	}
-
-	public Listview addList() {
-		return addChild(new Listview());
+	public String getName() {
+		return name;
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag div = html.startDIV();
-		div.setDataRole("content");
-		if (maxWidth != null) div.setStyle("max-width: " + maxWidth + "px", "margin: 0 auto");
+	public String toString() {
+		return name;
 	}
 
 }
