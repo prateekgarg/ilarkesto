@@ -14,33 +14,18 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+public enum Theme {
 
-public class Header extends AHtmlContainerElement {
+	BLACK("a"), BLUE("b"), LIGHT("c"), DARK("d"), YELLOW("e");
 
-	private Theme theme;
+	private String name;
 
-	public Header setDataTheme(Theme theme) {
-		this.theme = theme;
-		return this;
+	Theme(String name) {
+		this.name = name;
 	}
 
-	public void addHomeLink(String href) {
-		HtmlRenderer html = addHtmlRenderer();
-		Tag a = html.startA(href);
-		a.set("data-icon", "home");
-		a.set("data-iconpos", "notext");
-		a.set("data-direction", "reverse");
-		html.text("Home");
-		html.endA();
-	}
-
-	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag div = html.startDIV();
-		div.setDataRole("header");
-		if (theme != null) div.set("data-theme", theme.getName());
+	public String getName() {
+		return name;
 	}
 
 }

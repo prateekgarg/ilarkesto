@@ -31,6 +31,10 @@ public class Form extends AHtmlContainerElement {
 		this.name = id;
 	}
 
+	public void addHidden(String name, String value) {
+		addHtmlRenderer().INPUThidden(name, value);
+	}
+
 	public void addSubmitButton(String label) {
 		addHtmlRenderer().INPUTsubmit("submit", label, null, null);
 	}

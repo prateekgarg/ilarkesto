@@ -15,8 +15,20 @@
 package ilarkesto.ui.web.jqm;
 
 import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlRenderer.Tag;
 
 public abstract class AHtmlContainerElement extends AContainerElement {
+
+	public void addLinkButton(String href, String text, String target, DataIcon icon, Theme theme) {
+		HtmlRenderer html = addHtmlRenderer();
+		Tag a = html.startA(href);
+		a.setDataRole("button");
+		a.setTarget(target);
+		if (icon != null) a.setDataIcon(icon.getName());
+		if (theme != null) a.set("data-theme", theme.getName());
+		html.text(text);
+		html.endA();
+	}
 
 	public HtmlElement addHtml() {
 		return addChild(new HtmlElement());
