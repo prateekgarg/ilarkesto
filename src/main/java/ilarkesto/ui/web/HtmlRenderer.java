@@ -73,6 +73,12 @@ public class HtmlRenderer {
 
 	private static final String TEXTAREA = "textarea";
 
+	public void TEXTAREA(String name, String id, String text) {
+		startTag(TEXTAREA).set("name", name).setId(id);
+		html(text);
+		endTag(TEXTAREA);
+	}
+
 	public void TEXTAREA(String name, String id, String text, Integer cols, int rows, boolean wysiwyg, String width) {
 		Tag tag = startTag(TEXTAREA).set("name", name).setId(id).set("rows", rows).set("cols", cols)
 				.set("wrap", "virtual").setWidth(width).setStyle("width: " + width + ";");
@@ -258,8 +264,12 @@ public class HtmlRenderer {
 		endTag(FORM);
 	}
 
-	public void startSELECT(String name, int size) {
-		startTag(SELECT, true).setName(name).set("size", size);
+	public Tag startSELECT(String name) {
+		return startTag(SELECT, true).setName(name);
+	}
+
+	public Tag startSELECT(String name, Integer size) {
+		return startSELECT(name).set("size", size);
 	}
 
 	public void endSELECT() {

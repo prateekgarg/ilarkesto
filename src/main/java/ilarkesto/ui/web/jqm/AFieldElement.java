@@ -15,32 +15,35 @@
 package ilarkesto.ui.web.jqm;
 
 import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
 
-public class TextInput extends AFieldElement {
+public abstract class AFieldElement extends AElement {
 
-	private InputType type = InputType.Text;
-	private String value;
+	protected String id;
+	protected String name;
+	protected String label;
 
-	public TextInput(String id, String label) {
-		super(id, label);
+	public AFieldElement(String id, String label) {
+		this.id = id;
+		this.label = label;
+
+		this.name = id;
 	}
+
+	protected abstract void renderElement(HtmlRenderer html);
 
 	@Override
-	protected void renderElement(HtmlRenderer html) {
-		Tag input = html.startINPUT(type.getName(), name);
-		input.setId(id);
-		input.setValue(value);
-		html.endINPUT();
+	public void render(HtmlRenderer html) {
+		html.startDIV().setDataRole("fieldcontain");
+
+		html.LABEL(id, label);
+
+		renderElement(html);
+
+		html.endDIV();
 	}
 
-	public TextInput setValue(String value) {
-		this.value = value;
-		return this;
-	}
-
-	public TextInput setType(InputType type) {
-		this.type = type;
+	public AFieldElement setName(String name) {
+		this.name = name;
 		return this;
 	}
 

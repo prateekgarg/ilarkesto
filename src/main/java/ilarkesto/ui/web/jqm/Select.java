@@ -14,33 +14,47 @@
  */
 package ilarkesto.ui.web.jqm;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.ui.web.HtmlRenderer;
 import ilarkesto.ui.web.HtmlRenderer.Tag;
 
-public class TextInput extends AFieldElement {
+import java.util.HashMap;
+import java.util.Map;
 
-	private InputType type = InputType.Text;
+public class Select extends AFieldElement {
+
 	private String value;
+	private Map<String, String> options = new HashMap<String, String>();
+	private boolean optional = true;
 
-	public TextInput(String id, String label) {
+	public Select(String id, String label) {
 		super(id, label);
 	}
 
 	@Override
 	protected void renderElement(HtmlRenderer html) {
-		Tag input = html.startINPUT(type.getName(), name);
-		input.setId(id);
-		input.setValue(value);
-		html.endINPUT();
+		Tag select = html.startSELECT(name);
+		select.setId(id);
+
+		if (optional) {
+			html.OPTION("", "", Str.isBlank(value));
+		}
+
+		for (Map.Entry<String, String> option : options.entrySet()) {
+			String key = option.getKey();
+			html.OPTION(key, option.getValue(), key.equals(value));
+		}
+
+		html.endSELECT();
 	}
 
-	public TextInput setValue(String value) {
+	public Select setValue(String value) {
 		this.value = value;
 		return this;
 	}
 
-	public TextInput setType(InputType type) {
-		this.type = type;
+	public Select setOptions(Map<String, String> options) {
+		this.options = options;
 		return this;
 	}
 

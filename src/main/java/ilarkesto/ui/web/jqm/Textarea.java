@@ -15,32 +15,22 @@
 package ilarkesto.ui.web.jqm;
 
 import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
 
-public class TextInput extends AFieldElement {
+public class Textarea extends AFieldElement {
 
-	private InputType type = InputType.Text;
 	private String value;
 
-	public TextInput(String id, String label) {
+	public Textarea(String id, String label) {
 		super(id, label);
 	}
 
 	@Override
 	protected void renderElement(HtmlRenderer html) {
-		Tag input = html.startINPUT(type.getName(), name);
-		input.setId(id);
-		input.setValue(value);
-		html.endINPUT();
+		html.TEXTAREA(name, id, value);
 	}
 
-	public TextInput setValue(String value) {
+	public Textarea setValue(String value) {
 		this.value = value;
-		return this;
-	}
-
-	public TextInput setType(InputType type) {
-		this.type = type;
 		return this;
 	}
 

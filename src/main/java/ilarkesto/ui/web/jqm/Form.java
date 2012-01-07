@@ -16,6 +16,7 @@ package ilarkesto.ui.web.jqm;
 
 import ilarkesto.base.Url;
 import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlRenderer.Tag;
 
 public class Form extends AHtmlContainerElement {
 
@@ -23,6 +24,7 @@ public class Form extends AHtmlContainerElement {
 	private String name;
 	private String action;
 	private String method = "POST";
+	private boolean ajax = false;
 
 	public Form(String id, String action) {
 		this.id = id;
@@ -35,17 +37,36 @@ public class Form extends AHtmlContainerElement {
 		addHtmlRenderer().INPUThidden(name, value);
 	}
 
-	public void addSubmitButton(String label) {
-		addHtmlRenderer().INPUTsubmit("submit", label, null, null);
+	public void addSubmitButton(String label, Theme theme) {
+		HtmlRenderer html = addHtmlRenderer();
+		Tag input = html.startTag("input", true).set("type", "submit");
+		input.set("name", name);
+		input.setValue(label);
+		if (theme != null) input.set("data-theme", theme.getName());
+		html.endShortTag();
+	}
+
+	public Textarea addTextarea(String id, String label) {
+		return addChild(new Textarea(id, label));
 	}
 
 	public TextInput addTextInput(String id, String label) {
 		return addChild(new TextInput(id, label));
 	}
 
+	public FlipToggleSwitch addFlipToggleSwitch(String id, String label, String trueLabel, String falseLabel) {
+		return addChild(new FlipToggleSwitch(id, label, trueLabel, falseLabel));
+	}
+
+	public Select addSelect(String id, String label) {
+		return addChild(new Select(id, label));
+	}
+
 	@Override
 	protected void renderHeader(HtmlRenderer html) {
-		html.startFORM(new Url(action), method, name, false).setId(id);
+		Tag form = html.startFORM(new Url(action), method, name, false);
+		form.setId(id);
+		form.set("data-ajax", ajax);
 		html.startFIELDSET();
 	}
 

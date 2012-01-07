@@ -17,30 +17,32 @@ package ilarkesto.ui.web.jqm;
 import ilarkesto.ui.web.HtmlRenderer;
 import ilarkesto.ui.web.HtmlRenderer.Tag;
 
-public class TextInput extends AFieldElement {
+public class FlipToggleSwitch extends AFieldElement {
 
-	private InputType type = InputType.Text;
-	private String value;
+	private String trueLabel;
+	private String falseLabel;
+	private boolean value;
 
-	public TextInput(String id, String label) {
+	public FlipToggleSwitch(String id, String label, String trueLabel, String falseLabel) {
 		super(id, label);
+		this.trueLabel = trueLabel;
+		this.falseLabel = falseLabel;
 	}
 
 	@Override
 	protected void renderElement(HtmlRenderer html) {
-		Tag input = html.startINPUT(type.getName(), name);
-		input.setId(id);
-		input.setValue(value);
-		html.endINPUT();
+		Tag select = html.startSELECT(name);
+		select.setId(id);
+		select.setDataRole("slider");
+
+		html.OPTION(String.valueOf(false), falseLabel, !value);
+		html.OPTION(String.valueOf(true), trueLabel, value);
+
+		html.endSELECT();
 	}
 
-	public TextInput setValue(String value) {
-		this.value = value;
-		return this;
-	}
-
-	public TextInput setType(InputType type) {
-		this.type = type;
+	public FlipToggleSwitch setValue(Boolean value) {
+		this.value = value == null ? false : value;
 		return this;
 	}
 
