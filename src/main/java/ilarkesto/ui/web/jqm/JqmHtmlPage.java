@@ -38,9 +38,9 @@ public class JqmHtmlPage extends AContainerElement {
 		html.startHTML();
 		html.startHEAD(title, language);
 
-		html.LINKcss("https://servisto.de/js/jquery.mobile-1.0.min.css");
-		html.SCRIPTjavascript("https://servisto.de/js/jquery-1.6.4.min.js", null);
-		html.SCRIPTjavascript("https://servisto.de/js/jquery.mobile-1.0.min.js", null);
+		html.LINKcss("http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css");
+		html.SCRIPTjavascript("http://code.jquery.com/jquery-1.6.4.min.js", null);
+		html.SCRIPTjavascript("http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js", null);
 
 		html.endHEAD();
 		html.startBODY();
