@@ -27,6 +27,13 @@ public class Listview extends AContainerElement {
 		return this;
 	}
 
+	public ListItem addItem(String href, Object text) {
+		ListItem item = addItem();
+		item.setHref(href);
+		item.addText(text);
+		return item;
+	}
+
 	public ListItem addItem() {
 		return addChild(new ListItem());
 	}

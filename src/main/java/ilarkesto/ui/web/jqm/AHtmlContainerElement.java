@@ -30,6 +30,11 @@ public abstract class AHtmlContainerElement extends AContainerElement {
 		html.endA();
 	}
 
+	public void addText(Object text) {
+		if (text == null) return;
+		addHtmlRenderer().text(text);
+	}
+
 	public HtmlElement addHtml() {
 		return addChild(new HtmlElement());
 	}

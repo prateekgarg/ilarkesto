@@ -805,6 +805,12 @@ public class HtmlRenderer {
 		endTH();
 	}
 
+	public void nbsp(int count) {
+		for (int i = 0; i < count; i++) {
+			nbsp();
+		}
+	}
+
 	// --- core ---
 
 	public void nbsp() {

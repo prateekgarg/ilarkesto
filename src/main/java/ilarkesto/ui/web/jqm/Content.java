@@ -14,8 +14,11 @@
  */
 package ilarkesto.ui.web.jqm;
 
+import ilarkesto.base.Url;
 import ilarkesto.ui.web.HtmlRenderer;
 import ilarkesto.ui.web.HtmlRenderer.Tag;
+
+import java.util.UUID;
 
 public class Content extends AHtmlContainerElement {
 
@@ -24,6 +27,14 @@ public class Content extends AHtmlContainerElement {
 	public Content setMaxWidth(Integer maxWidth) {
 		this.maxWidth = maxWidth;
 		return this;
+	}
+
+	public Form addForm(Url action) {
+		return addForm(action.toString());
+	}
+
+	public Form addForm(String action) {
+		return addChild(new Form("jqmform_" + UUID.randomUUID().toString(), action));
 	}
 
 	public Form addForm(String id, String action) {
