@@ -127,6 +127,18 @@ public class HtmlRenderer {
 		endLI();
 	}
 
+	// --- STRONG ---
+
+	private static final String STRONG = "strong";
+
+	public Tag startSTRONG() {
+		return startTag(STRONG);
+	}
+
+	public void endSTRONG() {
+		endTag(STRONG);
+	}
+
 	// --- EM ---
 
 	private static final String EM = "em";
@@ -844,6 +856,18 @@ public class HtmlRenderer {
 		out.print(name);
 		depth++;
 		return tag;
+	}
+
+	public void textEm(Object text) {
+		startEM();
+		text(text);
+		endEM();
+	}
+
+	public void textStrong(Object text) {
+		startSTRONG();
+		text(text);
+		endSTRONG();
 	}
 
 	public void text(Object text) {
