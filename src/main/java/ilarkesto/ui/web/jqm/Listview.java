@@ -21,6 +21,7 @@ public class Listview extends AContainerElement {
 
 	private boolean dataInset = true;
 	private boolean dataFilter;
+	private Theme dataTheme;
 
 	public Listview setDataFilter(boolean dataFilter) {
 		this.dataFilter = dataFilter;
@@ -43,12 +44,18 @@ public class Listview extends AContainerElement {
 		Tag ul = html.startUL();
 		ul.setDataRole("listview");
 		ul.set("data-inset", dataInset);
+		if (dataTheme != null) ul.set("data-theme", dataTheme.getName());
 		if (dataFilter) ul.set("data-filter", dataFilter);
 	}
 
 	@Override
 	protected void renderFooter(HtmlRenderer html) {
 		html.endUL();
+	}
+
+	public Listview setDataTheme(Theme dataTheme) {
+		this.dataTheme = dataTheme;
+		return this;
 	}
 
 }
