@@ -17,6 +17,7 @@ package ilarkesto.base.time;
 import ilarkesto.base.Str;
 import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
+import ilarkesto.core.time.Weekday;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -79,6 +80,11 @@ public final class Date extends ilarkesto.core.time.Date {
 
 	public GregorianCalendar getGregorianCalendar() {
 		return new GregorianCalendar(year, month - 1, day);
+	}
+
+	public Date getMondayOfWeek() {
+		if (getWeekday() == Weekday.MONDAY) return this;
+		return addDays(-1).getMondayOfWeek();
 	}
 
 	public Date getFirstDateOfMonth() {
