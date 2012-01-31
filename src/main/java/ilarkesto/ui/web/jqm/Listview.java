@@ -28,6 +28,16 @@ public class Listview extends AContainerElement {
 		return this;
 	}
 
+	public ListDivider addDivider(Object text) {
+		ListDivider divider = addDivider();
+		divider.addText(text);
+		return divider;
+	}
+
+	public ListDivider addDivider() {
+		return addChild(new ListDivider());
+	}
+
 	public ListItem addItem(String href, Object text) {
 		ListItem item = addItem();
 		item.setHref(href);

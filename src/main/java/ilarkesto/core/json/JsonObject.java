@@ -38,6 +38,11 @@ public class JsonObject {
 		return elements.containsKey(name);
 	}
 
+	public boolean containsString(String name, String expected) {
+		String value = getString(name);
+		return value == expected || (value != null && value.equals(expected));
+	}
+
 	public String getString(String name) {
 		return (String) get(name);
 	}
