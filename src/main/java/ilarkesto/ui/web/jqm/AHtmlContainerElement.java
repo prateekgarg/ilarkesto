@@ -19,13 +19,23 @@ import ilarkesto.ui.web.HtmlRenderer.Tag;
 
 public abstract class AHtmlContainerElement extends AContainerElement {
 
+	public void addDialogButton(String href, String text, DataIcon icon, Theme theme) {
+		addLinkButton(href, text, null, icon, theme, "dialog");
+	}
+
 	public void addLinkButton(String href, String text, String target, DataIcon icon, Theme theme) {
+		addLinkButton(href, text, target, icon, theme, null);
+	}
+
+	private void addLinkButton(String href, String text, String target, DataIcon icon, Theme theme, String dataRel) {
 		HtmlRenderer html = addHtmlRenderer();
 		Tag a = html.startA(href);
 		a.setDataRole("button");
 		a.setTarget(target);
 		if (icon != null) a.setDataIcon(icon.getName());
 		if (theme != null) a.set("data-theme", theme.getName());
+		if (dataRel != null) a.set("data-rel", dataRel);
+		// a.set("data-inline", "true");
 		html.text(text);
 		html.endA();
 	}
