@@ -259,7 +259,7 @@ public final class Proc {
 	 * Gets the standard output of the process.
 	 */
 	public String getOutput() {
-		if (output == null) throw new RuntimeException("Process not started yet.");
+		if (output == null) return null;
 		synchronized (output) {
 			return output.toString().trim();
 		}
