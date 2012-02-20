@@ -26,15 +26,9 @@ public class YoutubeLinkConverter implements LinkConverter {
 	private String createHtml(String videoId, int width) {
 		int height = (int) (width / 1.6623f);
 		StringBuilder sb = new StringBuilder();
-		sb.append("<object width=\"").append(width).append("\" height=\"").append(height).append("\">");
-		sb.append("<param name=\"movie\" value=\"http://www.youtube.com/v/").append(videoId)
-				.append("&hl=en_US&fs=1&\"></param>");
-		sb.append("<param name=\"allowFullScreen\" value=\"true\"></param>");
-		sb.append("<param name=\"allowscriptaccess\" value=\"always\"></param>");
-		sb.append("<embed src=\"http://www.youtube.com/v/").append(videoId)
-				.append("&hl=en_US&fs=1&\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\"")
-				.append(" allowfullscreen=\"true\" width=\"").append(width).append("\" height=\"").append(height)
-				.append("\"></embed></object>");
+		sb.append("<iframe width=\"").append(width).append("\" height=\"").append(height)
+				.append("\" src=\"https://www.youtube-nocookie.com/embed/").append(videoId)
+				.append("?rel=0\" frameborder=\"0\" allowfullscreen></iframe>");
 		return sb.toString();
 	}
 
