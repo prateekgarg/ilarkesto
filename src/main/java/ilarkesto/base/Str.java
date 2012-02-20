@@ -14,6 +14,8 @@
  */
 package ilarkesto.base;
 
+import ilarkesto.integration.links.LinkConverter;
+
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
@@ -292,11 +294,11 @@ public class Str extends ilarkesto.core.base.Str {
 		return false;
 	}
 
-	public static String activateLinksInHtml(String s) {
-		return activateLinksInHtml(s, 640);
+	public static String activateLinksInHtml(String s, LinkConverter linkConverter) {
+		return activateLinksInHtml(s, linkConverter, 640);
 	}
 
-	public static String activateLinksInHtml(String s, int maxWidth) {
+	public static String activateLinksInHtml(String s, LinkConverter linkConverter, int maxWidth) {
 		if (s == null) return null;
 		int fromIndex = 0;
 		StringBuffer result = null;
@@ -311,32 +313,20 @@ public class Str extends ilarkesto.core.base.Str {
 					String url = s.substring(idx, endIdx);
 					if (result == null) result = new StringBuffer();
 					result.append(s.substring(fromIndex, idx));
-					String urlLower = url.toLowerCase();
 					result.append("<a href=\"");
 					result.append(url.startsWith("www.") ? "http://" + url : url);
 					result.append("\" target=\"_blank\">");
 
-					if (urlLower.startsWith("http://www.youtube.com/watch?v=")) {
-						result.append(youtube(parseYoutubeVideoId(url), maxWidth));
-					} else if (urlLower.startsWith("http://twitpic.com/")) {
-						String id = removePrefix(url, "http://twitpic.com/");
-						result.append("<img src=\"");
-						result.append("http://twitpic.com/show/full/").append(id);
-						result.append("\" style=\"max-width: " + maxWidth + "px; max-height: " + maxWidth
-								+ "px;\" alt=\"twitpic\">");
-					} else if (urlLower.endsWith(".jpg") || urlLower.endsWith(".gif") || urlLower.endsWith(".png")
-							|| urlLower.endsWith(".jpeg") || url.contains(".ggpht.com/")) {
-						result.append("<img src=\"");
-						result.append(url.startsWith("www.") ? "http://" + url : url);
-						result.append("\" style=\"max-width: " + maxWidth + "px; max-height: " + maxWidth
-								+ "px;\" alt=\"img\">");
-					} else {
+					String convertedUrl = linkConverter.convert(url, maxWidth);
+					if (convertedUrl == url) {
 						String label = url;
 						if (url.startsWith("http://")) url = url.substring(7);
 						if (url.startsWith("https://")) url = url.substring(8);
 						if (url.startsWith("www.")) url = url.substring(4);
 						label = cutRight(url, 30, "...");
 						result.append(label);
+					} else {
+						result.append(convertedUrl);
 					}
 
 					result.append("</a>");
@@ -353,39 +343,6 @@ public class Str extends ilarkesto.core.base.Str {
 		if (result == null) return s;
 		result.append(s.substring(fromIndex));
 		return result.toString();
-	}
-
-	private static String parseYoutubeVideoId(String url) {
-		String prefix = "http://www.youtube.com/watch?v=";
-		String s = removePrefix(url, prefix);
-		int endIdx = s.indexOf("&");
-		if (endIdx > 0) {
-			s = s.substring(0, endIdx);
-		}
-		return s;
-	}
-
-	public static String youtube(String vId) {
-		return youtube(vId, 640, 385);
-	}
-
-	public static String youtube(String vId, int width) {
-		int height = (int) (width / 1.6623f);
-		return youtube(vId, width, height);
-	}
-
-	public static String youtube(String vId, int width, int height) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("<object width=\"").append(width).append("\" height=\"").append(height).append("\">");
-		sb.append("<param name=\"movie\" value=\"http://www.youtube.com/v/").append(vId)
-				.append("&hl=en_US&fs=1&\"></param>");
-		sb.append("<param name=\"allowFullScreen\" value=\"true\"></param>");
-		sb.append("<param name=\"allowscriptaccess\" value=\"always\"></param>");
-		sb.append("<embed src=\"http://www.youtube.com/v/").append(vId)
-				.append("&hl=en_US&fs=1&\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\"")
-				.append(" allowfullscreen=\"true\" width=\"").append(width).append("\" height=\"").append(height)
-				.append("\"></embed></object>");
-		return sb.toString();
 	}
 
 	public static int firstIndexOf(String s, int fromIndex, String... stringsToFind) {

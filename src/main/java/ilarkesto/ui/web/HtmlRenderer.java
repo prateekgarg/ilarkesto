@@ -19,6 +19,7 @@ import ilarkesto.base.Url;
 import ilarkesto.base.Utl;
 import ilarkesto.id.CountingIdGenerator;
 import ilarkesto.id.IdGenerator;
+import ilarkesto.integration.links.MultiLinkConverter;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -890,14 +891,14 @@ public class HtmlRenderer {
 			if (s.startsWith("<html>")) {
 				if (s.length() > 6) {
 					s = s.substring(6);
-					if (activateLinks) s = Str.activateLinksInHtml(s);
+					if (activateLinks) s = Str.activateLinksInHtml(s, MultiLinkConverter.ALL);
 					out.print(s);
 				}
 			} else {
 				s = Str.replaceForHtml(s);
 				// text = StringEscapeUtils.escapeHtml(text);
 				// text = text.replace("\n", "<BR/>");
-				if (activateLinks) s = Str.activateLinksInHtml(s);
+				if (activateLinks) s = Str.activateLinksInHtml(s, MultiLinkConverter.ALL);
 				out.print(s);
 			}
 		}
