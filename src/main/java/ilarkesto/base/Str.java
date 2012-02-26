@@ -75,6 +75,10 @@ public class Str extends ilarkesto.core.base.Str {
 		return sb.toString();
 	}
 
+	public static String generateRandomParagraphs(int count) {
+		return generateRandomParagraphs(count, null, null, "\n\n");
+	}
+
 	public static String generateRandomParagraphs(int count, String prefix, String suffix, String separator) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < count; i++) {
