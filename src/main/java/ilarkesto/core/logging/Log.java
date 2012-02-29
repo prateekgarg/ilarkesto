@@ -33,7 +33,9 @@ public class Log {
 	}
 
 	public void log(Level level, Object... parameters) {
-		if (logRecordHandler != null) logRecordHandler.log(new LogRecord(name, level, parameters));
+		if (logRecordHandler == null) return;
+		if (level.isDebug() && !isDebugEnabled()) return;
+		logRecordHandler.log(new LogRecord(name, level, parameters));
 	}
 
 	/**
@@ -122,6 +124,10 @@ public class Log {
 
 	public static enum Level {
 		DEBUG, INFO, WARN, ERROR, FATAL;
+
+		public boolean isDebug() {
+			return this == DEBUG;
+		}
 
 		public boolean isInfo() {
 			return this == INFO;
