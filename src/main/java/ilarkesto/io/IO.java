@@ -1008,12 +1008,24 @@ public abstract class IO {
 		return image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 	}
 
-	public static Image quadratizeToWidth(BufferedImage image) {
+	public static BufferedImage quadratize(BufferedImage image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
-		if (height <= width) return image;
-		int top = (height - width) / 2;
-		return image.getSubimage(0, top, width, width);
+		if (width == height) return image;
+
+		if (width > height) {
+			int offset = (width - height) / 2;
+			return image.getSubimage(offset, 0, height, height);
+		} else {
+			int offset = (height - width) / 2;
+			return image.getSubimage(0, offset, width, width);
+		}
+	}
+
+	public static Image quadratizeAndScale(BufferedImage image, int size) {
+		image = quadratize(image);
+		if (image.getWidth() == size) return image;
+		return image.getScaledInstance(size, size, Image.SCALE_SMOOTH);
 	}
 
 	public static void copyDataToFile(byte[] data, File file) {
