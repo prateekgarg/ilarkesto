@@ -1022,10 +1022,10 @@ public abstract class IO {
 		}
 	}
 
-	public static Image quadratizeAndScale(BufferedImage image, int size) {
+	public static Image quadratizeAndLimitSize(BufferedImage image, int maxSize) {
 		image = quadratize(image);
-		if (image.getWidth() == size) return image;
-		return image.getScaledInstance(size, size, Image.SCALE_SMOOTH);
+		if (image.getWidth() <= maxSize) return image;
+		return image.getScaledInstance(maxSize, maxSize, Image.SCALE_SMOOTH);
 	}
 
 	public static void copyDataToFile(byte[] data, File file) {
