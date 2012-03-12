@@ -16,18 +16,21 @@ package ilarkesto.gwt.client.editor;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.gwt.client.AViewEditWidget;
+import ilarkesto.gwt.client.Gwt;
+import ilarkesto.gwt.client.RichtextFormater;
 
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class TextEditorWidget extends AViewEditWidget {
 
-	private Label viewer;
+	private HTML viewer;
 	private TextBox editor;
 	private ATextEditorModel model;
 
@@ -38,7 +41,7 @@ public class TextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected final Widget onViewerInitialization() {
-		viewer = new Label();
+		viewer = new HTML();
 		return viewer;
 	}
 
@@ -76,8 +79,16 @@ public class TextEditorWidget extends AViewEditWidget {
 	}
 
 	public final void setViewerText(String text) {
-		if (Str.isBlank(text)) text = ".";
-		viewer.setText(text);
+		if (Str.isBlank(text)) {
+			viewer.setHTML(".");
+			return;
+		}
+		String html = getRichtextFormater().richtextToHtml(text);
+		viewer.setHTML(html);
+	}
+
+	protected RichtextFormater getRichtextFormater() {
+		return Gwt.getDefaultRichtextFormater();
 	}
 
 	public final void setEditorText(String text) {
