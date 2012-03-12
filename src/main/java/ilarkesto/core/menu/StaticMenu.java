@@ -14,8 +14,6 @@
  */
 package ilarkesto.core.menu;
 
-import ilarkesto.core.changeindicator.ChangeIndicator;
-import ilarkesto.core.changeindicator.HasChangeIndicator;
 
 import java.util.ArrayList;
 import java.util.List;

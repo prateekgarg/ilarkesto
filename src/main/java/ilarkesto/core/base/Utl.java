@@ -16,6 +16,8 @@ package ilarkesto.core.base;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,6 +27,18 @@ import java.util.Set;
 public class Utl {
 
 	public static String language = "en";
+
+	public static <T extends Comparable> List<T> sort(Collection<T> collection) {
+		List<T> result = new ArrayList<T>(collection);
+		Collections.sort(result);
+		return result;
+	}
+
+	public static <T> List<T> sort(Collection<T> collection, Comparator<T> comparator) {
+		List<T> result = new ArrayList<T>(collection);
+		Collections.sort(result, comparator);
+		return result;
+	}
 
 	public static int hashCode(Object... objects) {
 		int hashCode = 23;

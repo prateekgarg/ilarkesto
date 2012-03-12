@@ -18,7 +18,6 @@ import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -199,18 +198,6 @@ public class Utl extends ilarkesto.core.base.Utl {
 		List<T> result = new ArrayList<T>(count);
 		for (int i = 0; i < count && i < list.size(); i++)
 			result.add(list.get(i));
-		return result;
-	}
-
-	public static <T extends Comparable> List<T> sort(Collection<T> collection) {
-		List<T> result = new ArrayList<T>(collection);
-		Collections.sort(result);
-		return result;
-	}
-
-	public static <T> List<T> sort(Collection<T> collection, Comparator<T> comparator) {
-		List<T> result = new ArrayList<T>(collection);
-		Collections.sort(result, comparator);
 		return result;
 	}
 

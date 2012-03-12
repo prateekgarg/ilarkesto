@@ -14,7 +14,6 @@
  */
 package ilarkesto.core.menu;
 
-import ilarkesto.core.changeindicator.ChangeListener;
 
 public class StaticSubmenu extends StaticMenuItem implements Submenu<StaticMenuItem> {
 
