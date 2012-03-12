@@ -124,7 +124,11 @@ public abstract class AViewEditWidget extends AWidget {
 		if (update) update();
 	}
 
-	protected final boolean submitEditor() {
+	public final boolean submitEditor() {
+		return submitEditor(true);
+	}
+
+	public final boolean submitEditor(boolean switchToViewMode) {
 		if (!isEditMode()) throw new RuntimeException("submitEditor() not allowed. Not in edit mode: " + toString());
 		try {
 			onEditorSubmit();
@@ -133,8 +137,10 @@ public abstract class AViewEditWidget extends AWidget {
 			return false;
 		}
 		setEditorError(null);
-		switchToViewMode();
-		updateAutoUpdateWidget();
+		if (switchToViewMode || !editorWrapper.isAttached()) {
+			switchToViewMode();
+			updateAutoUpdateWidget();
+		}
 		return true;
 	}
 

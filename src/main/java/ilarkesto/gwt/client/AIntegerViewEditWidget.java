@@ -172,10 +172,8 @@ public abstract class AIntegerViewEditWidget extends AViewEditWidget {
 				editor.cancelKey();
 			}
 
-			if (keyCode == KeyCodes.KEY_ENTER) {
+			if (keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_ESCAPE) {
 				submitEditor();
-			} else if (keyCode == KeyCodes.KEY_ESCAPE) {
-				cancelEditor();
 			}
 		}
 

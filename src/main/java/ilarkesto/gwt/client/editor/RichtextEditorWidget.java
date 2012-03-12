@@ -45,8 +45,7 @@ public class RichtextEditorWidget extends AViewEditWidget {
 	private CodemirrorEditorWidget editor;
 	private String editorHeight = "300px";
 	private ToolbarWidget editorToolbar;
-	private String applyButtonLabel = "Apply";
-	private String restoreText;
+	private String applyButtonLabel = "Close";
 
 	private ATextEditorModel model;
 	private ToolbarWidget bottomToolbar;
@@ -60,7 +59,7 @@ public class RichtextEditorWidget extends AViewEditWidget {
 	protected void onUpdate() {
 		if (editor != null && editor.isBurned()) {
 			editor = null;
-			cancelEditor();
+			closeEditor();
 			return;
 		}
 		super.onUpdate();
@@ -115,12 +114,10 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		// TODO check lenght
 		// TODO check format/syntax
 		model.changeValue(value);
-		// TODO catch exceptions
 	}
 
 	@Override
 	protected final Widget onViewerInitialization() {
-		// viewer = new Label();
 		viewer = new HTML();
 		viewer.setStyleName("ARichtextViewEditWidget-viewer");
 		return viewer;
@@ -160,19 +157,6 @@ public class RichtextEditorWidget extends AViewEditWidget {
 				submitEditor();
 			}
 		});
-		bottomToolbar.addButton(new AAction() {
-
-			@Override
-			public String getLabel() {
-				return "Cancel";
-			}
-
-			@Override
-			protected void onExecute() {
-				cancelEditor();
-			}
-		});
-		bottomToolbar.addHyperlink(new RestoreAction());
 
 		// toolbar.add(Gwt
 		// .createHyperlink("http://en.wikipedia.org/wiki/Wikipedia:Cheatsheet", "Syntax Cheatsheet", true));
@@ -201,14 +185,6 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		}
 	}
 
-	@Override
-	protected void onSwitchToEditModeCompleted() {
-		super.onSwitchToEditModeCompleted();
-		if (!Str.isBlank(restoreText)) {
-			onEditorUpdate();
-		}
-	}
-
 	public ToolbarWidget getEditorToolbar() {
 		return editorToolbar;
 	}
@@ -233,12 +209,7 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected void closeEditor() {
-		boolean submit = Gwt.confirm("You have an open rich text editor. Apply changes?");
-		if (submit) {
-			submitEditor();
-		} else {
-			cancelEditor();
-		}
+		submitEditor();
 	}
 
 	public final String getEditorText() {
@@ -280,10 +251,6 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		return model;
 	}
 
-	public void setRestoreText(String restoreText) {
-		this.restoreText = restoreText;
-	}
-
 	private class EditorFocusListener implements FocusListener {
 
 		@Override
@@ -315,33 +282,6 @@ public class RichtextEditorWidget extends AViewEditWidget {
 			}
 		}
 
-	}
-
-	private class RestoreAction extends AAction {
-
-		@Override
-		public String getLabel() {
-			return "Restore lost text";
-		}
-
-		@Override
-		public String getTooltip() {
-			String preview = restoreText;
-			if (restoreText != null && restoreText.length() > 100) preview = restoreText.substring(0, 100) + "...";
-			return "Restore text, which was not saved: \"" + preview + "\"";
-		}
-
-		@Override
-		public boolean isExecutable() {
-			return !Str.isBlank(restoreText);
-		}
-
-		@Override
-		protected void onExecute() {
-			editor.setText(restoreText);
-			restoreText = null;
-			bottomToolbar.update();
-		}
 	}
 
 }
