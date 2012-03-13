@@ -72,6 +72,10 @@ public class Date implements Comparable<Date>, Serializable {
 		return new TimePeriod(Tm.DAY * Tm.getDaysBetweenDates(toJavaDate(), other.toJavaDate()));
 	}
 
+	public TimePeriod getPeriodToToday() {
+		return getPeriodTo(today());
+	}
+
 	public Weekday getWeekday() {
 		return Weekday.get(Tm.getWeekday(toJavaDate()));
 	}
