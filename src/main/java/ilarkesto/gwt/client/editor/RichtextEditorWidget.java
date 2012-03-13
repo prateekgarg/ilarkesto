@@ -45,7 +45,8 @@ public class RichtextEditorWidget extends AViewEditWidget {
 	private CodemirrorEditorWidget editor;
 	private String editorHeight = "300px";
 	private ToolbarWidget editorToolbar;
-	private String applyButtonLabel = "Close";
+	private String applyButtonLabel;
+	private boolean autosave = true;
 
 	private ATextEditorModel model;
 	private ToolbarWidget bottomToolbar;
@@ -137,6 +138,14 @@ public class RichtextEditorWidget extends AViewEditWidget {
 		this.applyButtonLabel = applyButtonLabel;
 	}
 
+	public void setAutosave(boolean autosave) {
+		this.autosave = autosave;
+	}
+
+	public boolean isAutosave() {
+		return autosave;
+	}
+
 	@Override
 	protected final Widget onEditorInitialization() {
 		editorWrapper = new SimplePanel();
@@ -149,7 +158,9 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 			@Override
 			public String getLabel() {
-				return applyButtonLabel;
+				String label = applyButtonLabel;
+				if (Str.isBlank(label)) label = autosave ? "Close" : "Apply";
+				return label;
 			}
 
 			@Override
@@ -157,6 +168,20 @@ public class RichtextEditorWidget extends AViewEditWidget {
 				submitEditor();
 			}
 		});
+		if (!autosave) {
+			bottomToolbar.addButton(new AAction() {
+
+				@Override
+				public String getLabel() {
+					return "Cancel";
+				}
+
+				@Override
+				protected void onExecute() {
+					cancelEditor();
+				}
+			});
+		}
 
 		// toolbar.add(Gwt
 		// .createHyperlink("http://en.wikipedia.org/wiki/Wikipedia:Cheatsheet", "Syntax Cheatsheet", true));
@@ -209,7 +234,11 @@ public class RichtextEditorWidget extends AViewEditWidget {
 
 	@Override
 	protected void closeEditor() {
-		submitEditor();
+		if (autosave) {
+			submitEditor();
+		} else {
+			super.closeEditor();
+		}
 	}
 
 	public final String getEditorText() {
