@@ -22,6 +22,10 @@ public class TmLocalizer {
 		throw new IllegalStateException(day.name());
 	}
 
+	public String years(long count) {
+		return count == 1 || count == -1 ? "year" : "years";
+	}
+
 	public String months(long count) {
 		return count == 1 || count == -1 ? "month" : "months";
 	}

@@ -164,7 +164,11 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable {
 		TmLocalizer loc = Tm.getLocalizer(language);
 		StringBuilder sb = new StringBuilder();
 		long m = millis >= 0 ? millis : -millis;
-		if (m >= (Tm.MONTH * 2)) {
+		if (m >= (Tm.YEAR * 2)) {
+			int i = toYears();
+			sb.append(i);
+			sb.append(" ").append(loc.years(i));
+		} else if (m >= (Tm.MONTH * 2)) {
 			int i = toMonths();
 			sb.append(i);
 			sb.append(" ").append(loc.months(i));
