@@ -158,6 +158,7 @@ public class OpenId {
 			throw new RuntimeException("Discovering OpenID failed: " + openId, ex);
 		}
 		DiscoveryInformation discovered = manager.associate(discoveries);
+		if (discovered == null) throw new RuntimeException("No DiscoveryInformation endpoint associated: " + openId);
 		session.setAttribute("openIdDiscovered", discovered);
 		AuthRequest authReq;
 		try {

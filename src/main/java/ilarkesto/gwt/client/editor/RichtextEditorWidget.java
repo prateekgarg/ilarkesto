@@ -159,7 +159,7 @@ public class RichtextEditorWidget extends AViewEditWidget {
 			@Override
 			public String getLabel() {
 				String label = applyButtonLabel;
-				if (Str.isBlank(label)) label = autosave ? "Close" : "Apply";
+				if (Str.isBlank(label)) label = autosave ? "Finish" : "Apply";
 				return label;
 			}
 
