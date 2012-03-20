@@ -48,10 +48,6 @@ public class ObjectMappedFlowPanel<O extends Object, W extends Widget> extends C
 		initWidget(panel);
 	}
 
-	public boolean isAnimating() {
-		return panel.isAnimating();
-	}
-
 	public void set(List<O> newObjects) {
 		boolean animationAllowed = !virgin;
 		virgin = false;
@@ -118,13 +114,7 @@ public class ObjectMappedFlowPanel<O extends Object, W extends Widget> extends C
 	private W remove(O object, boolean animate) {
 		assert containsObject(object);
 		W widget = getWidget(object);
-		if (animate) {
-			int height = widget.getElement().getOffsetHeight();
-			objectHeights.put(object, height);
-			panel.removeAnimated(widget);
-		} else {
-			panel.remove(widget);
-		}
+		panel.remove(widget);
 		objectList.remove(object);
 		widgetMap.remove(object);
 		assert !containsObject(object);

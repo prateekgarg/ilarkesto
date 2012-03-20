@@ -91,7 +91,7 @@ public class NavigatorWidget<K extends Object> extends AWidget {
 			if (item instanceof Submenu) {
 				boolean animate = lastAnimatedItem != item;
 				// log.debug("---------- animate:", animate);
-				Widget submenuPanel = animate ? new AnimatingFlowPanel(0.5) : new FlowPanel();
+				Widget submenuPanel = animate ? new AnimatingFlowPanel() : new FlowPanel();
 				if (animate) lastAnimatedItem = item;
 				submenuPanel.setStyleName("NavigatorWidget-submenu");
 				itemPanel.add(submenuPanel);
