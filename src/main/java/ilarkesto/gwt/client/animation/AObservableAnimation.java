@@ -28,17 +28,17 @@ public abstract class AObservableAnimation extends Animation {
 		startListeners.add(l);
 	}
 
+	protected void fireStartEvent() {
+		for (ObservableAnimationListener element : startListeners) {
+			element.onEvent(this);
+		}
+	}
+
 	public void addCompletionListener(ObservableAnimationListener l) {
 		completitionListeners.add(l);
 	}
 
 	protected void fireCompletionEvent() {
-		for (ObservableAnimationListener element : completitionListeners) {
-			element.onEvent(this);
-		}
-	}
-
-	protected void fireStartEvent() {
 		for (ObservableAnimationListener element : completitionListeners) {
 			element.onEvent(this);
 		}
