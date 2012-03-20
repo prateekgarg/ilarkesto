@@ -30,7 +30,7 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 	private FlowPanel panel;
 	private boolean actionRunning;
 	private List<Runnable> actions = new LinkedList<Runnable>();
-	private double animationDelayFactor = 1;
+	private double animationDelayFactor = 10;
 
 	public AnimatingFlowPanel() {
 		panel = new FlowPanel();
@@ -131,6 +131,13 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 			}
 
 			DisappearAnimation animation = new DisappearAnimation(widget, animationDelayFactor);
+			animation.addStartListener(new ObservableAnimationListener() {
+
+				@Override
+				public void onEvent(AObservableAnimation source) {
+					actionRunning = true;
+				}
+			});
 			animation.addCompletionListener(new ObservableAnimationListener() {
 
 				@Override
@@ -138,13 +145,6 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 					panel.remove(widget);
 					actionRunning = false;
 					executeNextAction();
-				}
-			});
-			animation.addStartListener(new ObservableAnimationListener() {
-
-				@Override
-				public void onEvent(AObservableAnimation source) {
-					actionRunning = true;
 				}
 			});
 			animation.run(250);
@@ -183,9 +183,15 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 				return;
 			}
 
-			actionRunning = true;
 			AppearAnimation animation = new AppearAnimation(animationHeight, widget, animationDelayFactor);
-			panel.insert(widget, index);
+			animation.addStartListener(new ObservableAnimationListener() {
+
+				@Override
+				public void onEvent(AObservableAnimation source) {
+					actionRunning = true;
+					panel.insert(widget, index);
+				}
+			});
 			animation.addCompletionListener(new ObservableAnimationListener() {
 
 				@Override
@@ -198,11 +204,6 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 			animation.run(250);
 		}
 
-	}
-
-	public static interface MoveObserver {
-
-		void onMoved();
 	}
 
 	public static interface InsertCallback {
