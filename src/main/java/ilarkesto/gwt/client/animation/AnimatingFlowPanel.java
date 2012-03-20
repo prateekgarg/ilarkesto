@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class AnimatingFlowPanel<W extends Widget> extends Composite implements HasWidgets {
 
-	private static boolean animationsDisabled = false;
+	public static boolean animationsDisabled = false;
 
 	private FlowPanel panel;
 	private boolean actionRunning;
