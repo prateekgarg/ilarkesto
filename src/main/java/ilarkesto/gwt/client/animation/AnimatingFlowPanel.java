@@ -32,10 +32,9 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 		initWidget(panel);
 	}
 
-	public void insertAnimated(int index, W widget, Integer height, InsertCallback runAfter) {
+	public void insertAnimated(int index, W widget, Integer height) {
 		insert(index, widget);
 		if (!animationsDisabled) new AppearAnimation(height, widget).run(250);
-		if (runAfter != null) runAfter.onInserted(index);
 	}
 
 	public void insert(int index, W widget) {
@@ -60,7 +59,7 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 
 	@Override
 	public void add(Widget w) {
-		insertAnimated(-1, (W) w, null, null);
+		insertAnimated(-1, (W) w, null);
 	}
 
 	public static interface InsertCallback {
