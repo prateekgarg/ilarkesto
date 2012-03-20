@@ -30,7 +30,7 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 	private FlowPanel panel;
 	private boolean actionRunning;
 	private List<Runnable> actions = new LinkedList<Runnable>();
-	private double animationDelayFactor = 10;
+	private double animationDelayFactor = 1;
 
 	public AnimatingFlowPanel() {
 		panel = new FlowPanel();
