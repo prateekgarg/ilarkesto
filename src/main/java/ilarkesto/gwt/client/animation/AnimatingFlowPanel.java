@@ -30,7 +30,7 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 	private FlowPanel panel;
 	private boolean actionRunning;
 	private List<Runnable> actions = new LinkedList<Runnable>();
-	private double animationDelayFactor = 2;
+	private double animationDelayFactor = 1;
 
 	public AnimatingFlowPanel() {
 		panel = new FlowPanel();
@@ -130,21 +130,26 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 				return;
 			}
 
-			actionRunning = true;
 			DisappearAnimation animation = new DisappearAnimation(widget, animationDelayFactor);
-			animation.addCompletionListener(new CompletionListener() {
+			animation.addCompletionListener(new ObservableAnimationListener() {
 
 				@Override
-				public void completionEvent(AObservableAnimation source) {
+				public void onEvent(AObservableAnimation source) {
 					panel.remove(widget);
 					actionRunning = false;
 					executeNextAction();
 				}
 			});
+			animation.addStartListener(new ObservableAnimationListener() {
+
+				@Override
+				public void onEvent(AObservableAnimation source) {
+					actionRunning = true;
+				}
+			});
 			animation.run(250);
 
 		}
-
 	}
 
 	private class InsertAction implements Runnable {
@@ -181,10 +186,10 @@ public class AnimatingFlowPanel<W extends Widget> extends Composite implements H
 			actionRunning = true;
 			AppearAnimation animation = new AppearAnimation(animationHeight, widget, animationDelayFactor);
 			panel.insert(widget, index);
-			animation.addCompletionListener(new CompletionListener() {
+			animation.addCompletionListener(new ObservableAnimationListener() {
 
 				@Override
-				public void completionEvent(AObservableAnimation source) {
+				public void onEvent(AObservableAnimation source) {
 					actionRunning = false;
 					if (callback != null) callback.onInserted(index);
 					executeNextAction();

@@ -14,8 +14,8 @@
  */
 package ilarkesto.gwt.client.animation;
 
-public interface CompletionListener {
+public interface ObservableAnimationListener {
 
-	void completionEvent(AObservableAnimation source);
+	void onEvent(AObservableAnimation source);
 
 }
