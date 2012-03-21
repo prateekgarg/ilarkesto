@@ -47,7 +47,11 @@ public abstract class APropertiesStore {
 	public final void set(String name, String value) {
 		String oldValue = get(name);
 		if (Utl.equals(value, oldValue)) return;
-		getProperties().setProperty(name, value);
+		if (value == null) {
+			getProperties().remove(name);
+		} else {
+			getProperties().setProperty(name, value);
+		}
 		save(getProperties());
 	}
 
