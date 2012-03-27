@@ -1263,6 +1263,10 @@ public class Str extends ilarkesto.core.base.Str {
 		return concat(sa, " ");
 	}
 
+	/**
+	 * @deprecated Use <code>toHtml()</code>
+	 */
+	@Deprecated
 	public static String replaceForHtml(String s) {
 		return toHtml(s);
 	}

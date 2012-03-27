@@ -17,16 +17,42 @@ package ilarkesto.richtext;
 import ilarkesto.base.Str;
 import ilarkesto.integration.links.MultiLinkConverter;
 
+import java.util.List;
+
 public class RichTextFormatter {
 
 	public static String toHtml(String s) {
 		if (s == null) return null;
 		if (!s.startsWith("<html")) {
-			s = Str.replaceForHtml(s);
+			s = textToHtml(s);
 		}
 		String html = Str.cutHtmlAndHeaderAndBody(s);
 		html = Str.activateLinksInHtml(html, MultiLinkConverter.ALL);
 		return html;
 	}
 
+	public static String textToHtml(String s) {
+		StringBuilder sb = new StringBuilder();
+		List<String> lines = Str.toStringList(s);
+		boolean inQuote = false;
+		for (String line : lines) {
+			if (line.startsWith("> ")) {
+				line = line.substring(2);
+				if (!inQuote) {
+					sb.append("<blockquote><i>");
+					inQuote = true;
+				}
+				sb.append(Str.toHtml(line)).append("<br>");
+			} else {
+				sb.append(Str.toHtml(line));
+				if (inQuote) {
+					sb.append("</i></blockquote>");
+					inQuote = false;
+				} else {
+					sb.append("<br>");
+				}
+			}
+		}
+		return sb.toString();
+	}
 }
