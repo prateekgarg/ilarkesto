@@ -110,7 +110,7 @@ public abstract class AViewEditWidget extends AWidget {
 	}
 
 	public void switchToViewMode() {
-		switchToViewMode(true);
+		switchToViewMode(isAttached());
 	}
 
 	public void switchToViewMode(boolean update) {
@@ -139,7 +139,7 @@ public abstract class AViewEditWidget extends AWidget {
 		setEditorError(null);
 		if (switchToViewMode || !editorWrapper.isAttached()) {
 			switchToViewMode();
-			updateAutoUpdateWidget();
+			if (isAttached()) updateAutoUpdateWidget();
 		}
 		return true;
 	}
@@ -155,6 +155,12 @@ public abstract class AViewEditWidget extends AWidget {
 
 	protected void closeEditor() {
 		cancelEditor();
+	}
+
+	@Override
+	protected void onDetach() {
+		super.onDetach();
+		if (isEditMode()) closeEditor();
 	}
 
 	private void initializeViewer() {
