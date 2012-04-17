@@ -41,4 +41,8 @@ public class PasswordHasher {
 		return sb.toString();
 	}
 
+	public static String hashPassword(String password, String salt) {
+		return hashPassword(password, salt, null);
+	}
+
 }
