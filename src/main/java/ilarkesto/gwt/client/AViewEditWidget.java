@@ -276,7 +276,7 @@ public abstract class AViewEditWidget extends AWidget {
 		private boolean isRightTarget(ClickEvent event) {
 			String eventTarget = event.getNativeEvent().getEventTarget().toString();
 			// showIfIe(eventTarget);
-			if (!GWT.isProdMode() && Gwt.isWebkit()) return eventTarget.startsWith("<div ");
+			if (!GWT.isProdMode()) return eventTarget.startsWith("<div ");
 			if (Gwt.isMsie()) return eventTarget.equals("[object]");
 			return eventTarget.startsWith("[object HTML");
 		}
