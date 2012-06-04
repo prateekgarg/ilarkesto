@@ -139,7 +139,7 @@ public class JsonObject {
 
 	// --- parsing ---
 
-	int parse(String json, int offset) {
+	private int parse(String json, int offset) {
 		idx = offset;
 		parseWhitespace(json, "'{'");
 		if (json.charAt(idx) != '{') throw new ParseException("Expecting '{'", json, idx);
@@ -214,7 +214,7 @@ public class JsonObject {
 				list.add(value);
 				parseWhitespace(json, "array");
 				if (json.charAt(idx) == ']') break;
-				if (json.charAt(idx) != ',') throw new ParseException("Expectint array separator ','", json, idx);
+				if (json.charAt(idx) != ',') throw new ParseException("Expecting array separator ','", json, idx);
 				idx++;
 			}
 			idx++;
@@ -229,9 +229,15 @@ public class JsonObject {
 					break;
 				}
 			}
-			String number = json.substring(idx, endIdx);
+			String sNumber = json.substring(idx, endIdx);
+			Number number;
+			try {
+				number = Json.parseNumber(sNumber);
+			} catch (NumberFormatException ex) {
+				throw new ParseException("Expecting number in <" + sNumber + ">", json, idx);
+			}
 			idx = endIdx;
-			return Json.parseNumber(number);
+			return number;
 		}
 	}
 

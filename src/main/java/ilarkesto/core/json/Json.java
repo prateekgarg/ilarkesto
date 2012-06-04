@@ -57,7 +57,7 @@ public class Json {
 		return s;
 	}
 
-	public static Number parseNumber(String s) {
+	public static Number parseNumber(String s) throws NumberFormatException {
 		return Long.parseLong(s);
 	}
 
