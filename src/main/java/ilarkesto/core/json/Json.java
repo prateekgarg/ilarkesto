@@ -58,6 +58,7 @@ public class Json {
 	}
 
 	public static Number parseNumber(String s) throws NumberFormatException {
+		if (s.contains(".")) return Double.parseDouble(s);
 		return Long.parseLong(s);
 	}
 
