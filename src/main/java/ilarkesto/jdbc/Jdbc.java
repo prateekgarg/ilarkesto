@@ -30,7 +30,7 @@ public class Jdbc {
 	public static Connection createConnection(String driver, String protocol, String host, String port,
 			String database, String login, String password) {
 		loadDriver(driver);
-		String url = getConnectionUrl(protocol, host, port, database);
+		String url = createConnectionUrl(protocol, host, port, database);
 		log.info("Connecting database:", url);
 		try {
 			return DriverManager.getConnection(url, login, password);
@@ -39,8 +39,14 @@ public class Jdbc {
 		}
 	}
 
-	public static String getConnectionUrl(String protocol, String host, String port, String database) {
-		return protocol + "//" + host + ":" + port + "/" + database;
+	public static String createConnectionUrl(String protocol, String host, String port, String database) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(protocol);
+		sb.append("//");
+		sb.append(host == null ? "localhost" : host);
+		if (port != null) sb.append(":").append(port);
+		if (database != null) sb.append("/").append(database);
+		return sb.toString();
 	}
 
 	public static void loadDriver(String driver) {
