@@ -70,7 +70,7 @@ public class Jdbc {
 		for (int i = 0; i < len; i++) {
 			Object value = params[i];
 			try {
-				stmt.setObject(i, value);
+				stmt.setObject(i + 1, value);
 			} catch (SQLException ex) {
 				throw new RuntimeException("Setting param " + i + " in prepared SQL statement failed:" + value, ex);
 			}
