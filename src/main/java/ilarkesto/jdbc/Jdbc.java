@@ -42,7 +42,7 @@ public class Jdbc {
 	public static String createConnectionUrl(String protocol, String host, String port, String database) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(protocol);
-		sb.append("//");
+		sb.append("://");
 		sb.append(host == null ? "localhost" : host);
 		if (port != null) sb.append(":").append(port);
 		if (database != null) sb.append("/").append(database);
