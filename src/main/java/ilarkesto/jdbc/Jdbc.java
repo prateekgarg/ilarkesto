@@ -51,9 +51,11 @@ public class Jdbc {
 
 	public static void loadDriver(String driver) {
 		try {
-			Class.forName(driver);
+			Class.forName(driver).newInstance();
 		} catch (ClassNotFoundException ex) {
 			throw new RuntimeException("Loading JDBC driver failed: " + driver, ex);
+		} catch (Exception ex) {
+			throw new RuntimeException("Instantiating JDBC driver failed: " + driver, ex);
 		}
 	}
 
