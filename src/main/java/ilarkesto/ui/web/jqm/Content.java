@@ -29,6 +29,10 @@ public class Content extends AHtmlContainerElement {
 		return this;
 	}
 
+	public Panel addPanel() {
+		return addChild(new Panel());
+	}
+
 	public Form addForm(Url action) {
 		return addForm(action.toString());
 	}

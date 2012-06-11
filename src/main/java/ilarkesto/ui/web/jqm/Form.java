@@ -54,6 +54,10 @@ public class Form extends AHtmlContainerElement {
 		return addChild(new TextInput(id, label));
 	}
 
+	public PasswordInput addPasswordInput(String id, String label) {
+		return addChild(new PasswordInput(id, label));
+	}
+
 	public FlipToggleSwitch addFlipToggleSwitch(String id, String label, String trueLabel, String falseLabel) {
 		return addChild(new FlipToggleSwitch(id, label, trueLabel, falseLabel));
 	}

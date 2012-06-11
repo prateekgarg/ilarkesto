@@ -21,6 +21,7 @@ public class TextInput extends AFieldElement {
 
 	private InputType type = InputType.Text;
 	private String value;
+	private boolean autoFocus;
 
 	public TextInput(String id, String label) {
 		super(id, label);
@@ -31,7 +32,9 @@ public class TextInput extends AFieldElement {
 		Tag input = html.startINPUT(type.getName(), name);
 		input.setId(id);
 		input.setValue(value);
-		html.endINPUT();
+		if (autoFocus) {
+			html.SCRIPTjavascript(null, "setTimeout( function() {$('#" + id + "').focus();}, 100 );");
+		}
 	}
 
 	public TextInput setValue(String value) {
@@ -41,6 +44,11 @@ public class TextInput extends AFieldElement {
 
 	public TextInput setType(InputType type) {
 		this.type = type;
+		return this;
+	}
+
+	public TextInput setAutoFocus(boolean grabFocus) {
+		this.autoFocus = grabFocus;
 		return this;
 	}
 

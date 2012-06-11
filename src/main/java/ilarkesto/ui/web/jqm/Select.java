@@ -18,13 +18,13 @@ import ilarkesto.core.base.Str;
 import ilarkesto.ui.web.HtmlRenderer;
 import ilarkesto.ui.web.HtmlRenderer.Tag;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Select extends AFieldElement {
 
 	private String value;
-	private Map<String, String> options = new HashMap<String, String>();
+	private Map<String, String> options = new LinkedHashMap<String, String>();
 	private boolean optional = true;
 
 	public Select(String id, String label) {
@@ -53,9 +53,24 @@ public class Select extends AFieldElement {
 		return this;
 	}
 
+	public Select setValue(Boolean value) {
+		if (value == null) return setValue((String) null);
+		return setValue(value.toString());
+	}
+
 	public Select setOptions(Map<String, String> options) {
 		this.options = options;
 		return this;
+	}
+
+	public Select addOption(String key, String label) {
+		options.put(key, label);
+		return this;
+	}
+
+	public Select addBooleanOptions(String trueLabel, String falseLabel) {
+		addOption("true", trueLabel);
+		return addOption("false", falseLabel);
 	}
 
 }

@@ -126,8 +126,10 @@ public class Autowire {
 					}
 					field.set(object, value);
 				} catch (Exception ex) {
+					String valueStr = value == null ? "<" + value + ">" : value.getClass().getSimpleName() + ": <"
+							+ value + ">";
 					throw new RuntimeException("Setting field " + object.getClass().getSimpleName() + "." + name
-							+ " to " + value.getClass().getSimpleName() + ": <" + value + "> failed.", ex);
+							+ " to " + valueStr + " failed.", ex);
 				}
 			}
 		});
@@ -176,11 +178,16 @@ public class Autowire {
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		// try call constructor
-		Class[] types = { value.getClass() };
 		try {
-			Constructor constructor = newType.getConstructor(types);
-			Object[] arguments = { value };
-			return constructor.newInstance(arguments);
+			if (value == null) {
+				Constructor constructor = newType.getConstructor();
+				return constructor.newInstance();
+			} else {
+				Class[] types = { value.getClass() };
+				Constructor constructor = newType.getConstructor(types);
+				Object[] arguments = { value };
+				return constructor.newInstance(arguments);
+			}
 		} catch (NoSuchMethodException e) {
 			// try using the transformers
 			ITransformer transformer = getTypeTransformer(newType);

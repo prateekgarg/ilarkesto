@@ -38,9 +38,9 @@ public class JqmHtmlPage extends AContainerElement {
 		html.startHTML();
 		html.startHEAD(title, language);
 
-		html.LINKcss("http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css");
-		html.SCRIPTjavascript("http://code.jquery.com/jquery-1.6.4.min.js", null);
-		html.SCRIPTjavascript("http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js", null);
+		html.LINKcss("jqm/jquery.mobile.css");
+		html.SCRIPTjavascript("jqm/jquery.js", null);
+		html.SCRIPTjavascript("jqm/jquery.mobile.js", null);
 
 		html.endHEAD();
 		html.startBODY();
