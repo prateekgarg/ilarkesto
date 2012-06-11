@@ -39,7 +39,7 @@ import java.util.StringTokenizer;
 public class Str extends ilarkesto.core.base.Str {
 
 	public static void main(String[] args) {
-		System.out.println(generateRandomParagraph());
+		System.out.println(generatePassword());
 		System.exit(0);
 	}
 
@@ -134,8 +134,24 @@ public class Str extends ilarkesto.core.base.Str {
 		return uppercase ? uppercaseFirstLetter(word) : word;
 	}
 
+	public static String generatePassword() {
+		return generatePassword(Utl.randomInt(12, 20));
+	}
+
 	public static String generatePassword(int length) {
-		return generateRandomWord("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!$%&=", length);
+		if (length <= 10)
+			return generateRandomWord("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!$%&=-_/()[]{}",
+				length);
+		StringBuilder sb = new StringBuilder();
+		length -= 2;
+		while (length > 6) {
+			String word = generateRandomWord(2, 6, true);
+			length -= word.length();
+			sb.append(word);
+		}
+		sb.append(generateRandomWord(length, length, true));
+		sb.append(generateRandomWord("1234567890", "!$%&=-_/()[]{}", 2));
+		return sb.toString();
 	}
 
 	public static String generateRandomWord(String availableChars, int minLength, int maxLength) {
