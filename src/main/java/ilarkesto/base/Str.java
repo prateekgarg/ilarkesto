@@ -135,7 +135,7 @@ public class Str extends ilarkesto.core.base.Str {
 	}
 
 	public static String generatePassword() {
-		return generatePassword(Utl.randomInt(12, 20));
+		return generatePassword(Utl.randomInt(12, 24));
 	}
 
 	public static String generatePassword(int length) {
