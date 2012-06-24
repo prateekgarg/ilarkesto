@@ -14,6 +14,7 @@
  */
 package ilarkesto.io;
 
+import ilarkesto.base.Sys;
 import ilarkesto.io.zip.Deflater;
 import ilarkesto.io.zip.ZipEntry;
 import ilarkesto.io.zip.ZipFile;
@@ -440,7 +441,8 @@ public abstract class IO {
 				"Basic " + Base64.encodeBytes((username + ":" + password).getBytes()));
 		}
 		connection.setDoOutput(true);
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), encoding));
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(),
+				encoding == null ? Sys.getFileEncoding() : encoding));
 		out.println(sb.toString());
 		out.println();
 		close(out);

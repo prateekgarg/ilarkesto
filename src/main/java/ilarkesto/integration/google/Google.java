@@ -70,7 +70,6 @@ import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 
 // http://code.google.com/apis/contacts/docs/2.0/developers_guide_java.html
-// http://code.google.com/apis/buzz/v1/using_rest.html
 public class Google {
 
 	public static void main(String[] args) throws Throwable {
