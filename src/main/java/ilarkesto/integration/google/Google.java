@@ -233,24 +233,6 @@ public class Google {
 		return Proc.execute("/opt/oacurl/oacurl", url);
 	}
 
-	public static List<BuzzActivity> getBuzzActivitiesSelf() {
-		return getBuzzActivities("@self");
-	}
-
-	public static List<BuzzActivity> getBuzzActivitiesConsumption() {
-		return getBuzzActivities("@consumption");
-	}
-
-	public static List<BuzzActivity> getBuzzActivities(String tag) {
-		String url = "https://www.googleapis.com/buzz/v1/activities/@me/" + tag + "?prettyPrint=true";
-		log.info("Loading Buzz activities:", url);
-		// String s = Oacurl.fetchString(url, null);
-		String s = oacurl(url);
-		log.info("   ", s);
-		List<BuzzActivity> activities = BuzzActivity.parseActivities(s);
-		return activities;
-	}
-
 	public static void uploadContactPhoto(ContactEntry contact, ContactsService service, String contentType,
 			byte[] photoData) {
 		Link photoLink = contact.getContactPhotoLink();
