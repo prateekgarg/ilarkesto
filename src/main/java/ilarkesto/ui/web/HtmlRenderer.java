@@ -449,8 +449,10 @@ public class HtmlRenderer {
 		// out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"
 		// \"http://www.w3.org/TR/html4/loose.dtd\">");
 		// out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		out.print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">");
-		startTag(HTML);
+		// out.print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">");
+		// startTag(HTML);
+
+		startHTMLstandard();
 	}
 
 	public void startHTMLstandard() {
