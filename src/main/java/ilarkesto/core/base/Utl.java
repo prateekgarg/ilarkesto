@@ -28,6 +28,20 @@ public class Utl {
 
 	public static String language = "en";
 
+	public static String[] concat(String[]... arrays) {
+		int len = 0;
+		for (String[] array : arrays) {
+			len += array.length;
+		}
+		String[] ret = new String[len];
+		int offset = 0;
+		for (String[] array : arrays) {
+			System.arraycopy(array, 0, ret, offset, array.length);
+			offset += array.length;
+		}
+		return ret;
+	}
+
 	public static <T extends Comparable> List<T> sort(Collection<T> collection) {
 		List<T> result = new ArrayList<T>(collection);
 		Collections.sort(result);
