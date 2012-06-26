@@ -635,6 +635,20 @@ public class CssRenderer {
 			return attr("background", color + " url(" + url + ") " + repeat);
 		}
 
+		public Style backgroundGradient(String topColor, String bottomColor) {
+			background(topColor);
+			background("-moz-linear-gradient(top,  " + topColor + " 0%, " + bottomColor + " 100%)");
+			background("-webkit-gradient(linear, left top, left bottom, color-stop(0%," + topColor
+					+ "), color-stop(100%," + bottomColor + "))");
+			background("-webkit-linear-gradient(top,  " + topColor + " 0%," + bottomColor + " 100%)");
+			background("-o-linear-gradient(top,  " + topColor + " 0%," + bottomColor + " 100%)");
+			background("-ms-linear-gradient(top,  " + topColor + " 0%," + bottomColor + " 100%)");
+			background("linear-gradient(top,  " + topColor + " 0%," + bottomColor + " 100%)");
+			attr("filter", "progid:DXImageTransform.Microsoft.gradient( startColorstr='" + topColor
+					+ "', endColorstr='" + bottomColor + "',GradientType=0 )");
+			return this;
+		}
+
 		public Style backgroundUrl(String imageUrl) {
 			return background("url(" + imageUrl + ")");
 		}
