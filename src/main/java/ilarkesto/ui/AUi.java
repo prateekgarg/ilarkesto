@@ -203,7 +203,7 @@ public abstract class AUi {
 		return new Url(entity.getId());
 	}
 
-	public static Url createViewUrl(AEntity entity, String invokingViewId, String invokingViewParentViewId) {
+	public static Url createViewUrl(AEntity entity) {
 		Url url = AUi.getViewUrl(entity);
 		return url;
 	}
