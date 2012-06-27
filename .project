@@ -20,11 +20,4 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>edu.umd.cs.findbugs.plugin.eclipse.findbugsNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>OUTPUT_DIR</name>
-			<type>2</type>
-			<locationURI>OUTPUT_DIR/ilarkesto</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
