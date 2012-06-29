@@ -145,7 +145,7 @@ public class Str extends ilarkesto.core.base.Str {
 		StringBuilder sb = new StringBuilder();
 		length -= 2;
 		while (length > 6) {
-			String word = generateRandomWord(2, 6, true);
+			String word = generateRandomWord(2, 5, true) + " ";
 			length -= word.length();
 			sb.append(word);
 		}
