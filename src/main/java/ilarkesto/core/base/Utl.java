@@ -154,4 +154,10 @@ public class Utl {
 		return ret;
 	}
 
+	public static <T> void removeFirstElements(List<T> list, int count) {
+		for (int i = 0; i < count; i++) {
+			list.remove(0);
+		}
+	}
+
 }

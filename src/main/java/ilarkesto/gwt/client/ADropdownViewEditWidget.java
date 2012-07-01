@@ -15,7 +15,6 @@
 package ilarkesto.gwt.client;
 
 import ilarkesto.core.base.ToHtmlSupport;
-import ilarkesto.core.logging.Log;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -48,7 +47,6 @@ public abstract class ADropdownViewEditWidget extends AViewEditWidget {
 
 	@Override
 	protected void onEditorUpdate() {
-		Log.DEBUG("----------> ADropdownViewEditWidget.updateEditor()");
 		editor.setFocus(true);
 	}
 
