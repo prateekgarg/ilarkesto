@@ -48,13 +48,13 @@ public class YoutubeLinkConverter implements LinkConverter {
 	private boolean isConvertable(String href) {
 		if (href == null) return false;
 
-		if (href.startsWith("http://www.youtube.com/watch?v=")) return true;
-		if (href.startsWith("https://www.youtube.com/watch?v=")) return true;
-		if (href.startsWith("www.youtube.com/watch?v=")) return true;
+		if (href.startsWith("http://www.youtube.com/watch?")) return true;
+		if (href.startsWith("https://www.youtube.com/watch?")) return true;
+		if (href.startsWith("www.youtube.com/watch?")) return true;
 
-		if (href.startsWith("http://www.youtu.be/watch?v=")) return true;
-		if (href.startsWith("https://www.youtu.be/watch?v=")) return true;
-		if (href.startsWith("www.youtu.be/watch?v=")) return true;
+		if (href.startsWith("http://www.youtu.be/watch?")) return true;
+		if (href.startsWith("https://www.youtu.be/watch?")) return true;
+		if (href.startsWith("www.youtu.be/watch?")) return true;
 
 		if (href.startsWith("http://www.youtube-nocookie.com/embed/")) return true;
 		if (href.startsWith("https://www.youtube-nocookie.com/embed/")) return true;
