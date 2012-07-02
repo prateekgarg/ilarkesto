@@ -406,6 +406,15 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln("");
 				ln("    public final", bean.getName(), "set" + nameUpper + "(" + type, p.getName() + ") {");
 				ln("        if (is" + nameUpper + "(" + p.getName() + ")) return (" + bean.getName() + ")this;");
+				if (p.isMandatory()) {
+					if (p.isString()) {
+						ln("        if (" + ilarkesto.core.base.Str.class.getName() + ".isBlank(" + p.getName()
+								+ ")) throw new RuntimeException(\"Field is mandatory.\");");
+					} else if (!p.isPrimitive()) {
+						ln("        if (" + p.getName()
+								+ " == null) throw new RuntimeException(\"Field is mandatory.\");");
+					}
+				}
 				if (p.isUnique()) {
 					ln("        if (" + p.getName() + " != null && getDao().get" + bean.getName() + "By" + nameUpper
 							+ "(" + p.getName() + ") != null) throw new RuntimeException(\"\\\"\" + " + p.getName()

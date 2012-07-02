@@ -15,6 +15,7 @@
 package ilarkesto.gwt.client;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 
 import com.google.gwt.core.client.GWT;
@@ -133,7 +134,8 @@ public abstract class AViewEditWidget extends AWidget {
 		try {
 			onEditorSubmit();
 		} catch (Throwable ex) {
-			setEditorError(ex.getMessage());
+			ex.printStackTrace();
+			setEditorError(Utl.getUserMessageStack(ex));
 			return false;
 		}
 		setEditorError(null);

@@ -28,6 +28,35 @@ public class Utl {
 
 	public static String language = "en";
 
+	public static Throwable getRootCause(Throwable ex) {
+		Throwable cause = ex.getCause();
+		return cause == null ? ex : getRootCause(cause);
+	}
+
+	public static String getUserMessage(Throwable ex) {
+		if (ex instanceof NullPointerException) return "NullPointerException";
+		if (ex instanceof RuntimeException) return ex.getMessage();
+		return Str.getSimpleName(ex.getClass()) + ": " + ex.getMessage();
+	}
+
+	public static String getUserMessageStack(Throwable ex) {
+		return getUserMessageStack(ex, " -> ");
+	}
+
+	public static String getUserMessageStack(Throwable ex, String separator) {
+		StringBuilder sb = null;
+		while (ex != null) {
+			if (sb == null) {
+				sb = new StringBuilder();
+			} else {
+				sb.append(separator);
+			}
+			sb.append(getUserMessage(ex));
+			ex = ex.getCause();
+		}
+		return sb == null ? null : sb.toString();
+	}
+
 	public static String[] concat(String[]... arrays) {
 		int len = 0;
 		for (String[] array : arrays) {

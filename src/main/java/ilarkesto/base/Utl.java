@@ -97,11 +97,6 @@ public class Utl extends ilarkesto.core.base.Utl {
 		return new Color(parseHex(color.substring(1)));
 	}
 
-	public static Throwable getRootCause(Throwable ex) {
-		Throwable cause = ex.getCause();
-		return cause == null ? ex : getRootCause(cause);
-	}
-
 	private static final Random random = new Random(System.currentTimeMillis());
 
 	public static boolean equals(Set<?> objects) {

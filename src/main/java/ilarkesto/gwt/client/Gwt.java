@@ -168,22 +168,6 @@ public class Gwt {
 		return DOM.getInnerHTML(div);
 	}
 
-	// public static String escapeHtml(String s) {
-	// if (s == null) return null;
-	// s = s.replace("&", "&amp;");
-	// s = s.replace("<", "&lt;");
-	// s = s.replace(">", "&gt;");
-	// s = s.replace("\"", "&quot;");
-	// return s;
-	// }
-
-	public static boolean equals(Object a, Object b) {
-		if (a == b) return true;
-		if (a == null && b == null) return true;
-		if (a != null) return a.equals(b);
-		return b.equals(a);
-	}
-
 	public static UndoManager getUndoManager() {
 		return undoManager;
 	}
