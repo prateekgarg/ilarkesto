@@ -16,6 +16,7 @@ package ilarkesto.core.time;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Date implements Comparable<Date>, Serializable {
@@ -272,5 +273,23 @@ public class Date implements Comparable<Date>, Serializable {
 
 		return dates;
 	}
+
+	public static Comparator<Date> COMPARATOR = new Comparator<Date>() {
+
+		@Override
+		public int compare(Date a, Date b) {
+			return a.compareTo(b);
+		}
+
+	};
+
+	public static Comparator<Date> REVERSE_COMPARATOR = new Comparator<Date>() {
+
+		@Override
+		public int compare(Date a, Date b) {
+			return b.compareTo(a);
+		}
+
+	};
 
 }
