@@ -362,6 +362,10 @@ public class CssRenderer {
 			return overflow("auto");
 		}
 
+		public Style overflowScroll() {
+			return overflow("scroll");
+		}
+
 		public Style overflow(String value) {
 			return attr("overflow", value);
 		}
