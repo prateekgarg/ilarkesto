@@ -224,7 +224,7 @@ public class Google {
 	}
 
 	public static String weatherAsXmlString(String language, String location) {
-		return IO.downloadUrlToString("http://www.google.com/ig/api?hl=" + language + "&weather="
+		return IO.downloadUrlToString("https://www.google.com/ig/api?hl=" + language + "&weather="
 				+ Str.encodeUrlParameter(location));
 	}
 

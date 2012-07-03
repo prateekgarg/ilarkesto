@@ -290,6 +290,10 @@ public class CssRenderer {
 			return attr("text-align", value);
 		}
 
+		public Style textShadowNone() {
+			return attr("text-shadow", "none");
+		}
+
 		public Style textShadow(int xOff, int yOff, int blur, String color) {
 			return attr("text-shadow", xOff + "px " + yOff + "px " + blur + "px " + color);
 		}
@@ -593,6 +597,23 @@ public class CssRenderer {
 
 		public Style margin(int topBottom, int leftRight) {
 			return margin(topBottom + "px " + leftRight + "px");
+		}
+
+		public Style margin(String top, String right, String bottom, String left) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(top == null ? "0" : top);
+			sb.append(" ").append(right == null ? "0" : right);
+			sb.append(" ").append(bottom == null ? "0" : bottom);
+			sb.append(" ").append(left == null ? "0" : left);
+			return margin(sb.toString());
+		}
+
+		public Style marginCentered(int top, int bottom) {
+			return margin(String.valueOf(top) + "px", "auto", String.valueOf(bottom) + "px", "auto");
+		}
+
+		public Style marginCentered() {
+			return marginCentered(0, 0);
 		}
 
 		public Style margin(String margin) {
