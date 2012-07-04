@@ -897,7 +897,7 @@ public class HtmlRenderer {
 					out.print(s);
 				}
 			} else {
-				s = Str.replaceForHtml(s);
+				s = Str.toHtml(s);
 				// text = StringEscapeUtils.escapeHtml(text);
 				// text = text.replace("\n", "<BR/>");
 				if (activateLinks) s = Str.activateLinksInHtml(s, MultiLinkConverter.ALL);

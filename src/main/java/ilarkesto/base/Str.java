@@ -39,7 +39,7 @@ import java.util.StringTokenizer;
 public class Str extends ilarkesto.core.base.Str {
 
 	public static void main(String[] args) {
-		System.out.println(generatePassword());
+		System.out.println(activateLinksInHtml(toHtml("abc <http://koczewski.de?x=x&y=y>"), null));
 		System.exit(0);
 	}
 
@@ -314,8 +314,8 @@ public class Str extends ilarkesto.core.base.Str {
 		return false;
 	}
 
-	public static String activateLinksInHtml(String s, LinkConverter linkConverter) {
-		return activateLinksInHtml(s, linkConverter, 640);
+	public static String activateLinksInHtml(String html, LinkConverter linkConverter) {
+		return activateLinksInHtml(html, linkConverter, 640);
 	}
 
 	public static String activateLinksInHtml(String s, LinkConverter linkConverter, int maxWidth) {
@@ -325,8 +325,8 @@ public class Str extends ilarkesto.core.base.Str {
 		int idx = -1;
 		while ((idx = firstIndexOf(s, fromIndex, "http://", "https://", "ftp://", "www.")) >= 0) {
 			char pre = idx == 0 ? ' ' : s.charAt(idx - 1);
-			if (pre == ' ' || pre == '\n' || pre == '>') {
-				int endIdx = firstIndexOf(s, idx, " ", "<", "\n");
+			if (pre == ' ' || pre == '\n' || pre == '>' || pre == ';') {
+				int endIdx = firstIndexOf(s, idx, " ", "<", "\n", pre == ';' ? "&gt;" : "\n");
 				if (endIdx <= 0 || !s.substring(endIdx).startsWith("</a>")) {
 					if (endIdx < 0) endIdx = s.length();
 					// activate
@@ -337,7 +337,7 @@ public class Str extends ilarkesto.core.base.Str {
 					result.append(url.startsWith("www.") ? "http://" + url : url);
 					result.append("\" target=\"_blank\">");
 
-					String convertedUrl = linkConverter.convert(url, maxWidth);
+					String convertedUrl = linkConverter == null ? url : linkConverter.convert(url, maxWidth);
 					if (convertedUrl == url) {
 						String label = url;
 						if (url.startsWith("http://")) url = url.substring(7);
