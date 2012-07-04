@@ -24,6 +24,11 @@ public class TmLocalizerDe extends TmLocalizer {
 	}
 
 	@Override
+	public String years(long count) {
+		return "Jahr.";
+	}
+
+	@Override
 	public String months(long count) {
 		return "Mon.";
 	}
