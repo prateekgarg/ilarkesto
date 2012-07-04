@@ -28,6 +28,11 @@ public class Utl {
 
 	public static String language = "en";
 
+	public static boolean isRootCause(Class<? extends Throwable> exceptionType, Throwable ex) {
+		Throwable cause = getRootCause(ex);
+		return cause.getClass().equals(exceptionType);
+	}
+
 	public static Throwable getRootCause(Throwable ex) {
 		Throwable cause = ex.getCause();
 		return cause == null ? ex : getRootCause(cause);
