@@ -187,6 +187,11 @@ public class Google {
 		}
 	}
 
+	public static String getMapsUrl(String query) {
+		if (Str.isBlank(query)) return null;
+		return "http://maps.google.de/maps?q=" + Str.encodeUrlParameter(query);
+	}
+
 	public static String weatherInfo(ilarkesto.core.time.Date date, String language, String location) {
 		if (date.isPast()) return null;
 		int inDays = date.getPeriodTo(ilarkesto.core.time.Date.today()).abs().toDays();

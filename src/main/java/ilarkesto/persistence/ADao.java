@@ -17,6 +17,7 @@ package ilarkesto.persistence;
 import ilarkesto.auth.AUser;
 import ilarkesto.auth.AUserDao;
 import ilarkesto.auth.Auth;
+import ilarkesto.auth.Ownable;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Utl;
@@ -182,6 +183,12 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	public void saveEntity(E entity) {
 		transactionService.saveEntity(entity);
 		daoService.fireEntitySaved(entity);
+	}
+
+	public E newEntityInstance(AUser user) {
+		E entity = newEntityInstance();
+		if (entity instanceof Ownable) ((Ownable) entity).setOwner(user);
+		return entity;
 	}
 
 	public E newEntityInstance() {

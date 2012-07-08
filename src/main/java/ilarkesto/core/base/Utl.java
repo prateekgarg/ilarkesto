@@ -194,4 +194,17 @@ public class Utl {
 		}
 	}
 
+	public static final <T extends Comparable> List<T> sortReverse(List<T> list) {
+		Collections.sort(list, REVERSE_COMPARATOR);
+		return list;
+	}
+
+	public static final Comparator REVERSE_COMPARATOR = new Comparator<Comparable>() {
+
+		@Override
+		public int compare(Comparable a, Comparable b) {
+			return b.compareTo(a);
+		}
+	};
+
 }
