@@ -1572,11 +1572,15 @@ public abstract class IO {
 	}
 
 	public static String downloadUrlToString(String url) {
-		return downloadUrlToString(url, null, null);
+		return downloadUrlToString(url, UTF_8);
 	}
 
-	public static String downloadUrlToString(String url, String username, String password) {
-		Reader urlReader = openUrlReader(url, username, password);
+	public static String downloadUrlToString(String url, String charset) {
+		return downloadUrlToString(url, charset, null, null);
+	}
+
+	public static String downloadUrlToString(String url, String charset, String username, String password) {
+		InputStreamReader urlReader = openUrlReader(url, charset, username, password);
 		if (urlReader == null) return null;
 		BufferedReader in = new BufferedReader(urlReader);
 		String s = readToString(in);
@@ -1632,12 +1636,13 @@ public abstract class IO {
 		}
 	}
 
-	public static Reader openUrlReader(String url, String username, String password) {
+	public static InputStreamReader openUrlReader(String url, String defaultEncoding, String username, String password) {
 		URLConnection connection = openUrlConnection(url, username, password);
-		String encoding = connection.getContentEncoding();
-		if (encoding == null) encoding = UTF_8;
+		String connectionEncoding = connection.getContentEncoding();
+		if (connectionEncoding != null) defaultEncoding = connectionEncoding;
+		if (defaultEncoding == null) defaultEncoding = UTF_8;
 		try {
-			return new InputStreamReader(connection.getInputStream(), encoding);
+			return new InputStreamReader(connection.getInputStream(), defaultEncoding);
 		} catch (FileNotFoundException ex) {
 			return null;
 		} catch (UnsupportedEncodingException ex) {

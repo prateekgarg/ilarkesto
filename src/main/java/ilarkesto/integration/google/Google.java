@@ -224,8 +224,8 @@ public class Google {
 	}
 
 	public static String weatherAsXmlString(String language, String location) {
-		return IO.downloadUrlToString("https://www.google.com/ig/api?hl=" + language + "&weather="
-				+ Str.encodeUrlParameter(location));
+		return IO.downloadUrlToString(
+			"https://www.google.com/ig/api?hl=" + language + "&weather=" + Str.encodeUrlParameter(location), IO.UTF_8);
 	}
 
 	public static String oacurl(String url) {
