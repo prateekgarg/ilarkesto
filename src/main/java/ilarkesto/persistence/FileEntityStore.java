@@ -230,13 +230,26 @@ public class FileEntityStore implements EntityStore {
 
 		beanSerializer.setAlias(alias, cls);
 
-		File f = new File(dir + "/" + alias);
-		LOG.info("Loading entities:", alias);
-		File[] files = f.listFiles();
+		File entitiesDir = new File(dir + "/" + alias);
+
+		File clusterFile = new File(dir + "/" + CLUSTER_FILE_NAME);
+		if (clusterFile.exists()) {
+			loadCluster(clusterFile, entities, cls, alias);
+		}
+
+		File[] files = entitiesDir.listFiles();
+		LOG.info("Loading", files.length, "entitiy files:", alias);
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
 				File file = files[i];
-				if (file.getName().equals(CLUSTER_FILE_NAME)) continue;
+				String filename = file.getName();
+
+				if (filename.equals(CLUSTER_FILE_NAME)) continue;
+				if (!filename.endsWith(".xml")) {
+					LOG.warn("Unsupported file. Skipping:", filename);
+					continue;
+				}
+
 				try {
 					loadObject(file, entities, cls, alias);
 				} catch (Throwable ex) {
@@ -247,13 +260,29 @@ public class FileEntityStore implements EntityStore {
 		// LOG.info(" Loaded entities:", alias, count);
 	}
 
-	private boolean loadObject(File file, Map<String, AEntity> entities, Class type, String alias) {
-		String name = file.getName();
-		if (!name.endsWith(".xml")) {
-			LOG.warn("Unsupported file. Skipping:", name);
-			return false;
+	private void loadCluster(File file, Map<String, AEntity> container, Class type, String alias) {
+		if (entityfilePreparator != null) entityfilePreparator.prepareClusterfile(file, type, alias);
+
+		BufferedInputStream in;
+		try {
+			in = new BufferedInputStream(new FileInputStream(file));
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
+		Collection<AEntity> entities = (Collection<AEntity>) beanSerializer.deserialize(in);
+
+		for (AEntity entity : entities) {
+			container.put(entity.getId(), entity);
 		}
 
+		try {
+			in.close();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	private void loadObject(File file, Map<String, AEntity> container, Class type, String alias) {
 		if (entityfilePreparator != null) entityfilePreparator.prepareEntityfile(file, type, alias);
 
 		BufferedInputStream in;
@@ -263,13 +292,12 @@ public class FileEntityStore implements EntityStore {
 			throw new RuntimeException(ex);
 		}
 		AEntity entity = (AEntity) beanSerializer.deserialize(in);
-		entities.put(entity.getId(), entity);
+		container.put(entity.getId(), entity);
 		try {
 			in.close();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		return true;
 	}
 
 	private void backup(File src, String type) {
