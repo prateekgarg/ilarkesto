@@ -87,6 +87,7 @@ public abstract class IO {
 
 	public static final String ISO_LATIN_1 = "ISO-8859-1";
 	public static final String UTF_8 = "UTF-8";
+	public static final String WINDOWS_1252 = "WINDOWS-1252";
 
 	private static LinkedList<Properties> properties = new LinkedList<Properties>();
 	private static LinkedList<File> propertiesFiles = new LinkedList<File>();

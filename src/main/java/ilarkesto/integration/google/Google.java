@@ -225,12 +225,14 @@ public class Google {
 	}
 
 	public static Document weatherAsXml(String language, String location) {
-		return JDom.createDocument(weatherAsXmlString(language, location));
+		String xml = weatherAsXmlString(language, location);
+		return JDom.createDocument(xml);
 	}
 
 	public static String weatherAsXmlString(String language, String location) {
 		return IO.downloadUrlToString(
-			"https://www.google.com/ig/api?hl=" + language + "&weather=" + Str.encodeUrlParameter(location), IO.UTF_8);
+			"https://www.google.com/ig/api?hl=" + language + "&weather=" + Str.encodeUrlParameter(location),
+			IO.WINDOWS_1252);
 	}
 
 	public static String oacurl(String url) {
