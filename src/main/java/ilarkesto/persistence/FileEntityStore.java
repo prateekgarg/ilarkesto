@@ -238,8 +238,9 @@ public class FileEntityStore implements EntityStore {
 		}
 
 		File[] files = entitiesDir.listFiles();
-		LOG.info("Loading", files.length, "entitiy files:", alias);
-		if (files != null) {
+		int count = files == null ? 0 : files.length;
+		LOG.info("Loading", count, "entitiy files:", alias);
+		if (count > 0) {
 			for (int i = 0; i < files.length; i++) {
 				File file = files[i];
 				String filename = file.getName();
