@@ -54,8 +54,13 @@ public class Time extends ilarkesto.core.time.Time {
 		return new TimePeriod(other.toMillis() - toMillis());
 	}
 
-	public final String toString(DateFormat format) {
-		return format.format(new java.util.Date(toMillis()));
+	// @Deprecated
+	// public final String toString(DateFormat format) {
+	// return toString(format, Date.today());
+	// }
+
+	public final String toString(DateFormat format, Date date) {
+		return format.format(getJavaDateOn(date));
 	}
 
 	public final String toString(Locale locale) {
