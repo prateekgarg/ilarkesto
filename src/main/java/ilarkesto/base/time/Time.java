@@ -25,8 +25,6 @@ public class Time extends ilarkesto.core.time.Time {
 
 	public static final transient SimpleDateFormat FORMAT_HOUR_MINUTE_SECOND_NOSEP = new SimpleDateFormat("HHmmss");
 
-	public static final transient SimpleDateFormat FORMAT_HOUR_MINUTE = new SimpleDateFormat("HH:mm");
-
 	public Time() {
 		super();
 	}
