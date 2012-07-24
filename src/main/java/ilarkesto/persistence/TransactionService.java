@@ -15,6 +15,7 @@
 package ilarkesto.persistence;
 
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.scope.In;
 import ilarkesto.fp.Predicate;
 import ilarkesto.id.IdentifiableResolver;
 
@@ -24,37 +25,18 @@ import java.util.Set;
 
 public class TransactionService implements IdentifiableResolver<AEntity> {
 
-	private static final Log LOG = Log.get(TransactionService.class);
+	private static final Log log = Log.get(TransactionService.class);
 
-	public TransactionService() {}
-
-	private Transaction createTransaction() {
-		Transaction t = new Transaction(entityStore);
-		LOG.debug("Transaction created: " + t);
-		return t;
-	}
+	@In
+	private EntityStore entityStore;
 
 	private ThreadLocal<Transaction> threadLocalTransaction = new ThreadLocal<Transaction>();
 
-	private Transaction getCurrentTransaction(boolean autocreate) {
-		Transaction t = threadLocalTransaction.get();
-		if (t == null && autocreate) {
-			t = createTransaction();
-			threadLocalTransaction.set(t);
-		}
-		return t;
-	}
-
-	private Transaction getCurrentTransaction() {
-		return getCurrentTransaction(true);
-	}
+	public TransactionService() {}
 
 	public synchronized void commit() {
 		Transaction t = getCurrentTransaction(false);
-		if (t == null) {
-			// LOG.debug("No transaction to commit.");
-			return;
-		}
+		if (t == null) return;
 		try {
 			t.commit();
 		} finally {
@@ -65,8 +47,19 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 	public synchronized void cancel() {
 		Transaction t = getCurrentTransaction(false);
 		if (t == null) return;
-		LOG.debug("Cancelling transaction:", t);
+		log.debug("Cancelling transaction:", t);
 		threadLocalTransaction.set(null);
+	}
+
+	private synchronized Transaction getCurrentTransaction(boolean autocreate) {
+		Transaction t = threadLocalTransaction.get();
+		if (t == null) {
+			if (!autocreate) return null;
+			t = new Transaction(entityStore);
+			log.debug("Transaction created: " + t);
+			threadLocalTransaction.set(t);
+		}
+		return t;
 	}
 
 	public boolean isPersistent(String id) {
@@ -128,24 +121,16 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 		}
 	}
 
-	public void deleteEntity(AEntity entity) {
-		getCurrentTransaction().deleteEntity(entity);
+	public synchronized void deleteEntity(AEntity entity) {
+		getCurrentTransaction(true).deleteEntity(entity);
 	}
 
-	public void saveEntity(AEntity entity) {
-		getCurrentTransaction().saveEntity(entity);
+	public synchronized void saveEntity(AEntity entity) {
+		getCurrentTransaction(true).saveEntity(entity);
 	}
 
-	public void registerEntity(AEntity entity) {
-		getCurrentTransaction().registerEntity(entity);
-	}
-
-	// --- dependencies ---
-
-	private EntityStore entityStore;
-
-	public void setEntityStore(EntityStore entityStore) {
-		this.entityStore = entityStore;
+	public synchronized void registerEntity(AEntity entity) {
+		getCurrentTransaction(true).registerEntity(entity);
 	}
 
 }

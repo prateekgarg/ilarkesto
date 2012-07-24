@@ -14,6 +14,7 @@
  */
 package ilarkesto.persistence;
 
+import ilarkesto.base.Utl;
 import ilarkesto.base.time.Date;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
@@ -44,6 +45,7 @@ public class FileEntityStore implements EntityStore {
 
 	private boolean versionSaved;
 	private boolean versionChecked;
+	private boolean locked;
 
 	// --- dependencies ---
 
@@ -80,8 +82,22 @@ public class FileEntityStore implements EntityStore {
 
 	// --- ---
 
+	public synchronized void lock() {
+		if (locked) return;
+		locked = true;
+		LOG.info("File entity store locked.");
+	}
+
+	public void unlock() {
+		if (!locked) return;
+		locked = false;
+		LOG.info("File entity store unlocked.");
+	}
+
 	@Override
 	public synchronized void save(AEntity entity) {
+		sleepWhileLocked();
+
 		if (!versionSaved) saveVersion();
 
 		String alias = aliases.get(entity.getClass());
@@ -121,6 +137,8 @@ public class FileEntityStore implements EntityStore {
 
 	@Override
 	public synchronized void delete(AEntity entity) {
+		sleepWhileLocked();
+
 		String alias = aliases.get(entity.getClass());
 		File file = new File(dir + "/" + alias + "/" + entity.getId() + ".xml");
 
@@ -136,6 +154,12 @@ public class FileEntityStore implements EntityStore {
 		getDao(entity.getClass()).remove(entity.getId());
 
 		LOG.debug("Entity deleted:", file.getPath(), entity.getClass().getSimpleName(), entity);
+	}
+
+	private void sleepWhileLocked() {
+		while (locked) {
+			Utl.sleep(100);
+		}
 	}
 
 	private Map<String, AEntity> getDao(Class<? extends AEntity> type) {

@@ -27,39 +27,49 @@ import java.util.Set;
 
 class Transaction implements IdentifiableResolver<AEntity> {
 
-	private static final Log LOG = Log.get(Transaction.class);
+	private static final Log log = Log.get(Transaction.class);
 
 	private static int count = 0;
+	private int no;
 
+	private EntityStore entityStore;
+
+	private String threadName;
 	private List<AEntity> entitiesToSave = new ArrayList<AEntity>();
-
 	private List<AEntity> entitiesToDelete = new ArrayList<AEntity>();
-
 	private List<AEntity> entitiesRegistered = new ArrayList<AEntity>();
+
+	public Transaction(EntityStore entityStore) {
+		synchronized (getClass()) {
+			no = ++count;
+		}
+		this.entityStore = entityStore;
+		threadName = Thread.currentThread().getName();
+	}
 
 	/**
 	 * avoids infinite loops within <code>ensureIntegrity()</code>
 	 */
 	private AEntity currentlySaving;
 
-	public synchronized void saveEntity(AEntity entity) {
+	synchronized void saveEntity(AEntity entity) {
 		if (entity == null) throw new NullPointerException("entity");
 		if (currentlySaving == entity) return;
 		currentlySaving = entity;
 		if (entitiesToSave.contains(entity) || entitiesToDelete.contains(entity)) return;
-		LOG.debug("SAVE", toStringWithType(entity), "@", this);
+		log.debug("SAVE", toStringWithType(entity), "@", this);
 		entitiesToSave.add(entity);
 		currentlySaving = null;
 	}
 
-	public synchronized void deleteEntity(AEntity entity) {
+	synchronized void deleteEntity(AEntity entity) {
 		if (entitiesToDelete.contains(entity)) return;
-		LOG.debug("DELETE", toStringWithType(entity), "@", this);
+		log.debug("DELETE", toStringWithType(entity), "@", this);
 		entitiesToDelete.add(entity);
 		entitiesToSave.remove(entity);
 	}
 
-	public synchronized void registerEntity(AEntity entity) {
+	synchronized void registerEntity(AEntity entity) {
 		entitiesRegistered.add(entity);
 	}
 
@@ -70,9 +80,9 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		committed = true;
 
 		if (isEmpty()) {
-			LOG.debug("Committing empty transaction:", this);
+			log.debug("Committing empty transaction:", this);
 		} else {
-			LOG.info("Committing transaction:", this);
+			log.info("Committing transaction:", this);
 		}
 
 		Collection<AEntity> savedEntities = new HashSet<AEntity>(entitiesToSave.size());
@@ -97,10 +107,10 @@ class Transaction implements IdentifiableResolver<AEntity> {
 
 		entitiesRegistered.clear();
 
-		LOG.debug("Transaction committed:", this);
+		log.debug("Transaction committed:", this);
 	}
 
-	public synchronized boolean isPersistent(String id) {
+	synchronized boolean isPersistent(String id) {
 		AEntity result = entityStore.getById(id);
 		if (result != null) return true;
 
@@ -112,7 +122,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		return false;
 	}
 
-	public synchronized boolean isEmpty() {
+	synchronized boolean isEmpty() {
 		return entitiesToDelete.isEmpty() && entitiesToSave.isEmpty();
 	}
 
@@ -135,7 +145,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		return result;
 	}
 
-	public synchronized Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
+	synchronized Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		Set<AEntity> result = entityStore.getEntities(typeFilter, entityFilter);
 		for (AEntity entity : entitiesToSave) {
 			if (Persist.test(entity, typeFilter, entityFilter)) result.add(entity);
@@ -147,7 +157,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		return result;
 	}
 
-	public int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
+	int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		return entityStore.getEntitiesCount(typeFilter, entityFilter);
 	}
 
@@ -167,7 +177,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		return result;
 	}
 
-	public synchronized AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
+	synchronized AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		AEntity result = entityStore.getEntity(typeFilter, entityFilter);
 		if (result == null) {
 			for (AEntity entity : entitiesToSave) {
@@ -220,20 +230,6 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		} catch (Exception ex) {
 			return o.getClass().getSimpleName();
 		}
-	}
-
-	// --- dependencies ---
-
-	private EntityStore entityStore;
-	private int no;
-	private String threadName;
-
-	public Transaction(EntityStore entityStore) {
-		synchronized (getClass()) {
-			no = ++count;
-		}
-		this.entityStore = entityStore;
-		threadName = Thread.currentThread().getName();
 	}
 
 }

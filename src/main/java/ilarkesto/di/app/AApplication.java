@@ -124,6 +124,7 @@ public abstract class AApplication {
 					if (!tasks.isEmpty()) {
 						log.warn("Aborting tasks on shutdown failed:", tasks);
 					}
+					getEntityStore().lock();
 
 					if (context != null) context.destroy();
 
