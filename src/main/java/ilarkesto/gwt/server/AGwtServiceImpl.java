@@ -88,7 +88,9 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 	}
 
 	protected final AWebSession getSession() {
-		return getWebApplication().getWebSession(getThreadLocalRequest());
+		AWebApplication webApplication = getWebApplication();
+		if (webApplication.isShutdown()) throw new RuntimeException("Application shut down");
+		return webApplication.getWebSession(getThreadLocalRequest());
 	}
 
 	@Override

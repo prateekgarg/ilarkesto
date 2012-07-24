@@ -50,6 +50,7 @@ public abstract class AApplication {
 	private static Log log = Log.get(AApplication.class);
 
 	private ExclusiveFileLock exclusiveFileLock;
+	private boolean shutdown;
 
 	protected abstract void onStart();
 
@@ -125,6 +126,7 @@ public abstract class AApplication {
 						log.warn("Aborting tasks on shutdown failed:", tasks);
 					}
 					getEntityStore().lock();
+					shutdown = true;
 
 					if (context != null) context.destroy();
 
@@ -282,6 +284,10 @@ public abstract class AApplication {
 
 	public final boolean isProductionMode() {
 		return !isDevelopmentMode();
+	}
+
+	public boolean isShutdown() {
+		return shutdown;
 	}
 
 	@Override
