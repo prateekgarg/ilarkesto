@@ -322,6 +322,8 @@ public abstract class AApplication {
 			entityStore.setBackupDir(backupDir.getPath());
 			entityStore.setVersion(getDataVersion());
 			Context.get().autowire(entityStore);
+
+			entityStore.deleteOldBackups();
 		}
 		return entityStore;
 	}

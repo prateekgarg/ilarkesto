@@ -82,12 +82,14 @@ public class FileEntityStore implements EntityStore {
 
 	// --- ---
 
+	@Override
 	public synchronized void lock() {
 		if (locked) return;
 		locked = true;
 		LOG.info("File entity store locked.");
 	}
 
+	@Override
 	public void unlock() {
 		if (!locked) return;
 		locked = false;
@@ -362,6 +364,29 @@ public class FileEntityStore implements EntityStore {
 				: new Properties();
 		properties.setProperty("version", String.valueOf(version));
 		IO.saveProperties(properties, getClass().getName(), propertiesFile);
+	}
+
+	@Override
+	public void deleteOldBackups() {
+		if (Str.isBlank(backupDir)) return;
+		File[] dirs = new File(backupDir).listFiles();
+		if (dirs == null || dirs.length == 0) return;
+		Date deadline = Date.beforeDays(7);
+		LOG.info("Deleting temporary entity backups from before", deadline);
+		for (File dir : dirs) {
+			if (!dir.isDirectory()) continue;
+			String name = dir.getName();
+			Date date = null;
+			try {
+				date = new Date(name);
+			} catch (Throwable ex) {
+				continue;
+			}
+			if (date.isBefore(deadline)) {
+				LOG.debug("    Deleting temporary enity backups:", name);
+				IO.delete(dir);
+			}
+		}
 	}
 
 	private File getPropertiesFile() {
