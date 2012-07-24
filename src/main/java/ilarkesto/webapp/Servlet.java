@@ -48,7 +48,9 @@ public abstract class Servlet {
 		String url = request.getRequestURL().toString();
 		int offset = url.indexOf("//") + 2;
 		int idx = context.length() == 0 ? url.indexOf('/') : url.indexOf(context, offset);
-		return url.substring(0, idx + context.length());
+		String baseUrl = url.substring(0, idx + context.length());
+		if (!baseUrl.endsWith("/")) baseUrl += "/";
+		return baseUrl;
 	}
 
 	public static String getEtag(HttpServletRequest request) {
