@@ -18,10 +18,12 @@ import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
+import ilarkesto.base.time.DateAndTime;
 import ilarkesto.base.time.Time;
 import ilarkesto.concurrent.ATask;
 import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.TimePeriod;
 import ilarkesto.di.Context;
 import ilarkesto.integration.xstream.XStreamSerializer;
 import ilarkesto.io.ExclusiveFileLock;
@@ -37,6 +39,7 @@ import ilarkesto.persistence.TransactionService;
 import ilarkesto.properties.FilePropertiesStore;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Properties;
 import java.util.Set;
 
@@ -99,6 +102,9 @@ public abstract class AApplication {
 			}
 		}
 
+		backupApplicationDataDir();
+		deleteOldApplicationDataDirBackups();
+
 		try {
 			ensureIntegrity();
 			onStart();
@@ -139,6 +145,50 @@ public abstract class AApplication {
 		});
 		thread.setName(getApplicationName() + " shutdown");
 		thread.start();
+	}
+
+	public void backupApplicationDataDir() {
+		final File dir = new File(getApplicationDataDir());
+		File backupFile = new File(dir.getPath() + "/backups/" + getApplicationName() + "-data_"
+				+ DateAndTime.now().toString(DateAndTime.FORMAT_LOG) + ".zip");
+		log.info("Backing up application data dir:", dir.getAbsolutePath(), "into", backupFile);
+		long starttime = System.currentTimeMillis();
+		synchronized (getEntityStore()) {
+
+			IO.zip(backupFile, new File[] { dir }, new FileFilter() {
+
+				@Override
+				public boolean accept(File file) {
+					if (file.getParentFile().equals(dir)) {
+						// base dir
+						String name = file.getName();
+						if (name.equals("backups")) return false;
+						if (name.equals("entities-rescue")) return false;
+						if (name.equals("tmp")) return false;
+					}
+					if (file.isDirectory()) log.debug("    Zipping", file.getPath());
+					return true;
+				}
+			});
+		}
+		long runtime = System.currentTimeMillis() - starttime;
+		log.info("  Backup completed in", new TimePeriod(runtime).toShortestString());
+	}
+
+	private void deleteOldApplicationDataDirBackups() {
+		File backupDir = new File(getApplicationDataDir() + "/backups");
+		File[] files = backupDir.listFiles();
+		if (files == null || files.length == 0) return;
+
+		log.info("Deleting old backup files from", backupDir);
+		final long deadline = System.currentTimeMillis() - Tm.DAY * 3;
+
+		for (File file : files) {
+			if (!file.getName().startsWith(getApplicationName())) continue;
+			if (file.lastModified() >= deadline) continue;
+			log.debug("    Deleting", file);
+			IO.delete(file);
+		}
 	}
 
 	public final <T> T autowire(T bean) {
@@ -247,35 +297,6 @@ public abstract class AApplication {
 			}
 		}
 		return buildProperties;
-	}
-
-	public void deleteOldBackupFiles(String backupDir) {
-		log.info("Deleting old backup files from:", backupDir);
-		final long deadline = System.currentTimeMillis() - Tm.DAY * 3;
-		IO.FileProcessor processor = new IO.FileProcessor() {
-
-			@Override
-			public boolean isAbortRequested() {
-				return false;
-			}
-
-			@Override
-			public void onFile(File file) {
-				if (file.lastModified() < deadline) IO.delete(file);
-			}
-
-			@Override
-			public boolean onFolderBegin(File folder) {
-				return true;
-			}
-
-			@Override
-			public void onFolderEnd(File folder) {
-				folder.delete();
-			}
-
-		};
-		IO.process(backupDir, processor);
 	}
 
 	public boolean isDevelopmentMode() {

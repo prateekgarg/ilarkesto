@@ -39,8 +39,6 @@ public interface EntityStore extends IdentifiableResolver<AEntity> {
 
 	void lock();
 
-	void unlock();
-
 	void deleteOldBackups();
 
 }
