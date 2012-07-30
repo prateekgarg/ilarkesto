@@ -76,44 +76,46 @@ public abstract class AApplication {
 
 	public final void start() {
 		if (instance != null) { throw new RuntimeException("An Application already started: " + instance); }
-		instance = this;
+		synchronized (getApplicationLock()) {
 
-		log.info("\n\n     DATA PATH:", getApplicationDataDir(), "\n\n");
+			instance = this;
 
-		context = Context.createRootContext("app:" + getApplicationName());
-		context.addBeanProvider(this);
+			log.info("\n\n     DATA PATH:", getApplicationDataDir(), "\n\n");
 
-		if (isSingleton()) {
-			File lockFile = new File(getApplicationDataDir() + "/.lock");
-			for (int i = 0; i < 10; i++) {
-				try {
-					exclusiveFileLock = new ExclusiveFileLock(lockFile);
-					break;
-				} catch (FileLockedException ex) {
-					log.info("Application already running. Lock file locked: " + lockFile.getAbsolutePath());
+			context = Context.createRootContext("app:" + getApplicationName());
+			context.addBeanProvider(this);
+
+			if (isSingleton()) {
+				File lockFile = new File(getApplicationDataDir() + "/.lock");
+				for (int i = 0; i < 10; i++) {
+					try {
+						exclusiveFileLock = new ExclusiveFileLock(lockFile);
+						break;
+					} catch (FileLockedException ex) {
+						log.info("Application already running. Lock file locked: " + lockFile.getAbsolutePath());
+					}
+					Utl.sleep(1000);
 				}
-				Utl.sleep(1000);
+				if (exclusiveFileLock == null) {
+					log.fatal("Application startup failed. Another instance is running. Lock file: "
+							+ lockFile.getAbsolutePath());
+					shutdown();
+					return;
+				}
 			}
-			if (exclusiveFileLock == null) {
-				log.fatal("Application startup failed. Another instance is running. Lock file: "
-						+ lockFile.getAbsolutePath());
-				shutdown();
-				return;
+
+			try {
+				backupApplicationDataDir();
+				deleteOldApplicationDataDirBackups();
+				ensureIntegrity();
+				onStart();
+			} catch (Throwable ex) {
+				APPLICATION_LOCK = null;
+				throw new RuntimeException("Application startup failed.", ex);
 			}
+
+			scheduleTasks(getTaskManager());
 		}
-
-		backupApplicationDataDir();
-		deleteOldApplicationDataDirBackups();
-
-		try {
-			ensureIntegrity();
-			onStart();
-		} catch (Throwable ex) {
-			APPLICATION_LOCK = null;
-			throw new RuntimeException("Application startup failed.", ex);
-		}
-
-		scheduleTasks(getTaskManager());
 	}
 
 	public final void shutdown() {

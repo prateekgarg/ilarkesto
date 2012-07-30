@@ -90,6 +90,8 @@ public class FileEntityStore implements EntityStore {
 
 	@Override
 	public synchronized void save(AEntity entity) {
+		checkLock();
+
 		if (!versionSaved) saveVersion();
 
 		String alias = aliases.get(entity.getClass());
@@ -127,8 +129,14 @@ public class FileEntityStore implements EntityStore {
 		LOG.debug("Entity saved:", entity, "->", file.getPath());
 	}
 
+	public void checkLock() {
+		if (locked) throw new RuntimeException("Can not save entity. EntityStore already locked.");
+	}
+
 	@Override
 	public synchronized void delete(AEntity entity) {
+		checkLock();
+
 		String alias = aliases.get(entity.getClass());
 		File file = new File(dir + "/" + alias + "/" + entity.getId() + ".xml");
 
