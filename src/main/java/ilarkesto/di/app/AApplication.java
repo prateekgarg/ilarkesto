@@ -182,7 +182,7 @@ public abstract class AApplication {
 		if (files == null || files.length == 0) return;
 
 		log.info("Deleting old backup files from", backupDir);
-		final long deadline = System.currentTimeMillis() - Tm.DAY * 3;
+		final long deadline = System.currentTimeMillis() - Tm.DAY * 7;
 
 		for (File file : files) {
 			if (!file.getName().startsWith(getApplicationName())) continue;
