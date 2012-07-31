@@ -119,8 +119,9 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized {
 
 	@Override
 	public final boolean equals(Object o) {
+		if (this == o) return true;
 		if (o == null) return false;
-		if (!(o instanceof AEntity)) return false;
+		if (!getClass().equals(o.getClass())) return false;
 		return Utl.equals(getId(), ((AEntity) o).getId());
 	}
 

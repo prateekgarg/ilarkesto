@@ -382,6 +382,12 @@ public class FileEntityStore implements EntityStore {
 			backupExistingFile();
 		}
 
+		@Override
+		protected void complete() {
+			IO.move(tmpFile, file, true);
+			getDao(entity.getClass()).put(entity.getId(), entity);
+		}
+
 		public void backupExistingFile() {
 			if (file.exists() && !(entity instanceof BackupHostile)) {
 				backup(file, entity.getDao().getEntityName());
@@ -403,12 +409,6 @@ public class FileEntityStore implements EntityStore {
 
 			if (tmpFile.length() < 1)
 				throw new RuntimeException("Writing entity file caused empty file: " + tmpFile.getPath());
-		}
-
-		@Override
-		protected void complete() {
-			IO.move(tmpFile, file, true);
-			getDao(entity.getClass()).put(entity.getId(), entity);
 		}
 
 		@Override

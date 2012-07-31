@@ -46,19 +46,12 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		threadName = Thread.currentThread().getName();
 	}
 
-	/**
-	 * avoids infinite loops within <code>ensureIntegrity()</code>
-	 */
-	private AEntity currentlySaving;
-
 	synchronized void saveEntity(AEntity entity) {
 		if (entity == null) throw new NullPointerException("entity");
-		if (currentlySaving == entity) return;
-		currentlySaving = entity;
+		entity.getId();
 		if (entitiesToSave.contains(entity) || entitiesToDelete.contains(entity)) return;
 		log.debug("SAVE", toStringWithType(entity), "@", this);
 		entitiesToSave.add(entity);
-		currentlySaving = null;
 	}
 
 	synchronized void deleteEntity(AEntity entity) {
@@ -85,22 +78,26 @@ class Transaction implements IdentifiableResolver<AEntity> {
 			log.info("Committing transaction:", this);
 		}
 
-		Set<AEntity> toSave = new HashSet<AEntity>(entitiesToSave.size());
+		Set<AEntity> integratedEntities = new HashSet<AEntity>(entitiesToSave.size());
 
 		int loopcount = 0;
-		while (!toSave.equals(entitiesToSave)) {
-			if (loopcount > 1000) {
-				log.warn("Maximum loops reached while commiting:", this);
-				break;
+		while (!integratedEntities.containsAll(entitiesToSave)) {
+
+			if (loopcount > 0) {
+				HashSet<AEntity> tmp = new HashSet<AEntity>(entitiesToSave);
+				tmp.removeAll(integratedEntities);
+				log.debug("Entities changed after ensuring integrity:", tmp);
 			}
 
+			if (loopcount > 1000) throw new RuntimeException("Maximum loops reached while commiting:" + this);
+
 			entitiesToSave.removeAll(entitiesToDelete);
-			for (AEntity entity : entitiesToSave) {
+			for (AEntity entity : new HashSet<AEntity>(entitiesToSave)) {
 				entity.ensureIntegrity();
+				integratedEntities.add(entity);
 			}
 			entitiesToSave.removeAll(entitiesToDelete);
-			toSave.removeAll(entitiesToDelete);
-			toSave.addAll(entitiesToSave);
+
 			loopcount++;
 		}
 
