@@ -17,6 +17,7 @@ package ilarkesto.persistence;
 import ilarkesto.fp.Predicate;
 import ilarkesto.id.IdentifiableResolver;
 
+import java.util.Collection;
 import java.util.Set;
 
 public interface EntityStore extends IdentifiableResolver<AEntity> {
@@ -33,9 +34,7 @@ public interface EntityStore extends IdentifiableResolver<AEntity> {
 
 	Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter);
 
-	void save(AEntity entity);
-
-	void delete(AEntity entity);
+	void persist(Collection<AEntity> entitiesToSave, Collection<AEntity> entitiesToDelete);
 
 	void lock();
 
