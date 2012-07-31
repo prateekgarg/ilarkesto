@@ -363,6 +363,8 @@ public abstract class IO {
 	}
 
 	public static void move(File from, File to, boolean overwrite) {
+		if (!from.exists())
+			throw new RuntimeException("Moving file " + from + " to " + to + " failed. Source file does not exist.");
 		if (to.exists()) {
 			if (!overwrite)
 				throw new RuntimeException("Moving file " + from + " to " + to + " failed. File already exists.");

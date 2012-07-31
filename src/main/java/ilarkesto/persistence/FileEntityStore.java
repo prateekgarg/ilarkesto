@@ -375,29 +375,33 @@ public class FileEntityStore implements EntityStore {
 
 		@Override
 		protected void prepare() {
-			// write temporary file
 			tmpFile = new File(dir + "/tmp/" + entity.getId() + ".xml");
-			writeFile(entity, tmpFile);
-
 			file = new File(dir + "/" + entity.getDao().getEntityName() + "/" + entity.getId() + ".xml");
 
-			// backup
+			wirteTemporaryFile();
+			backupExistingFile();
+		}
+
+		public void backupExistingFile() {
 			if (file.exists() && !(entity instanceof BackupHostile)) {
 				backup(file, entity.getDao().getEntityName());
 			}
 		}
 
-		private void writeFile(AEntity entity, File file) {
-			if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
+		public void wirteTemporaryFile() {
+			if (!tmpFile.getParentFile().exists()) tmpFile.getParentFile().mkdirs();
 			BufferedOutputStream out;
 			try {
-				out = new BufferedOutputStream(new FileOutputStream(file));
+				out = new BufferedOutputStream(new FileOutputStream(tmpFile));
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
 			beanSerializer.serialize(entity, out);
 			IO.close(out);
-			if (file.length() < 1)
+
+			if (!tmpFile.exists()) throw new RuntimeException("Writing entity file failed: " + tmpFile.getPath());
+
+			if (tmpFile.length() < 1)
 				throw new RuntimeException("Writing entity file caused empty file: " + tmpFile.getPath());
 		}
 
