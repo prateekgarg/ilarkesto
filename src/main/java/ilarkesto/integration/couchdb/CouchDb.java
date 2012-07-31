@@ -14,12 +14,12 @@
  */
 package ilarkesto.integration.couchdb;
 
-import ilarkesto.core.json.JsonObject;
-import ilarkesto.core.jsondb.AJsonDb;
-import ilarkesto.core.jsondb.DocumentReference;
-import ilarkesto.core.jsondb.JsonDbException;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
+import ilarkesto.json.JsonObject;
+import ilarkesto.json.jsondb.AJsonDb;
+import ilarkesto.json.jsondb.DocumentReference;
+import ilarkesto.json.jsondb.JsonDbException;
 
 import java.io.IOException;
 import java.io.InputStream;

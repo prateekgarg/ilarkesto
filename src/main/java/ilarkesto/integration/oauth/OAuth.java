@@ -2,8 +2,8 @@ package ilarkesto.integration.oauth;
 
 import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
-import ilarkesto.core.json.JsonObject;
 import ilarkesto.core.logging.Log;
+import ilarkesto.json.JsonObject;
 
 import java.util.Scanner;
 

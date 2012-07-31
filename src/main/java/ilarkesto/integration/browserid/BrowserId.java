@@ -14,10 +14,10 @@
  */
 package ilarkesto.integration.browserid;
 
-import ilarkesto.core.json.JsonObject;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.io.IO;
+import ilarkesto.json.JsonObject;
 
 import java.util.HashMap;
 import java.util.Map;

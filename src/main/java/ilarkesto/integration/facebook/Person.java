@@ -1,6 +1,6 @@
 package ilarkesto.integration.facebook;
 
-import ilarkesto.core.json.JsonObject;
+import ilarkesto.json.JsonObject;
 
 public class Person extends Item {
 

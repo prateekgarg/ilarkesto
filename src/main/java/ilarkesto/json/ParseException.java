@@ -1,4 +1,4 @@
-package ilarkesto.core.json;
+package ilarkesto.json;
 
 public class ParseException extends RuntimeException {
 

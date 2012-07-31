@@ -1,7 +1,7 @@
 package ilarkesto.integration.facebook;
 
-import ilarkesto.core.json.JsonObject;
 import ilarkesto.core.logging.Log;
+import ilarkesto.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;

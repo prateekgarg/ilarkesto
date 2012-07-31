@@ -12,36 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.core.jsondb;
+package ilarkesto.json.jsondb;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import ilarkesto.json.JsonObject;
 
-public class DocumentReference {
+public interface DocumentFilter {
 
-	private String id;
-
-	public DocumentReference(String id) {
-		super();
-		this.id = id;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	@Override
-	public String toString() {
-		return id;
-	}
-
-	public static List<String> getIds(Collection<DocumentReference> references) {
-		List<String> ids = new ArrayList<String>(references.size());
-		for (DocumentReference reference : references) {
-			ids.add(reference.getId());
-		}
-		return ids;
-	}
+	boolean matches(JsonObject document);
 
 }

@@ -3,10 +3,10 @@ package ilarkesto.integration.facebook;
 import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Str;
-import ilarkesto.core.json.JsonObject;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.oauth.OAuth;
 import ilarkesto.io.IO;
+import ilarkesto.json.JsonObject;
 
 import java.io.File;
 import java.util.Collection;

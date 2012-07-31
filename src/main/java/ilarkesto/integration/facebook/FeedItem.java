@@ -1,7 +1,7 @@
 package ilarkesto.integration.facebook;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.json.JsonObject;
+import ilarkesto.json.JsonObject;
 
 import java.util.Date;
 
