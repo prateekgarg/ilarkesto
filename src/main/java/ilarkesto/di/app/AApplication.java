@@ -105,7 +105,6 @@ public abstract class AApplication {
 			}
 
 			try {
-				getApplicationConfig();
 				backupApplicationDataDir();
 				deleteOldApplicationDataDirBackups();
 				ensureIntegrity();
@@ -156,7 +155,8 @@ public abstract class AApplication {
 				+ DateAndTime.now().toString(DateAndTime.FORMAT_LOG) + ".zip");
 		log.info("Backing up application data dir:", dir.getAbsolutePath(), "into", backupFile);
 		long starttime = System.currentTimeMillis();
-		synchronized (getEntityStore()) {
+		Object lock = entityStore == null ? this : entityStore;
+		synchronized (lock) {
 
 			IO.zip(backupFile, new File[] { dir }, new FileFilter() {
 
