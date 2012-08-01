@@ -1,8 +1,7 @@
 package ilarkesto.integration.facebook;
 
+import ilarkesto.base.time.DateAndTime;
 import ilarkesto.json.JsonObject;
-
-import java.util.Date;
 
 public abstract class AIdentity extends AObject {
 
@@ -16,7 +15,7 @@ public abstract class AIdentity extends AObject {
 		return json.getString("id");
 	}
 
-	public final Date getCreatedTime() {
+	public final DateAndTime getCreatedTime() {
 		return getDate("created_time");
 	}
 
