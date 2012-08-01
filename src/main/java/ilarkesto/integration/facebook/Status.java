@@ -2,7 +2,7 @@ package ilarkesto.integration.facebook;
 
 import ilarkesto.json.JsonObject;
 
-public class Status extends FeedItem {
+public class Status extends AIdentity {
 
 	public Status(JsonObject data) {
 		super(data);
@@ -12,6 +12,6 @@ public class Status extends FeedItem {
 	 * The status message content
 	 */
 	public final String getMessage() {
-		return data.getString("message");
+		return json.getString("message");
 	}
 }

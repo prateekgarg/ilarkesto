@@ -91,4 +91,9 @@ public abstract class AJsonWrapper {
 		return json;
 	}
 
+	@Override
+	public String toString() {
+		return json.toFormatedString();
+	}
+
 }

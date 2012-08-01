@@ -9,7 +9,11 @@ import ilarkesto.io.IO;
 import ilarkesto.json.JsonObject;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import org.scribe.builder.api.FacebookApi;
@@ -39,8 +43,10 @@ public class Facebook {
 
 		String accessToken = properties.getProperty("facebook.oauth.accesstoken");
 
-		System.out.println(facebook.loadMe(accessToken));
+		System.out.println(facebook.loadMeLikes(accessToken));
 	}
+
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
 
 	public static final String PERMISSION_READ_STREAM = "read_stream";
 	public static final String PERMISSION_USER_ACTIVITIES = "user_activities";
@@ -57,18 +63,38 @@ public class Facebook {
 		this.callbackUri = callbackUri;
 	}
 
+	public List<Like> loadMeLikes(String oauthAccessToken) {
+		JsonObject json = loadJson(oauthAccessToken, "me/likes");
+		List<JsonObject> data = json.getArrayOfObjects("data");
+		List<Like> likes = new ArrayList<Like>(data.size());
+		for (JsonObject element : data) {
+			String id = element.getString("id");
+			if (id == null) {
+				log.warn("Element has no id:", element);
+				continue;
+			}
+			JsonObject elementJson = loadJson(oauthAccessToken, id);
+			Like like = new Like(elementJson);
+			likes.add(like);
+		}
+		return likes;
+	}
+
 	public Person loadMe(String oauthAccessToken) {
-		JsonObject json = OAuth.loadUrlAsJson(getOauthService(), new LoginData(oauthAccessToken, null),
-			"https://graph.facebook.com/me");
-		log.info("Loaded me:", json);
+		JsonObject json = loadJson(oauthAccessToken, "me");
 		return new Person(json);
 	}
 
-	public Feed loadMeFeed(String oauthAccessToken) {
+	public MeFeed loadMeFeed(String oauthAccessToken) {
+		JsonObject json = loadJson(oauthAccessToken, "me/feed");
+		return new MeFeed(json);
+	}
+
+	public JsonObject loadJson(String oauthAccessToken, String id) {
 		JsonObject json = OAuth.loadUrlAsJson(getOauthService(), new LoginData(oauthAccessToken, null),
-			"https://graph.facebook.com/me/feed");
-		log.info("Loaded me/feed:", json);
-		return new Feed(json);
+			"https://graph.facebook.com/" + id);
+		log.info("Loaded", id, "->", json.toFormatedString());
+		return json;
 	}
 
 	public String createAccessToken(String code) {
@@ -91,6 +117,17 @@ public class Facebook {
 	private OAuthService getOauthService() {
 		if (oauthService == null) oauthService = OAuth.createService(FacebookApi.class, oauthApiKey, callbackUri);
 		return oauthService;
+	}
+
+	// --- helper ---
+
+	public static Date parseDate(String s) {
+		if (s == null) return null;
+		try {
+			return DATE_FORMAT.parse(s);
+		} catch (java.text.ParseException ex) {
+			throw new RuntimeException("Parsing date with format \"" + DATE_FORMAT.toString() + "\" failed: " + s, ex);
+		}
 	}
 
 }

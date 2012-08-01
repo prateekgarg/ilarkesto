@@ -169,8 +169,8 @@ public abstract class AApplication {
 						if (name.equals("entities-rescue")) return false;
 						if (name.equals("tmp")) return false;
 						if (name.startsWith("gwt-")) return false;
+						if (file.isDirectory()) log.info("    Zipping", file.getPath());
 					}
-					if (file.isDirectory()) log.debug("    Zipping", file.getPath());
 					return true;
 				}
 			});

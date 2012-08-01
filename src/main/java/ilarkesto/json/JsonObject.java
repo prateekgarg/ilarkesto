@@ -116,7 +116,7 @@ public class JsonObject {
 	}
 
 	public String toFormatedString() {
-		return toFormatedString(0);
+		return toFormatedString(2);
 	}
 
 	@Override

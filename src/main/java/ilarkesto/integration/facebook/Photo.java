@@ -2,7 +2,7 @@ package ilarkesto.integration.facebook;
 
 import ilarkesto.json.JsonObject;
 
-public class Photo extends FeedItem {
+public class Photo extends AIdentity {
 
 	public Photo(JsonObject data) {
 		super(data);
@@ -12,28 +12,28 @@ public class Photo extends FeedItem {
 	 * The user provided caption given to this photo
 	 */
 	public final String getName() {
-		return data.getString("name");
+		return json.getString("name");
 	}
 
 	/**
 	 * A link to the photo on Facebook
 	 */
 	public final String getLink() {
-		return data.getString("link");
+		return json.getString("link");
 	}
 
 	/**
 	 * The thumbnail-sized source of the photo
 	 */
 	public final String getPicture() {
-		return data.getString("picture");
+		return json.getString("picture");
 	}
 
 	/**
 	 * The source image of the photo
 	 */
 	public final String getSource() {
-		return data.getString("source");
+		return json.getString("source");
 	}
 
 }
