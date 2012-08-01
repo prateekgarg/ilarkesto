@@ -20,20 +20,28 @@ import ilarkesto.base.Utl;
 import ilarkesto.id.CountingIdGenerator;
 import ilarkesto.id.IdGenerator;
 import ilarkesto.integration.links.MultiLinkConverter;
+import ilarkesto.io.IO;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
 public class HtmlRenderer {
 
 	private PrintWriter out;
-	private String encoding;
+	private String encoding = IO.UTF_8;
+	private StringWriter buffer;
 
 	private String startingTag;
 
 	private Tag tag = new Tag();
+
+	public HtmlRenderer() {
+		buffer = new StringWriter();
+		out = new PrintWriter(buffer);
+	}
 
 	public HtmlRenderer(PrintWriter out, String encoding) {
 		this.encoding = encoding;
@@ -223,6 +231,12 @@ public class HtmlRenderer {
 	public void BR() {
 		startTag(BR);
 		endShortTag();
+	}
+
+	public void BR(int count) {
+		for (int i = 0; i < count; i++) {
+			BR();
+		}
 	}
 
 	// --- CENTER ---
@@ -559,6 +573,13 @@ public class HtmlRenderer {
 				+ "pageTracker._trackPageview();\r\n" + "} catch(err) {}</script>");
 	}
 
+	@Override
+	public String toString() {
+		if (buffer == null) return super.toString();
+		flush();
+		return buffer.toString();
+	}
+
 	// --- helper ---
 
 	private String toString(Url url) {
@@ -586,11 +607,17 @@ public class HtmlRenderer {
 	private static final String IMG = "img";
 
 	public void IMG(String src, String alternatieText, String id, String align, Integer width, Integer height) {
+		IMG(src, alternatieText, id, align, width, height, null);
+	}
+
+	public void IMG(String src, String alternatieText, String id, String align, Integer width, Integer height,
+			String style) {
 		Tag tag = startTag(IMG).setSrc(src).setAlt(alternatieText).setTitle(alternatieText).setBorder(0);
 		if (id != null) tag.setId(id);
 		if (width != null) tag.setWidth(width);
 		if (height != null) tag.set("height", height);
 		if (align != null) tag.setAlign(align);
+		if (style != null) tag.setStyle(style);
 		endShortTag();
 	}
 

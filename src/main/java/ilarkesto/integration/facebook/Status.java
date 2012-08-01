@@ -8,4 +8,10 @@ public class Status extends FeedItem {
 		super(data);
 	}
 
+	/**
+	 * The status message content
+	 */
+	public final String getMessage() {
+		return data.getString("message");
+	}
 }

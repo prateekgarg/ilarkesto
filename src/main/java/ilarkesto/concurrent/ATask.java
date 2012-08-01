@@ -78,8 +78,8 @@ public abstract class ATask {
 
 	public final long getRunTime() {
 		if (startTime < 0) return -1;
-		long endTime = finishTime < 0 ? System.currentTimeMillis() : finishTime;
-		return endTime - startTime;
+		if (isFinished()) return finishTime - startTime;
+		return System.currentTimeMillis() - startTime;
 	}
 
 	public void reset() {
@@ -94,6 +94,8 @@ public abstract class ATask {
 		started = false;
 		finished = false;
 		abortRequested = false;
+		startTime = -1;
+		finishTime = -1;
 	}
 
 	public final void run() {
