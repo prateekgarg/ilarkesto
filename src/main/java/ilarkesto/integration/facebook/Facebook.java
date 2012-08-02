@@ -50,6 +50,9 @@ public class Facebook {
 
 	public static final String PERMISSION_READ_STREAM = "read_stream";
 	public static final String PERMISSION_USER_ACTIVITIES = "user_activities";
+	public static final String PERMISSION_USER_LIKES = "user_likes";
+	public static final String PERMISSION_USER_EVENTS = "user_events";
+	public static final String PERMISSION_USER_PHOTOS = "user_photos";
 	public static final String PERMISSION_OFFLINE_ACCESS = "offline_access";
 
 	private static Log log = Log.get(Facebook.class);
