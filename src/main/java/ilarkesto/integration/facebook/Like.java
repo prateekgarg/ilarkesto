@@ -12,35 +12,12 @@ public class Like extends AIdentity {
 		return json.getString("name");
 	}
 
-	public String getPicture() {
-		return json.getString("picture");
-	}
-
-	public String getLink() {
-		return json.getString("link");
-	}
-
 	public String getCategory() {
 		return json.getString("category");
 	}
 
-	public String getDescription() {
-		return json.getString("description");
-	}
-
-	public String getAbout() {
-		return json.getString("about");
-	}
-
-	public String getWebsite() {
-		return json.getString("website");
-	}
-
-	public String getBestDescription() {
-		String description = getDescription();
-		if (description != null) return description;
-
-		return getAbout();
+	public Subject getSubject() {
+		return createFromObject("id__loaded", Subject.class);
 	}
 
 }

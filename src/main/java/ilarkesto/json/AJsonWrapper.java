@@ -71,6 +71,12 @@ public abstract class AJsonWrapper {
 		return wrappers;
 	}
 
+	protected <T extends AJsonWrapper> T createFromObject(String name, Class<T> type) {
+		JsonObject object = json.getObject(name);
+		if (object == null) return null;
+		return createWrapper(object, type);
+	}
+
 	private <T extends AJsonWrapper> T createWrapper(JsonObject json, Class<T> type) {
 		Constructor<T> constructor;
 		try {

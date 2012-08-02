@@ -67,14 +67,15 @@ public class Facebook {
 		JsonObject json = loadJson(oauthAccessToken, "me/likes");
 		List<JsonObject> data = json.getArrayOfObjects("data");
 		List<Like> likes = new ArrayList<Like>(data.size());
-		for (JsonObject element : data) {
-			String id = element.getString("id");
+		for (JsonObject jLike : data) {
+			String id = jLike.getString("id");
 			if (id == null) {
-				log.warn("Element has no id:", element);
+				log.warn("Element has no id:", jLike);
 				continue;
 			}
-			JsonObject elementJson = loadJson(oauthAccessToken, id);
-			Like like = new Like(elementJson);
+			JsonObject jSubject = loadJson(oauthAccessToken, id);
+			jLike.put("id__loaded", jSubject);
+			Like like = new Like(jLike);
 			likes.add(like);
 		}
 		return likes;
