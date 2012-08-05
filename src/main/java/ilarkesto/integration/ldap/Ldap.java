@@ -66,7 +66,8 @@ public class Ldap {
 		try {
 			Attribute mailAttribute = searchResult.getAttributes().get("mail");
 			if (mailAttribute != null) return mailAttribute.get().toString();
-		} catch (NamingException e) {
+		} catch (NamingException ex) {
+			log.info(ex);
 			// mail field not handled by ldap tree. can happen on some ldap server or with specific structures
 		}
 		return null;
