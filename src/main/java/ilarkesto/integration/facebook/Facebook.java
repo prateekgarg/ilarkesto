@@ -3,7 +3,9 @@ package ilarkesto.integration.facebook;
 import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Str;
+import ilarkesto.base.time.DateAndTime;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
 import ilarkesto.integration.oauth.OAuth;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonObject;
@@ -12,7 +14,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -43,7 +44,8 @@ public class Facebook {
 
 		String accessToken = properties.getProperty("facebook.oauth.accesstoken");
 
-		System.out.println(facebook.loadMeLikes(accessToken));
+		// System.out.println(facebook.loadMeLikes(accessToken, null));
+		System.out.println(facebook.loadMe(accessToken));
 	}
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
@@ -66,7 +68,7 @@ public class Facebook {
 		this.callbackUri = callbackUri;
 	}
 
-	public List<Like> loadMeLikes(String oauthAccessToken) {
+	public List<Like> loadMeLikes(String oauthAccessToken, Date deadline) {
 		JsonObject json = loadJson(oauthAccessToken, "me/likes");
 		List<JsonObject> data = json.getArrayOfObjects("data");
 		List<Like> likes = new ArrayList<Like>(data.size());
@@ -76,9 +78,14 @@ public class Facebook {
 				log.warn("Element has no id:", jLike);
 				continue;
 			}
+			Like like = new Like(jLike);
+			if (deadline != null) {
+				DateAndTime createdTime = like.getCreatedTime();
+				if (createdTime == null) continue;
+				if (createdTime.isBefore(deadline)) continue;
+			}
 			JsonObject jSubject = loadJson(oauthAccessToken, id);
 			jLike.put("id__loaded", jSubject);
-			Like like = new Like(jLike);
 			likes.add(like);
 		}
 		return likes;
@@ -125,7 +132,7 @@ public class Facebook {
 
 	// --- helper ---
 
-	public static Date parseDate(String s) {
+	public static java.util.Date parseDate(String s) {
 		if (s == null) return null;
 		try {
 			return DATE_FORMAT.parse(s);

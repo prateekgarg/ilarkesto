@@ -23,12 +23,23 @@ public abstract class AIdentity extends AObject {
 		return json.contains("from");
 	}
 
+	public final Person getFrom() {
+		return createFromObject("from", Person.class);
+	}
+
 	public final String getFacebookGraphUrl() {
 		return "https://graph.facebook.com/" + getId();
 	}
 
 	public final String getFacebookLink() {
 		return "https://www.facebook.com/" + getId();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof AIdentity)) return false;
+		AIdentity other = (AIdentity) obj;
+		return getId().equals(other.getId());
 	}
 
 }

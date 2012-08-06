@@ -168,6 +168,10 @@ public final class DateAndTime implements Comparable<DateAndTime> {
 		return sb.toString();
 	}
 
+	public boolean isBefore(ilarkesto.core.time.Date other) {
+		return getDate().isBefore(other);
+	}
+
 	public boolean isBefore(DateAndTime other) {
 		return compareTo(other) < 0;
 	}
