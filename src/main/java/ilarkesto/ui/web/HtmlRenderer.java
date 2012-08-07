@@ -362,11 +362,19 @@ public class HtmlRenderer {
 	}
 
 	public void INPUTtext(String name, String value, int width) {
-		INPUTtext(null, name, value, width);
+		INPUTtext(name, value, width, null);
+	}
+
+	public void INPUTtext(String name, String value, int width, String style) {
+		INPUTtext(null, name, value, width, style);
 	}
 
 	public void INPUTtext(String id, String name, String value, int width) {
-		Tag tag = INPUT("text", name, value).setId(id).set("size", width).setClass("inputText");
+		INPUTtext(id, name, value, width, null);
+	}
+
+	public void INPUTtext(String id, String name, String value, int width, String style) {
+		Tag tag = INPUT("text", name, value).setId(id).set("size", width).setClass("inputText").setStyle(style);
 		tag.setOnfocus("javascript:select();");
 		endShortTag();
 	}
