@@ -220,7 +220,7 @@ public class Imdb {
 	public static String extractId(String url) {
 		if (Str.isBlank(url)) return null;
 		String id = url;
-		id = Str.removePrefix(id, TITLE_URL_PREFIX);
+		id = Str.removePrefix(id, "http://akas.imdb.com/title/");
 		id = Str.removePrefix(id, "http://www.imdb.com/title/");
 		id = Str.removePrefix(id, "http://www.imdb.de/title/");
 		id = Str.removeSuffix(id, "/");
