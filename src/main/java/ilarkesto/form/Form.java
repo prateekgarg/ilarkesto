@@ -71,6 +71,10 @@ public class Form {
 		return footerPlugins;
 	}
 
+	public boolean isFooterPluginsAvailable() {
+		return footerPlugins != null && !footerPlugins.isEmpty();
+	}
+
 	public List<FormField> getAutoTriggerFields() {
 		List<FormField> result = new ArrayList<FormField>();
 		for (FormField field : visibleFields) {

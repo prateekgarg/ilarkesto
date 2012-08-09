@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Data type for URL's.
  */
-public final class Url implements BeanStorage<String> {
+public final class Url implements BeanStorage<String>, Cloneable {
 
 	private String base;
 	private Map<String, String> parameters;
@@ -35,6 +35,11 @@ public final class Url implements BeanStorage<String> {
 
 	public Url(String base) {
 		this.base = base;
+	}
+
+	@Override
+	public Url clone() {
+		return new Url(base).putAll(parameters);
 	}
 
 	public boolean isInternal() {
@@ -57,6 +62,7 @@ public final class Url implements BeanStorage<String> {
 	@Override
 	public Url putAll(Map<String, ? extends String> parameters) {
 		if (immutable) throw new RuntimeException("Url is immutable");
+		if (parameters == null || parameters.isEmpty()) return this;
 		if (this.parameters == null) this.parameters = new HashMap<String, String>();
 		this.parameters.putAll(parameters);
 		return this;
