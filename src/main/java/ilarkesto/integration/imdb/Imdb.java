@@ -32,7 +32,9 @@ import com.meterware.httpunit.WebResponse;
 
 public class Imdb {
 
-	private static final String TITLE_URL_PREFIX = "http://akas.imdb.com/title/";
+	static final String AKAS_URL = "http://akas.imdb.com";
+	static final String TITLE_URL_PREFIX = AKAS_URL + "/title/";
+	static final String TRAILER_URL_PREFIX = AKAS_URL + "/video/screenplay/";
 
 	private static Log log = Log.get(Imdb.class);
 
@@ -80,7 +82,7 @@ public class Imdb {
 			title = parseTitle(akasPage);
 			year = parseYear(akasPage);
 			coverId = parseCoverId(akasPage);
-			trailerId = null;
+			trailerId = parseTrailerId(akasPage);
 			String tagline = parseInfoContent(akasPage, "Tagline");
 			String plot = parseInfoContent(akasPage, "Plot");
 			String awards = parseInfoContent(akasPage, "Awards");
@@ -93,6 +95,16 @@ public class Imdb {
 		String titleDe = parseTitle(dePage);
 
 		return new ImdbRecord(imdbId, title, titleDe, year, coverId, trailerId);
+	}
+
+	private static String parseTrailerId(WebResponse response) {
+		String text;
+		try {
+			text = response.getText();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		return Str.cutFromTo(text, "href=\"/video/screenplay/", "/");
 	}
 
 	private static String parseInfoContent(WebResponse response, String label) {
@@ -186,7 +198,7 @@ public class Imdb {
 	}
 
 	public static String getPageUrlDe(String imdbId) {
-		return "http://www.imdb.de/title/" + imdbId + "/";
+		return TITLE_URL_PREFIX + imdbId + "/";
 	}
 
 	public static void downloadCover(String coverId, File destinationFile) {
@@ -200,10 +212,16 @@ public class Imdb {
 		return "http://ia.media-imdb.com/images/M/" + coverId + "._V1._SX510_SY755_.jpg";
 	}
 
+	public static String getTrailerUrl(String trailerId) {
+		if (trailerId == null) return null;
+		return TRAILER_URL_PREFIX + trailerId + "/";
+	}
+
 	public static String extractId(String url) {
 		if (Str.isBlank(url)) return null;
 		String id = url;
 		id = Str.removePrefix(id, TITLE_URL_PREFIX);
+		id = Str.removePrefix(id, "http://www.imdb.com/title/");
 		id = Str.removePrefix(id, "http://www.imdb.de/title/");
 		id = Str.removeSuffix(id, "/");
 		return id;
