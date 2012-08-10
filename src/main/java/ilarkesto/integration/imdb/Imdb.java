@@ -32,9 +32,17 @@ import com.meterware.httpunit.WebResponse;
 
 public class Imdb {
 
-	static final String AKAS_URL = "http://akas.imdb.com";
-	static final String TITLE_URL_PREFIX = AKAS_URL + "/title/";
-	static final String TRAILER_URL_PREFIX = AKAS_URL + "/video/screenplay/";
+	static final String URL_AKAS = "http://akas.imdb.com";
+	static final String URL_COM = "http://www.imdb.com";
+	static final String URL_DE = "http://www.imdb.de";
+
+	static final String PATH_TITLE = "/title/";
+	static final String PATH_TRAILER = "/video/screenplay/";
+
+	static final String URL_AKAS_TITLE = URL_AKAS + PATH_TITLE;
+	static final String URL_AKAS_TRAILER = URL_AKAS + PATH_TRAILER;
+
+	static final String URL_COVERS = "http://ia.media-imdb.com/images/M/";
 
 	private static Log log = Log.get(Imdb.class);
 
@@ -42,8 +50,8 @@ public class Imdb {
 		log.info("Determining IMDB-ID by title:", title);
 		WebResponse response = HttpUnit.loadPage(getTitleSearchUrl(title));
 		String url = response.getHeaderField("LOCATION");
-		if (!Str.isBlank(url) && url.startsWith(TITLE_URL_PREFIX)) {
-			url = Str.removePrefix(url, TITLE_URL_PREFIX);
+		if (!Str.isBlank(url) && url.startsWith(URL_AKAS_TITLE)) {
+			url = Str.removePrefix(url, URL_AKAS_TITLE);
 			if (url.contains("/")) url = Str.cutTo(url, "/");
 			return url;
 		}
@@ -58,9 +66,9 @@ public class Imdb {
 			for (WebLink link : links) {
 				String linkUrl = link.getURLString();
 				if (Str.isBlank(linkUrl)) continue;
-				linkUrl = Str.removePrefix(linkUrl, "http://akas.imdb.com");
-				if (linkUrl.startsWith("/title/")) {
-					String id = Str.removePrefix(linkUrl, "/title/");
+				linkUrl = Str.removePrefix(linkUrl, URL_AKAS);
+				if (linkUrl.startsWith(PATH_TITLE)) {
+					String id = Str.removePrefix(linkUrl, PATH_TITLE);
 					return Str.removeSuffix(id, "/");
 				}
 			}
@@ -104,7 +112,7 @@ public class Imdb {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		return Str.cutFromTo(text, "href=\"/video/screenplay/", "/");
+		return Str.cutFromTo(text, "href=\"" + PATH_TRAILER + "", "/");
 	}
 
 	private static String parseInfoContent(WebResponse response, String label) {
@@ -182,23 +190,23 @@ public class Imdb {
 		if (img == null) return null;
 		String url = img.getAttribute("src");
 		if (url == null) return null;
-		if (!url.startsWith("http://ia.media-imdb.com/images/M/")) return null;
+		if (!url.startsWith(URL_COVERS)) return null;
 		if (!url.contains("._")) return null;
-		String id = Str.removePrefix(url, "http://ia.media-imdb.com/images/M/");
+		String id = Str.removePrefix(url, URL_COVERS);
 		id = id.substring(0, id.indexOf("._"));
 		return id;
 	}
 
 	public static String getTitleSearchUrl(String title) {
-		return "http://akas.imdb.com/find?s=tt&q=" + Str.encodeUrlParameter(title);
+		return URL_AKAS + "/find?s=tt&q=" + Str.encodeUrlParameter(title);
 	}
 
 	public static String getPageUrl(String imdbId) {
-		return TITLE_URL_PREFIX + imdbId + "/";
+		return URL_AKAS_TITLE + imdbId + "/";
 	}
 
 	public static String getPageUrlDe(String imdbId) {
-		return TITLE_URL_PREFIX + imdbId + "/";
+		return URL_AKAS_TITLE + imdbId + "/";
 	}
 
 	public static void downloadCover(String coverId, File destinationFile) {
@@ -209,22 +217,22 @@ public class Imdb {
 
 	public static String getCoverUrl(String coverId) {
 		if (coverId == null) return null;
-		return "http://ia.media-imdb.com/images/M/" + coverId + "._V1._SX510_SY755_.jpg";
+		return URL_COVERS + coverId + "._V1._SX510_SY755_.jpg";
 	}
 
 	public static String getTrailerUrl(String trailerId) {
 		if (trailerId == null) return null;
-		return TRAILER_URL_PREFIX + trailerId + "/";
+		return URL_AKAS_TRAILER + trailerId + "/";
 	}
 
 	public static String extractId(String url) {
 		if (Str.isBlank(url)) return null;
 		String id = url;
-		id = Str.removePrefix(id, "http://akas.imdb.com/title/");
-		id = Str.removePrefix(id, "http://www.imdb.com/title/");
-		id = Str.removePrefix(id, "http://www.imdb.de/title/");
+		id = Str.removePrefix(id, URL_AKAS);
+		id = Str.removePrefix(id, URL_COM);
+		id = Str.removePrefix(id, URL_DE);
+		id = Str.removePrefix(id, PATH_TITLE);
 		id = Str.removeSuffix(id, "/");
 		return id;
 	}
-
 }
