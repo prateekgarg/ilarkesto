@@ -1037,7 +1037,7 @@ public class HtmlRenderer {
 		}
 
 		public Tag setTitle(String value) {
-			return set("title", value);
+			return set("title", Str.toHtml(value));
 		}
 
 		public Tag setHref(String value) {
