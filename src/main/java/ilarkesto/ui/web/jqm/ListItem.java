@@ -15,20 +15,30 @@
 package ilarkesto.ui.web.jqm;
 
 import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlRenderer.Tag;
 
 public class ListItem extends AHtmlContainerElement {
 
 	private String href;
+	private String dataRel;
 
 	public ListItem setHref(String href) {
 		this.href = href;
 		return this;
 	}
 
+	public ListItem setDataRel(String dataRel) {
+		this.dataRel = dataRel;
+		return this;
+	}
+
 	@Override
 	protected void renderHeader(HtmlRenderer html) {
 		html.startLI();
-		if (href != null) html.startA(href);
+		if (href != null) {
+			Tag a = html.startA(href);
+			if (dataRel != null) a.setDataRel(dataRel);
+		}
 	}
 
 	@Override

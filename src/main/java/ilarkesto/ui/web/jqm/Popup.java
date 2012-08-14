@@ -14,50 +14,22 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.base.Url;
 import ilarkesto.ui.web.HtmlRenderer;
 import ilarkesto.ui.web.HtmlRenderer.Tag;
 
-import java.util.UUID;
+public class Popup extends Content {
 
-public class Content extends AHtmlContainerElement {
+	private String id;
 
-	private Integer maxWidth;
-
-	public Content setMaxWidth(Integer maxWidth) {
-		this.maxWidth = maxWidth;
-		return this;
-	}
-
-	public Panel addPanel() {
-		return addChild(new Panel());
-	}
-
-	public Form addForm(Url action) {
-		return addForm(action.toString());
-	}
-
-	public Form addForm(String action) {
-		return addChild(new Form("jqmform_" + UUID.randomUUID().toString(), action));
-	}
-
-	public Form addForm(String id, String action) {
-		return addChild(new Form(id, action));
-	}
-
-	public Listview addList() {
-		return addChild(new Listview());
-	}
-
-	public Popup addPopup(String id) {
-		return addChild(new Popup(id));
+	public Popup(String id) {
+		this.id = id;
 	}
 
 	@Override
 	protected void renderHeader(HtmlRenderer html) {
 		Tag div = html.startDIV();
-		div.setDataRole("content");
-		if (maxWidth != null) div.setStyle("max-width: " + maxWidth + "px", "margin: 0 auto");
+		div.setId(id);
+		div.setClass("ui-content");
+		div.setDataRole("popup");
 	}
-
 }

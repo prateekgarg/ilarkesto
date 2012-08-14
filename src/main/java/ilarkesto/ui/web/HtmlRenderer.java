@@ -1117,6 +1117,14 @@ public class HtmlRenderer {
 			return set("data-role", value);
 		}
 
+		public Tag setDataRel(String value) {
+			return set("data-rel", value);
+		}
+
+		public Tag setDataRelPopup() {
+			return setDataRel("popup");
+		}
+
 		public Tag setDataIcon(String value) {
 			return set("data-icon", value);
 		}
