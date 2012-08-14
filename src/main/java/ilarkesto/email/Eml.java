@@ -30,11 +30,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -103,6 +106,7 @@ public class Eml {
 	public static final String HEADER_MESSAGE_CONTENT_TYPE = "Content-Type";
 	public static final String HEADER_REPLY_TO = "Reply-To";
 	public static final String HEADER_IN_REPLY_TO = "In-Reply-To";
+	public static final String HEADER_LIST_UNSUBSCRIBE = "List-Unsubscribe";
 	public static final String HEADER_X_MAILER = "X-Mailer";
 	public static final String HEADER_X_PRIORITY = "X-Priority";
 	public static final String HEADER_X_CONFIRM_READING_TO = "X-Confirm-Reading-To";
@@ -368,6 +372,22 @@ public class Eml {
 
 	public static String getFrom(Message msg) {
 		return getHeaderFieldValue(msg, HEADER_FROM);
+	}
+
+	public static String getHeaderListUnsubscribe(Message msg) {
+		return getHeaderFieldValue(msg, HEADER_LIST_UNSUBSCRIBE);
+	}
+
+	public static List<String> getHeaderListUnsubscribeParsed(Message msg) {
+		String s = getHeaderListUnsubscribe(msg);
+		if (Str.isBlank(s)) return Collections.emptyList();
+		String[] hrefs = Str.tokenize(s, ",");
+		List<String> ret = new ArrayList<String>(hrefs.length);
+		for (String href : hrefs) {
+			href = href.trim();
+			if (href.startsWith("<") && href.endsWith(">")) href = href.substring(1, href.length() - 2);
+		}
+		return ret;
 	}
 
 	public static String getFromFormated(Message msg) {
