@@ -639,7 +639,7 @@ public class Eml {
 			throw new RuntimeException(ex);
 		}
 		if (header == null) return null;
-		return header[0];
+		return Str.decodeQuotedPrintable(header[0]);
 	}
 
 	public static void setHeaderFieldValue(Message msg, String fieldName, String value) {
