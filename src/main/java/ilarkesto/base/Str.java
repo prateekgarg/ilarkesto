@@ -478,8 +478,14 @@ public class Str extends ilarkesto.core.base.Str {
 					continue;
 				}
 				char afterNext = s.charAt(i + 2);
-				int ch = Integer.valueOf(String.valueOf(next) + afterNext, 16);
-				sb.append((char) ch);
+				int chi = Integer.valueOf(String.valueOf(next) + afterNext, 16);
+				char ch = (char) chi;
+				if (!Character.isDefined(chi) || Character.isHighSurrogate(ch) || Character.isISOControl(chi)
+						|| Character.isSupplementaryCodePoint(chi)) {
+					sb.append(' ');
+				} else {
+					sb.append(chi);
+				}
 				i += 2;
 			} else if (c == '_') {
 				sb.append(' ');
