@@ -186,13 +186,18 @@ public abstract class AAction extends ATask {
 	// --- inputAction ---
 
 	protected final String showInputDialog() {
-		return showInputDialog(getStringKeyPrefix(), null);
+		return showInputDialog(getStringKeyPrefix(), null, null);
 	}
 
-	protected final String showInputDialog(String stringKeyPrefix, Validator validator) {
+	protected final String showInputDialog(String stringKeyPrefix, String initialValue) {
+		return showInputDialog(getStringKeyPrefix(), initialValue, null);
+	}
+
+	protected final String showInputDialog(String stringKeyPrefix, String initialValue, Validator validator) {
 		InputAction action = beanProvider.autowire(new InputAction());
 		action.setValidator(validator);
 		action.setStringKeyPrefix(stringKeyPrefix);
+		action.setInitialValue(initialValue);
 		actionPerformer.performSubAction(action, this);
 		return action.getInputString();
 	}
