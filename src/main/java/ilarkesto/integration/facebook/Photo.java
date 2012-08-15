@@ -36,4 +36,12 @@ public class Photo extends AIdentity {
 		return json.getString("source");
 	}
 
+	public final String getDescription() {
+		return json.getString("description");
+	}
+
+	public final String getStory() {
+		return json.getString("story");
+	}
+
 }
