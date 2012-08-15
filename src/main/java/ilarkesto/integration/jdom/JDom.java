@@ -101,7 +101,7 @@ public abstract class JDom {
 
 	public static Document createDocument(File file) {
 		try {
-			return createDocument(file.toURI().toURL().toString());
+			return createDocumentFromUrl(file.toURI().toURL().toString());
 		} catch (MalformedURLException ex) {
 			throw new RuntimeException(ex);
 		}
