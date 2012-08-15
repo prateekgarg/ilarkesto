@@ -6,7 +6,7 @@ import ilarkesto.base.time.DateAndTime;
 import java.text.ParseException;
 import java.util.TimeZone;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 public class TwitterStatus implements Comparable<TwitterStatus> {
 

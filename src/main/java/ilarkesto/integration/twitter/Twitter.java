@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.Response;
 import org.scribe.oauth.OAuthService;
@@ -57,7 +57,7 @@ public class Twitter {
 
 		List<TwitterStatus> ret = new ArrayList<TwitterStatus>();
 		Element root = doc.getRootElement();
-		for (Element eStatus : (List<Element>) root.getChildren("status")) {
+		for (Element eStatus : root.getChildren("status")) {
 			ret.add(new TwitterStatus(oauthAccessToken, eStatus));
 		}
 
@@ -76,7 +76,7 @@ public class Twitter {
 
 		List<TwitterStatus> ret = new ArrayList<TwitterStatus>();
 		Element root = doc.getRootElement();
-		for (Element eStatus : (List<Element>) root.getChildren("status")) {
+		for (Element eStatus : root.getChildren("status")) {
 			ret.add(new TwitterStatus(oauthAccessToken, eStatus));
 		}
 
