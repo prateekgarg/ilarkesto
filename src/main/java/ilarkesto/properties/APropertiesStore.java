@@ -33,6 +33,10 @@ public abstract class APropertiesStore {
 
 	// --- String ---
 
+	protected boolean isLoadedPropertiesChanged() {
+		return false;
+	}
+
 	public final String get(String name, String defaultValue) {
 		String value = getProperties().getProperty(name);
 		if (value != null) return value;
@@ -47,17 +51,19 @@ public abstract class APropertiesStore {
 	public final void set(String name, String value) {
 		String oldValue = get(name);
 		if (Utl.equals(value, oldValue)) return;
+		Properties p = getProperties();
 		if (value == null) {
-			getProperties().remove(name);
+			p.remove(name);
 		} else {
-			getProperties().setProperty(name, value);
+			p.setProperty(name, value);
 		}
-		save(getProperties());
+		save(p);
 	}
 
 	public void remove(String name) {
-		getProperties().remove(name);
-		save(getProperties());
+		Properties p = getProperties();
+		p.remove(name);
+		save(p);
 	}
 
 	// --- List<String> ---
@@ -147,7 +153,7 @@ public abstract class APropertiesStore {
 	// --- ---
 
 	private Properties getProperties() {
-		if (properties == null) {
+		if (properties == null || isLoadedPropertiesChanged()) {
 			properties = load();
 		}
 		return properties;

@@ -15,17 +15,19 @@
 package ilarkesto.email;
 
 import ilarkesto.Servers;
+import ilarkesto.auth.LoginData;
+import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
 import ilarkesto.base.time.DateAndTime;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
+import ilarkesto.swing.LoginPanel;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -78,11 +80,17 @@ public class Eml {
 		Log.setDebugEnabled(true);
 		Sys.setFileEncoding(IO.UTF_8);
 
-		Message msg = createTextMessage(createDummySession(), "aaa" + Str.UE + "aaa", "aaa" + Str.UE + "aaa",
-			"wi@koczewski.de", "wi@koczewski.de");
-		OutputStream out = new FileOutputStream("g:/inbox/email-test.msg");
-		writeMessage(msg, out);
-		out.close();
+		Session session = createSmtpSession("mail.servisto.de", null, false,
+			LoginPanel.showDialog(null, "Servisto SMTP", new File("runtimedata/servisto-smtp.properties")));
+		sendSmtpMessage(session,
+			createTextMessage(session, "test 1", "test 1", "daemon@freakpla.net", "wi@koczewski.de"));
+
+		// Message msg = createTextMessage(createDummySession(), "aaa" + Str.UE + "aaa", "aaa" + Str.UE +
+		// "aaa",
+		// "wi@koczewski.de", "wi@koczewski.de");
+		// OutputStream out = new FileOutputStream("g:/inbox/email-test.msg");
+		// writeMessage(msg, out);
+		// out.close();
 
 		// Store store = getStore("imaps", "imap.googlemail.com", "witoslaw.koczewski@googlemail.com", "xxx");
 		// try {
@@ -555,6 +563,11 @@ public class Eml {
 		} catch (MessagingException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public static Session createSmtpSession(String host, Integer port, boolean tls, LoginDataProvider login) {
+		LoginData loginData = login.getLoginData();
+		return createSmtpSession(host, port, tls, loginData.getLogin(), loginData.getPassword());
 	}
 
 	public static Session createSmtpSession(String host, Integer port, boolean tls, String user, String password) {
