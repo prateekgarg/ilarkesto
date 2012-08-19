@@ -53,6 +53,7 @@ public abstract class AApplication {
 	private static Log log = Log.get(AApplication.class);
 
 	private ExclusiveFileLock exclusiveFileLock;
+	private boolean shuttingDown;
 	private boolean shutdown;
 
 	protected abstract void onStart();
@@ -147,6 +148,7 @@ public abstract class AApplication {
 
 		});
 		thread.setName(getApplicationName() + " shutdown");
+		shuttingDown = true;
 		thread.start();
 	}
 
@@ -310,6 +312,10 @@ public abstract class AApplication {
 
 	public final boolean isProductionMode() {
 		return !isDevelopmentMode();
+	}
+
+	public boolean isShuttingDown() {
+		return shuttingDown;
 	}
 
 	public boolean isShutdown() {

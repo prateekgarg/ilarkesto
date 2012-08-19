@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -21,7 +21,7 @@ import java.util.Set;
  */
 public final class Context {
 
-	private static final ThreadLocal<Context> THREAD_LOCAL = new ThreadLocal<Context>();
+	private static ThreadLocal<Context> threadLocal = new ThreadLocal<Context>();
 
 	private static Context rootContext;
 
@@ -68,16 +68,19 @@ public final class Context {
 		releaseCurrentThread();
 		if (parent != null) {
 			parent.bindCurrentThread();
+		} else {
+			// root context
+			threadLocal = null;
 		}
 	}
 
 	public final void bindCurrentThread() {
-		THREAD_LOCAL.set(this);
+		if (threadLocal != null) threadLocal.set(this);
 		Thread.currentThread().setName(toString());
 	}
 
 	private final void releaseCurrentThread() {
-		THREAD_LOCAL.set(null);
+		if (threadLocal != null) threadLocal.set(null);
 		Thread.currentThread().setName("<no context>");
 	}
 
@@ -99,7 +102,7 @@ public final class Context {
 	}
 
 	public static Context get() {
-		Context context = THREAD_LOCAL.get();
+		Context context = threadLocal.get();
 		if (context == null) context = getRootContext();
 		return context;
 	}
