@@ -86,13 +86,14 @@ class Transaction implements IdentifiableResolver<AEntity> {
 			if (loopcount > 0) {
 				HashSet<AEntity> tmp = new HashSet<AEntity>(entitiesToSave);
 				tmp.removeAll(integratedEntities);
-				log.debug("Entities changed after ensuring integrity:", tmp);
+				log.debug("  Entities changed after ensuring integrity:", tmp);
 			}
 
 			if (loopcount > 1000) throw new RuntimeException("Maximum loops reached while commiting:" + this);
 
 			entitiesToSave.removeAll(entitiesToDelete);
 			for (AEntity entity : new HashSet<AEntity>(entitiesToSave)) {
+				log.debug("Ensuring integrity for", entity.getClass().getSimpleName(), entity.getId());
 				entity.ensureIntegrity();
 				integratedEntities.add(entity);
 			}
@@ -101,6 +102,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 			loopcount++;
 		}
 
+		log.debug("Persisting entities:", entitiesToSave, entitiesToDelete);
 		entityStore.persist(entitiesToSave, entitiesToDelete);
 
 		log.debug("Transaction committed:", this);
