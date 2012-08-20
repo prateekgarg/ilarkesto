@@ -3,7 +3,6 @@
 SRC=`pwd`
 
 # checking if in project dir
-############################
 if [ ! -f "src/main/java/ilarkesto/Servers.java" ]
 then
     echo "$0: build must be started from the ilarkesto project dir"
@@ -12,19 +11,14 @@ fi
 
 
 
-echo ""
-echo "###############"
-echo "# cleaning up #"
-echo "###############"
-rm -rf build
+echo "cleaning up"
+rm -rf build/ilarkesto
+rm -f build/ilarkesto.tbz
 if [ $? != 0 ]; then exit 1; fi
 
 
 
-echo ""
-echo "##############################"
-echo "# building main bash-scripts #"
-echo "##############################"
+echo "building main bash-scripts"
 DEST_BIN=$SRC/build/ilarkesto/bin
 mkdir -p $DEST_BIN
 cd src/main/bash
@@ -32,7 +26,7 @@ for file in $( find . -name '*.bsh' )
 do
 	file=${file#./}
 	filename=${file%.bsh}
-	echo "  ${filename}"
+	echo " > ${filename}"
 	destfile=$DEST_BIN/$filename
 	cp $file $destfile
 	if [ $? != 0 ]; then exit 1; fi
@@ -44,10 +38,7 @@ if [ $? != 0 ]; then exit 1; fi
 
 
 
-echo ""
-echo "####################################"
-echo "# building additional bash-Scripts #"
-echo "####################################"
+echo "building additional bash-Scripts"
 DEST_TOOLS=$SRC/build/ilarkesto/tools
 mkdir -p $DEST_TOOLS
 cd $SRC/src/tools/bash
@@ -55,7 +46,7 @@ for file in $( find . -name '*.bsh' )
 do
 	file=${file#./}
 	filename=${file%.bsh}
-	echo "  ${filename}"
+	echo " > ${filename}"
 	destfile=$DEST_TOOLS/$filename
 	cp $file $destfile
 	if [ $? != 0 ]; then exit 1; fi
@@ -67,10 +58,7 @@ if [ $? != 0 ]; then exit 1; fi
 
 
 
-echo ""
-echo "############################"
-echo "# building bashrc-includes #"
-echo "############################"
+echo "building bashrc-includes"
 
 DEST_BASHRC=$SRC/build/ilarkesto/bashrc
 
@@ -87,10 +75,7 @@ if [ $? != 0 ]; then exit 1; fi
 
 
 
-echo ""
-echo "###################"
-echo "# building images #"
-echo "###################"
+echo "building images"
 
 mkdir -p build/ilarkesto/img
 
@@ -99,40 +84,10 @@ if [ $? != 0 ]; then exit 1; fi
 
 
 
-echo ""
-echo "############################"
-echo "# downloading dependencies #"
-echo "############################"
+echo "building tarball"
 
-cd $SRC
-./update-libs.bsh
-
-
-
-echo ""
-echo "################"
-echo "# building jar #"
-echo "################"
-
-ant package
-cp build/ilarkesto.jar build/ilarkesto/
-
-
-
-echo ""
-echo "####################"
-echo "# building tarball #"
-echo "####################"
-
-cd build
-tar -cjz --owner=root --group=root -f ilarkesto.tbz ilarkesto
+cd $SRC/build
+tar -cj --owner=root --group=root -f ilarkesto.tbz ilarkesto
 if [ $? != 0 ]; then exit 1; fi
 echo ""
 echo "-> build/ilarkesto.tbz"
-
-
-
-echo ""
-echo "#######"
-echo "# :-D #"
-echo "#######"

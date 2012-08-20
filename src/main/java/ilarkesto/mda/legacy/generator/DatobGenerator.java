@@ -559,8 +559,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			// --- setXxxAsCommaSeperatedString
 			ln();
 			ln("    public final void set" + pNameUpper + "AsCommaSeparatedString(String " + p.getName() + ") {");
-			ln("        " + getFieldName(p) + " = new " + p.getCollectionImpl() + "(Str.parseCommaSeparatedString("
-					+ p.getName() + "));");
+			ln("        set" + pNameUpper + "(Str.parseCommaSeparatedString(" + p.getName() + "));");
 			ln("    }");
 		}
 

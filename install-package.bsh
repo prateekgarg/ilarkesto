@@ -1,6 +1,1 @@
-tar -xvzf .build/ilarkesto.tar.gz -C /opt
-
-cp -v .build/ilarkesto.tar.gz /var/www/servisto.de/projects/ilarkesto/
-cp -r .build/javadoc /var/www/servisto.de/projects/ilarkesto/
-cp -r src/main/homepage/* /var/www/servisto.de/projects/ilarkesto/
-
+tar -xvjf build/ilarkesto.tbz -C /opt

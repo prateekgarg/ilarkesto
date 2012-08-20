@@ -8,7 +8,7 @@
 	</target>
 	
 	<target name="update-libs">
-        <exec executable="./update-libs.bsh" />
+        <exec executable="./update-libs.bsh" failonerror="true"/>
 	</target>
 	
 	<target name="compile">
@@ -16,7 +16,7 @@
 		<copy todir="build/classes" preservelastmodified="true">
 			<fileset dir="src/main/java"/>
 		</copy>
-		<javac srcdir="build/classes" destdir="build/classes" encoding="UTF-8" nowarn="true" debug="true" debuglevel="lines,vars,source" >
+		<javac srcdir="build/classes" destdir="build/classes" encoding="UTF-8" nowarn="true" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
 			<classpath>
 				<fileset dir="lib" />
 			</classpath>
@@ -25,7 +25,7 @@
 
 	<target name="compile-test" depends="compile">
         <mkdir dir="build/test-classes" />
-        <javac srcdir="src/test/java" destdir="build/test-classes" encoding="UTF-8" nowarn="true" debug="true" debuglevel="lines,vars,source">
+        <javac srcdir="src/test/java" destdir="build/test-classes" encoding="UTF-8" nowarn="true" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
             <classpath>
                 <path location="build/classes" />
                 <fileset dir="lib" />
@@ -47,7 +47,8 @@
 
     <target name="package" depends="compile">
 		<jar destfile="build/ilarkesto.jar" basedir="build/classes"/>
-	</target>
+    	<exec executable="./build-package.bsh" failonerror="true" />
+    </target>
 	
 	<target name="javadoc">
 		<javadoc sourcepath="src/main/java" destdir="build/javadoc" encoding="UTF-8" failonerror="true">

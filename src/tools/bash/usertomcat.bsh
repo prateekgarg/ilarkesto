@@ -1,53 +1,67 @@
 #!/bin/bash
 
-if [ "$1" = "restart" ]; then
+COMMAND=$1
+NAME=`whoami`
+
+export CATALINA_PID=~/tomcat/catalina.pid
+
+if [ "$COMMAND" = "restart" ]; then
         $0 stop
         if [ $? != 0 ]; then exit 1; fi
         $0 start
         exit
 fi
 
-TMP_DIR=$HOME/war.tmp
-TOMCAT_DIR=$HOME/tomcat
-WEBAPP_DIR=$TOMCAT_DIR/webapps
+
+if [ "$COMMAND" = "restartifrequested" ]; then
+    RESTART_TRIGGER_FILE=~/tomcat/restart-request/trigger
+
+    if [ -e $RESTART_TRIGGER_FILE ]
+    then
+        echo "Tomcat restart request file found: $RESTART_TRIGGER_FILE"
+        cat $RESTART_TRIGGER_FILE"
+        echo "Restarting Tomcat"
+        rm $RESTART_TRIGGER_FILE
+        $0 restart
+        exit
+    else
+        echo "Tomcat restart request file does not exist: $RESTART_TRIGGER_FILE"
+    fi
+    exit
+fi
+
+
+cd ~
 
 FORCE_FLAG=""
-if [ "$1" = "stop" ]; then
-  MEM_OPTS="-Xmx64m"
-  FORCE_FLAG="-force"
-elif [ "$1" != "stop" ]; then
-  MEM_OPTS="-Xmx256m -XX:PermSize=64m -XX:MaxPermSize=96m"
+if [ "$COMMAND" = "stop" ]; then
+    ~/tomcat/bin/catalina.sh stop
+    if [ -e $CATALINA_PID ]; then
+                echo "Graceful stop failed."
+        export FORCE_FLAG="-force"
+        ~/tomcat/bin/catalina.sh stop
+                if [ -e $CATALINA_PID ]; then
+                        PID=`cat $CATALINA_PID`
+                        echo "Killing PID: $PID"
+                        kill -9 $PID
+                        if [ $? != 0 ]; then
+                                echo "Killing by PID failed. Killing all java processes."
+                                pkill -9 java
+                        fi
+                else
+                        echo "Killing all java processes."
+                        pkill -9 java
+                fi
+        rm $CATALINA_PID
+        fi
+    exit 0
 fi
 
-if [ "$1" = "start" ]; then
-  rm -rf $TOMCAT_DIR/logs/*
 
-  # delete exploded webapps
-  mkdir $TMP_DIR
-  mv $WEBAPP_DIR/*.war $TMP_DIR
-  rm -rf $WEBAPP_DIR/*
-  mv $TMP_DIR/*.war $WEBAPP_DIR/
-  rm -rf $TMP_DIR
-
-  # run prepare script
-  $HOME/tomcat-prepare.bsh
+if [ "$COMMAND" = "start" ]; then
+    echo "Starting Tomcat as $NAME"
+    rm -f ~/tomcat/logs/catalina.out
+    rm -rf ~/tomcat/webapps/$NAME
 fi
 
-export JAVA_HOME=/usr/lib/jvm/java-6
-export JAVA_OPTS="-D_$USER $MEM_OPTS"
-export LANG=de_DE.UTF-8
-export TZ=Europe/Berlin
-#export CATALINA_PID=catalina.pid
-
-cd $HOME
-if [ "$1" != "stop" ]; then
-  $TOMCAT_DIR/bin/catalina.sh $*
-fi
-
-if [ "$1" = "stop" ]; then
-  sleep 4
-  pkill java &> /dev/null
-  sleep 1
-  pkill -9 java &> /dev/null
-fi
-
+~/tomcat/bin/catalina.sh $COMMAND
