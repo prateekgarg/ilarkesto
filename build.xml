@@ -45,7 +45,7 @@
         </testng>
     </target>
 
-    <target name="package" depends="test">
+    <target name="package" depends="compile-java">
 		<jar destfile="build/ilarkesto.jar" basedir="build/classes"/>
 	</target>
 	
@@ -64,7 +64,7 @@
 		</copy>
 	</target>
 
-	<target name="continousIntegrationBuild" depends="clean,update-libs,deploy" />
+	<target name="continousIntegrationBuild" depends="clean,update-libs,test,deploy" />
 	
 </project>
 
