@@ -11,7 +11,7 @@
         <exec executable="./update-libs.bsh" />
 	</target>
 	
-	<target name="compile-java">
+	<target name="compile">
 		<mkdir dir="build/classes"/>
 		<copy todir="build/classes" preservelastmodified="true">
 			<fileset dir="src/main/java"/>
@@ -23,7 +23,7 @@
 		</javac>
 	</target>
 
-	<target name="compile-test" depends="compile-java">
+	<target name="compile-test" depends="compile">
         <mkdir dir="build/test-classes" />
         <javac srcdir="src/test/java" destdir="build/test-classes" encoding="UTF-8" nowarn="true" debug="true" debuglevel="lines,vars,source">
             <classpath>
@@ -45,11 +45,11 @@
         </testng>
     </target>
 
-    <target name="package" depends="compile-java">
+    <target name="package" depends="compile">
 		<jar destfile="build/ilarkesto.jar" basedir="build/classes"/>
 	</target>
 	
-	<target name="javadoc" depends="compile-java">
+	<target name="javadoc">
 		<javadoc sourcepath="src/main/java" destdir="build/javadoc" encoding="UTF-8" failonerror="true">
 			<classpath>
 				<fileset dir="lib" />
