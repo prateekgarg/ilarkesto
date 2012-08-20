@@ -1,4 +1,4 @@
-package ilarkesto.integration.ffmpeg;
+package ilarkesto.integration.avconv;
 
 import ilarkesto.base.Proc;
 
@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class FfmpegCmd {
+public class AvconvCmd {
 
-	private Proc proc = new Proc("ffmpeg");
+	private Proc proc = new Proc("avconv");
 	private int returnCode;
 	private String output;
 
 	public void execute() {
-		if (proc == null) throw new IllegalStateException("ffmpeg already executed");
+		if (proc == null) throw new IllegalStateException("avconv already executed");
 		proc.start();
 		proc.waitFor();
 		returnCode = proc.getReturnCode();
@@ -34,7 +34,7 @@ public class FfmpegCmd {
 	}
 
 	public String getOutput() {
-		if (proc != null) throw new IllegalStateException("ffmpeg not executed yet");
+		if (proc != null) throw new IllegalStateException("avconv not executed yet");
 		return output;
 	}
 
@@ -43,15 +43,15 @@ public class FfmpegCmd {
 	}
 
 	public int getReturnCode() {
-		if (proc != null) throw new IllegalStateException("ffmpeg not executed yet");
+		if (proc != null) throw new IllegalStateException("avconv not executed yet");
 		return returnCode;
 	}
 
 	public static List<String> getStreamInfos(File file) {
-		FfmpegCmd ffmpeg = new FfmpegCmd();
-		ffmpeg.addInputFile(file);
-		ffmpeg.execute();
-		return ffmpeg.getStreamInfos();
+		AvconvCmd avconv = new AvconvCmd();
+		avconv.addInputFile(file);
+		avconv.execute();
+		return avconv.getStreamInfos();
 	}
 
 }
