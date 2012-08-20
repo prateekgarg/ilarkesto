@@ -1,11 +1,6 @@
 #!/bin/bash
 
-JARS=lib/scribe-1.1.2.jar:lib/xstream-1.4.1.jar:lib/mail-1.4.jar:lib/junit-3.8.1.jar:lib/jaudiotagger-1.0.8.jar:lib/velocity-1.6.4.jar:lib/commons-collections-3.2.1.jar:lib/commons-fileupload-1.2.1.jar:lib/activation-1.1.jar:lib/httpunit-1.6.2.jar:lib/tidy.jar:lib/jdom-1.0.jar:lib/mail-1.4.1.jar:lib/servlet-api-2.4.jar:lib/gwt-user.jar:lib/itext-2.0.2.jar:lib/gwt-dnd.jar:lib/log4j-1.2.14.jar:lib/google-collect-1.0-rc1.jar:lib/gdata-client-1.0.jar:lib/gdata-contacts-3.0.jar:lib/gdata-core-1.0.jar:lib/oacurl-1.0.0.jar:lib/openid4java-0.9.5.jar:lib/testng-5.8.jar
-
 SRC=`pwd`
-BUILD=$SRC/build
-
-
 
 # checking if in project dir
 ############################
@@ -130,10 +125,10 @@ echo "# building tarball #"
 echo "####################"
 
 cd build
-tar -cvz --owner=root --group=root -f ilarkesto.tar.gz ilarkesto
+tar -cjz --owner=root --group=root -f ilarkesto.tbz ilarkesto
 if [ $? != 0 ]; then exit 1; fi
 echo ""
-echo "-> build/ilarkesto.tar.gz"
+echo "-> build/ilarkesto.tbz"
 
 
 
