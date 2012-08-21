@@ -9,9 +9,9 @@ wget https://servisto.de/projects/ilarkesto/ilarkesto.tbz
 if [ $? != 0 ]; then exit 1; fi
 
 rm -rf /opt/ilarkesto
-if [ $? != 0 ]; then exit $?; fi
+if [ $? != 0 ]; then exit 1; fi
 
-tar -xvzf ilarkesto.tar.gz -C /opt
-if [ $? != 0 ]; then exit $?; fi
+tar -xvjf ilarkesto.tbz -C /opt
+if [ $? != 0 ]; then exit 1; fi
 
 rm -rf $TMP_DIR
