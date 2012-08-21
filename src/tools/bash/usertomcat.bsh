@@ -58,10 +58,7 @@ fi
 
 
 if [ "$COMMAND" = "start" ]; then
-    #NAME=`whoami`
-    #echo "Starting Tomcat as $NAME"
     rm -f ~/tomcat/logs/catalina.out
-    #rm -rf ~/tomcat/webapps/$NAME
 fi
 
 ~/tomcat/bin/catalina.sh $COMMAND
