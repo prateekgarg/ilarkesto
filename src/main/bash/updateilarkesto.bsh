@@ -2,6 +2,7 @@
 
 TMP_DIR=~/ilarkesto-install-tmp
 
+rm -rf $TMP_DIR
 mkdir $TMP_DIR
 cd $TMP_DIR
 
