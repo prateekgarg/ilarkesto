@@ -1,4 +1,13 @@
-PS1='\[\033]0;\w\007
-\033[31m\]\u@\h \[\033[33m\w
-\[\033[32m$\033[0m\] '
-export PS1
+# prompt
+PS_RESET="\[\033[m\]"
+PS_GRAY="\[\e[30;1m\]"
+PS_RET_VALUE="\`if [ \$? = 0 ]; then echo '' ; else echo \[\e[1\;41m\]  \$?  \[\e[0m\]; fi\`"
+PS_USER="\[\033[0;31m\]\u\[\033[m\]"
+PS_HOST="\[\033[0;31m\]\h\[\033[m\]"
+PS_WORKDIR="\[\033[0;33m\]\w\[\033[m\]"
+PS_GIT="\`if [ -d .git ]; then echo git ; fi\`"
+PS_HIST="\[\033[0;32m\]!\!\[\033[m\]"
+
+export PS1="$PS_RET_VALUE
+  $PS_GRAY($PS_USER$PS_GRAY@$PS_HOST$PS_GRAY)-($PS_WORKDIR$PS_GRAY)
+  ($PS_HIST$PS_GRAY)->\[\033[m\] "

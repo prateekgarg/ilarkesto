@@ -1,2 +1,1 @@
-PATH=~/bin:/opt/ilarkesto/bin:$PATH
-export PATH
+export PATH=~/bin:/opt/ilarkesto/bin:$PATH
