@@ -1,7 +1,6 @@
 #!/bin/bash
 
 COMMAND=$1
-NAME=`whoami`
 
 export CATALINA_PID=~/tomcat/catalina.pid
 
@@ -59,9 +58,10 @@ fi
 
 
 if [ "$COMMAND" = "start" ]; then
-    echo "Starting Tomcat as $NAME"
+    #NAME=`whoami`
+    #echo "Starting Tomcat as $NAME"
     rm -f ~/tomcat/logs/catalina.out
-    rm -rf ~/tomcat/webapps/$NAME
+    #rm -rf ~/tomcat/webapps/$NAME
 fi
 
 ~/tomcat/bin/catalina.sh $COMMAND
