@@ -58,14 +58,15 @@
 		</javadoc>
 	</target>
 	
-	<target name="deploy" depends="package,javadoc">
+	<target name="r1-deploy">
 		<copy todir="/var/www/servisto.de/projects/ilarkesto" file="build/ilarkesto.jar" />
+        <copy todir="/var/www/servisto.de/projects/ilarkesto" file="build/ilarkesto.tbz" />
 		<copy todir="/var/www/servisto.de/projects/ilarkesto/javadoc" >
 				<fileset dir="build/javadoc" />
 		</copy>
 	</target>
 
-	<target name="continousIntegrationBuild" depends="clean,update-libs,test,deploy" />
+	<target name="continousIntegrationBuild" depends="clean,update-libs,test,package,javadoc,r1-deploy" />
 	
 </project>
 

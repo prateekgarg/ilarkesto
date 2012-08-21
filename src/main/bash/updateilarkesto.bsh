@@ -8,7 +8,10 @@ cd $TMP_DIR
 wget https://servisto.de/projects/ilarkesto/ilarkesto.tbz
 if [ $? != 0 ]; then exit 1; fi
 
-sudo rm -rf /opt/ilarkesto
-sudo tar -xvzf ilarkesto.tar.gz -C /opt
+rm -rf /opt/ilarkesto
+if [ $? != 0 ]; then exit $?; fi
+
+tar -xvzf ilarkesto.tar.gz -C /opt
+if [ $? != 0 ]; then exit $?; fi
 
 rm -rf $TMP_DIR
