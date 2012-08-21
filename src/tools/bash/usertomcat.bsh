@@ -17,7 +17,7 @@ if [ "$COMMAND" = "restartifrequested" ]; then
 
     if [ -e $RESTART_TRIGGER_FILE ]
     then
-        echo "Tomcat restart request file found: $RESTART_TRIGGER_FILE"
+        echo "`date` Tomcat restart request file found: $RESTART_TRIGGER_FILE"
         cat $RESTART_TRIGGER_FILE
         echo "Restarting Tomcat"
         rm $RESTART_TRIGGER_FILE
