@@ -18,7 +18,7 @@ if [ "$COMMAND" = "restartifrequested" ]; then
     if [ -e $RESTART_TRIGGER_FILE ]
     then
         echo "Tomcat restart request file found: $RESTART_TRIGGER_FILE"
-        cat $RESTART_TRIGGER_FILE"
+        cat $RESTART_TRIGGER_FILE
         echo "Restarting Tomcat"
         rm $RESTART_TRIGGER_FILE
         $0 restart
@@ -60,5 +60,6 @@ fi
 if [ "$COMMAND" = "start" ]; then
     rm -f ~/tomcat/logs/catalina.out
 fi
+
 
 ~/tomcat/bin/catalina.sh $COMMAND
