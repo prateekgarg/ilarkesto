@@ -44,12 +44,12 @@ if [ "$COMMAND" = "stop" ]; then
                         echo "Killing PID: $PID"
                         kill -9 $PID
                         if [ $? != 0 ]; then
-                                echo "Killing by PID failed. Killing all java processes."
-                                pkill -9 java
+                                echo "Killing by PID failed. Killing all Tomcat processes."
+                                /opt/ilarkesto/bin/killtomcat
                         fi
                 else
-                        echo "Killing all java processes."
-                        pkill -9 java
+                        echo "Killing all Tomcat processes."
+                        /opt/ilarkesto/bin/killtomcat
                 fi
         rm $CATALINA_PID
         fi

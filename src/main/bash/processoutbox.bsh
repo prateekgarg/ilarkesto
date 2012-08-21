@@ -1,6 +1,0 @@
-#!/bin/bash
-
-mkdir -p ~/outbox
-cd ~/outbox
-
-mv -v iriver/* /media/MK2004GAL/
