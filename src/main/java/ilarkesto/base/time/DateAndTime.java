@@ -188,6 +188,10 @@ public final class DateAndTime implements Comparable<DateAndTime> {
 		return compareTo(other) >= 0;
 	}
 
+	public final boolean isPast() {
+		return isBefore(now());
+	}
+
 	public boolean isFuture() {
 		return isAfter(now());
 	}

@@ -80,6 +80,14 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 		return now().getPeriodTo(this);
 	}
 
+	public final boolean isPast() {
+		return isBefore(now());
+	}
+
+	public final boolean isFuture() {
+		return isAfter(now());
+	}
+
 	public final boolean isBefore(DateAndTime other) {
 		return compareTo(other) < 0;
 	}
