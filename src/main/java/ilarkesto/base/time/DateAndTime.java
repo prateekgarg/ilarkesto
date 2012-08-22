@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
+// TODO extend core date and time
 public final class DateAndTime implements Comparable<DateAndTime> {
 
 	public static final transient SimpleDateFormat FORMAT_WEEKDAY_DAY_LONGMONTH_YEAR_HOUR_MINUTE = new SimpleDateFormat(

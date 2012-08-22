@@ -160,7 +160,6 @@ public abstract class AApplication {
 		long starttime = System.currentTimeMillis();
 		Object lock = entityStore == null ? this : entityStore;
 		synchronized (lock) {
-
 			IO.zip(backupFile, new File[] { dir }, new FileFilter() {
 
 				@Override
