@@ -132,8 +132,12 @@ public class MultiItemFormField<T> extends AFormField {
 	}
 
 	public MultiItemFormField<T> setValue(Collection<T> value) {
-		this.value = value == null ? null : new HashSet<T>(value);
 		removeButtons.clear();
+		if (value == null) {
+			this.value = null;
+			return this;
+		}
+		this.value = new HashSet<T>(value);
 		for (T item : value) {
 			RemoveButton button = (RemoveButton) new RemoveButton(item).setLabel("Entfernen").setIcon("delete");
 			removeButtons.put(item, button);

@@ -336,7 +336,8 @@ public class Eml {
 				}
 			}
 		} catch (MessagingException ex) {
-			throw new RuntimeException("Copying message " + toString(message) + " from " + source.getName() + " to "
+			String name = source == null ? "<no name>" : source.getName();
+			throw new RuntimeException("Copying message " + toString(message) + " from " + name + " to "
 					+ destination.getName() + " failed.", ex);
 		} finally {
 			if (sourceOpened) closeFolder(source, false);

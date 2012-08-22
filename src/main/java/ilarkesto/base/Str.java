@@ -164,7 +164,7 @@ public class Str extends ilarkesto.core.base.Str {
 		String charSet = charSet1;
 		for (int i = 0; i < length; i++) {
 			if (Utl.randomInt(0, 8) != 0) {
-				if (charSet == charSet1) {
+				if (charSet.equals(charSet1)) {
 					charSet = charSet2;
 				} else {
 					charSet = charSet1;
@@ -283,11 +283,11 @@ public class Str extends ilarkesto.core.base.Str {
 
 	public static boolean isReadable(char c) {
 		if (Character.isLetterOrDigit(c)) return true;
-		if (c == ' ' || c == '\n' || c == '!' || c == '"' || c == '�' || c == '$' || c == '%' || c == '&' || c == '/'
+		if (c == ' ' || c == '\n' || c == '!' || c == '"' || c == '§' || c == '$' || c == '%' || c == '&' || c == '/'
 				|| c == '(' || c == ')' || c == '=' || c == '?' || c == '{' || c == '}' || c == '[' || c == ']'
 				|| c == '\\' || c == '*' || c == '+' || c == '~' || c == '#' || c == '\'' || c == '-' || c == '_'
-				|| c == '.' || c == ':' || c == ',' || c == ';' || c == '�' || c == '<' || c == '>' || c == '@'
-				|| c == EUR || c == '^' || c == '�' || c == '�' || c == '�' || c == '|') return true;
+				|| c == '.' || c == ':' || c == ',' || c == ';' || c == '<' || c == '>' || c == '@' || c == EUR
+				|| c == '^' || c == '|' || c == 'µ' || c == '²' || c == '³') return true;
 		return false;
 	}
 
@@ -904,7 +904,7 @@ public class Str extends ilarkesto.core.base.Str {
 		// TODO convert encoding if not UTF-8
 
 		int idx = s.indexOf("<body");
-		if (idx < 0) s.indexOf("<BODY");
+		if (idx < 0) idx = s.indexOf("<BODY");
 		if (idx < 0) return s;
 
 		int startIdx = s.indexOf('>', idx);

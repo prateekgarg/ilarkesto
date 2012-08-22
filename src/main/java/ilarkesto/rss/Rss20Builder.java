@@ -58,6 +58,14 @@ public class Rss20Builder {
 		this.image = image;
 	}
 
+	public void setPubDate(DateAndTime pubDate) {
+		this.pubDate = pubDate;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public Item addItem() {
 		Item item = new Item();
 		items.add(item);

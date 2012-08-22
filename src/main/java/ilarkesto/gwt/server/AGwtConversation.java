@@ -43,6 +43,7 @@ public abstract class AGwtConversation implements Comparable<AGwtConversation> {
 	 * Data that will be transferred to the client at the next request.
 	 */
 	private ADataTransferObject nextData;
+	private Object nextDataLock = new Object();
 	private Map<AEntity, DateAndTime> remoteEntityModificationTimes = new HashMap<AEntity, DateAndTime>();
 
 	private AWebSession session;
@@ -128,7 +129,7 @@ public abstract class AGwtConversation implements Comparable<AGwtConversation> {
 
 	public final ADataTransferObject popNextData() {
 		if (nextData == null) return null;
-		synchronized (nextData) {
+		synchronized (nextDataLock) {
 			ADataTransferObject ret = nextData;
 			nextData = createDataTransferObject();
 			return ret;

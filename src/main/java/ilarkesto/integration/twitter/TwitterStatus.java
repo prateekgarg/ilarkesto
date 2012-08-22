@@ -72,6 +72,11 @@ public class TwitterStatus implements Comparable<TwitterStatus> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		return this == obj;
+	}
+
+	@Override
 	public int compareTo(TwitterStatus o) {
 		return createdAt.compareTo(o.createdAt);
 	}

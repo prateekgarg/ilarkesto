@@ -40,7 +40,7 @@ public abstract class APropertiesStore {
 	public final String get(String name, String defaultValue) {
 		String value = getProperties().getProperty(name);
 		if (value != null) return value;
-		if (defaults != null) return defaults.getProperty(value, defaultValue);
+		if (defaults != null) return defaults.getProperty(name, defaultValue);
 		return defaultValue;
 	}
 

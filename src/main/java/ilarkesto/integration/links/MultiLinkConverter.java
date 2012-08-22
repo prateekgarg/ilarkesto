@@ -36,7 +36,7 @@ public class MultiLinkConverter implements LinkConverter {
 		if (href == null) return null;
 		for (LinkConverter converter : converters) {
 			String s = converter.convert(href, maxWidth);
-			if (s != href) return s;
+			if (!s.equals(href)) return s;
 		}
 		return href;
 	}

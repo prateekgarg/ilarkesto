@@ -50,6 +50,7 @@ public final class Option<T> {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null) return false;
 		return key.equals(((Option) obj).getKey());
 	}
 

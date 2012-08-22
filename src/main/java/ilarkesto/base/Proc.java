@@ -267,11 +267,9 @@ public final class Proc {
 
 	public String popOutput() {
 		if (output == null) throw new RuntimeException("Process not started yet.");
-		synchronized (output) {
-			String s = getOutput();
-			output = new StringBuffer();
-			return s;
-		}
+		String s = getOutput();
+		output = new StringBuffer();
+		return s;
 	}
 
 	// --- static convinience methods ---

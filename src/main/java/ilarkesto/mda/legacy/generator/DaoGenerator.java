@@ -250,6 +250,7 @@ public class DaoGenerator extends ABeanGenerator<EntityModel> {
 	protected final String getUserClassName() {
 		EntityModel userModel = bean.getUserModel();
 		if (userModel == null && bean.getName().equals("User")) userModel = bean;
+		if (userModel == null) return null;
 		return userModel.getPackageName() + "." + userModel.getName();
 	}
 
