@@ -59,6 +59,7 @@ fi
 
 if [ "$COMMAND" = "start" ]; then
     rm -f ~/tomcat/logs/catalina.out
+    find ~/tomcat/webapps/ -maxdepth 1 -type d -exec rm -rf {} \;
 fi
 
 
