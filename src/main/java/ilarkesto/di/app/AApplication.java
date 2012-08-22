@@ -192,7 +192,7 @@ public abstract class AApplication {
 
 		for (File file : files) {
 			if (!file.getName().startsWith(getApplicationName())) continue;
-			if (file.lastModified() >= deadline) continue;
+			if (file.lastModified() >= deadline && !file.getName().endsWith(".zip~")) continue;
 			log.debug("    Deleting", file);
 			IO.delete(file);
 		}
