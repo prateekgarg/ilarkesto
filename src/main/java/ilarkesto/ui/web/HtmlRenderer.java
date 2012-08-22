@@ -319,7 +319,7 @@ public class HtmlRenderer {
 	}
 
 	public void INPUTreset(String value, String onclick) {
-		Tag tag = startTag(INPUT).set("type", "reset").set("value", value).setOnclick(onclick);
+		startTag(INPUT).set("type", "reset").set("value", value).setOnclick(onclick);
 		endShortTag();
 	}
 
@@ -780,8 +780,7 @@ public class HtmlRenderer {
 	private static final String TH = "th";
 
 	public Tag startTABLE() {
-		startTag(TABLE, true).setBorder(0).set("cellpadding", 0).set("cellspacing", 0);
-		return tag;
+		return startTag(TABLE, true).setBorder(0).set("cellpadding", 0).set("cellspacing", 0);
 	}
 
 	public Tag startTABLE(String clazz) {
@@ -789,9 +788,8 @@ public class HtmlRenderer {
 	}
 
 	public Tag startTABLE(String clazz, int border, int cellpadding, int cellspacing) {
-		startTag(TABLE, true).setClass(clazz).setBorder(border).set("cellpadding", cellpadding)
+		return startTag(TABLE, true).setClass(clazz).setBorder(border).set("cellpadding", cellpadding)
 				.set("cellspacing", cellspacing);
-		return tag;
 	}
 
 	public void endTABLE() {
@@ -893,7 +891,7 @@ public class HtmlRenderer {
 		out.print('<');
 		out.print(name);
 		depth++;
-		return tag;
+		return new Tag();
 	}
 
 	public void textEm(Object text) {
@@ -1140,6 +1138,7 @@ public class HtmlRenderer {
 		}
 
 		public Tag set(String name, String value) {
+			// TODO cache in map
 			if (value == null) return this;
 			out.print(" ");
 			out.print(name);

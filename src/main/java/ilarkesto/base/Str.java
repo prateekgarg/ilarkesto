@@ -338,7 +338,7 @@ public class Str extends ilarkesto.core.base.Str {
 					result.append("\" target=\"_blank\">");
 
 					String convertedUrl = linkConverter == null ? url : linkConverter.convert(url, maxWidth);
-					if (convertedUrl == url) {
+					if (url.equals(convertedUrl)) {
 						String label = url;
 						if (url.startsWith("http://")) url = url.substring(7);
 						if (url.startsWith("https://")) url = url.substring(8);
