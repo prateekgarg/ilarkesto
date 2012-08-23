@@ -270,7 +270,9 @@ public abstract class AViewEditWidget extends AWidget {
 
 		@Override
 		public void onClick(ClickEvent event) {
-			if (isRightTarget(event) && isEditable()) switchToEditMode();
+			// if (isRightTarget(event) && isEditable()) switchToEditMode();
+			Log.DEBUG("---------> onClick", event.getNativeEvent().getEventTarget());
+			if (isEditable()) switchToEditMode();
 			event.stopPropagation();
 		}
 
@@ -279,6 +281,7 @@ public abstract class AViewEditWidget extends AWidget {
 			// showIfIe(eventTarget);
 			// if (!GWT.isProdMode()) return eventTarget.startsWith("<div ");
 			// if (Gwt.isMsie()) return eventTarget.equals("[object]");
+
 			return eventTarget.startsWith("[object HTML") || eventTarget.startsWith("<div ")
 					|| eventTarget.equals("[object]");
 		}
