@@ -338,6 +338,14 @@ public class CssRenderer {
 			return textDecoration("underline");
 		}
 
+		public Style outlineNone() {
+			return outline("none");
+		}
+
+		public Style outline(String outline) {
+			return attr("outline", outline);
+		}
+
 		public Style alignRight() {
 			return align("right");
 		}

@@ -14,6 +14,8 @@
  */
 package ilarkesto.core.base;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
@@ -30,6 +32,15 @@ public class Str {
 	public static final char sz = '\u00DF';
 
 	public static final char EUR = '\u0080';
+
+	public static String encodeUrl(String url, String charset) {
+		if (isBlank(url)) return null;
+		try {
+			return URLEncoder.encode(url, charset);
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
 	public static String encodeUrlParameter(String s) {
 		if (s == null) return "";
