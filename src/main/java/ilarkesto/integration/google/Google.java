@@ -230,6 +230,7 @@ public class Google {
 	}
 
 	public static String weatherAsXmlString(String language, String location) {
+		// TODO API changed!
 		return IO.downloadUrlToString(
 			"https://www.google.com/ig/api?hl=" + language + "&weather=" + Str.encodeUrlParameter(location),
 			IO.WINDOWS_1252);
