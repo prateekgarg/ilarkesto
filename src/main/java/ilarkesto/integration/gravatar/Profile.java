@@ -81,6 +81,49 @@ public class Profile extends AJsonWrapper {
 		return createFromArray("urls", Url.class);
 	}
 
+	public List<Account> getAccounts() {
+		return createFromArray("accounts", Account.class);
+	}
+
+	public static class Account extends AJsonWrapper {
+
+		public static final String SHORTNAME_TWITTER = "twitter";
+		public static final String SHORTNAME_LINKEDIN = "linkedin";
+		public static final String SHORTNAME_YAHOO = "yahoo";
+		public static final String SHORTNAME_GOOGLE = "google";
+		public static final String SHORTNAME_FRIENDFEED = "friendfeed";
+		public static final String SHORTNAME_FACEBOOK = "facebook";
+
+		public Account(JsonObject json) {
+			super(json);
+		}
+
+		public String getDomain() {
+			return json.getString("domain");
+		}
+
+		public String getDisplay() {
+			return json.getString("display");
+		}
+
+		public String getUrl() {
+			return json.getString("url");
+		}
+
+		public String getUserId() {
+			return json.getString("userid");
+		}
+
+		public String getUsername() {
+			return json.getString("username");
+		}
+
+		public String getShortname() {
+			return json.getString("shortname");
+		}
+
+	}
+
 	public static class Url extends AJsonWrapper {
 
 		public Url(JsonObject json) {

@@ -213,12 +213,16 @@ public class OpenId {
 
 	public static String getFullname(VerificationResult verification) {
 		String value = getFetchResponseAttribute(verification, "fullname");
-		return Str.isBlank(value) ? null : value;
+		if (Str.isBlank(value)) return null;
+		if (value.equals(getOpenId(verification))) return null;
+		return value;
 	}
 
 	public static String getNickname(VerificationResult verification) {
 		String value = getFetchResponseAttribute(verification, "nickname");
-		return Str.isBlank(value) ? null : value;
+		if (Str.isBlank(value)) return null;
+		if (value.equals(getOpenId(verification))) return null;
+		return value;
 	}
 
 	public static String getOpenId(VerificationResult verification) {
