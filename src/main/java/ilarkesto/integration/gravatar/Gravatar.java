@@ -15,6 +15,7 @@
 package ilarkesto.integration.gravatar;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonObject;
 
@@ -24,6 +25,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class Gravatar {
 
+	private static Log log = Log.get(Gravatar.class);
+
 	public static void main(String[] args) {
 		System.out.println(createAvatarUrl("wi@koczewski.de"));
 		System.out.println(loadProfile("wi@koczewski.de"));
@@ -32,6 +35,7 @@ public class Gravatar {
 	public static final Profile loadProfile(String email) {
 		String url = createJsonProfileUrl(email);
 		if (Str.isBlank(url)) return null;
+		log.debug("Loading Gravatar profile for", email, "->", email);
 		String json = IO.downloadUrlToString(url);
 		if (Str.isBlank(json)) return null;
 		return new Profile(new JsonObject(json));
