@@ -77,14 +77,15 @@ if [ $? != 0 ]; then exit 1; fi
 
 echo "building images"
 
-mkdir -p build/ilarkesto/img
+mkdir -p $SRC/build/ilarkesto/img
 
-cp -r $SRC/img/* build/ilarkesto/img
+cp -r $SRC/img/* $SRC/build/ilarkesto/img
 if [ $? != 0 ]; then exit 1; fi
 
 
-cp $SRC/build/ilarkesto.jar $SRC/build/ilarkesto
-chmod 444 $SRC/build/ilarkesto.jar
+mkdir -p $SRC/build/ilarkesto/jar
+cp $SRC/build/ilarkesto.jar $SRC/build/ilarkesto/jar
+chmod 444 $SRC/build/ilarkesto/jar/ilarkesto.jar
 
 
 echo "building tarball"
