@@ -83,7 +83,8 @@ cp -r $SRC/img/* build/ilarkesto/img
 if [ $? != 0 ]; then exit 1; fi
 
 
-cp build/ilarkesto.jar build/ilarkesto
+cp $SRC/build/ilarkesto.jar $SRC/build/ilarkesto
+chmod 444 $SRC/build/ilarkesto.jar
 
 
 echo "building tarball"
