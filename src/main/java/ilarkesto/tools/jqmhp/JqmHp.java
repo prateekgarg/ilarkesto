@@ -19,6 +19,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.integration.jquery.JqueryDownloader;
 import ilarkesto.integration.jquery.JqueryMobileDownloader;
 import ilarkesto.io.IO;
+import ilarkesto.json.JsonObject;
 import ilarkesto.runtime.AutoProxy;
 import ilarkesto.ui.web.jqm.Content;
 import ilarkesto.ui.web.jqm.JqmHtmlPage;
@@ -38,7 +39,7 @@ public class JqmHp {
 	private static Log log = Log.get(JqmHp.class);
 
 	private File hpDir;
-	private String jqmVersion;
+	private Config config;
 
 	public JqmHp(File hpDir) {
 		this.hpDir = hpDir;
@@ -51,7 +52,7 @@ public class JqmHp {
 	private static int executeCommandLine(String... args) {
 		if (args.length < 1) return fail("Argument required: <homepage-path>");
 
-		String hpPath = args[1];
+		String hpPath = args[0];
 
 		JqmHp jqmHp = new JqmHp(hpPath);
 		jqmHp.update();
@@ -60,8 +61,21 @@ public class JqmHp {
 	}
 
 	public void update() {
+		loadConfig();
 		updateLibs();
 		updateIndexHtml();
+	}
+
+	private void loadConfig() {
+		File configFile = getHpFile("config/jqmhp.json");
+		if (configFile.exists()) {
+			config = Config.load(configFile);
+			return;
+		}
+
+		log.info("Creating new config file:", configFile);
+		config = new Config(new JsonObject());
+		config.getJson().write(configFile, true);
 	}
 
 	private void updateIndexHtml() {
@@ -88,11 +102,12 @@ public class JqmHp {
 		listview.addItem("http://kunagi.org", "Kunagi");
 		listview.addItem("http://koczewski.de", "Witoslaw Koczewski");
 
-		htmlPage.setJqmVersion(jqmVersion);
+		htmlPage.setJqmVersion(config.getJqm().getVersion());
 		htmlPage.write(file, IO.UTF_8);
 	}
 
 	private void updateLibs() {
+		String jqmVersion = config.getJqm().getVersion();
 		if (jqmVersion == null) jqmVersion = JqueryMobileDownloader.getStableVersion();
 		JqueryMobileDownloader.installToDir(jqmVersion, getLibDir("jquery.mobile"));
 		JqueryDownloader.installToDir(JqueryMobileDownloader.getCompatibleJqueryVersion(jqmVersion),
@@ -105,10 +120,6 @@ public class JqmHp {
 
 	private File getHpFile(String path) {
 		return new File(hpDir.getPath() + "/" + path);
-	}
-
-	public void setJqmVersion(String jqmVersion) {
-		this.jqmVersion = jqmVersion;
 	}
 
 	private static int fail(String message) {

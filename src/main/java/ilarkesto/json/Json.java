@@ -68,8 +68,9 @@ public class Json {
 
 	static Object convertValue(Object value) {
 		if (value == null) return null;
-		if (value instanceof String) return value;
+		if (value instanceof JsonWrapper) return ((JsonWrapper) value).getJson();
 		if (value instanceof JsonObject) return value;
+		if (value instanceof String) return value;
 		if (value instanceof List) return value;
 		if (value instanceof Boolean) return value;
 		if (value instanceof Number) return value;
@@ -104,6 +105,11 @@ public class Json {
 			if (ch == '"') return i;
 		}
 		return -1;
+	}
+
+	static interface JsonWrapper {
+
+		JsonObject getJson();
 	}
 
 }

@@ -1,5 +1,11 @@
 package ilarkesto.json;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,6 +32,10 @@ public class JsonObject {
 			Object value = Json.convertValue(entry.getValue());
 			put(name, value);
 		}
+	}
+
+	public JsonObject(File file) {
+		this(load(file));
 	}
 
 	// --- inspecting ---
@@ -238,6 +248,41 @@ public class JsonObject {
 			}
 			idx = endIdx;
 			return number;
+		}
+	}
+
+	// --- IO ---
+
+	public void write(File file, boolean formated) {
+		File dir = file.getParentFile();
+		if (!dir.exists()) {
+			if (!dir.mkdirs()) throw new RuntimeException("Creating directory failed: " + dir.getAbsolutePath());
+		}
+		PrintWriter out;
+		try {
+			out = new PrintWriter(new FileWriter(file));
+		} catch (IOException ex) {
+			throw new RuntimeException("Writing file failed: " + file.getAbsolutePath(), ex);
+		}
+		if (formated) {
+			out.print(toFormatedString());
+		} else {
+			out.print(toString());
+		}
+		out.close();
+	}
+
+	private static String load(File file) {
+		try {
+			StringBuilder sb = new StringBuilder();
+			BufferedReader in = new BufferedReader(new FileReader(file));
+			String line = null;
+			while ((line = in.readLine()) != null) {
+				sb.append(line).append('\n');
+			}
+			return sb.toString();
+		} catch (IOException ex) {
+			throw new RuntimeException("Loading file failed: +" + file.getAbsolutePath(), ex);
 		}
 	}
 

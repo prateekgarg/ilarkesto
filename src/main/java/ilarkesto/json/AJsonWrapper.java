@@ -15,13 +15,14 @@
 package ilarkesto.json;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.json.Json.JsonWrapper;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AJsonWrapper {
+public abstract class AJsonWrapper implements JsonWrapper {
 
 	protected final JsonObject json;
 
@@ -93,6 +94,7 @@ public abstract class AJsonWrapper {
 		return wrapper;
 	}
 
+	@Override
 	public JsonObject getJson() {
 		return json;
 	}
