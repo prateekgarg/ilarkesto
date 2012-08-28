@@ -28,6 +28,12 @@ public class JqueryDownloader {
 		download("jquery-" + version + ".js", destinationDir);
 	}
 
+	public static boolean isInstalled(String version, File destinationDir) {
+		if (!new File(destinationDir.getPath() + "/jquery-" + version + ".min.js").exists()) return false;
+		if (!new File(destinationDir.getPath() + "/jquery-" + version + ".js").exists()) return false;
+		return true;
+	}
+
 	private static void download(String filename, File destinationDir) {
 		String url = "http://code.jquery.com/" + filename;
 		String file = destinationDir.getPath() + "/" + filename;

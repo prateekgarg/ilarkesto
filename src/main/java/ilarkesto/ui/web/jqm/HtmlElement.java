@@ -14,20 +14,15 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.io.IO;
 import ilarkesto.ui.web.HtmlRenderer;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 public class HtmlElement extends AElement {
 
-	private StringWriter out;
 	private HtmlRenderer renderer;
 
 	public HtmlElement() {
-		out = new StringWriter();
-		renderer = new HtmlRenderer(new PrintWriter(out), IO.UTF_8);
+		renderer = new HtmlRenderer();
+		// renderer.setIndentationDepth(indentationDepth);
 	}
 
 	public HtmlRenderer getRenderer() {
@@ -36,8 +31,7 @@ public class HtmlElement extends AElement {
 
 	@Override
 	public void render(HtmlRenderer html) {
-		this.renderer.flush();
-		html.html(out.toString());
+		html.html(getRenderer().toString());
 	}
 
 }

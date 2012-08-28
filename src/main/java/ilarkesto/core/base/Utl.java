@@ -128,6 +128,16 @@ public class Utl {
 		return ret;
 	}
 
+	/**
+	 * Check if the first given parameter equals at least one of the other parameters
+	 */
+	public static boolean equalsAny(Object o, Object... others) {
+		for (Object other : others) {
+			if (o.equals(other)) return true;
+		}
+		return false;
+	}
+
 	public static boolean equals(Object a, Object b) {
 		if (a == null && b == null) return true;
 		if (a == null || b == null) return false;

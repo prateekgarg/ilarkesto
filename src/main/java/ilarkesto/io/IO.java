@@ -1421,6 +1421,10 @@ public abstract class IO {
 		return out.toByteArray();
 	}
 
+	public static String readFile(File file) {
+		return readFile(file, Sys.getFileEncoding());
+	}
+
 	public static String readFile(File file, String encoding) {
 		try {
 			return readToString(new FileInputStream(file), encoding);

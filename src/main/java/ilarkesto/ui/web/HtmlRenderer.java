@@ -40,6 +40,7 @@ public class HtmlRenderer {
 	private FileWriter fileWriter; // optional
 
 	private String startingTag;
+	private int depth;
 
 	public HtmlRenderer() {
 		buffer = new StringWriter();
@@ -62,6 +63,10 @@ public class HtmlRenderer {
 
 	public HtmlRenderer(File file, String encoding) throws IOException {
 		this(new FileWriter(file), encoding);
+	}
+
+	public void setIndentationDepth(int depth) {
+		this.depth = depth;
 	}
 
 	public void flush() {
@@ -764,11 +769,11 @@ public class HtmlRenderer {
 	private static final String A = "a";
 
 	public Tag startA(String clazz, String href) {
-		return startTag(A).setClass(clazz).setHref(href);
+		return startTag(A, false).setClass(clazz).setHref(href);
 	}
 
 	public Tag startA(String href) {
-		return startTag(A).setHref(href);
+		return startTag(A, false).setHref(href);
 	}
 
 	public void endA() {
@@ -891,11 +896,10 @@ public class HtmlRenderer {
 		return startTag(name, true);
 	}
 
-	private int depth;
-
 	private void printPrefix() {
 		// increases html file size
-		// for (int i = 0; i < depth; i++) out.print(" ");
+		for (int i = 0; i < depth; i++)
+			out.print(" ");
 	}
 
 	public Tag startTag(String name, boolean nl) {
@@ -982,8 +986,10 @@ public class HtmlRenderer {
 		closeStartingTag();
 		depth--;
 
-		// nl();
-		// printPrefix();
+		if (Utl.equalsAny(name, "html", "body", "head", "ul", "div")) {
+			nl();
+			printPrefix();
+		}
 
 		out.print("</");
 		out.print(name);

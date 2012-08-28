@@ -28,7 +28,7 @@ public class JqueryMobileDownloader {
 	}
 
 	public static String getPreviewVersion() {
-		return "1.2.0-alpha";
+		return "1.2.0-alpha.1";
 	}
 
 	public static String getCompatibleJqueryVersion(String jqueryMobileVersion) {
@@ -37,6 +37,15 @@ public class JqueryMobileDownloader {
 
 	public static void installToDir(File destinationDir) {
 		installToDir(getStableVersion(), destinationDir);
+	}
+
+	public static boolean isInstalled(String version, File destinationDir) {
+		if (!new File(destinationDir.getPath() + "/jquery.mobile-" + version + ".min.js").exists()) return false;
+		if (!new File(destinationDir.getPath() + "/jquery.mobile-" + version + ".js").exists()) return false;
+		if (!new File(destinationDir.getPath() + "/jquery.mobile-" + version + ".min.css").exists()) return false;
+		if (!new File(destinationDir.getPath() + "/jquery.mobile-" + version + ".css").exists()) return false;
+		if (!new File(destinationDir.getPath() + "/images").exists()) return false;
+		return true;
 	}
 
 	public static void installToDir(String version, File destinationDir) {

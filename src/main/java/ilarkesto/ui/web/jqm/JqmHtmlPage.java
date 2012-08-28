@@ -51,7 +51,7 @@ public class JqmHtmlPage extends AContainerElement {
 		} else {
 			String jqVersion = JqueryMobileDownloader.getCompatibleJqueryVersion(jqmVersion);
 			html.LINKcss("lib/jquery.mobile/jquery.mobile-" + jqmVersion + ".min.css");
-			html.SCRIPTjavascript("lib/jquery//jquery-" + jqVersion + ".min.js", null);
+			html.SCRIPTjavascript("lib/jquery/jquery-" + jqVersion + ".min.js", null);
 			html.SCRIPTjavascript("lib/jquery.mobile/jquery.mobile-" + jqmVersion + ".min.js", null);
 		}
 
