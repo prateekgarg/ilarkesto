@@ -19,6 +19,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.integration.jquery.JqueryDownloader;
 import ilarkesto.integration.jquery.JqueryMobileDownloader;
 import ilarkesto.io.IO;
+import ilarkesto.runtime.AutoProxy;
 import ilarkesto.ui.web.jqm.Content;
 import ilarkesto.ui.web.jqm.JqmHtmlPage;
 import ilarkesto.ui.web.jqm.Listview;
@@ -29,9 +30,9 @@ import java.io.File;
 public class JqmHp {
 
 	public static void main(String[] args) {
-		Sys.setHttpProxy("83.246.65.146", 80);
-		JqmHp jqmHp = new JqmHp("test-output/jqmhp");
-		jqmHp.update();
+		if (Sys.isDevelopmentMode()) AutoProxy.update();
+		int ret = executeCommandLine(args);
+		System.exit(ret);
 	}
 
 	private static Log log = Log.get(JqmHp.class);
@@ -45,6 +46,17 @@ public class JqmHp {
 
 	public JqmHp(String hpDir) {
 		this(new File(hpDir));
+	}
+
+	private static int executeCommandLine(String... args) {
+		if (args.length < 1) return fail("Argument required: <homepage-path>");
+
+		String hpPath = args[1];
+
+		JqmHp jqmHp = new JqmHp(hpPath);
+		jqmHp.update();
+
+		return 0;
 	}
 
 	public void update() {
@@ -97,6 +109,11 @@ public class JqmHp {
 
 	public void setJqmVersion(String jqmVersion) {
 		this.jqmVersion = jqmVersion;
+	}
+
+	private static int fail(String message) {
+		System.err.println(message);
+		return 1;
 	}
 
 }
