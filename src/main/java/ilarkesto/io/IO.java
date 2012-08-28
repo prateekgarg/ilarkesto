@@ -92,6 +92,21 @@ public abstract class IO {
 	private static LinkedList<Properties> properties = new LinkedList<Properties>();
 	private static LinkedList<File> propertiesFiles = new LinkedList<File>();
 
+	public static File createTempDir(String prefix) {
+		File file = createTempFile(prefix, "");
+		delete(file);
+		createDirectory(file);
+		return file;
+	}
+
+	public static File createTempFile(String prefix, String suffix) {
+		try {
+			return File.createTempFile(prefix, suffix);
+		} catch (IOException ex) {
+			throw new RuntimeException("Creating temprary file failed.", ex);
+		}
+	}
+
 	public static long getSize(File file) {
 		if (file.isFile()) return file.length();
 		if (file.isDirectory()) {
@@ -363,17 +378,35 @@ public abstract class IO {
 	}
 
 	public static void move(File from, File to, boolean overwrite) {
+		if (from.getAbsolutePath().equals(to.getAbsolutePath())) return;
 		if (!from.exists())
 			throw new RuntimeException("Moving file " + from + " to " + to + " failed. Source file does not exist.");
-		if (to.exists()) {
+		if (!to.isDirectory() && to.exists()) {
 			if (!overwrite)
 				throw new RuntimeException("Moving file " + from + " to " + to + " failed. File already exists.");
-			delete(to);
 		}
 		createDirectory(to.getParentFile());
 		if (from.renameTo(to)) return;
+
+		if (from.isDirectory()) {
+			moveFiles(from.listFiles(), to, overwrite);
+			return;
+		}
 		copyFile(from, to);
 		delete(from);
+	}
+
+	private static void moveFiles(File[] files, File destination, boolean overwrite) {
+		if (files == null || files.length == 0) return;
+		if (destination.exists()) {
+			if (!destination.isDirectory())
+				throw new RuntimeException("Moving files to " + destination + " failed. Destination is not a directory");
+		} else {
+			createDirectory(destination);
+		}
+		for (File file : files) {
+			move(file, new File(destination.getPath() + "/" + file.getName()), overwrite);
+		}
 	}
 
 	public static boolean isHttpAvailable() {
@@ -887,6 +920,13 @@ public abstract class IO {
 		delete(new File(file));
 	}
 
+	public static void delete(File... files) {
+		if (files == null || files.length == 0) return;
+		for (File file : files) {
+			delete(file);
+		}
+	}
+
 	public static void delete(File f) {
 		if (!f.exists()) return;
 		if (f.isDirectory()) {
@@ -896,6 +936,12 @@ public abstract class IO {
 			}
 		}
 		if (!f.delete()) { throw new RuntimeException("Deleting file failed: " + f.getPath()); }
+	}
+
+	public static void deleteQuiet(File f) {
+		try {
+			IO.delete(f);
+		} catch (Throwable ex) {}
 	}
 
 	@Deprecated

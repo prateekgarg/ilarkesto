@@ -43,7 +43,7 @@ public class Form extends AHtmlContainerElement {
 		input.set("name", name);
 		input.setValue(label);
 		if (theme != null) input.set("data-theme", theme.getName());
-		html.endShortTag();
+		input.end();
 	}
 
 	public Textarea addTextarea(String id, String label) {

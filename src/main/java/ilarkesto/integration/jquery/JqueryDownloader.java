@@ -12,37 +12,26 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.ui.web.jqm;
+package ilarkesto.integration.jquery;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.core.logging.Log;
+import ilarkesto.io.IO;
 
-public class Page extends AHtmlContainerElement {
+import java.io.File;
 
-	private String[] style;
+public class JqueryDownloader {
 
-	public Page setStyle(String... style) {
-		this.style = style;
-		return this;
+	private static Log log = Log.get(JqueryDownloader.class);
+
+	public static void installToDir(String version, File destinationDir) {
+		download("jquery-" + version + ".min.js", destinationDir);
+		download("jquery-" + version + ".js", destinationDir);
 	}
 
-	public Header addHeader() {
-		return addChild(new Header());
+	private static void download(String filename, File destinationDir) {
+		String url = "http://code.jquery.com/" + filename;
+		String file = destinationDir.getPath() + "/" + filename;
+		log.info("Downloading", url, "to", file);
+		IO.downloadUrlToFile(url, file);
 	}
-
-	public Content addContent() {
-		return addChild(new Content());
-	}
-
-	public void addHeaderWithH1(String h1) {
-		addHeader().addHtmlRenderer().H1(h1);
-	}
-
-	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag div = html.startDIV();
-		div.setDataRole("page");
-		if (style != null) div.setStyle(style);
-	}
-
 }
