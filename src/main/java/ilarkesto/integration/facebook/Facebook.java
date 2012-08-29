@@ -45,7 +45,7 @@ public class Facebook {
 		String accessToken = properties.getProperty("facebook.oauth.accesstoken");
 
 		// System.out.println(facebook.loadMeLikes(accessToken, null));
-		System.out.println(facebook.loadMeFriends(accessToken));
+		System.out.println(facebook.loadPerson(accessToken, "koczewski"));
 	}
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
@@ -72,6 +72,16 @@ public class Facebook {
 	public Facebook(LoginDataProvider oauthApiKey, String callbackUri) {
 		this.oauthApiKey = oauthApiKey;
 		this.callbackUri = callbackUri;
+	}
+
+	public static String getProfilePictureUrl(String id) {
+		return getGraphUrl(id + "/picture");
+	}
+
+	public Person loadPerson(String oauthAccessToken, String id) {
+		JsonObject json = loadJson(oauthAccessToken, id);
+		if (json == null) return null;
+		return new Person(json);
 	}
 
 	public List<Reference> loadMeFriends(String oauthAccessToken) {
@@ -118,10 +128,14 @@ public class Facebook {
 	}
 
 	public JsonObject loadJson(String oauthAccessToken, String id) {
-		JsonObject json = OAuth.loadUrlAsJson(getOauthService(), new LoginData(oauthAccessToken, null),
-			"https://graph.facebook.com/" + id);
+		JsonObject json = OAuth
+				.loadUrlAsJson(getOauthService(), new LoginData(oauthAccessToken, null), getGraphUrl(id));
 		log.info("Loaded", id, "->", json.toFormatedString());
 		return json;
+	}
+
+	private static String getGraphUrl(String id) {
+		return "https://graph.facebook.com/" + id;
 	}
 
 	public String createAccessToken(String code) {

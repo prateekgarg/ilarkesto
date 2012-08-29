@@ -36,4 +36,12 @@ public class Person extends AIdentity {
 		return json.getString("username");
 	}
 
+	public City getHometown() {
+		return createFromObject("hometown", City.class);
+	}
+
+	public City getLocation() {
+		return createFromObject("location", City.class);
+	}
+
 }
