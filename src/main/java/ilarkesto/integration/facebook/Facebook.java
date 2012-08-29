@@ -45,17 +45,23 @@ public class Facebook {
 		String accessToken = properties.getProperty("facebook.oauth.accesstoken");
 
 		// System.out.println(facebook.loadMeLikes(accessToken, null));
-		System.out.println(facebook.loadMe(accessToken));
+		System.out.println(facebook.loadMeFriends(accessToken));
 	}
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
 
 	public static final String PERMISSION_READ_STREAM = "read_stream";
+	public static final String PERMISSION_OFFLINE_ACCESS = "offline_access";
 	public static final String PERMISSION_USER_ACTIVITIES = "user_activities";
 	public static final String PERMISSION_USER_LIKES = "user_likes";
 	public static final String PERMISSION_USER_EVENTS = "user_events";
 	public static final String PERMISSION_USER_PHOTOS = "user_photos";
-	public static final String PERMISSION_OFFLINE_ACCESS = "offline_access";
+	public static final String PERMISSION_USER_STATUS = "user_status";
+	public static final String PERMISSION_FRIENDS_ACTIVITIES = "friends_activities";
+	public static final String PERMISSION_FRIENDS_LIKES = "friends_likes";
+	public static final String PERMISSION_FRIENDS_EVENTS = "friends_events";
+	public static final String PERMISSION_FRIENDS_PHOTOS = "friends_photos";
+	public static final String PERMISSION_FRIENDS_STATUS = "friends_status";
 
 	private static Log log = Log.get(Facebook.class);
 
@@ -66,6 +72,16 @@ public class Facebook {
 	public Facebook(LoginDataProvider oauthApiKey, String callbackUri) {
 		this.oauthApiKey = oauthApiKey;
 		this.callbackUri = callbackUri;
+	}
+
+	public List<Reference> loadMeFriends(String oauthAccessToken) {
+		JsonObject json = loadJson(oauthAccessToken, "me/friends");
+		List<JsonObject> data = json.getArrayOfObjects("data");
+		List<Reference> friends = new ArrayList<Reference>(data.size());
+		for (JsonObject jReference : data) {
+			friends.add(new Reference(jReference));
+		}
+		return friends;
 	}
 
 	public List<Like> loadMeLikes(String oauthAccessToken, Date deadline) {
