@@ -14,8 +14,10 @@
  */
 package ilarkesto.tools.jqmhp;
 
+import ilarkesto.base.Reflect;
+import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
-import ilarkesto.core.base.Str;
+import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.jquery.JqueryDownloader;
 import ilarkesto.integration.jquery.JqueryMobileDownloader;
@@ -29,6 +31,9 @@ import ilarkesto.ui.web.jqm.Page;
 
 import java.io.File;
 
+// TODO .htaccess
+// TODO .git
+// TODO sitemap
 public class JqmHp {
 
 	public static void main(String[] args) {
@@ -41,6 +46,7 @@ public class JqmHp {
 
 	private File hpDir;
 	private Config config;
+	private String fileEncoding = IO.UTF_8;
 
 	public JqmHp(File hpDir) {
 		this.hpDir = hpDir;
@@ -51,22 +57,72 @@ public class JqmHp {
 	}
 
 	private static int executeCommandLine(String... args) {
-		if (args.length < 1) return fail("Argument required: <homepage-path>");
+		if (args.length < 1) return fail("Argument required: <command>");
 
-		String hpPath = args[0];
+		String command = args[0];
 
-		JqmHp jqmHp = new JqmHp(hpPath);
-		jqmHp.update();
+		JqmHp jqmHp = new JqmHp(Sys.getWorkDir());
+
+		try {
+			Reflect.invoke(jqmHp, command);
+		} catch (Throwable ex) {
+			log.error(Str.formatException(ex));
+			return 1;
+		}
 
 		return 0;
 	}
 
+	public void continousupdate() {
+		checkIfJqmhp();
+		long lastModified = 0;
+		File jqmhpDir = getHpFile("jqmhp");
+		while (true) {
+			long newLastModified = jqmhpDir.lastModified();
+			if (newLastModified > lastModified) {
+				lastModified = newLastModified;
+				try {
+					update();
+				} catch (Throwable ex) {
+					log.error(ex);
+				}
+				log.info("Update finished. Waiting for changes...");
+			}
+			Utl.sleep(1000);
+		}
+	}
+
 	public void update() {
+		log.info("Updating JQueryMobile homepage:", hpDir.getAbsolutePath());
+		checkIfJqmhp();
 		loadConfig();
 		updateLibs();
+		createJavascript();
 		createHtmlFile("index.html");
 		recreateHtmlFile("_template.html");
 		updateHtmlFiles();
+	}
+
+	public void checkIfJqmhp() {
+		if (!getHpFile("jqmhp").exists())
+			throw new RuntimeException("Not a jqmhp directory: " + hpDir.getAbsolutePath());
+	}
+
+	private void createJavascript() {
+		File mainJs = getHpFile("js/main.js");
+		if (!mainJs.exists() || mainJs.length() == 0) {
+			IO.writeFile(mainJs, buildMainJs(), fileEncoding);
+		}
+	}
+
+	private String buildMainJs() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("(function() {\n\n");
+		sb.append("\t$(document).bind('mobileinit', function(event) {\n\t\t// on startup (once per html page)\n\t});\n\n");
+		sb.append("\t$(document).bind('pagebeforechange', function(event, data) {\n\t\t// on page requested (on every page change)\n\t});\n\n");
+		sb.append("\t$(document).bind('pageinit', function(event, data) {\n  \t\t//on after page created (once per jqm page)\n\t});\n\n");
+		sb.append("})();\n");
+		return sb.toString();
 	}
 
 	private void updateHtmlFiles() {
@@ -82,7 +138,7 @@ public class JqmHp {
 	}
 
 	private void loadConfig() {
-		File configFile = getHpFile("config/jqmhp.json");
+		File configFile = getHpFile("jqmhp/config.json");
 		if (configFile.exists()) {
 			config = Config.load(configFile);
 			return;
@@ -94,7 +150,7 @@ public class JqmHp {
 	}
 
 	private void recreateHtmlFile(String name) {
-		IO.writeFile(getHpFile(name), "", Sys.getFileEncoding());
+		IO.writeFile(getHpFile(name), "", fileEncoding);
 	}
 
 	private void createHtmlFile(String name) {
@@ -108,7 +164,7 @@ public class JqmHp {
 			writeNewHtmlFile(file);
 			return;
 		}
-		String s = IO.readFile(file, Sys.getFileEncoding());
+		String s = IO.readFile(file, fileEncoding);
 		String head = Str.cutFromTo(s, "<head", "</head>");
 		if (Str.isBlank(head)) {
 			log.info("    No <head>");
@@ -121,7 +177,7 @@ public class JqmHp {
 		if (Str.isBlank(usedJqmVersion)) {
 			log.info("    No JQueryMobile referenced");
 		} else {
-			String jqmVersion = getJqmVersion();
+			String jqmVersion = config.getJqm().getVersion();
 			if (!jqmVersion.equals(usedJqmVersion)) {
 				log.info("    Updating JQueryMobile version:", usedJqmVersion, "->", jqmVersion);
 				s = s.replace("jquery.mobile-" + usedJqmVersion, "jquery.mobile-" + jqmVersion);
@@ -133,7 +189,7 @@ public class JqmHp {
 		if (Str.isBlank(usedJqVersion)) {
 			log.info("    No JQuery referenced");
 		} else {
-			String jqVersion = getJqVersion();
+			String jqVersion = config.getJqm().getJqueryVersion();
 			if (!jqVersion.equals(usedJqVersion)) {
 				log.info("    Updating JQuery version:", usedJqVersion, "->", jqVersion);
 				s = s.replace("jquery-" + usedJqVersion, "jquery-" + jqVersion);
@@ -142,7 +198,7 @@ public class JqmHp {
 		}
 
 		if (modified) {
-			IO.writeFile(file, s, Sys.getFileEncoding());
+			IO.writeFile(file, s, fileEncoding);
 		}
 	}
 
@@ -155,9 +211,11 @@ public class JqmHp {
 	}
 
 	private void writeNewHtmlFile(File file) {
-		String title = "Initial JQM page";
+		String title = config.getContent().getTitle();
 
 		JqmHtmlPage htmlPage = new JqmHtmlPage(title, "en");
+		htmlPage.addCss("css/main.css");
+		htmlPage.addJavascript("js/main.js");
 
 		Page page = htmlPage.addPage();
 		page.addHeaderWithH1(title);
@@ -166,12 +224,12 @@ public class JqmHp {
 		listview.addItem("http://kunagi.org", "Kunagi");
 		listview.addItem("http://koczewski.de", "Witoslaw Koczewski");
 
-		htmlPage.setJqmVersion(getJqmVersion());
+		htmlPage.setJqmVersion(config.getJqm().getVersion());
 		htmlPage.write(file, IO.UTF_8);
 	}
 
 	private void updateLibs() {
-		String jqmVersion = getJqmVersion();
+		String jqmVersion = config.getJqm().getVersion();
 		File jqmLibDir = getLibDir("jquery.mobile");
 		if (JqueryMobileDownloader.isInstalled(jqmVersion, jqmLibDir)) {
 			log.info("JQueryMobile ist up to date");
@@ -188,16 +246,6 @@ public class JqmHp {
 			IO.delete(jqmLibDir.listFiles());
 			JqueryDownloader.installToDir(jqVersion, jqLibDir);
 		}
-	}
-
-	private String getJqmVersion() {
-		String version = config.getJqm().getVersion();
-		if (Str.isBlank(version)) version = JqueryMobileDownloader.getStableVersion();
-		return version;
-	}
-
-	private String getJqVersion() {
-		return JqueryMobileDownloader.getCompatibleJqueryVersion(getJqmVersion());
 	}
 
 	private File getLibDir(String name) {

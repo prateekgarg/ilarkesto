@@ -40,6 +40,7 @@ public class Page extends AHtmlContainerElement {
 
 	@Override
 	protected void renderHeader(HtmlRenderer html) {
+		html.nl();
 		Tag div = html.startDIV();
 		div.setDataRole("page");
 		if (style != null) div.setStyle(style);

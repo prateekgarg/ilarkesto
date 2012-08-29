@@ -20,6 +20,8 @@ import ilarkesto.ui.web.HtmlRenderer;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JqmHtmlPage extends AContainerElement {
 
@@ -28,10 +30,21 @@ public class JqmHtmlPage extends AContainerElement {
 
 	private String jqmVersion;
 
+	private List<String> javascripts = new ArrayList<String>();
+	private List<String> csss = new ArrayList<String>();
+
 	public JqmHtmlPage(String title, String language) {
 		super();
 		this.title = title;
 		this.language = language;
+	}
+
+	public void addJavascript(String path) {
+		javascripts.add(path);
+	}
+
+	public void addCss(String path) {
+		csss.add(path);
 	}
 
 	public Page addPage() {
@@ -46,12 +59,24 @@ public class JqmHtmlPage extends AContainerElement {
 		if (jqmVersion == null) {
 			// TODO organizanto needs changes to remove this
 			html.LINKcss("jqm/jquery.mobile.css");
+			for (String path : csss) {
+				html.LINKcss(path);
+			}
 			html.SCRIPTjavascript("jqm/jquery.js", null);
+			for (String path : javascripts) {
+				html.SCRIPTjavascript(path, null);
+			}
 			html.SCRIPTjavascript("jqm/jquery.mobile.js", null);
 		} else {
 			String jqVersion = JqueryMobileDownloader.getCompatibleJqueryVersion(jqmVersion);
 			html.LINKcss("lib/jquery.mobile/jquery.mobile-" + jqmVersion + ".min.css");
+			for (String path : csss) {
+				html.LINKcss(path);
+			}
 			html.SCRIPTjavascript("lib/jquery/jquery-" + jqVersion + ".min.js", null);
+			for (String path : javascripts) {
+				html.SCRIPTjavascript(path, null);
+			}
 			html.SCRIPTjavascript("lib/jquery.mobile/jquery.mobile-" + jqmVersion + ".min.js", null);
 		}
 

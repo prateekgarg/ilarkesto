@@ -217,7 +217,7 @@ public abstract class Reflect {
 	public static Object invoke(Object object, String method, Object... parameters) {
 		Method m = getDeclaredMethodUsingAutoboxing(object.getClass(), method, getClasses(parameters));
 		if (m == null)
-			throw new NullPointerException("Method does not exist: " + object.getClass() + "." + method + "("
+			throw new RuntimeException("Method does not exist: " + object.getClass() + "." + method + "("
 					+ Str.concat(getClassSimpleNames(parameters), ", ") + ")");
 		return invoke(object, m, parameters);
 	}

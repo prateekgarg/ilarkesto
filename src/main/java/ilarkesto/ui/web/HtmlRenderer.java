@@ -888,7 +888,7 @@ public class HtmlRenderer {
 		out.print("&nbsp;");
 	}
 
-	private void nl() {
+	public void nl() {
 		out.println();
 	}
 

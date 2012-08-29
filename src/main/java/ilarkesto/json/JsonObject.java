@@ -57,6 +57,11 @@ public class JsonObject {
 		return (String) get(name);
 	}
 
+	public String getString(String name, String defaultValue) {
+		String value = getString(name);
+		return value == null ? defaultValue : value;
+	}
+
 	public JsonObject getObject(String name) {
 		return (JsonObject) get(name);
 	}

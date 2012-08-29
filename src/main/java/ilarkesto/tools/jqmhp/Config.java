@@ -14,6 +14,7 @@
  */
 package ilarkesto.tools.jqmhp;
 
+import ilarkesto.integration.jquery.JqueryMobileDownloader;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
 
@@ -23,11 +24,28 @@ public class Config extends AJsonWrapper {
 
 	public Config(JsonObject json) {
 		super(json);
-		if (!json.contains("jqm")) json.put("jqm", new Jqm());
+		if (!json.contains("jqm")) json.put("jqm", new JsonObject());
+		if (!json.contains("content")) json.put("content", new JsonObject());
 	}
 
 	public Jqm getJqm() {
 		return createFromObject("jqm", Jqm.class);
+	}
+
+	public Content getContent() {
+		return createFromObject("content", Content.class);
+	}
+
+	public static class Content extends AJsonWrapper {
+
+		public Content(JsonObject json) {
+			super(json);
+		}
+
+		public String getTitle() {
+			return json.getString("title", "JqmHp");
+		}
+
 	}
 
 	public static class Jqm extends AJsonWrapper {
@@ -36,12 +54,12 @@ public class Config extends AJsonWrapper {
 			super(json);
 		}
 
-		private Jqm() {
-			super(new JsonObject());
+		public String getVersion() {
+			return json.getString("version", JqueryMobileDownloader.getStableVersion());
 		}
 
-		public String getVersion() {
-			return json.getString("version");
+		public String getJqueryVersion() {
+			return JqueryMobileDownloader.getCompatibleJqueryVersion(getVersion());
 		}
 
 	}
