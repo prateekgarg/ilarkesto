@@ -16,7 +16,6 @@ package ilarkesto.webapp;
 
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
-import ilarkesto.base.Url;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
@@ -38,8 +37,6 @@ public abstract class AWebApplication extends AApplication {
 	protected abstract void onShutdownWebApplication();
 
 	protected abstract AWebSession createWebSession(HttpServletRequest httpRequest);
-
-	public abstract Url getHomeUrl();
 
 	private Set<AWebSession> webSessions = new HashSet<AWebSession>();
 

@@ -74,6 +74,10 @@ public class Facebook {
 		this.callbackUri = callbackUri;
 	}
 
+	public static String getProfileUrl(String id) {
+		return "https://www.facebook.com/" + id;
+	}
+
 	public static String getProfilePictureUrl(String id) {
 		return getGraphUrl(id + "/picture");
 	}
