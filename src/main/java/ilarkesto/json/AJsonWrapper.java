@@ -31,6 +31,10 @@ public abstract class AJsonWrapper implements JsonWrapper {
 		this.json = json;
 	}
 
+	public AJsonWrapper() {
+		this(new JsonObject());
+	}
+
 	protected void putArray(String name, Iterable<? extends AJsonWrapper> wrappers) {
 		json.put(name, getJsonObjects(wrappers));
 	}

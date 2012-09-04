@@ -7,12 +7,13 @@ import java.util.Map;
 
 public class Json {
 
-	public static String valueToString(Object value) {
+	public static String valueToString(Object value, int indentation) {
 		if (value == null) return "null";
 		if (value instanceof String) return '"' + escapeString((String) value) + '"';
 		if (value instanceof Iterable) {
 			StringBuilder sb = new StringBuilder();
 			sb.append('[');
+			if (indentation >= 0) indentation++;
 			Iterable list = (Iterable) value;
 			boolean first = true;
 			for (Object element : list) {
@@ -21,12 +22,21 @@ public class Json {
 				} else {
 					sb.append(',');
 				}
-				sb.append(valueToString(element));
+				sb.append(valueToString(element, indentation));
 			}
 			sb.append(']');
+			if (indentation >= 0) indentation--;
 			return sb.toString();
 		}
+		if (value instanceof JsonObject) return ((JsonObject) value).toString(indentation);
+		if (value instanceof JsonWrapper) return ((JsonWrapper) value).getJson().toString(indentation);
 		return value.toString();
+	}
+
+	static void indent(StringBuilder sb, int indentation) {
+		for (int i = 0; i < indentation; i++) {
+			sb.append('\t');
+		}
 	}
 
 	public static String escapeString(String s) {

@@ -14,6 +14,19 @@ import java.util.Map;
 
 public class JsonObject {
 
+	public static void main(String[] args) {
+		JsonObject json = new JsonObject();
+		json.put("name", "Witek");
+		json.put("gender", "male");
+
+		json.putNewObject("subobject").put("a", "1");
+		json.addToArray("array", "1");
+		json.addToArray("array", "2");
+		json.addToArray("array", new JsonObject());
+
+		System.out.println(json.toFormatedString());
+	}
+
 	private Map<String, Object> elements = new LinkedHashMap<String, Object>();
 	private int idx = -1;
 
@@ -151,12 +164,16 @@ public class JsonObject {
 		return elements.remove(name);
 	}
 
+	public JsonObject putNewObject(String name) {
+		return put(name, new JsonObject());
+	}
+
 	// --- formating ---
 
-	public String toFormatedString(int indentation) {
+	String toString(int indentation) {
 		StringBuilder sb = new StringBuilder();
 		sb.append('{');
-		indentation++;
+		if (indentation >= 0) indentation++;
 		boolean first = true;
 		for (Map.Entry<String, Object> element : elements.entrySet()) {
 			if (first) {
@@ -164,49 +181,27 @@ public class JsonObject {
 			} else {
 				sb.append(',');
 			}
-			sb.append('\n');
-			indent(sb, indentation);
+			if (indentation >= 0) sb.append('\n');
+			Json.indent(sb, indentation);
 			sb.append('"').append(Json.escapeString(element.getKey())).append("\": ");
-			Object value = element.getValue();
-			if (value instanceof JsonObject) {
-				sb.append(((JsonObject) value).toFormatedString(indentation));
-			} else {
-				sb.append(Json.valueToString(value));
-			}
+			sb.append(Json.valueToString(element.getValue(), indentation));
 		}
-		indentation--;
-		sb.append('\n');
-		indent(sb, indentation);
+		if (indentation >= 0) {
+			indentation--;
+			sb.append('\n');
+			Json.indent(sb, indentation);
+		}
 		sb.append('}');
 		return sb.toString();
 	}
 
-	private void indent(StringBuilder sb, int indentation) {
-		for (int i = 0; i < indentation; i++) {
-			sb.append('\t');
-		}
-	}
-
 	public String toFormatedString() {
-		return toFormatedString(0);
+		return toString(0);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append('{');
-		boolean first = true;
-		for (Map.Entry<String, Object> element : elements.entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(',');
-			}
-			sb.append('"').append(Json.escapeString(element.getKey())).append("\":");
-			sb.append(Json.valueToString(element.getValue()));
-		}
-		sb.append('}');
-		return sb.toString();
+		return toString(-1);
 	}
 
 	// --- parsing ---
