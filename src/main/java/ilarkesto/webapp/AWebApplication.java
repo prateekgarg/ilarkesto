@@ -20,6 +20,8 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
 import ilarkesto.logging.DefaultLogRecordHandler;
+import ilarkesto.restapi.ReflectionRestApiFactory;
+import ilarkesto.restapi.RestApiFactory;
 
 import java.io.File;
 import java.util.HashSet;
@@ -41,6 +43,8 @@ public abstract class AWebApplication extends AApplication {
 	private Set<AWebSession> webSessions = new HashSet<AWebSession>();
 
 	private String applicationName;
+
+	private RestApiFactory restApiFactory;
 
 	@Override
 	protected void onStart() {
@@ -137,6 +141,15 @@ public abstract class AWebApplication extends AApplication {
 			ret.addAll(session.getGwtConversations());
 		}
 		return ret;
+	}
+
+	public RestApiFactory getRestApiFactory() {
+		if (restApiFactory == null) restApiFactory = createRestApiFactory();
+		return restApiFactory;
+	}
+
+	protected ReflectionRestApiFactory createRestApiFactory() {
+		return new ReflectionRestApiFactory(this);
 	}
 
 	public static AWebApplication get() {
