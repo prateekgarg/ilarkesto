@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,16 +71,43 @@ public class JsonObject {
 		return (List) get(name);
 	}
 
-	public List getNumber(String name) {
-		return (List) get(name);
+	public Number getNumber(String name) {
+		return (Number) get(name);
 	}
 
 	public Integer getInteger(String name) {
-		return (Integer) get(name);
+		Number value = getNumber(name);
+		if (value == null) return null;
+		if (value instanceof Integer) return (Integer) value;
+		return value.intValue();
 	}
 
 	public Long getLong(String name) {
-		return (Long) get(name);
+		Number value = getNumber(name);
+		if (value == null) return null;
+		if (value instanceof Long) return (Long) value;
+		return value.longValue();
+	}
+
+	public Double getDouble(String name) {
+		Number value = getNumber(name);
+		if (value == null) return null;
+		if (value instanceof Double) return (Double) value;
+		return value.doubleValue();
+	}
+
+	public Float getFloat(String name) {
+		Number value = getNumber(name);
+		if (value == null) return null;
+		if (value instanceof Float) return (Float) value;
+		return value.floatValue();
+	}
+
+	public Byte getByte(String name) {
+		Number value = getNumber(name);
+		if (value == null) return null;
+		if (value instanceof Byte) return (Byte) value;
+		return value.byteValue();
 	}
 
 	public Boolean getBoolean(String name) {
@@ -126,12 +154,41 @@ public class JsonObject {
 	// --- formating ---
 
 	public String toFormatedString(int indentation) {
-		// TODO
-		return toString();
+		StringBuilder sb = new StringBuilder();
+		sb.append('{');
+		indentation++;
+		boolean first = true;
+		for (Map.Entry<String, Object> element : elements.entrySet()) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(',');
+			}
+			sb.append('\n');
+			indent(sb, indentation);
+			sb.append('"').append(Json.escapeString(element.getKey())).append("\": ");
+			Object value = element.getValue();
+			if (value instanceof JsonObject) {
+				sb.append(((JsonObject) value).toFormatedString(indentation));
+			} else {
+				sb.append(Json.valueToString(value));
+			}
+		}
+		indentation--;
+		sb.append('\n');
+		indent(sb, indentation);
+		sb.append('}');
+		return sb.toString();
+	}
+
+	private void indent(StringBuilder sb, int indentation) {
+		for (int i = 0; i < indentation; i++) {
+			sb.append('\t');
+		}
 	}
 
 	public String toFormatedString() {
-		return toFormatedString(2);
+		return toFormatedString(0);
 	}
 
 	@Override
@@ -258,6 +315,10 @@ public class JsonObject {
 
 	// --- IO ---
 
+	public void write(Writer out, boolean formated) {
+		write(new PrintWriter(out), formated);
+	}
+
 	public void write(File file, boolean formated) {
 		File dir = file.getParentFile();
 		if (!dir.exists()) {
@@ -269,12 +330,16 @@ public class JsonObject {
 		} catch (IOException ex) {
 			throw new RuntimeException("Writing file failed: " + file.getAbsolutePath(), ex);
 		}
+		write(out, formated);
+		out.close();
+	}
+
+	public void write(PrintWriter out, boolean formated) {
 		if (formated) {
 			out.print(toFormatedString());
 		} else {
 			out.print(toString());
 		}
-		out.close();
 	}
 
 	private static String load(File file) {

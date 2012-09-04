@@ -74,7 +74,7 @@ public abstract class AWebApplication extends AApplication {
 
 	private static final String WEB_SESSION_SESSION_ATTRIBUTE = "_webSession";
 
-	public final AWebSession getWebSession(HttpServletRequest httpRequest) {
+	public AWebSession getWebSession(HttpServletRequest httpRequest) {
 		if (isShuttingDown()) return null;
 		HttpSession httpSession = httpRequest.getSession();
 		AWebSession webSession = (AWebSession) httpSession.getAttribute(WEB_SESSION_SESSION_ATTRIBUTE);

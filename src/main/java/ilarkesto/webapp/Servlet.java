@@ -20,6 +20,7 @@ import ilarkesto.base.time.DateAndTime;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -42,6 +43,17 @@ public abstract class Servlet {
 	public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy, HH:mm:";
 
 	private Servlet() {}
+
+	public static String readContentToString(HttpServletRequest request) {
+		BufferedReader in;
+		try {
+			in = request.getReader();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		if (in == null) return null;
+		return IO.readToString(in);
+	}
 
 	public static String getBaseUrl(HttpServletRequest request) {
 		String context = request.getContextPath();
