@@ -186,7 +186,8 @@ public class JsonObject {
 			}
 			if (indentation >= 0) sb.append('\n');
 			Json.indent(sb, indentation);
-			sb.append('"').append(Json.escapeString(element.getKey())).append("\": ");
+			sb.append('"').append(Json.escapeString(element.getKey())).append("\":");
+			if (indentation >= 0) sb.append(' ');
 			sb.append(Json.valueToString(element.getValue(), indentation));
 		}
 		if (indentation >= 0) {
