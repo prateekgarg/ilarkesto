@@ -142,6 +142,7 @@ public abstract class Servlet {
 		String path = file.getParentFile().getName();
 
 		// TODO String path = servletContext.getContextPaht() when servlet-2.5
+		// servletContext.getContextPath()
 
 		if (path == null) return null;
 		path = path.trim();

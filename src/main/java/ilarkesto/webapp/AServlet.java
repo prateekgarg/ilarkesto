@@ -39,6 +39,8 @@ public abstract class AServlet<A extends AWebApplication> extends HttpServlet {
 		resp.sendError(HttpServletResponse.SC_NO_CONTENT);
 	}
 
+	protected void onInit(ServletConfig config) {}
+
 	@Override
 	protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		AWebSession session = webApplication.getWebSession(req);
@@ -73,6 +75,7 @@ public abstract class AServlet<A extends AWebApplication> extends HttpServlet {
 	@Override
 	public final void init(ServletConfig config) throws ServletException {
 		super.init(config);
+		onInit(config);
 		webApplication = (A) AWebApplication.get();
 	}
 
