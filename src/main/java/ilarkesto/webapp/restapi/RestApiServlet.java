@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.restapi;
+package ilarkesto.webapp.restapi;
 
 import ilarkesto.base.Sys;
 import ilarkesto.core.base.Str;
@@ -38,7 +38,7 @@ public class RestApiServlet extends AServlet<AWebApplication> {
 			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
-		writeGet(resp, api);
+		writeGet(req, resp, api);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class RestApiServlet extends AServlet<AWebApplication> {
 			return;
 		}
 		update(req, api);
-		writeGet(resp, api);
+		writeGet(req, resp, api);
 	}
 
 	private void update(HttpServletRequest req, ARestApi api) {
@@ -57,11 +57,11 @@ public class RestApiServlet extends AServlet<AWebApplication> {
 		if (Str.isBlank(s)) throw new RuntimeException("Illegal request");
 		JsonObject json = new JsonObject(s);
 		log.info(json.toFormatedString());
-		api.post(json);
+		api.post(json, req.getParameterMap());
 	}
 
-	private void writeGet(HttpServletResponse resp, ARestApi api) throws IOException {
-		JsonObject result = api.get();
+	private void writeGet(HttpServletRequest req, HttpServletResponse resp, ARestApi api) throws IOException {
+		JsonObject result = api.get(req.getParameterMap());
 		result.write(resp.getWriter(), Sys.isDevelopmentMode());
 	}
 

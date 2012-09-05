@@ -14,6 +14,7 @@
  */
 package ilarkesto.webapp;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 
 import java.io.IOException;
@@ -30,18 +31,43 @@ public abstract class AServlet<A extends AWebApplication> extends HttpServlet {
 
 	protected A webApplication;
 
-	protected abstract void onGet(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+	protected void onGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		resp.sendError(HttpServletResponse.SC_NO_CONTENT);
+	}
 
-	protected abstract void onPost(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+	protected void onPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		resp.sendError(HttpServletResponse.SC_NO_CONTENT);
+	}
 
 	@Override
 	protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		onGet(req, resp);
+		AWebSession session = webApplication.getWebSession(req);
+		session.getContext().bindCurrentThread();
+		try {
+			onGet(req, resp);
+		} catch (Throwable ex) {
+			handleError(ex, req, resp);
+		}
 	}
 
 	@Override
 	protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		onPost(req, resp);
+		AWebSession session = webApplication.getWebSession(req);
+		session.getContext().bindCurrentThread();
+		try {
+			onPost(req, resp);
+		} catch (Throwable ex) {
+			handleError(ex, req, resp);
+		}
+	}
+
+	private void handleError(Throwable ex, HttpServletRequest req, HttpServletResponse resp) {
+		log.info("request caused error:", req.getRequestURI(), ex);
+		try {
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, Str.format(ex));
+		} catch (IOException ex1) {
+			log.error(ex1);
+		}
 	}
 
 	@Override

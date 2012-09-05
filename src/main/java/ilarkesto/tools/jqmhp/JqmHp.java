@@ -76,7 +76,7 @@ public class JqmHp {
 	public void continousupdate() {
 		checkIfJqmhp();
 		long lastModified = 0;
-		File jqmhpDir = getHpFile("jqmhp");
+		File jqmhpDir = getConfigDir();
 		while (true) {
 			long newLastModified = jqmhpDir.lastModified();
 			if (newLastModified > lastModified) {
@@ -92,6 +92,10 @@ public class JqmHp {
 		}
 	}
 
+	public File getConfigDir() {
+		return getHpFile(".jqmhp");
+	}
+
 	public void update() {
 		log.info("Updating JQueryMobile homepage:", hpDir.getAbsolutePath());
 		checkIfJqmhp();
@@ -104,8 +108,7 @@ public class JqmHp {
 	}
 
 	public void checkIfJqmhp() {
-		if (!getHpFile("jqmhp").exists())
-			throw new RuntimeException("Not a jqmhp directory: " + hpDir.getAbsolutePath());
+		if (!getConfigDir().exists()) throw new RuntimeException("Not a jqmhp directory: " + hpDir.getAbsolutePath());
 	}
 
 	private void createJavascript() {
@@ -138,7 +141,7 @@ public class JqmHp {
 	}
 
 	private void loadConfig() {
-		File configFile = getHpFile("jqmhp/config.json");
+		File configFile = getConfigFile("config.json");
 		if (configFile.exists()) {
 			config = Config.load(configFile);
 			return;
@@ -250,6 +253,10 @@ public class JqmHp {
 
 	private File getLibDir(String name) {
 		return getHpFile("lib/" + name);
+	}
+
+	private File getConfigFile(String path) {
+		return new File(getConfigDir().getPath() + "/" + path);
 	}
 
 	private File getHpFile(String path) {

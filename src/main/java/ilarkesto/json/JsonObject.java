@@ -24,7 +24,10 @@ public class JsonObject {
 		json.addToArray("array", "2");
 		json.addToArray("array", new JsonObject());
 
-		System.out.println(json.toFormatedString());
+		String s = json.toFormatedString();
+		System.out.println(s);
+
+		new JsonObject(s);
 	}
 
 	private Map<String, Object> elements = new LinkedHashMap<String, Object>();
@@ -236,6 +239,7 @@ public class JsonObject {
 	}
 
 	private void parseElement(String json) {
+		parseWhitespace(json, "\"");
 		if (json.charAt(idx) != '"') throw new ParseException("Expecting '\"'", json, idx);
 		idx++;
 		int nameEndIdx = Json.getFirstQuoting(json, idx);

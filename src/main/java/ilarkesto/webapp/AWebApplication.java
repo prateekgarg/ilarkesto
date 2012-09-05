@@ -20,8 +20,8 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
 import ilarkesto.logging.DefaultLogRecordHandler;
-import ilarkesto.restapi.ReflectionRestApiFactory;
-import ilarkesto.restapi.RestApiFactory;
+import ilarkesto.webapp.restapi.ReflectionRestApiFactory;
+import ilarkesto.webapp.restapi.RestApiFactory;
 
 import java.io.File;
 import java.util.HashSet;

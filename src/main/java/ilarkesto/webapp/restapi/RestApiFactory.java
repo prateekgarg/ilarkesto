@@ -12,26 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.restapi;
+package ilarkesto.webapp.restapi;
 
-import ilarkesto.json.JsonObject;
+import javax.servlet.http.HttpServletRequest;
 
-public abstract class ARestApi {
+public interface RestApiFactory {
 
-	protected abstract void onGet(JsonObject json);
-
-	protected void onPost(JsonObject json) {
-		throw new RuntimeException("POST not supported");
-	}
-
-	public final JsonObject get() {
-		JsonObject json = new JsonObject();
-		onGet(json);
-		return json;
-	}
-
-	public final void post(JsonObject update) {
-		onPost(update);
-	}
+	ARestApi createApi(HttpServletRequest req, String path);
 
 }
