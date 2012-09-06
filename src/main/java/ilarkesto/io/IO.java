@@ -15,6 +15,7 @@
 package ilarkesto.io;
 
 import ilarkesto.base.Sys;
+import ilarkesto.core.time.Tm;
 import ilarkesto.io.zip.Deflater;
 import ilarkesto.io.zip.ZipEntry;
 import ilarkesto.io.zip.ZipFile;

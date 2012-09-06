@@ -44,6 +44,8 @@
 
 package ilarkesto.io.zip;
 
+import ilarkesto.core.time.Tm;
+
 import java.io.IOException;
 import java.io.OutputStream;
 

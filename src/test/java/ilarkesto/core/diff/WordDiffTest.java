@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.diff;
 
+import ilarkesto.core.time.Tm;
 import ilarkesto.testng.ATest;
 
 import org.testng.annotations.Test;
