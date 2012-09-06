@@ -35,7 +35,7 @@ public class Log {
 	public void log(Level level, Object... parameters) {
 		if (logRecordHandler == null) return;
 		if (level.isDebug() && !isDebugEnabled()) return;
-		logRecordHandler.log(new LogRecord(name, level, parameters));
+		logRecordHandler.log(new LogRecord(System.currentTimeMillis(), name, level, parameters));
 	}
 
 	/**
