@@ -166,7 +166,7 @@ public final class Proc {
 			}
 			log.debug(sb.toString());
 		}
-		startTime = System.currentTimeMillis();
+		startTime = Tm.getCurrentTimeMillis();
 		try {
 			process = Runtime.getRuntime().exec(cmdarray, getEnvParameters(), workingDir);
 		} catch (IOException ex) {
@@ -224,7 +224,7 @@ public final class Proc {
 	}
 
 	public long getRunTime() {
-		return System.currentTimeMillis() - startTime;
+		return Tm.getCurrentTimeMillis() - startTime;
 	}
 
 	/**

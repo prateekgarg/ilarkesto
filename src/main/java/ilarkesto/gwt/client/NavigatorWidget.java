@@ -57,7 +57,7 @@ public class NavigatorWidget<K extends Object> extends AWidget {
 			panel.add(createItemWidget(item));
 		}
 		super.onUpdate();
-		lastUpdateTime = System.currentTimeMillis();
+		lastUpdateTime = Tm.getCurrentTimeMillis();
 	}
 
 	protected String getHref(MenuItem item) {

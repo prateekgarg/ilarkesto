@@ -23,18 +23,18 @@ public class LogRecordTest extends ATest {
 
 	@Test
 	public void hash() {
-		LogRecord a = new LogRecord(System.currentTimeMillis(), "A", Level.INFO, "hello", "logger");
-		LogRecord b = new LogRecord(System.currentTimeMillis(), "A", Level.INFO, "hello", "logger");
-		LogRecord c = new LogRecord(System.currentTimeMillis(), "A", Level.INFO, "hello", "world");
+		LogRecord a = new LogRecord(Tm.getCurrentTimeMillis(), "A", Level.INFO, "hello", "logger");
+		LogRecord b = new LogRecord(Tm.getCurrentTimeMillis(), "A", Level.INFO, "hello", "logger");
+		LogRecord c = new LogRecord(Tm.getCurrentTimeMillis(), "A", Level.INFO, "hello", "world");
 		assertEquals(a.hashCode(), b.hashCode());
 		assertNotEquals(a.hashCode(), c.hashCode());
 	}
 
 	@Test
 	public void equals() {
-		LogRecord a = new LogRecord(System.currentTimeMillis(), "A", Level.INFO, "hello", "logger");
-		LogRecord b = new LogRecord(System.currentTimeMillis(), "A", Level.INFO, "hello", "logger");
-		LogRecord c = new LogRecord(System.currentTimeMillis(), "A", Level.INFO, "hello", "world");
+		LogRecord a = new LogRecord(Tm.getCurrentTimeMillis(), "A", Level.INFO, "hello", "logger");
+		LogRecord b = new LogRecord(Tm.getCurrentTimeMillis(), "A", Level.INFO, "hello", "logger");
+		LogRecord c = new LogRecord(Tm.getCurrentTimeMillis(), "A", Level.INFO, "hello", "world");
 		assertEquals(a, a);
 		assertEquals(a, b);
 		assertNotEquals(a, c);

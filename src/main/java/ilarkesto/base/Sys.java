@@ -50,7 +50,7 @@ public final class Sys {
 	}
 
 	public static void storeStartupTime() {
-		startupTime = System.currentTimeMillis();
+		startupTime = Tm.getCurrentTimeMillis();
 	}
 
 	public static long getStartupTime() {

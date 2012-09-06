@@ -157,7 +157,7 @@ public abstract class AApplication {
 		File backupFile = new File(dir.getPath() + "/backups/" + getApplicationName() + "-data_"
 				+ DateAndTime.now().toString(DateAndTime.FORMAT_LOG) + ".zip");
 		log.info("Backing up application data dir:", dir.getAbsolutePath(), "into", backupFile);
-		long starttime = System.currentTimeMillis();
+		long starttime = Tm.getCurrentTimeMillis();
 		Object lock = entityStore == null ? this : entityStore;
 		synchronized (lock) {
 			IO.zip(backupFile, new File[] { dir }, new FileFilter() {
@@ -178,7 +178,7 @@ public abstract class AApplication {
 				}
 			});
 		}
-		long runtime = System.currentTimeMillis() - starttime;
+		long runtime = Tm.getCurrentTimeMillis() - starttime;
 		log.info("  Backup completed in", new TimePeriod(runtime).toShortestString());
 	}
 
@@ -188,7 +188,7 @@ public abstract class AApplication {
 		if (files == null || files.length == 0) return;
 
 		log.info("Deleting old backup files from", backupDir);
-		final long deadline = System.currentTimeMillis() - Tm.DAY * 7;
+		final long deadline = Tm.getCurrentTimeMillis() - Tm.DAY * 7;
 
 		for (File file : files) {
 			if (!file.getName().startsWith(getApplicationName())) continue;

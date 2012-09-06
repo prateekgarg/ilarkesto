@@ -52,7 +52,7 @@ public abstract class AGwtEntity {
 	}
 
 	public void updateLocalModificationTime() {
-		localModificationTime = System.currentTimeMillis();
+		localModificationTime = Tm.getCurrentTimeMillis();
 	}
 
 	public final String getId() {

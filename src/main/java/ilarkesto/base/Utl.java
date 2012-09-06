@@ -107,7 +107,7 @@ public class Utl extends ilarkesto.core.base.Utl {
 		return new Color(parseHex(color.substring(1)));
 	}
 
-	private static final Random random = new Random(System.currentTimeMillis());
+	private static final Random random = new Random(Tm.getCurrentTimeMillis());
 
 	public static boolean equals(Set<?> objects) {
 		Object first = null;

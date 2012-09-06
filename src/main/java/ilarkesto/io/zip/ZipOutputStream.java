@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -48,37 +48,36 @@ import java.util.Vector;
  */
 public class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
 
-	private Vector				entries					= new Vector();
-	private CRC32				crc						= new CRC32();
-	private ZipEntry			curEntry				= null;
+	private Vector entries = new Vector();
+	private CRC32 crc = new CRC32();
+	private ZipEntry curEntry = null;
 
-	private int					curMethod;
-	private int					size;
-	private int					offset					= 0;
+	private int curMethod;
+	private int size;
+	private int offset = 0;
 
-	private byte[]				zipComment				= new byte[0];
-	private int					defaultMethod			= DEFLATED;
+	private byte[] zipComment = new byte[0];
+	private int defaultMethod = DEFLATED;
 
 	/**
 	 * Our Zip version is hard coded to 1.0 resp. 2.0
 	 */
-	private final static int	ZIP_STORED_VERSION		= 10;
-	private final static int	ZIP_DEFLATED_VERSION	= 20;
+	private final static int ZIP_STORED_VERSION = 10;
+	private final static int ZIP_DEFLATED_VERSION = 20;
 
 	/**
 	 * Compression method. This method doesn't compress at all.
 	 */
-	public final static int		STORED					= 0;
+	public final static int STORED = 0;
 	/**
 	 * Compression method. This method uses the Deflater.
 	 */
-	public final static int		DEFLATED				= 8;
+	public final static int DEFLATED = 8;
 
 	/**
 	 * Creates a new Zip output stream, writing a zip archive.
 	 * 
-	 * @param out
-	 *            the output stream to which the zip archive is written.
+	 * @param out the output stream to which the zip archive is written.
 	 */
 	public ZipOutputStream(OutputStream out) {
 		super(out, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
@@ -87,10 +86,8 @@ public class ZipOutputStream extends DeflaterOutputStream implements ZipConstant
 	/**
 	 * Set the zip file comment.
 	 * 
-	 * @param comment
-	 *            the comment.
-	 * @exception IllegalArgumentException
-	 *                if encoding of comment is longer than 0xffff bytes.
+	 * @param comment the comment.
+	 * @exception IllegalArgumentException if encoding of comment is longer than 0xffff bytes.
 	 */
 	public void setComment(String comment) {
 		byte[] commentBytes;
@@ -102,24 +99,20 @@ public class ZipOutputStream extends DeflaterOutputStream implements ZipConstant
 	/**
 	 * Sets default compression method. If the Zip entry specifies another method its method takes precedence.
 	 * 
-	 * @param method
-	 *            the method.
-	 * @exception IllegalArgumentException
-	 *                if method is not supported.
+	 * @param method the method.
+	 * @exception IllegalArgumentException if method is not supported.
 	 * @see #STORED
 	 * @see #DEFLATED
 	 */
 	public void setMethod(int method) {
-		if (method != STORED && method != DEFLATED)
-			throw new IllegalArgumentException("Method not supported.");
+		if (method != STORED && method != DEFLATED) throw new IllegalArgumentException("Method not supported.");
 		defaultMethod = method;
 	}
 
 	/**
 	 * Sets default compression level. The new level will be activated immediately.
 	 * 
-	 * @exception IllegalArgumentException
-	 *                if level is not supported.
+	 * @exception IllegalArgumentException if level is not supported.
 	 * @see Deflater
 	 */
 	public void setLevel(int level) {
@@ -148,12 +141,9 @@ public class ZipOutputStream extends DeflaterOutputStream implements ZipConstant
 	 * optional, but must be correct if present. If the time is not set in the entry, the current time is
 	 * used.
 	 * 
-	 * @param entry
-	 *            the entry.
-	 * @exception IOException
-	 *                if an I/O error occured.
-	 * @exception ZipException
-	 *                if stream was finished.
+	 * @param entry the entry.
+	 * @exception IOException if an I/O error occured.
+	 * @exception ZipException if stream was finished.
 	 */
 	public void putNextEntry(ZipEntry entry) throws IOException {
 		if (entries == null) throw new ZipException("ZipOutputStream was finished");
@@ -178,7 +168,7 @@ public class ZipOutputStream extends DeflaterOutputStream implements ZipConstant
 
 		if (curEntry != null) closeEntry();
 
-		if (entry.getTime() < 0) entry.setTime(System.currentTimeMillis());
+		if (entry.getTime() < 0) entry.setTime(Tm.getCurrentTimeMillis());
 
 		entry.flags = flags;
 		entry.offset = offset;
@@ -221,10 +211,8 @@ public class ZipOutputStream extends DeflaterOutputStream implements ZipConstant
 	/**
 	 * Closes the current entry.
 	 * 
-	 * @exception IOException
-	 *                if an I/O error occured.
-	 * @exception ZipException
-	 *                if no entry is active.
+	 * @exception IOException if an I/O error occured.
+	 * @exception ZipException if no entry is active.
 	 */
 	public void closeEntry() throws IOException {
 		if (curEntry == null) throw new ZipException("No open entry");
@@ -268,11 +256,10 @@ public class ZipOutputStream extends DeflaterOutputStream implements ZipConstant
 	/**
 	 * Writes the given buffer to the current entry.
 	 * 
-	 * @exception IOException
-	 *                if an I/O error occured.
-	 * @exception ZipException
-	 *                if no entry is active.
+	 * @exception IOException if an I/O error occured.
+	 * @exception ZipException if no entry is active.
 	 */
+	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
 		if (curEntry == null) throw new ZipException("No open entry.");
 
@@ -294,9 +281,9 @@ public class ZipOutputStream extends DeflaterOutputStream implements ZipConstant
 	 * Finishes the stream. This will write the central directory at the end of the zip file and flush the
 	 * stream.
 	 * 
-	 * @exception IOException
-	 *                if an I/O error occured.
+	 * @exception IOException if an I/O error occured.
 	 */
+	@Override
 	public void finish() throws IOException {
 		if (entries == null) return;
 		if (curEntry != null) closeEntry();

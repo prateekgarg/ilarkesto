@@ -15,6 +15,7 @@
 package ilarkesto.core.logging;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.time.Tm;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class Log {
 	public void log(Level level, Object... parameters) {
 		if (logRecordHandler == null) return;
 		if (level.isDebug() && !isDebugEnabled()) return;
-		logRecordHandler.log(new LogRecord(System.currentTimeMillis(), name, level, parameters));
+		logRecordHandler.log(new LogRecord(Tm.getCurrentTimeMillis(), name, level, parameters));
 	}
 
 	/**

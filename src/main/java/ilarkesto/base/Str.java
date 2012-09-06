@@ -1067,7 +1067,7 @@ public class Str extends ilarkesto.core.base.Str {
 
 	public static long generateUID(long idTimeSub) {
 		synchronized (UIDLOCK) {
-			long id = System.currentTimeMillis() - idTimeSub;
+			long id = Tm.getCurrentTimeMillis() - idTimeSub;
 			while (id <= lastId)
 				id++;
 			lastId = id;

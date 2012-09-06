@@ -231,7 +231,7 @@ public final class Date extends ilarkesto.core.time.Date {
 	}
 
 	public static Date today() {
-		if (today == null || System.currentTimeMillis() > todayInvalidTime) {
+		if (today == null || Tm.getCurrentTimeMillis() > todayInvalidTime) {
 			today = new Date();
 			todayInvalidTime = tomorrow().toJavaDate().getTime() - 1;
 		}
@@ -239,15 +239,15 @@ public final class Date extends ilarkesto.core.time.Date {
 	}
 
 	public static Date tomorrow() {
-		return new Date(System.currentTimeMillis() + Tm.DAY);
+		return new Date(Tm.getCurrentTimeMillis() + Tm.DAY);
 	}
 
 	public static Date inDays(int numberOfDays) {
-		return new Date(System.currentTimeMillis() + (Tm.DAY * numberOfDays));
+		return new Date(Tm.getCurrentTimeMillis() + (Tm.DAY * numberOfDays));
 	}
 
 	public static Date beforeDays(int numberOfDays) {
-		return new Date(System.currentTimeMillis() - (Tm.DAY * numberOfDays));
+		return new Date(Tm.getCurrentTimeMillis() - (Tm.DAY * numberOfDays));
 	}
 
 	public static Date randomPast(int beforeMaxDays) {

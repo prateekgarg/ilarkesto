@@ -107,7 +107,7 @@ public abstract class AUi {
 		setModel(model);
 		showDialog(view);
 		if (blocker != null) {
-			long waitStart = System.currentTimeMillis();
+			long waitStart = Tm.getCurrentTimeMillis();
 			// block until actionProvider triggers notify() (by next request)
 			synchronized (blocker) {
 				// TODO while (blocker.isNotReady())
@@ -115,7 +115,7 @@ public abstract class AUi {
 			}
 			if (timeout != 0) {
 				timeout = Math.round(timeout * 0.95);
-				long duration = System.currentTimeMillis() - waitStart;
+				long duration = Tm.getCurrentTimeMillis() - waitStart;
 				if (duration >= timeout) {
 					LOG.info("Dialog timeout:", view);
 					throw new DialogTimeoutException(view.getSimpleName());
@@ -129,7 +129,7 @@ public abstract class AUi {
 		setModel(model);
 		showDialog(viewId);
 		if (blocker != null) {
-			long waitStart = System.currentTimeMillis();
+			long waitStart = Tm.getCurrentTimeMillis();
 			// block until actionProvider triggers notify() (by next request)
 			synchronized (blocker) {
 				// TODO while (blocker.isNotReady())
@@ -137,7 +137,7 @@ public abstract class AUi {
 			}
 			if (timeout != 0) {
 				timeout = Math.round(timeout * 0.95);
-				long duration = System.currentTimeMillis() - waitStart;
+				long duration = Tm.getCurrentTimeMillis() - waitStart;
 				if (duration >= timeout) {
 					LOG.info("Dialog timeout:", viewId);
 					throw new DialogTimeoutException(viewId);

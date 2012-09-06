@@ -196,7 +196,7 @@ public class CodemirrorEditorWidget extends AWidget {
 
 		public MyTextArea() {
 			setWidth("100%");
-			getElement().setId("CodeMirror" + System.currentTimeMillis());
+			getElement().setId("CodeMirror" + Tm.getCurrentTimeMillis());
 			// setVisible(false);
 		}
 

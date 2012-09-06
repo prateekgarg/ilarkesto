@@ -38,6 +38,16 @@ public class Tm {
 	private static TmLocalizer tmLocalizer;
 	private static TmLocalizerDe tmLocalizerDe;
 
+	private static long timeOffset = 0;
+
+	public static long getCurrentTimeMillis() {
+		return System.currentTimeMillis() + timeOffset;
+	}
+
+	public static void setTimeOffset(long timeOffset) {
+		Tm.timeOffset = timeOffset;
+	}
+
 	public static Date getDateAndTime(Date date, long time) {
 		date = copyDate(date);
 		resetTime(date);
@@ -178,12 +188,8 @@ public class Tm {
 		return date.getSeconds();
 	}
 
-	public static long getNowAsMillis() {
-		return System.currentTimeMillis();
-	}
-
 	public static Date getNowAsDate() {
-		return createDate(getNowAsMillis());
+		return createDate(getCurrentTimeMillis());
 	}
 
 }

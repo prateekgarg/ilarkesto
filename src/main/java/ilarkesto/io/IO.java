@@ -1105,7 +1105,7 @@ public abstract class IO {
 
 	public static void copyDataToFile(InputStream is, File dst, CopyObserver observer) {
 		createDirectory(dst.getParentFile());
-		File tmp = new File(dst.getPath() + "~" + System.currentTimeMillis());
+		File tmp = new File(dst.getPath() + "~" + Tm.getCurrentTimeMillis());
 
 		BufferedInputStream in;
 		try {

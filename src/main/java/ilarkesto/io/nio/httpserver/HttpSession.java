@@ -19,8 +19,8 @@ import java.util.UUID;
 public class HttpSession<S> {
 
 	private String id = UUID.randomUUID().toString();
-	private long startTime = System.currentTimeMillis();
-	private long lastAccessTime = System.currentTimeMillis();
+	private long startTime = Tm.getCurrentTimeMillis();
+	private long lastAccessTime = Tm.getCurrentTimeMillis();
 
 	private S bean;
 
@@ -37,15 +37,15 @@ public class HttpSession<S> {
 	}
 
 	public void touch() {
-		lastAccessTime = System.currentTimeMillis();
+		lastAccessTime = Tm.getCurrentTimeMillis();
 	}
 
 	public long getAge() {
-		return System.currentTimeMillis() - startTime;
+		return Tm.getCurrentTimeMillis() - startTime;
 	}
 
 	public long getIdleTime() {
-		return System.currentTimeMillis() - lastAccessTime;
+		return Tm.getCurrentTimeMillis() - lastAccessTime;
 	}
 
 }
