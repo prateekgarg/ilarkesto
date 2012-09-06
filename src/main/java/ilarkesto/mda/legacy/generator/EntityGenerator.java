@@ -21,7 +21,7 @@ import ilarkesto.auth.ViewProtected;
 import ilarkesto.base.Str;
 import ilarkesto.base.time.Date;
 import ilarkesto.base.time.DateAndTime;
-import ilarkesto.base.time.Time;
+import ilarkesto.core.time.Time;
 import ilarkesto.mda.legacy.model.BackReferenceModel;
 import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PropertyModel;

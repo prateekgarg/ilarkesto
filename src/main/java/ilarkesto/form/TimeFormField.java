@@ -15,7 +15,7 @@
 package ilarkesto.form;
 
 import ilarkesto.base.Utl;
-import ilarkesto.base.time.Time;
+import ilarkesto.core.time.Time;
 
 import java.util.Collection;
 import java.util.Map;

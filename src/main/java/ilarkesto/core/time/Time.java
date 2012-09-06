@@ -15,8 +15,13 @@
 package ilarkesto.core.time;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 
 public class Time implements Comparable<Time>, Serializable {
+
+	public static final transient SimpleDateFormat FORMAT_HOUR_MINUTE_SECOND = new SimpleDateFormat("HH:mm:ss");
+
+	public static final transient SimpleDateFormat FORMAT_HOUR_MINUTE_SECOND_NOSEP = new SimpleDateFormat("HHmmss");
 
 	protected int hour;
 	protected int minute;
@@ -57,6 +62,10 @@ public class Time implements Comparable<Time>, Serializable {
 
 	public Time(java.util.Date javaDate) {
 		this(Tm.getHour(javaDate), Tm.getMinute(javaDate), Tm.getSecond(javaDate));
+	}
+
+	public Time(long millis) {
+		this(new java.util.Date(millis));
 	}
 
 	public Time() {
@@ -131,7 +140,7 @@ public class Time implements Comparable<Time>, Serializable {
 		return toString(false);
 	}
 
-	private final String toString(boolean includeSeconds) {
+	public final String toString(boolean includeSeconds) {
 		StringBuilder sb = new StringBuilder();
 		if (hour < 10) sb.append("0");
 		sb.append(hour);
@@ -168,6 +177,19 @@ public class Time implements Comparable<Time>, Serializable {
 
 	public static Time now() {
 		return new Time();
+	}
+
+	public static String toStringBeginEnd(Time begin, Time end) {
+		if (begin == null && end == null) return null;
+		StringBuilder sb = new StringBuilder();
+		if (begin != null) {
+			sb.append(begin);
+		}
+		if (end != null) {
+			sb.append("-");
+			sb.append(end);
+		}
+		return sb.toString();
 	}
 
 }

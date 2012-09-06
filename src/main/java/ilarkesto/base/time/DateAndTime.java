@@ -15,6 +15,7 @@
 package ilarkesto.base.time;
 
 import ilarkesto.base.Tm;
+import ilarkesto.core.time.Time;
 import ilarkesto.core.time.TimePeriod;
 
 import java.text.DateFormat;
@@ -45,21 +46,17 @@ public final class DateAndTime implements Comparable<DateAndTime> {
 	private Time time;
 
 	public DateAndTime(java.util.Date date) {
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.setTime(date);
-		this.date = new Date(calendar);
-		this.time = new Time(calendar);
+		this.date = new Date(date);
+		this.time = new Time(date);
 	}
 
 	public DateAndTime(long millis) {
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.setTimeInMillis(millis);
-		this.date = new Date(calendar);
-		this.time = new Time(calendar);
+		this.date = new Date(millis);
+		this.time = new Time(millis);
 	}
 
 	public DateAndTime(GregorianCalendar calendar) {
-		this(new Date(calendar), new Time(calendar));
+		this(calendar.getTime());
 	}
 
 	public DateAndTime(Date date, Time time) {
@@ -166,7 +163,7 @@ public final class DateAndTime implements Comparable<DateAndTime> {
 		StringBuilder sb = new StringBuilder();
 		sb.append(date.toString(locale));
 		sb.append(", ");
-		sb.append(time.toString(locale));
+		sb.append(time.toString(false));
 		return sb.toString();
 	}
 

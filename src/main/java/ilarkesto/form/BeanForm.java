@@ -19,8 +19,8 @@ import ilarkesto.base.Factory;
 import ilarkesto.base.Money;
 import ilarkesto.base.Str;
 import ilarkesto.base.time.Date;
-import ilarkesto.base.time.Time;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Time;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.email.EmailAddress;
 

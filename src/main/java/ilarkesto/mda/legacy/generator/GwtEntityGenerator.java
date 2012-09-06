@@ -17,7 +17,7 @@ package ilarkesto.mda.legacy.generator;
 import ilarkesto.base.Str;
 import ilarkesto.base.time.Date;
 import ilarkesto.base.time.DateAndTime;
-import ilarkesto.base.time.Time;
+import ilarkesto.core.time.Time;
 import ilarkesto.gwt.client.AGwtDao;
 import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.Gwt;
