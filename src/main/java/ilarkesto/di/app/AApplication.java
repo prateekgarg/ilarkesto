@@ -167,6 +167,7 @@ public abstract class AApplication {
 					if (file.getParentFile().equals(dir)) {
 						// base dir
 						String name = file.getName();
+						if (name.equals(".lock")) return false;
 						if (name.equals("backups")) return false;
 						if (name.equals("entities-rescue")) return false;
 						if (name.equals("tmp")) return false;
