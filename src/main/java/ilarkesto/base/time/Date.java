@@ -17,37 +17,15 @@ package ilarkesto.base.time;
 import ilarkesto.base.Str;
 import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
+import ilarkesto.core.time.TimePeriod;
 import ilarkesto.core.time.Weekday;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public final class Date extends ilarkesto.core.time.Date {
-
-	public static final transient SimpleDateFormat FORMAT_DAY_MONTH_SHORTYEAR = new SimpleDateFormat("dd.MM.yy");
-	public static final transient SimpleDateFormat FORMAT_DAY_MONTH_YEAR = new SimpleDateFormat("dd.MM.yyyy");
-	public static final transient SimpleDateFormat FORMAT_LONGMONTH_DAY_YEAR = new SimpleDateFormat("MMMM d, yyyy");
-	public static final transient SimpleDateFormat FORMAT_DAY_MONTH = new SimpleDateFormat("dd.MM.");
-	public static final transient SimpleDateFormat FORMAT_WEEKDAY_DAY_MONTH = new SimpleDateFormat("EEEE, dd.MM.");
-	public static final transient SimpleDateFormat FORMAT_DAY_LONGMONTH_YEAR = new SimpleDateFormat("dd. MMMM yyyy");
-	public static final transient SimpleDateFormat FORMAT_WEEKDAY_DAY_LONGMONTH_YEAR = new SimpleDateFormat(
-			"EEEE, dd. MMMM yyyy");
-	public static final transient SimpleDateFormat FORMAT_SHORTWEEKDAY_DAY_MONTH_YEAR = new SimpleDateFormat(
-			"EE, dd.MM.yyyy");
-	public static final transient SimpleDateFormat FORMAT_SHORTWEEKDAY_SHORTMONTH_DAY = new SimpleDateFormat(
-			"EE, MMM dd");
-	public static final transient SimpleDateFormat FORMAT_LONGMONTH = new SimpleDateFormat("MMMM");
-	public static final transient SimpleDateFormat FORMAT_LONGMONTH_YEAR = new SimpleDateFormat("MMMM yyyy");
-
-	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH_DAY = new SimpleDateFormat("yyyy-MM-dd");
-	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH = new SimpleDateFormat("yyyy-MM");
-	public static final transient SimpleDateFormat FORMAT_YEAR_LONGMONTH = new SimpleDateFormat("yyyy-MMMM");
-	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH_DAY_NOSEP = new SimpleDateFormat("yyyyMMdd");
-
-	public static final transient SimpleDateFormat FORMAT_WEEKDAY = new SimpleDateFormat("EEEE");
 
 	public Date() {
 		super();
@@ -78,7 +56,12 @@ public final class Date extends ilarkesto.core.time.Date {
 		return new Date(javaDate);
 	}
 
-	public GregorianCalendar getGregorianCalendar() {
+	@Override
+	protected Date newDate(int year, int month, int day) {
+		return new Date(year, month, day);
+	}
+
+	GregorianCalendar getGregorianCalendar() {
 		return new GregorianCalendar(year, month - 1, day);
 	}
 
@@ -87,11 +70,9 @@ public final class Date extends ilarkesto.core.time.Date {
 		return addDays(-1).getMondayOfWeek();
 	}
 
+	@Override
 	public Date getFirstDateOfMonth() {
-		GregorianCalendar c = new GregorianCalendar();
-		c.setTime(toJavaDate());
-		c.set(GregorianCalendar.DAY_OF_MONTH, 1);
-		return new Date(c);
+		return (Date) super.getFirstDateOfMonth();
 	}
 
 	public Date getLastDateOfMonth() {
@@ -113,10 +94,6 @@ public final class Date extends ilarkesto.core.time.Date {
 		c.setTime(toJavaDate());
 		c.add(GregorianCalendar.YEAR, count);
 		return new Date(c);
-	}
-
-	public int getDaysInMonth() {
-		return getGregorianCalendar().getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
 	}
 
 	public TimePeriod getPeriodTo(Date other) {
@@ -147,50 +124,13 @@ public final class Date extends ilarkesto.core.time.Date {
 		return getPeriodToInMonths(today());
 	}
 
-	private String toDe() {
-		StringBuilder sb = new StringBuilder();
-		if (day < 10) sb.append('0');
-		sb.append(day);
-		sb.append(".");
-		if (month < 10) sb.append('0');
-		sb.append(month);
-		sb.append(".");
-		sb.append(year);
-		return sb.toString();
-	}
-
-	public String toLongDe() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(Tm.WEEKDAYS_DE[getGregorianCalendar().get(GregorianCalendar.DAY_OF_WEEK) - 1]);
-		sb.append(", der ");
-		sb.append(toDe());
-		return sb.toString();
-	}
-
-	private String toInt() {
-		return toString();
-	}
-
-	public String toLongInt() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(Tm.WEEKDAYS[getGregorianCalendar().get(GregorianCalendar.DAY_OF_WEEK) - 1]);
-		sb.append(", the ");
-		sb.append(toInt());
-		return sb.toString();
-	}
-
 	public String toString(DateFormat format) {
 		return format.format(toJavaDate());
 	}
 
 	public String toString(Locale locale) {
-		if (locale.equals(Locale.GERMANY)) return toDe();
-		return toInt();
-	}
-
-	public String toLongString(Locale locale) {
-		if (locale.equals(Locale.GERMANY)) return toLongDe();
-		return toLongInt();
+		if (locale.equals(Locale.GERMANY)) return toString(FORMAT_DAY_MONTH_YEAR);
+		return toString();
 	}
 
 	@Override
@@ -278,18 +218,6 @@ public final class Date extends ilarkesto.core.time.Date {
 
 		if (ia[0] > 31) return new Date(Tm.year(ia[0]), today.month, today.day);
 		return new Date(today.year, today.month, ia[0]);
-	}
-
-	// --- Object ---
-
-	public boolean equalsIgnoreYear(Date d) {
-		if (d == null) return false;
-		return d.day == day && d.month == month;
-	}
-
-	public boolean equalsIgnoreDay(Date d) {
-		if (d == null) return false;
-		return d.year == year && d.month == month;
 	}
 
 }

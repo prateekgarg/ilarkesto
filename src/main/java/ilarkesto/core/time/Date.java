@@ -15,11 +15,34 @@
 package ilarkesto.core.time;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class Date implements Comparable<Date>, Serializable {
+
+	public static final transient SimpleDateFormat FORMAT_DAY_MONTH_SHORTYEAR = new SimpleDateFormat("dd.MM.yy");
+	public static final transient SimpleDateFormat FORMAT_DAY_MONTH_YEAR = new SimpleDateFormat("dd.MM.yyyy");
+	public static final transient SimpleDateFormat FORMAT_LONGMONTH_DAY_YEAR = new SimpleDateFormat("MMMM d, yyyy");
+	public static final transient SimpleDateFormat FORMAT_DAY_MONTH = new SimpleDateFormat("dd.MM.");
+	public static final transient SimpleDateFormat FORMAT_WEEKDAY_DAY_MONTH = new SimpleDateFormat("EEEE, dd.MM.");
+	public static final transient SimpleDateFormat FORMAT_DAY_LONGMONTH_YEAR = new SimpleDateFormat("dd. MMMM yyyy");
+	public static final transient SimpleDateFormat FORMAT_WEEKDAY_DAY_LONGMONTH_YEAR = new SimpleDateFormat(
+			"EEEE, dd. MMMM yyyy");
+	public static final transient SimpleDateFormat FORMAT_SHORTWEEKDAY_DAY_MONTH_YEAR = new SimpleDateFormat(
+			"EE, dd.MM.yyyy");
+	public static final transient SimpleDateFormat FORMAT_SHORTWEEKDAY_SHORTMONTH_DAY = new SimpleDateFormat(
+			"EE, MMM dd");
+	public static final transient SimpleDateFormat FORMAT_LONGMONTH = new SimpleDateFormat("MMMM");
+	public static final transient SimpleDateFormat FORMAT_LONGMONTH_YEAR = new SimpleDateFormat("MMMM yyyy");
+
+	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH_DAY = new SimpleDateFormat("yyyy-MM-dd");
+	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH = new SimpleDateFormat("yyyy-MM");
+	public static final transient SimpleDateFormat FORMAT_YEAR_LONGMONTH = new SimpleDateFormat("yyyy-MMMM");
+	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH_DAY_NOSEP = new SimpleDateFormat("yyyyMMdd");
+
+	public static final transient SimpleDateFormat FORMAT_WEEKDAY = new SimpleDateFormat("EEEE");
 
 	protected int year;
 	protected int month;
@@ -63,7 +86,15 @@ public class Date implements Comparable<Date>, Serializable {
 		return new Date(javaDate);
 	}
 
+	protected Date newDate(int year, int month, int day) {
+		return new Date(year, month, day);
+	}
+
 	// ---
+
+	public final int getDaysInMonth() {
+		return Tm.getDaysInMonth(year, month);
+	}
 
 	public final int getWeek() {
 		return Tm.getWeek(toJavaDate());
@@ -75,6 +106,10 @@ public class Date implements Comparable<Date>, Serializable {
 
 	public TimePeriod getPeriodToToday() {
 		return getPeriodTo(today());
+	}
+
+	public Date getFirstDateOfMonth() {
+		return newDate(year, month, 1);
 	}
 
 	public Weekday getWeekday() {
@@ -201,6 +236,16 @@ public class Date implements Comparable<Date>, Serializable {
 		if (obj == null) return false;
 		Date other = (Date) obj;
 		return other.day == day && other.month == month && other.year == year;
+	}
+
+	public boolean equalsIgnoreYear(Date d) {
+		if (d == null) return false;
+		return d.day == day && d.month == month;
+	}
+
+	public boolean equalsIgnoreDay(Date d) {
+		if (d == null) return false;
+		return d.year == year && d.month == month;
 	}
 
 	@Override

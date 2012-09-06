@@ -24,6 +24,37 @@ public class TmLocalizerDe extends TmLocalizer {
 	}
 
 	@Override
+	public String full(Month month) {
+		switch (month) {
+			case JANUARY:
+				return "Januar";
+			case FEBRUARY:
+				return "Februar";
+			case MARCH:
+				return "März";
+			case APRIL:
+				return "April";
+			case MAY:
+				return "Mai";
+			case JUNE:
+				return "Juni";
+			case JULY:
+				return "Juli";
+			case AUGUST:
+				return "August";
+			case SEPTEMBER:
+				return "September";
+			case OCTOBER:
+				return "Oktober";
+			case NOVEMBER:
+				return "November";
+			case DECEMBER:
+				return "Dezember";
+		}
+		throw new IllegalArgumentException(month.name());
+	}
+
+	@Override
 	public String years(long count) {
 		return "Jahr.";
 	}

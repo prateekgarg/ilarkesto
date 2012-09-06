@@ -14,6 +14,8 @@
  */
 package ilarkesto.base.time;
 
+import ilarkesto.core.time.TimePeriod;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;

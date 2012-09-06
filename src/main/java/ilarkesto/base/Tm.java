@@ -24,17 +24,6 @@ import java.util.TimeZone;
  */
 public final class Tm extends ilarkesto.core.time.Tm {
 
-	private Tm() {}
-
-	public static final String[] MONTHS_DE = new String[] { "Januar", "Februar", "M\u00E4rz", "April", "Mai", "Juni",
-			"Juli", "August", "September", "Oktober", "November", "Dezember" };
-
-	public static final String[] WEEKDAYS = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
-			"Friday", "Saturday" };
-
-	public static final String[] WEEKDAYS_DE = new String[] { "Sonntag", "Montag", "Dienstag", "Mittwoch",
-			"Donnerstag", "Freitag", "Samstag" };
-
 	public static final SimpleDateFormat DATE_DE = new SimpleDateFormat("dd.MM.yyyy");
 
 	public static final SimpleDateFormat DATE_WITH_SHORT_WEEKDAY_DE = new SimpleDateFormat("EE, dd.MM.yyyy");
