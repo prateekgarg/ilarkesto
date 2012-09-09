@@ -15,12 +15,16 @@
 package ilarkesto.mda.legacy.generator;
 
 import ilarkesto.auth.AUserDao;
+import ilarkesto.auth.Auth;
+import ilarkesto.base.Cache;
 import ilarkesto.base.Str;
+import ilarkesto.fp.Predicate;
 import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.DependencyModel;
 import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.persistence.ADao;
+import ilarkesto.persistence.EntityEvent;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -269,14 +273,12 @@ public class DaoGenerator extends ABeanGenerator<EntityModel> {
 	protected Set<String> getImports() {
 		Set<String> result = new LinkedHashSet<String>();
 		result.addAll(super.getImports());
-		result.add("ilarkesto.base.*");
-		result.add("ilarkesto.base.time.*");
-		result.add("ilarkesto.auth.*");
-		result.add("ilarkesto.persistence.*");
-		result.add("ilarkesto.fp.*");
+		result.add(Auth.class.getName());
+		result.add(Cache.class.getName());
+		result.add(EntityEvent.class.getName());
+		result.add(Predicate.class.getName());
 		return result;
 	}
-
 	// --- dependencies ---
 
 }
