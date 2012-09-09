@@ -14,7 +14,7 @@
  */
 package ilarkesto.ui.usermessage;
 
-import ilarkesto.base.time.DateAndTime;
+import ilarkesto.core.time.DateAndTime;
 
 public class UserMessage {
 

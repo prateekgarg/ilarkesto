@@ -15,34 +15,12 @@
 package ilarkesto.core.time;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class Date implements Comparable<Date>, Serializable {
-
-	public static final transient SimpleDateFormat FORMAT_DAY_MONTH_SHORTYEAR = new SimpleDateFormat("dd.MM.yy");
-	public static final transient SimpleDateFormat FORMAT_DAY_MONTH_YEAR = new SimpleDateFormat("dd.MM.yyyy");
-	public static final transient SimpleDateFormat FORMAT_LONGMONTH_DAY_YEAR = new SimpleDateFormat("MMMM d, yyyy");
-	public static final transient SimpleDateFormat FORMAT_DAY_MONTH = new SimpleDateFormat("dd.MM.");
-	public static final transient SimpleDateFormat FORMAT_WEEKDAY_DAY_MONTH = new SimpleDateFormat("EEEE, dd.MM.");
-	public static final transient SimpleDateFormat FORMAT_DAY_LONGMONTH_YEAR = new SimpleDateFormat("dd. MMMM yyyy");
-	public static final transient SimpleDateFormat FORMAT_WEEKDAY_DAY_LONGMONTH_YEAR = new SimpleDateFormat(
-			"EEEE, dd. MMMM yyyy");
-	public static final transient SimpleDateFormat FORMAT_SHORTWEEKDAY_DAY_MONTH_YEAR = new SimpleDateFormat(
-			"EE, dd.MM.yyyy");
-	public static final transient SimpleDateFormat FORMAT_SHORTWEEKDAY_SHORTMONTH_DAY = new SimpleDateFormat(
-			"EE, MMM dd");
-	public static final transient SimpleDateFormat FORMAT_LONGMONTH = new SimpleDateFormat("MMMM");
-	public static final transient SimpleDateFormat FORMAT_LONGMONTH_YEAR = new SimpleDateFormat("MMMM yyyy");
-
-	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH_DAY = new SimpleDateFormat("yyyy-MM-dd");
-	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH = new SimpleDateFormat("yyyy-MM");
-	public static final transient SimpleDateFormat FORMAT_YEAR_LONGMONTH = new SimpleDateFormat("yyyy-MMMM");
-	public static final transient SimpleDateFormat FORMAT_YEAR_MONTH_DAY_NOSEP = new SimpleDateFormat("yyyyMMdd");
-
-	public static final transient SimpleDateFormat FORMAT_WEEKDAY = new SimpleDateFormat("EEEE");
 
 	protected int year;
 	protected int month;
@@ -112,6 +90,10 @@ public class Date implements Comparable<Date>, Serializable {
 		return newDate(year, month, 1);
 	}
 
+	public Date getLastDateOfMonth() {
+		return newDate(year, month, Tm.getDaysInMonth(year, month));
+	}
+
 	public Weekday getWeekday() {
 		return Weekday.get(Tm.getWeekday(toJavaDate()));
 	}
@@ -120,12 +102,41 @@ public class Date implements Comparable<Date>, Serializable {
 		return newDate(Tm.addDays(toJavaDate(), days));
 	}
 
+	public Date addMonths(int months) {
+		int years = months / 12;
+		months = months - (years * 12);
+		int newMonth = month + months;
+		if (newMonth > 12) {
+			years++;
+			newMonth -= 12;
+		} else if (newMonth <= 0) {
+			years--;
+			newMonth += 12;
+		}
+		int newYear = year + years;
+		int daysInNewMonth = Tm.getDaysInMonth(newYear, newMonth);
+		int newDay = daysInNewMonth < day ? daysInNewMonth : day;
+		return newDate(newYear, newMonth, newDay);
+	}
+
+	public Date addYears(int years) {
+		int newYear = year + years;
+		int daysInNewMonth = Tm.getDaysInMonth(newYear, month);
+		int newDay = daysInNewMonth < day ? daysInNewMonth : day;
+		return newDate(newYear, month, newDay);
+	}
+
 	public Date prevDay() {
 		return addDays(-1);
 	}
 
 	public Date nextDay() {
 		return addDays(1);
+	}
+
+	public Date getMondayOfWeek() {
+		if (getWeekday() == Weekday.MONDAY) return this;
+		return addDays(-1).getMondayOfWeek();
 	}
 
 	public final boolean isBetween(Date begin, Date end, boolean includingBoundaries) {
@@ -260,17 +271,71 @@ public class Date implements Comparable<Date>, Serializable {
 		return 0;
 	}
 
-	@Override
-	public final String toString() {
+	@Deprecated
+	public String format(DateFormat format) {
+		return format.format(toJavaDate());
+	}
+
+	public String formatDayMonth() {
+		StringBuilder sb = new StringBuilder();
+		formatDay(sb);
+		sb.append(".");
+		formatMonth(sb);
+		sb.append(".");
+		return sb.toString();
+	}
+
+	public String formatDayLongMonthYear() {
+		StringBuilder sb = new StringBuilder();
+		formatDay(sb);
+		sb.append(". ");
+		sb.append(formatLongMonth());
+		sb.append(' ');
+		sb.append(year);
+		return sb.toString();
+	}
+
+	public String formatLongMonthYear() {
+		return formatLongMonth() + " " + year;
+	}
+
+	public String formatLongMonth() {
+		return Month.get(month).toLocalString();
+	}
+
+	public String formatDayMonthYear() {
+		StringBuilder sb = new StringBuilder();
+		formatDay(sb);
+		sb.append('.');
+		formatMonth(sb);
+		sb.append('.');
+		sb.append(year);
+		return sb.toString();
+	}
+
+	public String formatYearMonthDay() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(year);
-		sb.append("-");
-		if (month < 10) sb.append('0');
-		sb.append(month);
-		sb.append("-");
+		sb.append('-');
+		formatMonth(sb);
+		sb.append('-');
+		formatDay(sb);
+		return sb.toString();
+	}
+
+	@Override
+	public final String toString() {
+		return formatYearMonthDay();
+	}
+
+	public void formatDay(StringBuilder sb) {
 		if (day < 10) sb.append('0');
 		sb.append(day);
-		return sb.toString();
+	}
+
+	public void formatMonth(StringBuilder sb) {
+		if (month < 10) sb.append('0');
+		sb.append(month);
 	}
 
 	// --- static ---

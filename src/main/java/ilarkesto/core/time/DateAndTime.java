@@ -14,7 +14,12 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.base.Tm;
+
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.TimeZone;
 
 public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 
@@ -68,6 +73,46 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 
 	// ---
 
+	/**
+	 * Assume instance as in given time zone and convert to UTC.
+	 */
+	public DateAndTime toUtc(TimeZone timeZone) {
+		return new DateAndTime(Tm.toUtc(toJavaDate(), timeZone));
+	}
+
+	/**
+	 * Assume instance as in system default time zone and convert to UTC.
+	 */
+	public DateAndTime toUtc() {
+		return toUtc(TimeZone.getDefault());
+	}
+
+	/**
+	 * Assume instance as in UTC and convert to given time zone.
+	 */
+	public DateAndTime toTimezone(TimeZone timeZone) {
+		return new DateAndTime(Tm.toTimeZone(toJavaDate(), timeZone));
+	}
+
+	/**
+	 * Assume instance as in UTC and convert to the local time zone.
+	 */
+	public DateAndTime toLocalTimezone() {
+		return new DateAndTime(Tm.toLocalTime(toJavaDate()));
+	}
+
+	public DateAndTime addDays(int days) {
+		return new DateAndTime(Tm.addDays(toJavaDate(), days));
+	}
+
+	public DateAndTime addHours(int hours) {
+		return new DateAndTime(toMillis() + (hours * Tm.HOUR));
+	}
+
+	public DateAndTime addMinutes(int minutes) {
+		return new DateAndTime(toMillis() + (minutes * Tm.MINUTE));
+	}
+
 	public TimePeriod getPeriodTo(DateAndTime other) {
 		return new TimePeriod(other.toMillis() - toMillis());
 	}
@@ -88,12 +133,24 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 		return isAfter(now());
 	}
 
+	public final boolean isBefore(Date other) {
+		return getDate().isBefore(other);
+	}
+
 	public final boolean isBefore(DateAndTime other) {
 		return compareTo(other) < 0;
 	}
 
+	public boolean isBeforeOrSame(DateAndTime other) {
+		return compareTo(other) <= 0;
+	}
+
 	public final boolean isAfter(DateAndTime other) {
 		return compareTo(other) > 0;
+	}
+
+	public boolean isAfterOrSame(DateAndTime other) {
+		return compareTo(other) >= 0;
 	}
 
 	public final Date getDate() {
@@ -112,13 +169,26 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 		return date.toMillis() + time.toMillis();
 	}
 
+	public String formatLog() {
+		return date.formatYearMonthDay() + "_" + time.formatLog();
+	}
+
+	public String formatDayMonthYearHourMinute() {
+		return date.formatDayMonthYear() + " " + time.formatHourMinute();
+	}
+
+	public String formatYearMonthDayHourMinute() {
+		return date.formatYearMonthDay() + " " + time.formatHourMinute();
+	}
+
+	@Deprecated
+	public String toString(DateFormat format) {
+		return format.format(toJavaDate());
+	}
+
 	@Override
 	public final String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(date.toString());
-		sb.append(" ");
-		sb.append(time.toString());
-		return sb.toString();
+		return date + " " + time;
 	}
 
 	@Override
@@ -148,6 +218,18 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 
 	public static DateAndTime now() {
 		return new DateAndTime();
+	}
+
+	public static DateAndTime parse(String s, DateFormat... formats) throws ParseException {
+		ParseException ex = null;
+		for (DateFormat format : formats) {
+			try {
+				return new DateAndTime(format.parse(s));
+			} catch (ParseException e) {
+				ex = e;
+			}
+		}
+		throw ex;
 	}
 
 }

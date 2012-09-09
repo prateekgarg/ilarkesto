@@ -1,7 +1,7 @@
 package ilarkesto.integration.twitter;
 
 import ilarkesto.auth.LoginDataProvider;
-import ilarkesto.base.time.DateAndTime;
+import ilarkesto.core.time.DateAndTime;
 
 import java.text.ParseException;
 import java.util.TimeZone;

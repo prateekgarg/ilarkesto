@@ -39,12 +39,11 @@ public abstract class AServlet<A extends AWebApplication> extends HttpServlet {
 		resp.sendError(HttpServletResponse.SC_NO_CONTENT);
 	}
 
-	protected void onInit(ServletConfig config) {}
+	protected void onInit(ServletConfig config) throws ServletException {}
 
 	@Override
 	protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		AWebSession session = webApplication.getWebSession(req);
-		session.getContext().bindCurrentThread();
+		if (!init(req, resp)) return;
 		try {
 			onGet(req, resp);
 		} catch (Throwable ex) {
@@ -54,13 +53,32 @@ public abstract class AServlet<A extends AWebApplication> extends HttpServlet {
 
 	@Override
 	protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		AWebSession session = webApplication.getWebSession(req);
-		session.getContext().bindCurrentThread();
+		if (!init(req, resp)) return;
 		try {
 			onPost(req, resp);
 		} catch (Throwable ex) {
 			handleError(ex, req, resp);
 		}
+	}
+
+	private boolean init(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		if (webApplication == null) {
+			resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Application not started yet");
+			return false;
+		}
+		if (webApplication.isShuttingDown()) {
+			resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, webApplication.getApplicationLabel()
+					+ " shutting down");
+			return false;
+		}
+		if (webApplication.isStartupFailed()) {
+			resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, webApplication.getApplicationLabel()
+					+ " startup failed");
+			return false;
+		}
+		AWebSession session = webApplication.getWebSession(req);
+		session.getContext().bindCurrentThread();
+		return true;
 	}
 
 	private void handleError(Throwable ex, HttpServletRequest req, HttpServletResponse resp) {

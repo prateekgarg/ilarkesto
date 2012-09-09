@@ -15,10 +15,10 @@
 package ilarkesto.di.app;
 
 import ilarkesto.base.Sys;
-import ilarkesto.base.time.DateAndTime;
 import ilarkesto.cli.ACommand;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.di.BeanContainer;
 import ilarkesto.di.BeanProvider;
 import ilarkesto.di.MultiBeanProvider;

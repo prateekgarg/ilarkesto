@@ -17,7 +17,7 @@ package ilarkesto.persistence;
 import ilarkesto.auth.AUser;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Utl;
-import ilarkesto.base.time.DateAndTime;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.id.Identifiable;
 
 import java.util.Map;

@@ -99,6 +99,13 @@ public class TmTest extends ATest {
 	@Test
 	public void addDays() {
 		assertEquals(Tm.addDays(birthday, 1), Tm.createDate(1979, 8, 4));
+		assertEquals(Tm.addDays(birthday, -1), Tm.createDate(1979, 8, 2));
+
+		assertEquals(Tm.addDays(Tm.createDate(2011, 2, 28), 1), Tm.createDate(2011, 3, 1));
+		assertEquals(Tm.addDays(Tm.createDate(2012, 2, 28), 1), Tm.createDate(2012, 2, 29));
+		assertEquals(Tm.addDays(Tm.createDate(2012, 2, 29), 1), Tm.createDate(2012, 3, 1));
+
+		assertEquals(Tm.addDays(Tm.createDate(2012, 12, 1), 31), Tm.createDate(2013, 1, 1));
 	}
 
 	@Test

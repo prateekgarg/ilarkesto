@@ -14,7 +14,7 @@
  */
 package ilarkesto.concurrent.locker;
 
-import ilarkesto.base.time.DateAndTime;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 
 public class Lock {

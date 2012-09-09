@@ -14,7 +14,7 @@
  */
 package ilarkesto.integration.xstream;
 
-import ilarkesto.base.time.DateAndTime;
+import ilarkesto.core.time.DateAndTime;
 
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 

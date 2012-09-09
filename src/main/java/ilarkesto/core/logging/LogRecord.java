@@ -18,12 +18,11 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log.Level;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class LogRecord {
 
-	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	// private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public final long time;
 	public final String name;
@@ -47,7 +46,7 @@ public class LogRecord {
 		StringBuilder sb = new StringBuilder();
 
 		// time
-		sb.append(TIME_FORMAT.format(new Date(time))).append(" ");
+		sb.append(new Date(time)).append(" ");
 
 		// level
 		if ((level != Level.DEBUG) && (level != Level.INFO)) sb.append("\n    ");

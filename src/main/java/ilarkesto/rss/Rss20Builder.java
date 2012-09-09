@@ -14,8 +14,9 @@
  */
 package ilarkesto.rss;
 
+import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
-import ilarkesto.base.time.DateAndTime;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.integration.jdom.JDom;
 
 import java.io.OutputStream;
@@ -84,7 +85,7 @@ public class Rss20Builder {
 		if (link != null) JDom.addTextElement(eChannel, "link", link);
 		if (description != null) JDom.addTextElement(eChannel, "description", description);
 		if (language != null) JDom.addTextElement(eChannel, "language", language);
-		if (pubDate != null) JDom.addTextElement(eChannel, "pubDate", pubDate.toString(DateAndTime.FORMAT_RFC822));
+		if (pubDate != null) JDom.addTextElement(eChannel, "pubDate", Tm.FORMAT_RFC822.format(pubDate));
 		if (image != null) {
 			Element eImage = JDom.addElement(eChannel, "image");
 			JDom.addTextElement(eImage, "url", image);
@@ -132,7 +133,7 @@ public class Rss20Builder {
 			if (description != null) JDom.addTextElement(eItem, "description", description);
 			if (link != null) JDom.addTextElement(eItem, "link", link);
 			if (guid != null) JDom.addTextElement(eItem, "guid", guid);
-			if (pubDate != null) JDom.addTextElement(eItem, "pubDate", pubDate.toString(DateAndTime.FORMAT_RFC822));
+			if (pubDate != null) JDom.addTextElement(eItem, "pubDate", Tm.FORMAT_RFC822.format(pubDate));
 			if (enclosure != null) {
 				Element eEnclosure = JDom.addElement(eItem, "enclosure");
 				eEnclosure.setAttribute("url", enclosure);

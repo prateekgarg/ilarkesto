@@ -18,10 +18,10 @@ import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
-import ilarkesto.base.time.DateAndTime;
 import ilarkesto.concurrent.ATask;
 import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.di.Context;
@@ -53,6 +53,7 @@ public abstract class AApplication {
 	private static Log log = Log.get(AApplication.class);
 
 	private ExclusiveFileLock exclusiveFileLock;
+	private boolean startupFailed;
 	private boolean shuttingDown;
 	private boolean shutdown;
 
@@ -107,12 +108,17 @@ public abstract class AApplication {
 
 			try {
 				getApplicationConfig();
-				backupApplicationDataDir();
+				try {
+					backupApplicationDataDir();
+				} catch (Throwable ex) {
+					log.error("Backing up application data directory failed.", ex);
+				}
 				deleteOldApplicationDataDirBackups();
 				ensureIntegrity();
 				onStart();
 			} catch (Throwable ex) {
 				APPLICATION_LOCK = null;
+				shutdown();
 				throw new RuntimeException("Application startup failed.", ex);
 			}
 
@@ -155,7 +161,7 @@ public abstract class AApplication {
 	public void backupApplicationDataDir() {
 		final File dir = new File(getApplicationDataDir());
 		File backupFile = new File(dir.getPath() + "/backups/" + getApplicationName() + "-data_"
-				+ DateAndTime.now().toString(DateAndTime.FORMAT_LOG) + ".zip");
+				+ DateAndTime.now().formatLog() + ".zip");
 		log.info("Backing up application data dir:", dir.getAbsolutePath(), "into", backupFile);
 		long starttime = Tm.getCurrentTimeMillis();
 		Object lock = entityStore == null ? this : entityStore;
@@ -312,6 +318,10 @@ public abstract class AApplication {
 
 	public final boolean isProductionMode() {
 		return !isDevelopmentMode();
+	}
+
+	public boolean isStartupFailed() {
+		return startupFailed;
 	}
 
 	public boolean isShuttingDown() {

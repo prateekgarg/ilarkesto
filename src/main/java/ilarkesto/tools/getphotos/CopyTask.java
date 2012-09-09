@@ -16,10 +16,10 @@ package ilarkesto.tools.getphotos;
 
 import ilarkesto.base.Env;
 import ilarkesto.base.Str;
-import ilarkesto.base.time.Date;
-import ilarkesto.base.time.DateAndTime;
 import ilarkesto.concurrent.ACollectionTask;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Tm;
 import ilarkesto.io.IO;
 
@@ -60,7 +60,7 @@ public class CopyTask extends ACollectionTask<File> {
 			return null;
 		}
 
-		String dirName = DateAndTime.now().toString(DateAndTime.FORMAT_LOG);
+		String dirName = DateAndTime.now().formatLog();
 		destinationDir = new File(GetphotosSwingApplication.get().getDestinationDir() + "/" + dirName);
 
 		copyPanel.setPhotoCount(photos.size());
@@ -94,7 +94,7 @@ public class CopyTask extends ACollectionTask<File> {
 					"<html>Fotos kopiert. Bitte Bezeichnung für das Album eingeben.<br><br><i style='font-weight: normal;'>Z.B. Ort, wo die Fotos gemacht wurden</i><br><br>",
 					"Wie soll das Album heissen?", JOptionPane.QUESTION_MESSAGE);
 		name = Str.toFileCompatibleString(name).replace(' ', '-');
-		name = date.toString(Date.FORMAT_YEAR_MONTH_DAY) + "_" + name;
+		name = date.formatYearMonthDay() + "_" + name;
 
 		File newDestinationDir = new File(destinationDir.getParent() + "/" + name);
 		if (destinationDir.renameTo(newDestinationDir)) {

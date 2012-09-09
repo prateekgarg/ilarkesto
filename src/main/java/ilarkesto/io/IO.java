@@ -861,12 +861,12 @@ public abstract class IO {
 			}
 			zipout.close();
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			throw new RuntimeException("Zipping files failed.", ex);
 		}
 	}
 
 	public static void addZipEntry(ZipOutputStream zipout, String zippath, File f, FileFilter filter,
-			ZipObserver observer) throws Exception {
+			ZipObserver observer) {
 		if (filter != null && !filter.accept(f)) return;
 		if (observer != null) {
 			if (observer.isAbortRequested()) return;
@@ -886,7 +886,7 @@ public abstract class IO {
 				in.close();
 				zipout.closeEntry();
 			} catch (Exception ex) {
-				if (observer == null) { throw ex; }
+				if (observer == null) { throw new RuntimeException("Zipping " + f + " failed.", ex); }
 				observer.onFileError(f, ex);
 			}
 		}

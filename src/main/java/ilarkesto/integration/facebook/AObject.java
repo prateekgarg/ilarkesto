@@ -1,6 +1,6 @@
 package ilarkesto.integration.facebook;
 
-import ilarkesto.base.time.DateAndTime;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
 

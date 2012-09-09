@@ -1,6 +1,6 @@
 package ilarkesto.integration.facebook;
 
-import ilarkesto.base.time.DateAndTime;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.json.JsonObject;
 
 public abstract class AIdentity extends AObject {

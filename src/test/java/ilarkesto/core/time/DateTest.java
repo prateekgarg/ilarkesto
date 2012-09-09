@@ -57,6 +57,24 @@ public class DateTest extends ATest {
 	}
 
 	@Test
+	public void addMonths() {
+		assertEquals(BIRTHDAY.addMonths(12), new Date(1980, 8, 3));
+		assertEquals(BIRTHDAY.addMonths(-12), new Date(1978, 8, 3));
+		assertEquals(BIRTHDAY.addMonths(4), new Date(1979, 12, 3));
+
+		assertEquals(new Date(2011, 1, 1).addMonths(-1), new Date(2010, 12, 1));
+		assertEquals(new Date(2011, 1, 31).addMonths(1), new Date(2011, 2, 28));
+	}
+
+	@Test
+	public void addYears() {
+		assertEquals(BIRTHDAY.addYears(10), new Date(1989, 8, 3));
+		assertEquals(BIRTHDAY.addYears(-10), new Date(1969, 8, 3));
+
+		assertEquals(new Date(2012, 2, 29).addYears(1), new Date(2013, 2, 28));
+	}
+
+	@Test
 	public void addDaysWithCalendar() {
 		Date date = new Date(2010, 1, 1);
 		for (int i = -10000; i < 10000; i++) {

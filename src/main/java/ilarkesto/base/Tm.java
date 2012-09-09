@@ -14,9 +14,13 @@
  */
 package ilarkesto.base;
 
+import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.Time;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -24,26 +28,43 @@ import java.util.TimeZone;
  */
 public final class Tm extends ilarkesto.core.time.Tm {
 
-	public static final SimpleDateFormat DATE_DE = new SimpleDateFormat("dd.MM.yyyy");
-
-	public static final SimpleDateFormat DATE_WITH_SHORT_WEEKDAY_DE = new SimpleDateFormat("EE, dd.MM.yyyy");
-
-	public static final SimpleDateFormat DATE_LONG_DE = new SimpleDateFormat("dd. MMMM yyyy");
-
-	public static final SimpleDateFormat DATE_VERY_LONG_DE = new SimpleDateFormat("EEEE, dd. MMMM yyyy");
-
-	public static final SimpleDateFormat DATE_TIME_DE = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-
-	public static final SimpleDateFormat DATE_ISO = new SimpleDateFormat("yyyy-MM-dd");
-
-	public static final SimpleDateFormat DATE_TIME_ISO = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-	public static final SimpleDateFormat DATE_TIME_LOGFILE = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-
-	public static final SimpleDateFormat TIME_SHORT_DE = new SimpleDateFormat("HH:mm");
-
+	public static final Format FORMAT_HOUR_MINUTE_SECOND = new Format("HH:mm:ss");
+	public static final Format FORMAT_HOUR_MINUTE_SECOND_NOSEP = new Format("HHmmss");
+	public static final Format FORMAT_DAY_MONTH_SHORTYEAR = new Format("dd.MM.yy");
+	public static final Format FORMAT_DAY_MONTH_YEAR = new Format("dd.MM.yyyy");
+	public static final Format FORMAT_LONGMONTH_DAY_YEAR = new Format("MMMM d, yyyy");
+	public static final Format FORMAT_DAY_MONTH = new Format("dd.MM.");
+	public static final Format FORMAT_WEEKDAY_DAY_MONTH = new Format("EEEE, dd.MM.");
+	public static final Format FORMAT_DAY_LONGMONTH_YEAR = new Format("dd. MMMM yyyy");
+	public static final Format FORMAT_WEEKDAY_DAY_LONGMONTH_YEAR = new Format("EEEE, dd. MMMM yyyy");
+	public static final Format FORMAT_SHORTWEEKDAY_DAY_MONTH_YEAR = new Format("EE, dd.MM.yyyy");
+	public static final Format FORMAT_SHORTWEEKDAY_SHORTMONTH_DAY = new Format("EE, MMM dd");
+	public static final Format FORMAT_LONGMONTH = new Format("MMMM");
+	public static final Format FORMAT_LONGMONTH_YEAR = new Format("MMMM yyyy");
+	public static final Format FORMAT_YEAR_MONTH_DAY = new Format("yyyy-MM-dd");
+	public static final Format FORMAT_YEAR_MONTH = new Format("yyyy-MM");
+	public static final Format FORMAT_YEAR_LONGMONTH = new Format("yyyy-MMMM");
+	public static final Format FORMAT_YEAR_MONTH_DAY_NOSEP = new Format("yyyyMMdd");
+	public static final Format FORMAT_WEEKDAY = new Format("EEEE");
+	public static final Format DATE_DE = new Format("dd.MM.yyyy");
+	public static final Format DATE_WITH_SHORT_WEEKDAY_DE = new Format("EE, dd.MM.yyyy");
+	public static final Format DATE_LONG_DE = new Format("dd. MMMM yyyy");
+	public static final Format DATE_VERY_LONG_DE = new Format("EEEE, dd. MMMM yyyy");
+	public static final Format DATE_TIME_DE = new Format("dd.MM.yyyy HH:mm:ss");
+	public static final Format DATE_ISO = new Format("yyyy-MM-dd");
+	public static final Format DATE_TIME_ISO = new Format("yyyy-MM-dd HH:mm:ss");
+	public static final Format DATE_TIME_LOGFILE = new Format("yyyy-MM-dd_HH-mm-ss");
+	public static final Format TIME_SHORT_DE = new Format("HH:mm");
 	public static final TimeZone TZ_BERLIN = TimeZone.getTimeZone("Europe/Berlin");
 	public static final TimeZone TZ_GMT = TimeZone.getTimeZone("GMT");
+	public static final transient Format FORMAT_WEEKDAY_DAY_LONGMONTH_YEAR_HOUR_MINUTE = new Format(
+			"EEE, dd. MMMM yyyy, HH:mm");
+	public static final Format FORMAT_WEEKDAY_LONGMONTH_DAY_YEAR_HOUR_MINUTE = new Format("EEE, MMM d, yyyy, HH:mm");
+	public static final Format FORMAT_DAY_MONTH_YEAR_HOUR_MINUTE = new Format("dd.MM.yyyy, HH:mm");
+	public static final Format FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND = new Format("yyyy-MM-dd HH:mm:ss");
+	public static final Format FORMAT_LOG = new Format("yyyy-MM-dd_HH-mm-ss");
+
+	public static final Format FORMAT_RFC822 = new Format("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
 
 	public static Date toUtc(Date date) {
 		return toUtc(date, TimeZone.getDefault());
@@ -136,6 +157,44 @@ public final class Tm extends ilarkesto.core.time.Tm {
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.setTime(date);
 		return getCurrentYear() - cal.get(GregorianCalendar.YEAR);
+	}
+
+	public static class Format {
+
+		private SimpleDateFormat format;
+
+		public Format(String pattern) {
+			this.format = new SimpleDateFormat(pattern);
+		}
+
+		public Format(String pattern, Locale locale) {
+			this.format = new SimpleDateFormat(pattern, locale);
+		}
+
+		public synchronized String format(Date date) {
+			if (date == null) return null;
+			return format.format(date);
+		}
+
+		public String format(ilarkesto.core.time.Date date) {
+			if (date == null) return null;
+			return format(date.toJavaDate());
+		}
+
+		public String format(DateAndTime dateAndTime) {
+			if (dateAndTime == null) return null;
+			return format(dateAndTime.toJavaDate());
+		}
+
+		public String format(Time time) {
+			if (time == null) return null;
+			return format(time.getJavaDateOn(ilarkesto.core.time.Date.today()));
+		}
+
+		public SimpleDateFormat getFormat() {
+			return format;
+		}
+
 	}
 
 }

@@ -14,9 +14,9 @@
  */
 package ilarkesto.webapp;
 
-import ilarkesto.base.time.DateAndTime;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.di.Context;
 import ilarkesto.gwt.server.AGwtConversation;

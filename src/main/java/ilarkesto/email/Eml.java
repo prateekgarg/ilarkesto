@@ -20,8 +20,8 @@ import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
-import ilarkesto.base.time.DateAndTime;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.io.IO;
 import ilarkesto.swing.LoginPanel;
 

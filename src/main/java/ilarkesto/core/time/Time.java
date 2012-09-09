@@ -15,13 +15,8 @@
 package ilarkesto.core.time;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 
 public class Time implements Comparable<Time>, Serializable {
-
-	public static final transient SimpleDateFormat FORMAT_HOUR_MINUTE_SECOND = new SimpleDateFormat("HH:mm:ss");
-
-	public static final transient SimpleDateFormat FORMAT_HOUR_MINUTE_SECOND_NOSEP = new SimpleDateFormat("HHmmss");
 
 	protected int hour;
 	protected int minute;
@@ -140,26 +135,57 @@ public class Time implements Comparable<Time>, Serializable {
 		return toString(false);
 	}
 
-	public final String toString(boolean includeSeconds) {
+	public String formatLog() {
 		StringBuilder sb = new StringBuilder();
-		if (hour < 10) sb.append("0");
-		sb.append(hour);
+		formatHour(sb);
+		sb.append("-");
+		formatMinute(sb);
+		sb.append("-");
+		formatSecond(sb);
+		return sb.toString();
+	}
+
+	public String formatHourMinute() {
+		StringBuilder sb = new StringBuilder();
+		formatHour(sb);
 		sb.append(":");
+		formatMinute(sb);
+		return sb.toString();
+	}
+
+	public String formatHourMinuteSecond() {
+		StringBuilder sb = new StringBuilder();
+		formatHour(sb);
+		sb.append(":");
+		formatMinute(sb);
+		sb.append(":");
+		formatSecond(sb);
+		return sb.toString();
+	}
+
+	@Deprecated
+	public final String toString(boolean includeSeconds) {
+		return includeSeconds ? formatHourMinuteSecond() : formatHourMinute();
+	}
+
+	public void formatSecond(StringBuilder sb) {
+		if (second < 10) sb.append("0");
+		sb.append(second);
+	}
+
+	public void formatMinute(StringBuilder sb) {
 		if (minute < 10) sb.append("0");
 		sb.append(minute);
-		if (includeSeconds) {
-			if (second > 0) {
-				sb.append(":");
-				if (second < 10) sb.append("0");
-				sb.append(second);
-			}
-		}
-		return sb.toString();
+	}
+
+	public void formatHour(StringBuilder sb) {
+		if (hour < 10) sb.append("0");
+		sb.append(hour);
 	}
 
 	@Override
 	public final String toString() {
-		return toString(true);
+		return formatHourMinuteSecond();
 	}
 
 	@Override

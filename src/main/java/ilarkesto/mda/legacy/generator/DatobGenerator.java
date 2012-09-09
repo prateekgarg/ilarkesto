@@ -15,9 +15,9 @@
 package ilarkesto.mda.legacy.generator;
 
 import ilarkesto.base.Str;
-import ilarkesto.base.time.Date;
-import ilarkesto.base.time.DateAndTime;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
 import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.PropertyModel;

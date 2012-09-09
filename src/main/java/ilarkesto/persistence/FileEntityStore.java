@@ -14,9 +14,9 @@
  */
 package ilarkesto.persistence;
 
-import ilarkesto.base.time.Date;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
 import ilarkesto.fp.Predicate;
 import ilarkesto.io.IO;
 
