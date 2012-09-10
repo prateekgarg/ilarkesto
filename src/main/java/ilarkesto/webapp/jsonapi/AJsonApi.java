@@ -17,31 +17,41 @@ package ilarkesto.webapp.jsonapi;
 import ilarkesto.json.JsonObject;
 import ilarkesto.webapp.RequestWrapper;
 
-
 public abstract class AJsonApi {
 
-	protected void onGet(JsonObject json) {}
+	// --- dependencies ---
 
-	protected void onGet(JsonObject json, RequestWrapper request) {
-		onGet(json);
+	protected RequestWrapper request;
+	private String path;
+
+	public void init(RequestWrapper request, String path) {
+		this.request = request;
+		this.path = path;
 	}
 
-	protected void onPost(JsonObject json) {
+	// --- ---
+
+	protected void onGet(JsonObject json, String path) {}
+
+	protected void onPost(JsonObject json, String path) {
 		throw new RuntimeException("POST not supported");
 	}
 
-	protected void onPost(JsonObject json, RequestWrapper request) {
-		onPost(json);
-	}
+	protected void onBinaryGet(String path) {}
 
-	public final JsonObject get(RequestWrapper request) {
+	public final JsonObject doGet() {
 		JsonObject json = new JsonObject();
-		onGet(json, request);
+		onGet(json, path);
 		return json;
 	}
 
-	public final void post(JsonObject update, RequestWrapper request) {
-		onPost(update, request);
+	public final void doPost(JsonObject update) {
+		onPost(update, path);
+	}
+
+	public final boolean doBinaryGet() {
+		onBinaryGet(path);
+		return request.isResponseServed();
 	}
 
 }

@@ -30,18 +30,20 @@ public class JsonApiServlet extends AServlet<AWebApplication, AWebSession> {
 
 	@Override
 	protected void onGet(RequestWrapper req) throws IOException {
-		AJsonApi api = getApi(req);
+		AJsonApi api = createApi(req);
 		if (api == null) {
 			req.sendErrorNotFound();
 			return;
 		}
 		req.preventCaching();
+		boolean binary = api.doBinaryGet();
+		if (binary) return;
 		writeGet(req, api);
 	}
 
 	@Override
 	protected void onPost(RequestWrapper req) throws IOException {
-		AJsonApi api = getApi(req);
+		AJsonApi api = createApi(req);
 		if (api == null) {
 			req.sendErrorNotFound();
 			return;
@@ -53,18 +55,28 @@ public class JsonApiServlet extends AServlet<AWebApplication, AWebSession> {
 	private void update(RequestWrapper req, AJsonApi api) {
 		JsonObject json = req.readContentToJson();
 		log.info(json.toFormatedString());
-		api.post(json, req);
+		api.doPost(json);
 	}
 
 	private void writeGet(RequestWrapper req, AJsonApi api) throws IOException {
-		JsonObject result = api.get(req);
+		JsonObject result = api.doGet();
 		req.write(result);
 	}
 
-	private AJsonApi getApi(RequestWrapper req) {
+	private AJsonApi createApi(RequestWrapper req) {
 		String path = Str.cutFrom(req.getUriWithoutContext(), "api/");
 		log.info(path);
-		return webApplication.getRestApiFactory().createApi(req, path);
+		String subpath = null;
+		int idx = path.indexOf('/');
+		if (idx >= 0) {
+			subpath = path.substring(idx + 1);
+			subpath = Str.removeSuffix(subpath, "/");
+			if (Str.isBlank(subpath)) subpath = null;
+			path = path.substring(0, idx);
+		}
+		AJsonApi api = webApplication.getRestApiFactory().createApi(req, path);
+		api.init(req, subpath);
+		return api;
 	}
 
 }

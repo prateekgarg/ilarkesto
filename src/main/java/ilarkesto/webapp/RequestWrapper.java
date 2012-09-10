@@ -38,6 +38,7 @@ public class RequestWrapper<S extends AWebSession> {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private S session;
+	private boolean responseServed;
 
 	public RequestWrapper(HttpServletRequest request, HttpServletResponse response) {
 		super();
@@ -53,6 +54,7 @@ public class RequestWrapper<S extends AWebSession> {
 		} catch (IOException ex) {
 			throw new RuntimeException("Writing PDF failed", ex);
 		}
+		responseServed = true;
 	}
 
 	public void write(JsonObject json) {
@@ -61,6 +63,7 @@ public class RequestWrapper<S extends AWebSession> {
 		} else {
 			write(json.toString());
 		}
+		responseServed = true;
 	}
 
 	public void write(File file, boolean setFilename) {
@@ -69,6 +72,7 @@ public class RequestWrapper<S extends AWebSession> {
 		} catch (IOException ex) {
 			throw new RuntimeException("Writing file failed: " + file, ex);
 		}
+		responseServed = true;
 	}
 
 	public void write(byte[] data) {
@@ -77,6 +81,7 @@ public class RequestWrapper<S extends AWebSession> {
 		} catch (IOException ex) {
 			throw new RuntimeException("Writing response data failed", ex);
 		}
+		responseServed = true;
 	}
 
 	public void write(String s) {
@@ -85,6 +90,7 @@ public class RequestWrapper<S extends AWebSession> {
 		} catch (IOException ex) {
 			throw new RuntimeException("Writing response failed: " + this, ex);
 		}
+		responseServed = true;
 	}
 
 	public void setFilename(String filename) {
@@ -121,6 +127,7 @@ public class RequestWrapper<S extends AWebSession> {
 		} catch (IOException ex) {
 			throw new RuntimeException("Redirecting failed", ex);
 		}
+		responseServed = true;
 	}
 
 	public void sendErrorForbidden() {
@@ -153,6 +160,7 @@ public class RequestWrapper<S extends AWebSession> {
 		} catch (IOException ex) {
 			log.info("Sending error failed:", getUri(), ex);
 		}
+		responseServed = true;
 	}
 
 	public void preventCaching() {
@@ -241,7 +249,16 @@ public class RequestWrapper<S extends AWebSession> {
 
 	// --- ---
 
+	public boolean isResponseServed() {
+		return responseServed;
+	}
+
+	public void setResponseServed(boolean responseServed) {
+		this.responseServed = responseServed;
+	}
+
 	public OutputStream getOutputStream() {
+		responseServed = true;
 		try {
 			return response.getOutputStream();
 		} catch (IOException ex) {
@@ -250,6 +267,7 @@ public class RequestWrapper<S extends AWebSession> {
 	}
 
 	public PrintWriter getWriter() {
+		responseServed = true;
 		try {
 			return response.getWriter();
 		} catch (IOException ex) {
