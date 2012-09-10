@@ -25,69 +25,66 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public abstract class AServlet<A extends AWebApplication> extends HttpServlet {
+public abstract class AServlet<A extends AWebApplication, S extends AWebSession> extends HttpServlet {
 
 	private static Log log = Log.get(AServlet.class);
 
 	protected A webApplication;
 
-	protected void onGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		resp.sendError(HttpServletResponse.SC_NO_CONTENT);
+	protected void onGet(RequestWrapper<S> req) throws IOException {
+		req.sendErrorNoContent();
 	}
 
-	protected void onPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		resp.sendError(HttpServletResponse.SC_NO_CONTENT);
+	protected void onPost(RequestWrapper<S> req) throws IOException {
+		req.sendErrorNoContent();
 	}
 
 	protected void onInit(ServletConfig config) throws ServletException {}
 
 	@Override
-	protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (!init(req, resp)) return;
+	protected final void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+			throws ServletException, IOException {
+		RequestWrapper<S> req = new RequestWrapper<S>(httpRequest, httpResponse);
+		if (!init(req)) return;
 		try {
-			onGet(req, resp);
+			onGet(req);
 		} catch (Throwable ex) {
-			handleError(ex, req, resp);
+			handleError(ex, req);
 		}
 	}
 
 	@Override
-	protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (!init(req, resp)) return;
+	protected final void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+			throws ServletException, IOException {
+		RequestWrapper<S> req = new RequestWrapper<S>(httpRequest, httpResponse);
+		if (!init(req)) return;
 		try {
-			onPost(req, resp);
+			onPost(req);
 		} catch (Throwable ex) {
-			handleError(ex, req, resp);
+			handleError(ex, req);
 		}
 	}
 
-	private boolean init(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	private boolean init(RequestWrapper<S> req) throws IOException {
 		if (webApplication == null) {
-			resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Application not started yet");
+			req.sendErrorServiceUnavailable("Application not started yet");
 			return false;
 		}
 		if (webApplication.isShuttingDown()) {
-			resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, webApplication.getApplicationLabel()
-					+ " shutting down");
+			req.sendErrorServiceUnavailable(webApplication.getApplicationLabel() + " shutting down");
 			return false;
 		}
 		if (webApplication.isStartupFailed()) {
-			resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, webApplication.getApplicationLabel()
-					+ " startup failed");
+			req.sendErrorServiceUnavailable(webApplication.getApplicationLabel() + " startup failed");
 			return false;
 		}
-		AWebSession session = webApplication.getWebSession(req);
-		session.getContext().bindCurrentThread();
+		req.getSession().getContext().bindCurrentThread();
 		return true;
 	}
 
-	private void handleError(Throwable ex, HttpServletRequest req, HttpServletResponse resp) {
-		log.info("request caused error:", req.getRequestURI(), ex);
-		try {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, Str.format(ex));
-		} catch (IOException ex1) {
-			log.error(ex1);
-		}
+	private void handleError(Throwable ex, RequestWrapper<S> req) {
+		log.info("request caused error:", req, ex);
+		req.sendErrorInternal(Str.format(ex));
 	}
 
 	@Override

@@ -12,17 +12,17 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.webapp.restapi;
+package ilarkesto.webapp.jsonapi;
 
 import ilarkesto.json.JsonObject;
-import ilarkesto.webapp.RequestParametersWrapper;
+import ilarkesto.webapp.RequestWrapper;
 
 
-public abstract class ARestApi {
+public abstract class AJsonApi {
 
 	protected void onGet(JsonObject json) {}
 
-	protected void onGet(JsonObject json, RequestParametersWrapper parameters) {
+	protected void onGet(JsonObject json, RequestWrapper request) {
 		onGet(json);
 	}
 
@@ -30,18 +30,18 @@ public abstract class ARestApi {
 		throw new RuntimeException("POST not supported");
 	}
 
-	protected void onPost(JsonObject json, RequestParametersWrapper parameters) {
+	protected void onPost(JsonObject json, RequestWrapper request) {
 		onPost(json);
 	}
 
-	public final JsonObject get(RequestParametersWrapper parameters) {
+	public final JsonObject get(RequestWrapper request) {
 		JsonObject json = new JsonObject();
-		onGet(json, parameters);
+		onGet(json, request);
 		return json;
 	}
 
-	public final void post(JsonObject update, RequestParametersWrapper parameters) {
-		onPost(update, parameters);
+	public final void post(JsonObject update, RequestWrapper request) {
+		onPost(update, request);
 	}
 
 }

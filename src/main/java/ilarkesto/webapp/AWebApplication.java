@@ -20,8 +20,8 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
 import ilarkesto.logging.DefaultLogRecordHandler;
-import ilarkesto.webapp.restapi.ReflectionRestApiFactory;
-import ilarkesto.webapp.restapi.RestApiFactory;
+import ilarkesto.webapp.jsonapi.ReflectionJsonApiFactory;
+import ilarkesto.webapp.jsonapi.JsonApiFactory;
 
 import java.io.File;
 import java.util.HashSet;
@@ -44,7 +44,7 @@ public abstract class AWebApplication extends AApplication {
 
 	private String applicationName;
 
-	private RestApiFactory restApiFactory;
+	private JsonApiFactory restApiFactory;
 
 	@Override
 	protected void onStart() {
@@ -143,13 +143,13 @@ public abstract class AWebApplication extends AApplication {
 		return ret;
 	}
 
-	public RestApiFactory getRestApiFactory() {
+	public JsonApiFactory getRestApiFactory() {
 		if (restApiFactory == null) restApiFactory = createRestApiFactory();
 		return restApiFactory;
 	}
 
-	protected ReflectionRestApiFactory createRestApiFactory() {
-		return new ReflectionRestApiFactory(this);
+	protected ReflectionJsonApiFactory createRestApiFactory() {
+		return new ReflectionJsonApiFactory(this);
 	}
 
 	public static AWebApplication get() {

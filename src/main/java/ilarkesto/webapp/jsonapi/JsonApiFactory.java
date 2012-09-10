@@ -12,12 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.webapp.restapi;
+package ilarkesto.webapp.jsonapi;
 
-import javax.servlet.http.HttpServletRequest;
+import ilarkesto.webapp.RequestWrapper;
 
-public interface RestApiFactory {
+public interface JsonApiFactory {
 
-	ARestApi createApi(HttpServletRequest req, String path);
+	AJsonApi createApi(RequestWrapper req, String path);
 
 }
