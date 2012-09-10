@@ -50,7 +50,7 @@ public class DateFormField extends AFormField {
 		s = s.trim();
 		if (s.length() == 0) return null;
 		try {
-			return DateParser.parse(s).formatDayMonthYear();
+			return DateParser.parseDate(s).formatDayMonthYear();
 		} catch (ParseException ex) {
 			return s;
 		}
@@ -63,7 +63,7 @@ public class DateFormField extends AFormField {
 
 		} else {
 			try {
-				DateParser.parse(value);
+				DateParser.parseDate(value);
 			} catch (ParseException ex) {
 				throw new ValidationException("Eingabe muss ein Datum sein. " + ex.getMessage());
 			}
@@ -77,7 +77,7 @@ public class DateFormField extends AFormField {
 
 	public Date getValueAsDate() {
 		try {
-			return value == null ? null : DateParser.parse(value);
+			return value == null ? null : DateParser.parseDate(value);
 		} catch (ParseException ex) {
 			throw new RuntimeException(ex);
 		}

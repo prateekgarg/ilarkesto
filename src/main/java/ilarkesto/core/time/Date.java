@@ -15,7 +15,6 @@
 package ilarkesto.core.time;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -269,11 +268,6 @@ public class Date implements Comparable<Date>, Serializable {
 		if (day > other.day) return 1;
 		if (day < other.day) return -1;
 		return 0;
-	}
-
-	@Deprecated
-	public String format(DateFormat format) {
-		return format.format(toJavaDate());
 	}
 
 	public String formatDayMonth() {

@@ -96,8 +96,8 @@ public abstract class Servlet {
 
 	public static void setLastModified(HttpServletResponse httpResponse, DateAndTime lastModified) {
 		lastModified = lastModified.toUtc();
-		httpResponse.setHeader("Last-Modified", lastModified.toString(new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss"))
-				+ " GMT");
+		httpResponse.setHeader("Last-Modified",
+			new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss").format(lastModified.toJavaDate()) + " GMT");
 	}
 
 	public static void setEtag(HttpServletResponse httpResponse, String eTag) {

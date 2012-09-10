@@ -15,12 +15,14 @@
 package ilarkesto.base;
 
 import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 
 public class DateParser {
 
-	public static Date parse(String s) throws ParseException {
+	public static Date parseDate(String s) throws ParseException {
 		if (s == null) return null;
 		s = s.trim();
 		String[] sa = Str.tokenize(s, ".,- ");
@@ -49,6 +51,18 @@ public class DateParser {
 
 		if (ia[0] > 31) return new Date(Tm.year(ia[0]), todayMonth, todayDay);
 		return new Date(todayYear, todayMonth, ia[0]);
+	}
+
+	public static DateAndTime parseDateAndTime(String s, DateFormat... formats) throws ParseException {
+		ParseException ex = null;
+		for (DateFormat format : formats) {
+			try {
+				return new DateAndTime(format.parse(s));
+			} catch (ParseException e) {
+				ex = e;
+			}
+		}
+		throw ex;
 	}
 
 }

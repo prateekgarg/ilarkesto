@@ -17,8 +17,6 @@ package ilarkesto.core.time;
 import ilarkesto.base.Tm;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.TimeZone;
 
 public class DateAndTime implements Comparable<DateAndTime>, Serializable {
@@ -181,11 +179,6 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 		return date.formatYearMonthDay() + " " + time.formatHourMinute();
 	}
 
-	@Deprecated
-	public String toString(DateFormat format) {
-		return format.format(toJavaDate());
-	}
-
 	@Override
 	public final String toString() {
 		return date + " " + time;
@@ -218,18 +211,6 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 
 	public static DateAndTime now() {
 		return new DateAndTime();
-	}
-
-	public static DateAndTime parse(String s, DateFormat... formats) throws ParseException {
-		ParseException ex = null;
-		for (DateFormat format : formats) {
-			try {
-				return new DateAndTime(format.parse(s));
-			} catch (ParseException e) {
-				ex = e;
-			}
-		}
-		throw ex;
 	}
 
 }
