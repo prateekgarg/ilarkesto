@@ -356,7 +356,7 @@ public abstract class IO {
 		createDirectory(new File(path));
 	}
 
-	public static void createDirectory(File dir) {
+	public static synchronized void createDirectory(File dir) {
 		if (dir.exists()) {
 			if (dir.isDirectory()) return;
 			throw new RuntimeException("A file already exists: " + dir.getPath());
@@ -945,11 +945,17 @@ public abstract class IO {
 		} catch (Throwable ex) {}
 	}
 
-	@Deprecated
-	public static void writeImage(Image image, String type, String file) throws IOException {
-		File f = new File(file);
-		createDirectory(f.getParentFile());
-		ImageIO.write(toBufferedImage(image), type, f);
+	public static void writeImage(Image image, String type, String file) {
+		writeImage(image, type, new File(file));
+	}
+
+	public static void writeImage(Image image, String type, File file) {
+		createDirectory(file.getParentFile());
+		try {
+			ImageIO.write(toBufferedImage(image), type, file);
+		} catch (IOException ex) {
+			throw new RuntimeException("Writing image to file failed: " + file, ex);
+		}
 	}
 
 	public static void writeImage(Image image, int width, int height, String type, String file) throws IOException {

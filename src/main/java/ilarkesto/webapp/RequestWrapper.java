@@ -48,6 +48,15 @@ public class RequestWrapper<S extends AWebSession> {
 
 	// --- response helpers ---
 
+	public void serve(File file) {
+		serve(file, true, true);
+	}
+
+	public void serve(File file, boolean setFilename, boolean enableCaching) {
+		Servlet.serveFile(file, request, response, setFilename, enableCaching);
+		responseServed = true;
+	}
+
 	public void write(PdfBuilder pdf) {
 		try {
 			pdf.write(response.getOutputStream());
@@ -62,15 +71,6 @@ public class RequestWrapper<S extends AWebSession> {
 			write(json.toFormatedString());
 		} else {
 			write(json.toString());
-		}
-		responseServed = true;
-	}
-
-	public void write(File file, boolean setFilename) {
-		try {
-			Servlet.serveFile(file, response, setFilename);
-		} catch (IOException ex) {
-			throw new RuntimeException("Writing file failed: " + file, ex);
 		}
 		responseServed = true;
 	}

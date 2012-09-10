@@ -35,7 +35,6 @@ public class JsonApiServlet extends AServlet<AWebApplication, AWebSession> {
 			req.sendErrorNotFound();
 			return;
 		}
-		req.preventCaching();
 		boolean binary = api.doBinaryGet();
 		if (binary) return;
 		writeGet(req, api);
