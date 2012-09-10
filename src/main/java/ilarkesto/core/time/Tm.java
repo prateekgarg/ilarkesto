@@ -15,6 +15,7 @@
 package ilarkesto.core.time;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Tm {
 
@@ -35,6 +36,9 @@ public class Tm {
 	public static final int FRIDAY = 6;
 	public static final int SATURDAY = 7;
 
+	public static final TimeZone TZ_BERLIN = TimeZone.getTimeZone("Europe/Berlin");
+	public static final TimeZone TZ_GMT = TimeZone.getTimeZone("GMT");
+
 	private static TmLocalizer tmLocalizer;
 	private static TmLocalizerDe tmLocalizerDe;
 
@@ -46,6 +50,26 @@ public class Tm {
 
 	public static void setTimeOffset(long timeOffset) {
 		Tm.timeOffset = timeOffset;
+	}
+
+	public static Date toUtc(Date date) {
+		return toUtc(date, TimeZone.getDefault());
+	}
+
+	public static Date toUtc(Date date, TimeZone timeZone) {
+		long millis = date.getTime();
+		int offset = timeZone.getOffset(millis);
+		return new Date(millis - offset);
+	}
+
+	public static Date toTimeZone(Date date, TimeZone timeZone) {
+		long millis = date.getTime();
+		int offset = timeZone.getOffset(millis);
+		return new Date(millis + offset);
+	}
+
+	public static Date toLocalTime(Date date) {
+		return toTimeZone(date, TZ_GMT);
 	}
 
 	public static Date getDateAndTime(Date date, long time) {

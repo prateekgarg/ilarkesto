@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * Utilitiy methods for dealing with date and time. Current month, year. Date comparsions.
@@ -55,8 +54,6 @@ public final class Tm extends ilarkesto.core.time.Tm {
 	public static final Format DATE_TIME_ISO = new Format("yyyy-MM-dd HH:mm:ss");
 	public static final Format DATE_TIME_LOGFILE = new Format("yyyy-MM-dd_HH-mm-ss");
 	public static final Format TIME_SHORT_DE = new Format("HH:mm");
-	public static final TimeZone TZ_BERLIN = TimeZone.getTimeZone("Europe/Berlin");
-	public static final TimeZone TZ_GMT = TimeZone.getTimeZone("GMT");
 	public static final transient Format FORMAT_WEEKDAY_DAY_LONGMONTH_YEAR_HOUR_MINUTE = new Format(
 			"EEE, dd. MMMM yyyy, HH:mm");
 	public static final Format FORMAT_WEEKDAY_LONGMONTH_DAY_YEAR_HOUR_MINUTE = new Format("EEE, MMM d, yyyy, HH:mm");
@@ -65,26 +62,6 @@ public final class Tm extends ilarkesto.core.time.Tm {
 	public static final Format FORMAT_LOG = new Format("yyyy-MM-dd_HH-mm-ss");
 
 	public static final Format FORMAT_RFC822 = new Format("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-
-	public static Date toUtc(Date date) {
-		return toUtc(date, TimeZone.getDefault());
-	}
-
-	public static Date toUtc(Date date, TimeZone timeZone) {
-		long millis = date.getTime();
-		int offset = timeZone.getOffset(millis);
-		return new Date(millis - offset);
-	}
-
-	public static Date toTimeZone(Date date, TimeZone timeZone) {
-		long millis = date.getTime();
-		int offset = timeZone.getOffset(millis);
-		return new Date(millis + offset);
-	}
-
-	public static Date toLocalTime(Date date) {
-		return toTimeZone(date, TZ_GMT);
-	}
 
 	public static boolean isSameDay(Date day1, Date day2) {
 		return getDayBegin(day1).equals(getDayBegin(day2));

@@ -14,8 +14,6 @@
  */
 package ilarkesto.core.time;
 
-import ilarkesto.base.Tm;
-
 import java.io.Serializable;
 import java.util.TimeZone;
 
