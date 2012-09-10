@@ -14,6 +14,7 @@
  */
 package ilarkesto.mda.legacy.generator;
 
+import ilarkesto.auth.AUser;
 import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
@@ -24,7 +25,13 @@ import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
 import ilarkesto.mda.legacy.model.SetPropertyModel;
 import ilarkesto.persistence.ADatob;
+import ilarkesto.persistence.AEntity;
+import ilarkesto.persistence.AStructure;
+import ilarkesto.persistence.EntityDoesNotExistException;
 import ilarkesto.persistence.UniqueFieldConstraintException;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
@@ -657,6 +664,19 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 	@Override
 	protected String getSuperclass() {
 		return bean.getSuperclass();
+	}
+
+	@Override
+	protected Set<String> getImports() {
+		Set<String> result = new LinkedHashSet<String>();
+		result.addAll(super.getImports());
+		result.add(ADatob.class.getName());
+		result.add(AEntity.class.getName());
+		result.add(AStructure.class.getName());
+		result.add(AUser.class.getName());
+		result.add(EntityDoesNotExistException.class.getName());
+		result.add(Str.class.getName());
+		return result;
 	}
 
 	// --- dependencies ---

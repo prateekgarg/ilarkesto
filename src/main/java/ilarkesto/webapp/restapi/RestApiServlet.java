@@ -20,6 +20,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.json.JsonObject;
 import ilarkesto.webapp.AServlet;
 import ilarkesto.webapp.AWebApplication;
+import ilarkesto.webapp.RequestParametersWrapper;
 import ilarkesto.webapp.Servlet;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class RestApiServlet extends AServlet<AWebApplication> {
 			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
+		Servlet.preventCaching(resp);
 		writeGet(req, resp, api);
 	}
 
@@ -57,11 +59,11 @@ public class RestApiServlet extends AServlet<AWebApplication> {
 		if (Str.isBlank(s)) throw new RuntimeException("Illegal request");
 		JsonObject json = new JsonObject(s);
 		log.info(json.toFormatedString());
-		api.post(json, req.getParameterMap());
+		api.post(json, new RequestParametersWrapper(req));
 	}
 
 	private void writeGet(HttpServletRequest req, HttpServletResponse resp, ARestApi api) throws IOException {
-		JsonObject result = api.get(req.getParameterMap());
+		JsonObject result = api.get(new RequestParametersWrapper(req));
 		result.write(resp.getWriter(), Sys.isDevelopmentMode());
 	}
 

@@ -12,36 +12,30 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.webapp.restapi;
+package ilarkesto.io;
 
-import ilarkesto.json.JsonObject;
-import ilarkesto.webapp.RequestParametersWrapper;
+import java.io.File;
 
+public class FileWatcher {
 
-public abstract class ARestApi {
+	private File file;
+	private long lastModified;
 
-	protected void onGet(JsonObject json) {}
-
-	protected void onGet(JsonObject json, RequestParametersWrapper parameters) {
-		onGet(json);
+	public FileWatcher(File file) {
+		super();
+		this.file = file;
 	}
 
-	protected void onPost(JsonObject json) {
-		throw new RuntimeException("POST not supported");
+	public boolean checkIfChanged() {
+		long fileLastModified = file.lastModified();
+		if (fileLastModified == lastModified) return false;
+		lastModified = fileLastModified;
+		return true;
 	}
 
-	protected void onPost(JsonObject json, RequestParametersWrapper parameters) {
-		onPost(json);
-	}
-
-	public final JsonObject get(RequestParametersWrapper parameters) {
-		JsonObject json = new JsonObject();
-		onGet(json, parameters);
-		return json;
-	}
-
-	public final void post(JsonObject update, RequestParametersWrapper parameters) {
-		onPost(update, parameters);
+	@Override
+	public String toString() {
+		return "FileWatcher: " + file;
 	}
 
 }

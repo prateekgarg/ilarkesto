@@ -12,36 +12,32 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.webapp.restapi;
+package ilarkesto.webapp;
 
-import ilarkesto.json.JsonObject;
-import ilarkesto.webapp.RequestParametersWrapper;
+import javax.servlet.http.HttpServletRequest;
 
+public class RequestParametersWrapper {
 
-public abstract class ARestApi {
+	private HttpServletRequest req;
 
-	protected void onGet(JsonObject json) {}
-
-	protected void onGet(JsonObject json, RequestParametersWrapper parameters) {
-		onGet(json);
+	public RequestParametersWrapper(HttpServletRequest req) {
+		super();
+		this.req = req;
 	}
 
-	protected void onPost(JsonObject json) {
-		throw new RuntimeException("POST not supported");
+	public String get(String name) {
+		return req.getParameter(name);
 	}
 
-	protected void onPost(JsonObject json, RequestParametersWrapper parameters) {
-		onPost(json);
+	public String get(String name, String defaultValue) {
+		String value = get(name);
+		return value == null ? defaultValue : value;
 	}
 
-	public final JsonObject get(RequestParametersWrapper parameters) {
-		JsonObject json = new JsonObject();
-		onGet(json, parameters);
-		return json;
-	}
-
-	public final void post(JsonObject update, RequestParametersWrapper parameters) {
-		onPost(update, parameters);
+	public String getMandatory(String name) {
+		String value = get(name);
+		if (value == null) throw new RuntimeException("Missing mandatory request parameter: " + name);
+		return value;
 	}
 
 }

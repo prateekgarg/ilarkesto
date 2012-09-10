@@ -14,7 +14,6 @@
  */
 package ilarkesto.mda.legacy.generator;
 
-import ilarkesto.auth.AUser;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
@@ -23,10 +22,6 @@ import ilarkesto.mda.legacy.model.CompositeModel;
 import ilarkesto.mda.legacy.model.DependencyModel;
 import ilarkesto.mda.legacy.model.EventModel;
 import ilarkesto.mda.legacy.model.ParameterModel;
-import ilarkesto.persistence.ADatob;
-import ilarkesto.persistence.AEntity;
-import ilarkesto.persistence.AStructure;
-import ilarkesto.persistence.EntityDoesNotExistException;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -175,12 +170,6 @@ public abstract class ABeanGenerator<B extends BeanModel> extends AClassGenerato
 		// result.add("ilarkesto.base.time.*");
 		// result.add("ilarkesto.auth.*");
 		// result.add(AEntity.class.getName());
-		result.add(ADatob.class.getName());
-		result.add(AEntity.class.getName());
-		result.add(AStructure.class.getName());
-		result.add(AUser.class.getName());
-		result.add(EntityDoesNotExistException.class.getName());
-		result.add(Str.class.getName());
 		return result;
 	}
 

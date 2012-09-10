@@ -281,6 +281,13 @@ public class Str extends ilarkesto.core.base.Str {
 		return sb.toString();
 	}
 
+	public static String removeFilenameSuffix(String filename) {
+		if (filename == null) return null;
+		int idx = filename.lastIndexOf('.');
+		if (idx < 0) return filename;
+		return filename.substring(0, idx);
+	}
+
 	public static boolean isReadable(char c) {
 		if (Character.isLetterOrDigit(c)) return true;
 		if (c == ' ' || c == '\n' || c == '!' || c == '"' || c == '§' || c == '$' || c == '%' || c == '&' || c == '/'
