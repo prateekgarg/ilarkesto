@@ -15,7 +15,6 @@
 package ilarkesto.core.time;
 
 import java.io.Serializable;
-import java.util.TimeZone;
 
 public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 
@@ -68,34 +67,6 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 	}
 
 	// ---
-
-	/**
-	 * Assume instance as in given time zone and convert to UTC.
-	 */
-	public DateAndTime toUtc(TimeZone timeZone) {
-		return new DateAndTime(Tm.toUtc(toJavaDate(), timeZone));
-	}
-
-	/**
-	 * Assume instance as in system default time zone and convert to UTC.
-	 */
-	public DateAndTime toUtc() {
-		return toUtc(TimeZone.getDefault());
-	}
-
-	/**
-	 * Assume instance as in UTC and convert to given time zone.
-	 */
-	public DateAndTime toTimezone(TimeZone timeZone) {
-		return new DateAndTime(Tm.toTimeZone(toJavaDate(), timeZone));
-	}
-
-	/**
-	 * Assume instance as in UTC and convert to the local time zone.
-	 */
-	public DateAndTime toLocalTimezone() {
-		return new DateAndTime(Tm.toLocalTime(toJavaDate()));
-	}
 
 	public DateAndTime addDays(int days) {
 		return new DateAndTime(Tm.addDays(toJavaDate(), days));
