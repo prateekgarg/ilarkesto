@@ -181,18 +181,19 @@ public abstract class AApplication {
 	}
 
 	public void backupApplicationDataDir() {
-		final File dir = new File(getApplicationDataDir());
-		File backupFile = new File(dir.getPath() + "/backups/" + getApplicationName() + "-data_"
+		final File dataDir = new File(getApplicationDataDir());
+		File backupFile = new File(dataDir.getPath() + "/backups/" + getApplicationName() + "-data_"
 				+ DateAndTime.now().formatLog() + ".zip");
-		log.info("Backing up application data dir:", dir.getAbsolutePath(), "into", backupFile);
+		log.info("Backing up application data dir:", dataDir.getAbsolutePath(), "into", backupFile);
 		long starttime = Tm.getCurrentTimeMillis();
 		Object lock = entityStore == null ? this : entityStore;
 		synchronized (lock) {
-			IO.zip(backupFile, new File[] { dir }, new FileFilter() {
+			IO.zip(backupFile, new File[] { dataDir }, new FileFilter() {
 
 				@Override
 				public boolean accept(File file) {
-					if (file.getParentFile().equals(dir)) {
+					File dir = file.getParentFile();
+					if (dir.equals(dataDir)) {
 						// base dir
 						String name = file.getName();
 						if (name.equals(".lock")) return false;
@@ -283,7 +284,7 @@ public abstract class AApplication {
 	public String getApplicationDataDir() {
 		if (applicationDataDir == null) {
 			if (isDevelopmentMode()) {
-				applicationDataDir = "runtimedata";
+				applicationDataDir = new File("runtimedata").getAbsolutePath();
 			} else {
 				applicationDataDir = Sys.getUsersHomePath() + "/." + getApplicationName();
 			}
