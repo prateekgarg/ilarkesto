@@ -281,7 +281,13 @@ public abstract class AApplication {
 	private String applicationDataDir;
 
 	public String getApplicationDataDir() {
-		if (applicationDataDir == null) applicationDataDir = Sys.getUsersHomePath() + "/." + getApplicationName();
+		if (applicationDataDir == null) {
+			if (isDevelopmentMode()) {
+				applicationDataDir = "runtimedata";
+			} else {
+				applicationDataDir = Sys.getUsersHomePath() + "/." + getApplicationName();
+			}
+		}
 		return applicationDataDir;
 	}
 
