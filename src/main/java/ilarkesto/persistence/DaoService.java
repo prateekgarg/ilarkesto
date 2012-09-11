@@ -15,6 +15,7 @@
 package ilarkesto.persistence;
 
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
 import ilarkesto.di.Context;
@@ -28,8 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.gdata.data.dublincore.Date;
 
 public class DaoService implements IdentifiableResolver<AEntity> {
 

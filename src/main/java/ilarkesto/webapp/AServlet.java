@@ -95,7 +95,8 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 		try {
 			onPreInit(config);
 			webApplication = (A) AWebApplication.get();
-			if (webApplication == null) throw new RuntimeException("Web application startup failed.");
+			if (webApplication == null || webApplication.isStartupFailed())
+				throw new RuntimeException("Web application startup failed.");
 			onInit(config);
 		} catch (Throwable ex) {
 			throw new ServletException(getClass().getSimpleName() + ".init(ServletConfig) failed.", ex);

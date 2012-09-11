@@ -16,7 +16,7 @@
 		<copy todir="build/classes" preservelastmodified="true">
 			<fileset dir="src/main/java"/>
 		</copy>
-		<javac target="1.6" srcdir="build/classes" destdir="build/classes" encoding="UTF-8" nowarn="true" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+		<javac source="1.6" target="1.6" srcdir="build/classes" destdir="build/classes" encoding="UTF-8" nowarn="true" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
 			<classpath>
 				<fileset dir="lib" />
 			</classpath>
