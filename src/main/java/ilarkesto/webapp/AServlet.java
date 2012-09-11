@@ -39,7 +39,7 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 		req.sendErrorNoContent();
 	}
 
-	protected void onInit(ServletConfig config) throws ServletException {}
+	protected void onInit(ServletConfig config) {}
 
 	@Override
 	protected final void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
@@ -87,11 +87,24 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 		req.sendErrorInternal(Str.format(ex));
 	}
 
+	protected void onPreInit(ServletConfig config) {}
+
 	@Override
 	public final void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		onInit(config);
-		webApplication = (A) AWebApplication.get();
+		try {
+			onPreInit(config);
+			webApplication = (A) AWebApplication.get();
+			if (webApplication == null) throw new RuntimeException("Web application startup failed.");
+			onInit(config);
+		} catch (Throwable ex) {
+			throw new ServletException(getClass().getSimpleName() + ".init(ServletConfig) failed.", ex);
+		}
+	}
+
+	@Override
+	public final void init() throws ServletException {
+		super.init();
 	}
 
 }

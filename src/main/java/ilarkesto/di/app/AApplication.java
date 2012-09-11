@@ -108,25 +108,46 @@ public abstract class AApplication {
 
 			try {
 				getApplicationConfig();
-				try {
-					backupApplicationDataDir();
-				} catch (Throwable ex) {
-					log.error("Backing up application data directory failed.", ex);
-				}
+			} catch (Throwable ex) {
+				startupFailed = true;
+				throw new RuntimeException("Application startup failed. Loading configuration failed.", ex);
+			}
+			try {
+				backupApplicationDataDir();
 				deleteOldApplicationDataDirBackups();
+			} catch (Throwable ex) {
+				log.error("Backing up application data directory failed.", ex);
+			}
+			try {
 				ensureIntegrity();
+			} catch (Throwable ex) {
+				startupFailed = true;
+				shutdown(false);
+				throw new RuntimeException("Application startup failed. Data integrity check or repair failed.", ex);
+			}
+			try {
 				onStart();
 			} catch (Throwable ex) {
-				APPLICATION_LOCK = null;
-				shutdown();
+				startupFailed = true;
+				shutdown(false);
 				throw new RuntimeException("Application startup failed.", ex);
 			}
 
-			scheduleTasks(getTaskManager());
+			try {
+				scheduleTasks(getTaskManager());
+			} catch (Throwable ex) {
+				startupFailed = true;
+				shutdown(true);
+				throw new RuntimeException("Application startup failed.", ex);
+			}
 		}
 	}
 
 	public final void shutdown() {
+		shutdown(true);
+	}
+
+	private final void shutdown(final boolean runOnShutdown) {
 		Thread thread = new Thread(new Runnable() {
 
 			@Override
@@ -134,7 +155,8 @@ public abstract class AApplication {
 				synchronized (getApplicationLock()) {
 					if (instance == null) throw new RuntimeException("Application not started yet.");
 					log.info("Shutdown initiated:", getApplicationName());
-					onShutdown();
+
+					if (runOnShutdown) onShutdown();
 
 					getTaskManager().shutdown(10000);
 					Set<ATask> tasks = getTaskManager().getRunningTasks();
