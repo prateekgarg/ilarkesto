@@ -655,12 +655,6 @@ public class HtmlRenderer {
 
 	private static final String DIV = "div";
 
-	public void DIVclean() {
-		startDIV("clean");
-		IMG("dot.png", "", null, null, null, null);
-		endDIV();
-	}
-
 	public void DIVclear() {
 		startDIV().setStyle("clear: both;");
 		endDIV();
