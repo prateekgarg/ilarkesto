@@ -154,10 +154,15 @@ public class Time implements Comparable<Time>, Serializable {
 	}
 
 	public String formatHourMinuteSecond() {
+		return formatHourMinuteSecond(true);
+	}
+
+	public String formatHourMinuteSecond(boolean skipSecondIfZero) {
 		StringBuilder sb = new StringBuilder();
 		formatHour(sb);
 		sb.append(":");
 		formatMinute(sb);
+		if (skipSecondIfZero && second == 0) return sb.toString();
 		sb.append(":");
 		formatSecond(sb);
 		return sb.toString();
@@ -185,7 +190,7 @@ public class Time implements Comparable<Time>, Serializable {
 
 	@Override
 	public final String toString() {
-		return formatHourMinuteSecond();
+		return formatHourMinuteSecond(true);
 	}
 
 	@Override
