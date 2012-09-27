@@ -24,6 +24,27 @@ public class TmLocalizerDe extends TmLocalizer {
 	}
 
 	@Override
+	public String shorted(Weekday day) {
+		switch (day) {
+			case MONDAY:
+				return "Mo";
+			case TUESDAY:
+				return "Di";
+			case WEDNESDAY:
+				return "Mi";
+			case THURSDAY:
+				return "Do";
+			case FRIDAY:
+				return "Fr";
+			case SATURDAY:
+				return "Sa";
+			case SUNDAY:
+				return "So";
+		}
+		throw new IllegalStateException(day.name());
+	}
+
+	@Override
 	public String full(Month month) {
 		switch (month) {
 			case JANUARY:

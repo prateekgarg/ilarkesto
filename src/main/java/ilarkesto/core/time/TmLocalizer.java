@@ -22,6 +22,26 @@ public class TmLocalizer {
 		throw new IllegalStateException(day.name());
 	}
 
+	public String shorted(Weekday day) {
+		switch (day) {
+			case MONDAY:
+				return "Mon";
+			case TUESDAY:
+				return "Tue";
+			case WEDNESDAY:
+				return "Wed";
+			case THURSDAY:
+				return "Thu";
+			case FRIDAY:
+				return "Fri";
+			case SATURDAY:
+				return "Sat";
+			case SUNDAY:
+				return "Sun";
+		}
+		throw new IllegalStateException(day.name());
+	}
+
 	public String full(Month month) {
 		switch (month) {
 			case JANUARY:

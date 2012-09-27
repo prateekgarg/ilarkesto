@@ -21,7 +21,9 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Utl {
@@ -72,6 +74,15 @@ public class Utl {
 		for (String[] array : arrays) {
 			System.arraycopy(array, 0, ret, offset, array.length);
 			offset += array.length;
+		}
+		return ret;
+	}
+
+	public static <K extends Comparable, V> LinkedHashMap<K, V> sort(Map<K, V> map) {
+		LinkedHashMap<K, V> ret = new LinkedHashMap<K, V>();
+		List<K> keys = sort(map.keySet());
+		for (K key : keys) {
+			ret.put(key, map.get(key));
 		}
 		return ret;
 	}

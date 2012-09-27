@@ -16,8 +16,11 @@ package ilarkesto.core.time;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Date implements Comparable<Date>, Serializable {
 
@@ -376,6 +379,34 @@ public class Date implements Comparable<Date>, Serializable {
 		}
 
 		return dates;
+	}
+
+	public static Map<Integer, List<Date>> groupByYear(Collection<Date> dates) {
+		Map<Integer, List<Date>> ret = new HashMap<Integer, List<Date>>();
+		for (Date date : dates) {
+			Integer year = date.getYear();
+			List<Date> list = ret.get(year);
+			if (list == null) {
+				list = new ArrayList<Date>();
+				ret.put(year, list);
+			}
+			list.add(date);
+		}
+		return ret;
+	}
+
+	public static Map<Integer, List<Date>> groupByMonth(Collection<Date> dates) {
+		Map<Integer, List<Date>> ret = new HashMap<Integer, List<Date>>();
+		for (Date date : dates) {
+			Integer month = date.getMonth();
+			List<Date> list = ret.get(month);
+			if (list == null) {
+				list = new ArrayList<Date>();
+				ret.put(month, list);
+			}
+			list.add(date);
+		}
+		return ret;
 	}
 
 	public static Comparator<Date> COMPARATOR = new Comparator<Date>() {

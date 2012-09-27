@@ -51,12 +51,24 @@ public enum Weekday {
 		return !isWeekend();
 	}
 
+	public boolean isMonday() {
+		return this == MONDAY;
+	}
+
+	public boolean isTuesday() {
+		return this == TUESDAY;
+	}
+
 	public boolean isSunday() {
 		return this == SUNDAY;
 	}
 
 	public String toString(String language) {
 		return Tm.getLocalizer(language).full(this);
+	}
+
+	public String toShortString(String language) {
+		return Tm.getLocalizer(language).shorted(this);
 	}
 
 	public String toLocalString() {
