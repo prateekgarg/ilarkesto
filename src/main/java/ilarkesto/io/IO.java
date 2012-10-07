@@ -961,7 +961,9 @@ public abstract class IO {
 	public static void writeImage(Image image, int width, int height, String type, String file) throws IOException {
 		File f = new File(file);
 		createDirectory(f.getParentFile());
-		ImageIO.write(toBufferedImage(image, width, height), type, f);
+		BufferedImage bufferedImage = toBufferedImage(image, width, height);
+		ImageIO.write(bufferedImage, type, f);
+		System.out.println("done");
 	}
 
 	public static BufferedImage toBufferedImage(Image img) {
@@ -969,7 +971,7 @@ public abstract class IO {
 		return toBufferedImage(img, img.getWidth(null), img.getHeight(null));
 	}
 
-	public static BufferedImage toBufferedImage(Image img, int width, int height) {
+	public static synchronized BufferedImage toBufferedImage(Image img, int width, int height) {
 		if (img instanceof BufferedImage) return (BufferedImage) img;
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = image.createGraphics();

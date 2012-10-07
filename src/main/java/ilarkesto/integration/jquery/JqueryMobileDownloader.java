@@ -24,14 +24,15 @@ public class JqueryMobileDownloader {
 	private static Log log = Log.get(JqueryMobileDownloader.class);
 
 	public static String getStableVersion() {
-		return "1.1.1";
+		return "1.2.0";
 	}
 
 	public static String getPreviewVersion() {
-		return "1.2.0-alpha.1";
+		return "1.2.0";
 	}
 
 	public static String getCompatibleJqueryVersion(String jqueryMobileVersion) {
+		if (jqueryMobileVersion.startsWith("1.2.")) return "1.8.2";
 		return "1.7.1";
 	}
 

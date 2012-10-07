@@ -23,6 +23,10 @@ public class JqueryDownloader {
 
 	private static Log log = Log.get(JqueryDownloader.class);
 
+	public static String getStableVersion() {
+		return "1.8.2";
+	}
+
 	public static void installToDir(String version, File destinationDir) {
 		download("jquery-" + version + ".min.js", destinationDir);
 		download("jquery-" + version + ".js", destinationDir);
