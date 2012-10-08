@@ -41,12 +41,12 @@ public class Json {
 
 	public static String escapeString(String s) {
 		if (s == null) return "";
+		s = s.replace("\\", "\\\\");
 		s = s.replace("\"", "\\\"");
 		s = s.replace("\t", "\\\t");
 		s = s.replace("\r", "\\\r");
 		s = s.replace("\n", "\\\n");
 		s = s.replace("/", "\\/");
-		s = s.replace("\\", "\\\\");
 		return s;
 	}
 

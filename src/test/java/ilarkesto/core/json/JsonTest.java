@@ -39,6 +39,14 @@ public class JsonTest extends ATest {
 	}
 
 	@Test
+	public void escapting() {
+		JsonObject jo = new JsonObject();
+		jo.put("a", "this is \"a\"");
+		String s = jo.toString();
+		assertEquals(s, "{\"a\":\"this is \\\"a\\\"\"}");
+	}
+
+	@Test
 	public void toStringArray() {
 		JsonObject jo = new JsonObject();
 		jo.put("list", Utl.toList(1, 2, 3));
