@@ -37,6 +37,7 @@ public class MeFeed extends AObject {
 		if ("photo".equals(type)) return new Photo(json);
 		if ("video".equals(type)) return new Video(json);
 		if ("swf".equals(type)) return new Video(json);
+		if ("checkin".equals(type)) return new Checkin(json);
 
 		log.error("Unknown object type:", type, "->", json);
 		return null;
