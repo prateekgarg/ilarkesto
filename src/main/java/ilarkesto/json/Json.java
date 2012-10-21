@@ -43,9 +43,9 @@ public class Json {
 		if (s == null) return "";
 		s = s.replace("\\", "\\\\");
 		s = s.replace("\"", "\\\"");
-		s = s.replace("\t", "\\\t");
-		s = s.replace("\r", "\\\r");
-		s = s.replace("\n", "\\\n");
+		s = s.replace("\t", "\\t");
+		s = s.replace("\r", "\\r");
+		s = s.replace("\n", "\\n");
 		s = s.replace("/", "\\/");
 		return s;
 	}

@@ -17,6 +17,11 @@ public class JsonTest extends ATest {
 	}
 
 	@Test
+	public void escapeString() {
+		assertEquals(Json.escapeString("\t"), "\\t");
+	}
+
+	@Test
 	public void toStringBasics() {
 		JsonObject jo = new JsonObject();
 		assertEquals(jo.toString(), "{}");
@@ -39,11 +44,19 @@ public class JsonTest extends ATest {
 	}
 
 	@Test
-	public void escapting() {
+	public void toStringWithEscaping() {
 		JsonObject jo = new JsonObject();
 		jo.put("a", "this is \"a\"");
+		jo.put("b", "new\nline");
 		String s = jo.toString();
-		assertEquals(s, "{\"a\":\"this is \\\"a\\\"\"}");
+		assertEquals(s, "{\"a\":\"this is \\\"a\\\"\",\"b\":\"new\\nline\"}");
+	}
+
+	@Test
+	public void parseWithEscaping() {
+		assertEquals(Json.parseString("new\\nline"), "new\nline");
+		JsonObject jo = new JsonObject("{\"a\":\"new\\nline\"}");
+		assertEquals(jo.get("a"), "new\nline");
 	}
 
 	@Test
