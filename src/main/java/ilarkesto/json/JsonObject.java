@@ -174,6 +174,7 @@ public class JsonObject {
 	// --- formating ---
 
 	String toString(int indentation) {
+		if (isShort()) indentation = -1;
 		StringBuilder sb = new StringBuilder();
 		sb.append('{');
 		if (indentation >= 0) indentation++;
@@ -197,6 +198,22 @@ public class JsonObject {
 		}
 		sb.append('}');
 		return sb.toString();
+	}
+
+	private boolean isShort() {
+		if (elements.size() > 3) return false;
+		for (Object value : elements.values()) {
+			if (!isPrimitive(value)) return false;
+		}
+		return true;
+	}
+
+	private boolean isPrimitive(Object value) {
+		if (value == null) return true;
+		if (value instanceof String) return true;
+		if (value instanceof Number) return true;
+		if (value instanceof Boolean) return true;
+		return false;
 	}
 
 	public String toFormatedString() {
