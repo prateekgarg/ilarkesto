@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class JsonObject {
 
@@ -56,6 +57,10 @@ public class JsonObject {
 	}
 
 	// --- inspecting ---
+
+	public Set<String> getProperties() {
+		return elements.keySet();
+	}
 
 	public Object get(String name) {
 		return elements.get(name);

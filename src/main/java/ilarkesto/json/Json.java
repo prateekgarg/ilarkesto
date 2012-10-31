@@ -117,7 +117,7 @@ public class Json {
 		return -1;
 	}
 
-	static interface JsonWrapper {
+	public static interface JsonWrapper {
 
 		JsonObject getJson();
 	}
