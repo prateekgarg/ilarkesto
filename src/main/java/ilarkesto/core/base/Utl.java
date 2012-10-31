@@ -78,6 +78,12 @@ public class Utl {
 		return ret;
 	}
 
+	public static <T> List<T> shuffle(Collection<T> collection) {
+		List<T> list = collection instanceof List ? (List<T>) collection : new ArrayList<T>(collection);
+		Collections.shuffle(list);
+		return list;
+	}
+
 	public static <K extends Comparable, V> LinkedHashMap<K, V> sort(Map<K, V> map) {
 		LinkedHashMap<K, V> ret = new LinkedHashMap<K, V>();
 		List<K> keys = sort(map.keySet());
