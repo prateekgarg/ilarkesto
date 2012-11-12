@@ -21,8 +21,6 @@ import ilarkesto.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
-import ilarkesto.integration.jdom.JDom;
-import ilarkesto.io.IO;
 import ilarkesto.swing.LoginPanel;
 
 import java.io.File;
@@ -31,9 +29,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
 
 import com.google.gdata.client.Service.GDataRequest;
 import com.google.gdata.client.contacts.ContactQuery;
@@ -192,49 +187,49 @@ public class Google {
 		return "http://maps.google.de/maps?q=" + Str.encodeUrlParameter(query);
 	}
 
-	public static String weatherInfo(ilarkesto.core.time.Date date, String language, String location) {
-		if (date.isPast()) return null;
-		int inDays = date.getPeriodTo(ilarkesto.core.time.Date.today()).abs().toDays();
-		if (inDays > 4) return null;
-
-		Document doc = weatherAsXml(language, location);
-		Element eReply = doc.getRootElement();
-		Element eWeather = eReply.getChild("weather");
-		if (eWeather == null) return null;
-
-		if (date.isToday()) {
-			Element eConditions = eWeather.getChild("current_conditions");
-			if (eConditions == null) return null;
-			String temp = JDom.getChildAttributeValue(eConditions, "temp_c", "data");
-			String condition = JDom.getChildAttributeValue(eConditions, "condition", "data");
-			String humidity = JDom.getChildAttributeValue(eConditions, "humidity", "data");
-			String wind = JDom.getChildAttributeValue(eConditions, "wind_condition", "data");
-			StringBuilder sb = new StringBuilder();
-			sb.append(temp).append("°, ").append(condition);
-			if (humidity != null) sb.append(", ").append(humidity);
-			if (wind != null) sb.append(", ").append(wind);
-			return sb.toString();
-		}
-
-		List<Element> elConditions = JDom.getChildren(eWeather, "forecast_conditions");
-		if (elConditions.isEmpty()) return null;
-		if (elConditions.size() < inDays) return null;
-		Element eConditions = elConditions.get(inDays - 1);
-
-		return JDom.getChildAttributeValue(eConditions, "condition", "data");
-	}
-
-	public static Document weatherAsXml(String language, String location) {
-		String xml = weatherAsXmlString(language, location);
-		return JDom.createDocument(xml);
-	}
-
-	public static String weatherAsXmlString(String language, String location) {
-		// TODO API changed!
-		return IO.downloadUrlToString(
-			"https://www.google.com/ig/api?hl=" + language + "&weather=" + Str.encodeUrlParameter(location),
-			IO.WINDOWS_1252);
-	}
+	// public static String weatherInfo(ilarkesto.core.time.Date date, String language, String location) {
+	// if (date.isPast()) return null;
+	// int inDays = date.getPeriodTo(ilarkesto.core.time.Date.today()).abs().toDays();
+	// if (inDays > 4) return null;
+	//
+	// Document doc = weatherAsXml(language, location);
+	// Element eReply = doc.getRootElement();
+	// Element eWeather = eReply.getChild("weather");
+	// if (eWeather == null) return null;
+	//
+	// if (date.isToday()) {
+	// Element eConditions = eWeather.getChild("current_conditions");
+	// if (eConditions == null) return null;
+	// String temp = JDom.getChildAttributeValue(eConditions, "temp_c", "data");
+	// String condition = JDom.getChildAttributeValue(eConditions, "condition", "data");
+	// String humidity = JDom.getChildAttributeValue(eConditions, "humidity", "data");
+	// String wind = JDom.getChildAttributeValue(eConditions, "wind_condition", "data");
+	// StringBuilder sb = new StringBuilder();
+	// sb.append(temp).append("°, ").append(condition);
+	// if (humidity != null) sb.append(", ").append(humidity);
+	// if (wind != null) sb.append(", ").append(wind);
+	// return sb.toString();
+	// }
+	//
+	// List<Element> elConditions = JDom.getChildren(eWeather, "forecast_conditions");
+	// if (elConditions.isEmpty()) return null;
+	// if (elConditions.size() < inDays) return null;
+	// Element eConditions = elConditions.get(inDays - 1);
+	//
+	// return JDom.getChildAttributeValue(eConditions, "condition", "data");
+	// }
+	//
+	// public static Document weatherAsXml(String language, String location) {
+	// String xml = weatherAsXmlString(language, location);
+	// return JDom.createDocument(xml);
+	// }
+	//
+	// public static String weatherAsXmlString(String language, String location) {
+	// // TODO API changed!
+	// return IO.downloadUrlToString(
+	// "https://www.google.com/ig/api?hl=" + language + "&weather=" + Str.encodeUrlParameter(location),
+	// IO.WINDOWS_1252);
+	// }
 
 	public static String oacurl(String url) {
 		return Proc.execute("/opt/oacurl/oacurl", url);
