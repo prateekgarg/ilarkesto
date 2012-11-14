@@ -18,6 +18,8 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -270,10 +272,19 @@ public abstract class AViewEditWidget extends AWidget {
 
 		@Override
 		public void onClick(ClickEvent event) {
+			NativeEvent nativeEvent = event.getNativeEvent();
+			if (nativeEvent != null) {
+				EventTarget nativeEventTarget = nativeEvent.getEventTarget();
+				if (nativeEventTarget != null) {
+					String key = nativeEventTarget.toString();
+					Log.DEBUG("AViewEditWidget.onClick native event target:", key);
+					if (key.startsWith("<a")) return;
+				}
+			}
+
 			if (isEditable()) switchToEditMode();
 			event.stopPropagation();
 		}
-
 	}
 
 	protected class SubmitEditorFocusListener implements FocusListener {
