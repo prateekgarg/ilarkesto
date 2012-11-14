@@ -272,18 +272,22 @@ public abstract class AViewEditWidget extends AWidget {
 
 		@Override
 		public void onClick(ClickEvent event) {
+			if (isEventSourceHref(event)) return; // no switch to edit mode when link clicked
+			if (isEditable()) switchToEditMode();
+			event.stopPropagation();
+		}
+
+		private boolean isEventSourceHref(ClickEvent event) {
 			NativeEvent nativeEvent = event.getNativeEvent();
 			if (nativeEvent != null) {
 				EventTarget nativeEventTarget = nativeEvent.getEventTarget();
 				if (nativeEventTarget != null) {
 					String key = nativeEventTarget.toString();
 					Log.DEBUG("AViewEditWidget.onClick native event target:", key);
-					if (key.startsWith("<a")) return;
+					if (key.startsWith("<a")) return true;
 				}
 			}
-
-			if (isEditable()) switchToEditMode();
-			event.stopPropagation();
+			return false;
 		}
 	}
 
