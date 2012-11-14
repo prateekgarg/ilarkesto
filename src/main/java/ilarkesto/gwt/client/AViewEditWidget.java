@@ -279,11 +279,13 @@ public abstract class AViewEditWidget extends AWidget {
 
 		private boolean isEventSourceHref(ClickEvent event) {
 			NativeEvent nativeEvent = event.getNativeEvent();
+			log.info("---> native event:", nativeEvent);
 			if (nativeEvent != null) {
 				EventTarget nativeEventTarget = nativeEvent.getEventTarget();
+				log.info("---> native event target:", nativeEventTarget);
 				if (nativeEventTarget != null) {
 					String key = nativeEventTarget.toString();
-					Log.DEBUG("AViewEditWidget.onClick native event target:", key);
+					log.info("---> native event target key:", key);
 					if (key.startsWith("<a")) return true;
 				}
 			}
