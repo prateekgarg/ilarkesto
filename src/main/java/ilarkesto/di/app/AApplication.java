@@ -114,7 +114,6 @@ public abstract class AApplication {
 			}
 			try {
 				backupApplicationDataDir();
-				deleteOldApplicationDataDirBackups();
 			} catch (Throwable ex) {
 				log.error("Backing up application data directory failed.", ex);
 			}
@@ -209,6 +208,7 @@ public abstract class AApplication {
 		}
 		long runtime = Tm.getCurrentTimeMillis() - starttime;
 		log.info("  Backup completed in", new TimePeriod(runtime).toShortestString());
+		deleteOldApplicationDataDirBackups();
 	}
 
 	private void deleteOldApplicationDataDirBackups() {
