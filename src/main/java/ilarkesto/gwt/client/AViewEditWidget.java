@@ -18,6 +18,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -25,7 +26,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -280,15 +280,18 @@ public abstract class AViewEditWidget extends AWidget {
 
 		private boolean isEventSourceHref(ClickEvent event) {
 			NativeEvent nativeEvent = event.getNativeEvent();
-			log.info("---> native event:", nativeEvent);
 			if (nativeEvent != null) {
 				EventTarget nativeEventTarget = nativeEvent.getEventTarget();
-				log.info("---> native event target:", nativeEventTarget);
 				if (nativeEventTarget != null) {
 					String key = nativeEventTarget.toString();
-					log.info("---> native event target key:", key);
-					Window.alert("native event target: " + key);
-					if (key.startsWith("<a")) return true;
+					log.debug("Native event target:", key);
+					if (GWT.isScript()) {
+						if (key.startsWith("[object")) return false;
+						return true;
+					} else {
+						if (key.startsWith("<a")) return true;
+						return false;
+					}
 				}
 			}
 			return false;
