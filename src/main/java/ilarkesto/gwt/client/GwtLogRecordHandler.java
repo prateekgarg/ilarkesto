@@ -32,7 +32,8 @@ public class GwtLogRecordHandler implements LogRecordHandler {
 
 	private static native void logToConsole(String message)
 	/*-{
-	 	if (console && console.log) console.log(message);
+		if (typeof console === 'undefined') return;
+	 	console.log(message);
 	}-*/;
 
 	@Override
