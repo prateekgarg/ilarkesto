@@ -18,7 +18,6 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -285,13 +284,9 @@ public abstract class AViewEditWidget extends AWidget {
 				if (nativeEventTarget != null) {
 					String key = nativeEventTarget.toString();
 					log.debug("Native event target:", key);
-					if (GWT.isScript()) {
-						if (key.startsWith("[object")) return false;
-						return true;
-					} else {
-						if (key.startsWith("<a")) return true;
-						return false;
-					}
+					if (key.startsWith("<a")) return true; // devMode
+					if (key.startsWith("[object")) return false; // all browsers
+					return true;
 				}
 			}
 			return false;
