@@ -19,6 +19,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -37,6 +38,12 @@ public class Utl extends ilarkesto.core.base.Utl {
 		for (int i = 0; i < 100; i++) {
 			System.out.println(randomInt(3, 5));
 		}
+	}
+
+	public static <T> List<T> shuffle(Collection<T> collection) {
+		List<T> list = collection instanceof List ? (List<T>) collection : new ArrayList<T>(collection);
+		Collections.shuffle(list);
+		return list;
 	}
 
 	public static String toUrl(File file) {
