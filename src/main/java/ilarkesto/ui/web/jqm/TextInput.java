@@ -23,6 +23,7 @@ public class TextInput extends AFieldElement {
 	private String value;
 	private Boolean autofocus;
 	private Boolean autocomplete;
+	private String step;
 
 	public TextInput(String id, String label) {
 		super(id, label);
@@ -35,6 +36,7 @@ public class TextInput extends AFieldElement {
 		input.setValue(value);
 		if (autocomplete != null) input.set("autocomplete", autocomplete.booleanValue() ? "on" : "off");
 		if (autofocus != null) input.set("autocomplete", autofocus.booleanValue() ? "on" : "off");
+		if (step != null) input.set("step", step);
 	}
 
 	public TextInput setValue(String value) {
@@ -44,6 +46,11 @@ public class TextInput extends AFieldElement {
 
 	public TextInput setType(InputType type) {
 		this.type = type;
+		return this;
+	}
+
+	public TextInput setStep(String step) {
+		this.step = step;
 		return this;
 	}
 
