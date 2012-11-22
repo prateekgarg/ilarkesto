@@ -21,7 +21,8 @@ public class TextInput extends AFieldElement {
 
 	private InputType type = InputType.Text;
 	private String value;
-	private boolean autoFocus;
+	private Boolean autofocus;
+	private Boolean autocomplete;
 
 	public TextInput(String id, String label) {
 		super(id, label);
@@ -32,9 +33,8 @@ public class TextInput extends AFieldElement {
 		Tag input = html.startINPUT(type.getName(), name);
 		input.setId(id);
 		input.setValue(value);
-		if (autoFocus) {
-			html.SCRIPTjavascript(null, "setTimeout( function() {$('#" + id + "').focus();}, 100 );");
-		}
+		if (autocomplete != null) input.set("autocomplete", autocomplete.booleanValue() ? "on" : "off");
+		if (autofocus != null) input.set("autocomplete", autofocus.booleanValue() ? "on" : "off");
 	}
 
 	public TextInput setValue(String value) {
@@ -47,8 +47,13 @@ public class TextInput extends AFieldElement {
 		return this;
 	}
 
-	public TextInput setAutoFocus(boolean grabFocus) {
-		this.autoFocus = grabFocus;
+	public TextInput setAutofocus(Boolean autofocus) {
+		this.autofocus = autofocus;
+		return this;
+	}
+
+	public TextInput setAutocomplete(Boolean autocomplete) {
+		this.autocomplete = autocomplete;
 		return this;
 	}
 
