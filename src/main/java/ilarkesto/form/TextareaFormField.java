@@ -53,6 +53,20 @@ public class TextareaFormField extends TextFormField {
 		return lines;
 	}
 
+	private boolean json;
+
+	public boolean isJson() {
+		return json;
+	}
+
+	public TextareaFormField setJson(boolean json) {
+		this.json = json;
+		if (json) {
+			setHtml(false);
+		}
+		return this;
+	}
+
 	private boolean html = true;
 
 	public boolean isHtml() {
