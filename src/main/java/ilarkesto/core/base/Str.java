@@ -192,6 +192,13 @@ public class Str {
 		return s.substring(0, s.length() - suffixToRemove.length());
 	}
 
+	public static String removeSuffixStartingWith(String s, String suffixIndicator) {
+		if (s == null) return null;
+		int idx = s.indexOf(suffixIndicator);
+		if (idx < 0) return s;
+		return s.substring(0, idx);
+	}
+
 	public static String removePrefix(String s, String prefixToRemove) {
 		if (s == null) return null;
 		if (!s.startsWith(prefixToRemove)) return s;

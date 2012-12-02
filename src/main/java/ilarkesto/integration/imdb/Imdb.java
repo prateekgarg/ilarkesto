@@ -56,21 +56,20 @@ public class Imdb {
 			return url;
 		}
 
-		if (guess) {
-			WebLink[] links;
-			try {
-				links = response.getLinks();
-			} catch (SAXException ex) {
-				throw new RuntimeException(ex);
-			}
-			for (WebLink link : links) {
-				String linkUrl = link.getURLString();
-				if (Str.isBlank(linkUrl)) continue;
-				linkUrl = Str.removePrefix(linkUrl, URL_AKAS);
-				if (linkUrl.startsWith(PATH_TITLE)) {
-					String id = Str.removePrefix(linkUrl, PATH_TITLE);
-					return Str.removeSuffix(id, "/");
-				}
+		WebLink[] links;
+		try {
+			links = response.getLinks();
+		} catch (SAXException ex) {
+			throw new RuntimeException(ex);
+		}
+		for (WebLink link : links) {
+			String linkUrl = link.getURLString();
+			if (Str.isBlank(linkUrl)) continue;
+			linkUrl = Str.removePrefix(linkUrl, URL_AKAS);
+			if (linkUrl.startsWith(PATH_TITLE)) {
+				if (guess) return extractId(linkUrl);
+				String linkTitle = link.getText();
+				if (title.equals(linkTitle)) return extractId(linkUrl);
 			}
 		}
 
@@ -232,7 +231,7 @@ public class Imdb {
 		id = Str.removePrefix(id, URL_COM);
 		id = Str.removePrefix(id, URL_DE);
 		id = Str.removePrefix(id, PATH_TITLE);
-		id = Str.removeSuffix(id, "/");
+		id = Str.removeSuffixStartingWith(id, "/");
 		return id;
 	}
 }
