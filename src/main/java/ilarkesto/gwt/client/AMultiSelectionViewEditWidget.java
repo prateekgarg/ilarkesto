@@ -15,8 +15,8 @@
 package ilarkesto.gwt.client;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.base.ToHtmlSupport;
-import ilarkesto.core.base.Utl;
+import ilarkesto.core.html.Html;
+import ilarkesto.core.html.ToHtmlSupport;
 
 import java.util.Collection;
 import java.util.List;
@@ -117,7 +117,7 @@ public abstract class AMultiSelectionViewEditWidget<I extends Object> extends AV
 			viewer.setText(".");
 			return;
 		}
-		viewer.setHTML(Utl.concatToHtml(items, "<br>"));
+		viewer.setHTML(Html.concatToHtml(items, "<br>"));
 	}
 
 	public void setEditorItems(Collection<I> items) {

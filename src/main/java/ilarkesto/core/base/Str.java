@@ -236,7 +236,6 @@ public class Str {
 		s = s.replace(">", "&gt;");
 		s = s.replace("\"", "&quot;");
 		s = s.replace("\n", "<br>");
-
 		return s;
 	}
 

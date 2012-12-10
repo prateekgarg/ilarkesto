@@ -14,7 +14,7 @@
  */
 package ilarkesto.gwt.client;
 
-import ilarkesto.core.base.ToHtmlSupport;
+import ilarkesto.core.html.ToHtmlSupport;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

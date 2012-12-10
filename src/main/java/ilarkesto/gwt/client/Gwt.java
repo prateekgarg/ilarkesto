@@ -14,8 +14,8 @@
  */
 package ilarkesto.gwt.client;
 
-import ilarkesto.core.base.ToHtmlSupport;
-import ilarkesto.core.base.Utl;
+import ilarkesto.core.html.Html;
+import ilarkesto.core.html.ToHtmlSupport;
 import ilarkesto.gwt.client.editor.RichtextEditorWidget;
 import ilarkesto.gwt.client.undo.UndoManager;
 
@@ -212,7 +212,7 @@ public class Gwt {
 	}
 
 	public static Widget createToHtmlItemsWidget(Collection<? extends ToHtmlSupport> items) {
-		return new HTML(Utl.concatToHtml(items, "<br>"));
+		return new HTML(Html.concatToHtml(items, "<br>"));
 	}
 
 	public static HTML createServletDownloadLink(String relativeHref, String text) {
