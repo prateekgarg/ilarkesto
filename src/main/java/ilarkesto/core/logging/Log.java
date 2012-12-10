@@ -15,14 +15,13 @@
 package ilarkesto.core.logging;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.time.Tm;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Log {
 
-	private static final Log ANONYMOUS = new Log("?");
+	private static final Log ANONYMOUS = new Log("----- ANONYMOUS ----->");
 	private static final Map<String, Log> LOGGERS = new HashMap<String, Log>();
 	private static boolean debugEnabled = true;
 	private static LogRecordHandler logRecordHandler = new PrintStreamLogRecordHandler(System.err);
@@ -36,7 +35,7 @@ public class Log {
 	public void log(Level level, Object... parameters) {
 		if (logRecordHandler == null) return;
 		if (level.isDebug() && !isDebugEnabled()) return;
-		logRecordHandler.log(new LogRecord(Tm.getCurrentTimeMillis(), name, level, parameters));
+		logRecordHandler.log(new LogRecord(System.currentTimeMillis(), name, level, parameters));
 	}
 
 	/**
@@ -117,6 +116,10 @@ public class Log {
 
 	public static void DEBUG(Object... s) {
 		ANONYMOUS.debug(s);
+	}
+
+	public static void TEST(Object... s) {
+		ANONYMOUS.warn(s);
 	}
 
 	public static void setLogRecordHandler(LogRecordHandler handler) {

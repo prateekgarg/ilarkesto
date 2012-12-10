@@ -56,7 +56,7 @@ public class LogRecord {
 		sb.append(" ").append(nameFormated);
 
 		// text
-		sb.append(Str.fillUpRight(getParametersAsString(), " ", 100));
+		sb.append(getText());
 
 		// context
 		if (context != null) sb.append(" | ").append(context);
@@ -65,6 +65,10 @@ public class LogRecord {
 		if ((level != Level.DEBUG) && (level != Level.INFO)) sb.append('\n');
 
 		return sb.toString();
+	}
+
+	public String getText() {
+		return Str.fillUpRight(getParametersAsString(), " ", 100);
 	}
 
 	public String getParametersAsString() {
