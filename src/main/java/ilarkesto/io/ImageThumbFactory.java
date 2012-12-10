@@ -44,9 +44,9 @@ public class ImageThumbFactory {
 
 	private void createThumb(File imageFile, File thumbFile, int size) {
 		log.info("Creating thumb:", imageFile, "->", thumbFile);
-		BufferedImage image = IO.loadImage(imageFile);
-		Image thumbImage = IO.quadratizeAndLimitSize(image, size);
-		IO.writeImage(thumbImage, "JPG", thumbFile);
+		BufferedImage image = Awt.loadImage(imageFile);
+		Image thumbImage = Awt.quadratizeAndLimitSize(image, size);
+		Awt.writeImage(thumbImage, "JPG", thumbFile);
 		thumbFile.setLastModified(imageFile.lastModified());
 	}
 }

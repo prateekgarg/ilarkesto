@@ -14,16 +14,6 @@
  */
 package ilarkesto.io;
 
-import ilarkesto.base.Sys;
-import ilarkesto.core.time.Tm;
-import ilarkesto.io.zip.Deflater;
-import ilarkesto.io.zip.ZipEntry;
-import ilarkesto.io.zip.ZipFile;
-import ilarkesto.io.zip.ZipOutputStream;
-
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -68,12 +58,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 /**
  * Set of static methods to easy work with Streams or Images
@@ -479,7 +466,7 @@ public abstract class IO {
 		}
 		connection.setDoOutput(true);
 		PrintWriter out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(),
-				encoding == null ? Sys.getFileEncoding() : encoding));
+				encoding == null ? getFileEncoding() : encoding));
 		out.println(sb.toString());
 		out.println();
 		close(out);
@@ -588,10 +575,6 @@ public abstract class IO {
 
 	public static boolean existResource(String resourceName) {
 		return getResource(resourceName) != null;
-	}
-
-	public static Icon getIcon(String resourceName) {
-		return new ImageIcon(getResource(resourceName));
 	}
 
 	public static void appendLine(String file, String line) throws IOException {
@@ -751,158 +734,8 @@ public abstract class IO {
 		return result;
 	}
 
-	public static void unzip(File zipfile, File destinationDir) {
-		unzip(zipfile, destinationDir, null);
-	}
-
-	public static void unzip(File zipfile, File destinationDir, UnzipObserver observer) {
-		ZipFile zf;
-		try {
-			zf = new ZipFile(zipfile);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		if (observer != null) observer.onFileCountAvailable(zf.size());
-		try {
-			Enumeration entries = zf.entries();
-			while (entries.hasMoreElements()) {
-				if (observer != null && observer.isAbortRequested()) return;
-				ZipEntry ze = (ZipEntry) entries.nextElement();
-				String name = ze.getName();
-				name = name.replace((char) 129, '\u00FC');
-				name = name.replace((char) 154, '\u00DC');
-				name = name.replace((char) 148, '\u00F6');
-				name = name.replace((char) 153, '\u00D6');
-				name = name.replace((char) 132, '\u00E4');
-				name = name.replace((char) 142, '\u00C4');
-				name = name.replace((char) 225, '\u00DF');
-				if (ze.isDirectory()) continue;
-				File f = new File(destinationDir.getPath() + "/" + name);
-				if (observer != null) observer.onFileBegin(f);
-				try {
-					createDirectory(f.getParentFile());
-					BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
-					InputStream in = zf.getInputStream(ze);
-					copyData(new BufferedInputStream(in), out);
-					out.close();
-					long lastModified = ze.getTime();
-					if (lastModified >= 0) setLastModified(f, lastModified);
-				} catch (Exception ex) {
-					if (observer == null) throw new RuntimeException(ex);
-					observer.onFileError(f, ex);
-				}
-				if (observer != null) observer.onFileEnd(f);
-			}
-		} finally {
-			try {
-				zf.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
-
 	public static void setLastModified(File file, long time) {
 		if (!file.setLastModified(time)) throw new RuntimeException("Settring lastModified on " + file + " failed.");
-	}
-
-	public static interface UnzipObserver {
-
-		void onFileCountAvailable(int count);
-
-		void onFileBegin(File f);
-
-		void onFileEnd(File f);
-
-		void onFileError(File f, Throwable ex);
-
-		boolean isAbortRequested();
-
-	}
-
-	public static void zip(File zipfile, File... files) {
-		zip(zipfile, files, null);
-	}
-
-	public static void zip(File zipfile, File[] files, FileFilter filter) {
-		zip(zipfile, files, filter, null);
-	}
-
-	public static void zip(File zipfile, File[] files, FileFilter filter, ZipObserver observer) {
-		if (zipfile.exists()) delete(zipfile);
-		createDirectory(zipfile.getParentFile());
-		File tempFile = new File(zipfile.getPath() + "~");
-
-		try {
-			zip(new FileOutputStream(tempFile), files, filter, observer);
-		} catch (FileNotFoundException ex) {
-			throw new RuntimeException(ex);
-		}
-
-		if (observer != null && observer.isAbortRequested()) {
-			delete(tempFile);
-		} else {
-			move(tempFile, zipfile);
-		}
-	}
-
-	public static void zip(OutputStream os, File... files) {
-		zip(os, files, null, null);
-	}
-
-	public static void zip(OutputStream os, File[] files, FileFilter filter, ZipObserver observer) {
-		ZipOutputStream zipout;
-		try {
-			zipout = new ZipOutputStream(new BufferedOutputStream(os));
-			zipout.setLevel(Deflater.BEST_COMPRESSION);
-			for (int i = 0; i < files.length; i++) {
-				if (!files[i].exists()) continue;
-				addZipEntry(zipout, "", files[i], filter, observer);
-			}
-			zipout.close();
-		} catch (Exception ex) {
-			throw new RuntimeException("Zipping files failed.", ex);
-		}
-	}
-
-	public static void addZipEntry(ZipOutputStream zipout, String zippath, File f, FileFilter filter,
-			ZipObserver observer) {
-		if (filter != null && !filter.accept(f)) return;
-		if (observer != null) {
-			if (observer.isAbortRequested()) return;
-			observer.onFileBegin(f);
-		}
-		if (f.isDirectory()) {
-			File[] fa = f.listFiles();
-			for (int i = 0; i < fa.length; i++) {
-				addZipEntry(zipout, zippath + f.getName() + "/", fa[i], filter, observer);
-			}
-		} else {
-			try {
-				BufferedInputStream in = new BufferedInputStream(new FileInputStream(f));
-				ZipEntry entry = new ZipEntry(zippath + f.getName());
-				zipout.putNextEntry(entry);
-				copyData(in, zipout);
-				in.close();
-				zipout.closeEntry();
-			} catch (Exception ex) {
-				if (observer == null) { throw new RuntimeException("Zipping " + f + " failed.", ex); }
-				observer.onFileError(f, ex);
-			}
-		}
-		if (observer != null) observer.onFileEnd(f);
-	}
-
-	public static interface ZipObserver {
-
-		void onFileBegin(File f);
-
-		void onFileEnd(File f);
-
-		void onFileError(File f, Throwable ex);
-
-		boolean isAbortRequested();
-
 	}
 
 	public static void deleteContents(String folder) {
@@ -945,149 +778,6 @@ public abstract class IO {
 		} catch (Throwable ex) {}
 	}
 
-	public static void writeImage(Image image, String type, String file) {
-		writeImage(image, type, new File(file));
-	}
-
-	public static void writeImage(Image image, String type, File file) {
-		createDirectory(file.getParentFile());
-		try {
-			ImageIO.write(toBufferedImage(image), type, file);
-		} catch (IOException ex) {
-			throw new RuntimeException("Writing image to file failed: " + file, ex);
-		}
-	}
-
-	public static void writeImage(Image image, int width, int height, String type, String file) throws IOException {
-		File f = new File(file);
-		createDirectory(f.getParentFile());
-		BufferedImage bufferedImage = toBufferedImage(image, width, height);
-		ImageIO.write(bufferedImage, type, f);
-		System.out.println("done");
-	}
-
-	public static BufferedImage toBufferedImage(Image img) {
-		if (img instanceof BufferedImage) return (BufferedImage) img;
-		return toBufferedImage(img, img.getWidth(null), img.getHeight(null));
-	}
-
-	public static synchronized BufferedImage toBufferedImage(Image img, int width, int height) {
-		if (img instanceof BufferedImage) return (BufferedImage) img;
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = image.createGraphics();
-		g.drawImage(img, 0, 0, null);
-		g.dispose();
-		return image;
-	}
-
-	public static BufferedImage loadImage(File file) {
-		BufferedImage image;
-		try {
-			image = ImageIO.read(file);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		if (image == null) throw new RuntimeException("Unsupported image format.");
-		return image;
-	}
-
-	public static BufferedImage loadImage(byte[] data) {
-		BufferedImage image;
-		try {
-			ByteArrayInputStream in = new ByteArrayInputStream(data);
-			image = ImageIO.read(in);
-			in.close();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		if (image == null) throw new RuntimeException("Unsupported image format.");
-		return image;
-	}
-
-	public static BufferedImage loadImage(String resourcePath) {
-		try {
-			return ImageIO.read(IO.class.getClassLoader().getResource(resourcePath));
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-
-	public static void saveScaled(BufferedImage image, String type, String file, int maxWidth, int maxHeight)
-			throws IOException {
-		Image scaled = getScaled(image, maxWidth, maxHeight);
-		writeImage(scaled, type, file);
-	}
-
-	public static void scaleImage(String sourceFile, String destinationFile, String destinationType, int maxWidth,
-			int maxHeight) throws IOException {
-		saveScaled(loadImage(new File(sourceFile)), destinationType, destinationFile, maxWidth, maxHeight);
-	}
-
-	public static Image getScaled(BufferedImage image, int maxWidth, int maxHeight) {
-		int width = image.getWidth();
-		int height = image.getHeight();
-		if (width <= maxWidth && height <= maxHeight) { return image; }
-
-		if (width > maxWidth) {
-			width = maxWidth;
-			height = height * maxWidth / image.getWidth();
-		}
-
-		int h;
-		int w;
-		if (height > maxHeight) {
-			h = maxHeight;
-			w = width * maxHeight / height;
-		} else {
-			h = height;
-			w = width;
-		}
-
-		return image.getScaledInstance(w, h, Image.SCALE_SMOOTH);
-	}
-
-	public static Image scaledToWidth(BufferedImage image, int targetWidth) {
-		int width = image.getWidth();
-		int height = image.getHeight();
-		if (width == targetWidth) { return image; }
-
-		width = targetWidth;
-		height = height * targetWidth / image.getWidth();
-
-		return image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-	}
-
-	public static Image scaledToHeight(BufferedImage image, int targetHeight) {
-		int width = image.getWidth();
-		int height = image.getHeight();
-		if (height == targetHeight) { return image; }
-
-		height = targetHeight;
-		width = width * targetHeight / image.getHeight();
-
-		return image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-	}
-
-	public static BufferedImage quadratize(BufferedImage image) {
-		int width = image.getWidth();
-		int height = image.getHeight();
-		if (width == height) return image;
-
-		if (width > height) {
-			int offset = (width - height) / 2;
-			return image.getSubimage(offset, 0, height, height);
-		} else {
-			int offset = (height - width) / 2;
-			return image.getSubimage(0, offset, width, width);
-		}
-	}
-
-	public static Image quadratizeAndLimitSize(BufferedImage image, int maxSize) {
-		image = quadratize(image);
-		if (image.getWidth() <= maxSize) return image;
-		return image.getScaledInstance(maxSize, maxSize, Image.SCALE_SMOOTH);
-	}
-
 	public static void copyDataToFile(byte[] data, File file) {
 		ByteArrayInputStream in = new ByteArrayInputStream(data);
 		copyDataToFile(in, file);
@@ -1114,7 +804,7 @@ public abstract class IO {
 
 	public static void copyDataToFile(InputStream is, File dst, CopyObserver observer) {
 		createDirectory(dst.getParentFile());
-		File tmp = new File(dst.getPath() + "~" + Tm.getCurrentTimeMillis());
+		File tmp = new File(dst.getPath() + "~" + System.currentTimeMillis());
 
 		BufferedInputStream in;
 		try {
@@ -1431,7 +1121,11 @@ public abstract class IO {
 	}
 
 	public static String readFile(File file) {
-		return readFile(file, Sys.getFileEncoding());
+		return readFile(file, getFileEncoding());
+	}
+
+	public static String getFileEncoding() {
+		return System.getProperty("file.encoding");
 	}
 
 	public static String readFile(File file, String encoding) {

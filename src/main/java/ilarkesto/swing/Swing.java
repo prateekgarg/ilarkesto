@@ -16,6 +16,7 @@ package ilarkesto.swing;
 
 import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.io.Awt;
 import ilarkesto.io.IO;
 
 import java.awt.AWTException;
@@ -49,6 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -78,6 +80,10 @@ public class Swing {
 		showMessageDialog(
 			null,
 			" Geschafft, obwohl der Text so scheiss lang ist.\n Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheissGeschafft, obwohl der Text so scheiss lang ist.\\n Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheissGeschafft, obwohl der Text so scheiss lang ist.\\n Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheissGeschafft, obwohl der Text so scheiss lang ist.\\n Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss lang ist. Geschafft, obwohl der Text so scheiss");
+	}
+
+	public static Icon loadIconFromResource(String resourceName) {
+		return new ImageIcon(IO.getResource(resourceName));
 	}
 
 	public static void setSystemLookAndFeel() {
@@ -387,9 +393,9 @@ public class Swing {
 	}
 
 	public static Image getImage(String path, Integer size) {
-		BufferedImage im = IO.loadImage(path);
+		BufferedImage im = Awt.loadImage(path);
 		if (size == null) return im;
-		return IO.getScaled(im, size, size);
+		return Awt.getScaled(im, size, size);
 	}
 
 	public static void addTrayIcon(TrayIcon trayIcon) {

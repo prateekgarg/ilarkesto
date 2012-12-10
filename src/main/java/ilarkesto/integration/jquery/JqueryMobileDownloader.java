@@ -16,6 +16,7 @@ package ilarkesto.integration.jquery;
 
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
+import ilarkesto.io.Zip;
 
 import java.io.File;
 
@@ -70,7 +71,7 @@ public class JqueryMobileDownloader {
 	private static File extractJqmPackage(File zipfile) {
 		log.debug("Extracting JQM .zip package", zipfile);
 		File unzipdir = zipfile.getParentFile();
-		IO.unzip(zipfile, unzipdir);
+		Zip.unzip(zipfile, unzipdir);
 		File[] unzippedFiles = unzipdir.listFiles();
 		if (unzippedFiles == null) throw new RuntimeException("JQM .zip package contains no files");
 		for (File file : unzippedFiles) {

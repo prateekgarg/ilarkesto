@@ -29,6 +29,7 @@ import ilarkesto.integration.xstream.XStreamSerializer;
 import ilarkesto.io.ExclusiveFileLock;
 import ilarkesto.io.ExclusiveFileLock.FileLockedException;
 import ilarkesto.io.IO;
+import ilarkesto.io.Zip;
 import ilarkesto.logging.DefaultLogRecordHandler;
 import ilarkesto.persistence.DaoListener;
 import ilarkesto.persistence.DaoService;
@@ -187,7 +188,7 @@ public abstract class AApplication {
 		long starttime = Tm.getCurrentTimeMillis();
 		Object lock = entityStore == null ? this : entityStore;
 		synchronized (lock) {
-			IO.zip(backupFile, new File[] { dataDir }, new FileFilter() {
+			Zip.zip(backupFile, new File[] { dataDir }, new FileFilter() {
 
 				@Override
 				public boolean accept(File file) {
