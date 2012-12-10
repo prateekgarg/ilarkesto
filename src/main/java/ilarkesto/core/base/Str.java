@@ -14,10 +14,13 @@
  */
 package ilarkesto.core.base;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 public class Str {
 
@@ -30,6 +33,15 @@ public class Str {
 	public static final char sz = '\u00DF';
 
 	public static final char EUR = '\u0080';
+
+	public static List<String> tokenize(String s, String delimiters) {
+		List<String> ret = new ArrayList<String>();
+		StringTokenizer tokenizer = new StringTokenizer(s, delimiters);
+		while (tokenizer.hasMoreTokens()) {
+			ret.add(tokenizer.nextToken());
+		}
+		return ret;
+	}
 
 	public static String encodeUrlParameter(String s) {
 		if (s == null) return "";

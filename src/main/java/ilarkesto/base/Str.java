@@ -58,7 +58,7 @@ public class Str extends ilarkesto.core.base.Str {
 		return charset;
 	}
 
-	public static String[] tokenize(String s, String delimiter) {
+	public static String[] tokenizeToArray(String s, String delimiter) {
 		StringTokenizer tok = new StringTokenizer(s, delimiter);
 		LinkedList<String> ll = new LinkedList<String>();
 		while (tok.hasMoreTokens()) {
@@ -395,7 +395,7 @@ public class Str extends ilarkesto.core.base.Str {
 	}
 
 	public static String getTokenAfter(String stringToTokenize, String delimiter, String s, int index) {
-		return getStringAfter(tokenize(stringToTokenize, delimiter), s, index);
+		return getStringAfter(tokenizeToArray(stringToTokenize, delimiter), s, index);
 	}
 
 	public static String getFirstStringAfter(String[] strings, String s) {

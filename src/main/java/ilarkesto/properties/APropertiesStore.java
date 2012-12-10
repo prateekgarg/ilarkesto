@@ -70,7 +70,7 @@ public abstract class APropertiesStore {
 
 	public final List<String> getList(String name, List<String> defaultValue) {
 		String s = get(name);
-		return s == null ? defaultValue : Utl.toList(Str.tokenize(s, ";"));
+		return s == null ? defaultValue : Str.tokenize(s, ";");
 	}
 
 	// --- Integer ---

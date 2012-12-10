@@ -390,7 +390,7 @@ public class Eml {
 	public static List<String> getHeaderListUnsubscribeParsed(Message msg) {
 		String s = getHeaderListUnsubscribe(msg);
 		if (Str.isBlank(s)) return Collections.emptyList();
-		String[] hrefs = Str.tokenize(s, ",");
+		String[] hrefs = Str.tokenizeToArray(s, ",");
 		List<String> ret = new ArrayList<String>(hrefs.length);
 		for (String href : hrefs) {
 			href = href.trim();
@@ -814,7 +814,7 @@ public class Eml {
 	}
 
 	public static Address[] parseAddresses(String s) throws AddressException {
-		String[] tokens = Str.tokenize(s, ",;:");
+		String[] tokens = Str.tokenizeToArray(s, ",;:");
 		InternetAddress[] ads = new InternetAddress[tokens.length];
 		for (int i = 0; i < ads.length; i++) {
 			ads[i] = new InternetAddress(tokens[i]);

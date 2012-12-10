@@ -25,7 +25,7 @@ public class DateParser {
 	public static Date parseDate(String s) throws ParseException {
 		if (s == null) return null;
 		s = s.trim();
-		String[] sa = Str.tokenize(s, ".,- ");
+		String[] sa = Str.tokenizeToArray(s, ".,- ");
 		if (sa.length == 0) throw new ParseException("Not a Date: " + s, -1);
 		if (sa.length > 3) throw new ParseException("Not a Date: " + s, -1);
 		int[] ia = new int[sa.length];
