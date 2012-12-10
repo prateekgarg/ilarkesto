@@ -63,6 +63,21 @@ public abstract class AJsonWrapper implements JsonWrapper {
 	}
 
 	protected <T extends AJsonWrapper> List<T> createFromArray(String name, Class<T> type) {
+		return getArrayAsWrapperList(json, name, type);
+	}
+
+	protected <T extends AJsonWrapper> T createFromObject(String name, Class<T> type) {
+		return getAsWrapper(json, name, type);
+	}
+
+	public static <T extends AJsonWrapper> T getAsWrapper(JsonObject json, String name, Class<T> type) {
+		JsonObject object = json.getObject(name);
+		if (object == null) return null;
+		return createWrapper(object, type);
+	}
+
+	public static <T extends AJsonWrapper> List<T> getArrayAsWrapperList(JsonObject json, String name, Class<T> type) {
+		if (json == null) return Collections.emptyList();
 		List<JsonObject> array = json.getArrayOfObjects(name);
 		if (array == null || array.isEmpty()) return Collections.emptyList();
 
@@ -75,13 +90,8 @@ public abstract class AJsonWrapper implements JsonWrapper {
 		return wrappers;
 	}
 
-	protected <T extends AJsonWrapper> T createFromObject(String name, Class<T> type) {
-		JsonObject object = json.getObject(name);
-		if (object == null) return null;
-		return createWrapper(object, type);
-	}
-
-	private <T extends AJsonWrapper> T createWrapper(JsonObject json, Class<T> type) {
+	public static <T extends AJsonWrapper> T createWrapper(JsonObject json, Class<T> type) {
+		if (json == null) return null;
 		Constructor<T> constructor;
 		try {
 			constructor = type.getConstructor(JsonObject.class);

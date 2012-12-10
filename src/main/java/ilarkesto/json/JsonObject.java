@@ -1,17 +1,19 @@
 package ilarkesto.json;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class JsonObject {
 
@@ -31,7 +33,7 @@ public class JsonObject {
 		new JsonObject(s);
 	}
 
-	private Map<String, Object> elements = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> elements = new LinkedHashMap<String, Object>();
 	private int idx = -1;
 
 	public JsonObject() {}
@@ -57,10 +59,6 @@ public class JsonObject {
 	}
 
 	// --- inspecting ---
-
-	public Set<String> getProperties() {
-		return elements.keySet();
-	}
 
 	public Object get(String name) {
 		return elements.get(name);
@@ -98,6 +96,10 @@ public class JsonObject {
 
 	public Integer getInteger(String name) {
 		Number value = getNumber(name);
+		return toInteger(value);
+	}
+
+	private Integer toInteger(Number value) {
 		if (value == null) return null;
 		if (value instanceof Integer) return (Integer) value;
 		return value.intValue();
@@ -147,6 +149,15 @@ public class JsonObject {
 
 	public List<JsonObject> getArrayOfObjects(String name) {
 		return (List<JsonObject>) get(name);
+	}
+
+	public List<Integer> getArrayOfIntegers(String name) {
+		List<Number> values = (List<Number>) get(name);
+		List<Integer> ret = new ArrayList<Integer>(values.size());
+		for (Number value : values) {
+			ret.add(toInteger(value));
+		}
+		return ret;
 	}
 
 	// --- manipulating ---
@@ -205,6 +216,15 @@ public class JsonObject {
 		return sb.toString();
 	}
 
+	public String toFormatedString() {
+		return toString(0);
+	}
+
+	@Override
+	public String toString() {
+		return toString(-1);
+	}
+
 	private boolean isShort() {
 		if (elements.size() > 3) return false;
 		for (Object value : elements.values()) {
@@ -221,18 +241,10 @@ public class JsonObject {
 		return false;
 	}
 
-	public String toFormatedString() {
-		return toString(0);
-	}
-
-	@Override
-	public String toString() {
-		return toString(-1);
-	}
-
 	// --- parsing ---
 
 	private int parse(String json, int offset) {
+		if (json.length() < 2) throw new ParseException("Empty string is invalid", json, 0);
 		idx = offset;
 		parseWhitespace(json, "'{'");
 		if (json.charAt(idx) != '{') throw new ParseException("Expecting '{'", json, idx);
@@ -270,7 +282,8 @@ public class JsonObject {
 		String name = json.substring(idx, nameEndIdx);
 		idx = nameEndIdx + 1;
 		parseWhitespace(json, "':'");
-		if (json.charAt(idx) != ':') throw new ParseException("Expecting ':'", json, idx);
+		if (json.charAt(idx) != ':')
+			throw new ParseException("Expecting ':' after element name \"" + name + "\"", json, idx);
 		idx++;
 		parseWhitespace(json, "element value");
 		Object value = parseValue(json);
@@ -337,6 +350,16 @@ public class JsonObject {
 
 	// --- IO ---
 
+	public void write(OutputStream out, boolean formated) {
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
+		write(writer, formated);
+		try {
+			writer.flush();
+		} catch (IOException ex) {
+			throw new RuntimeException("Writing failed", ex);
+		}
+	}
+
 	public void write(Writer out, boolean formated) {
 		write(new PrintWriter(out), formated);
 	}
@@ -362,6 +385,7 @@ public class JsonObject {
 		} else {
 			out.print(toString());
 		}
+		out.flush();
 	}
 
 	private static String load(File file) {
