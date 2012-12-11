@@ -14,10 +14,27 @@
  */
 package ilarkesto.law;
 
-import java.util.List;
+public abstract class Book {
 
-public abstract class ABookCollection {
+	private String code;
+	private String title;
 
-	private List<ABook> books;
+	public Book(String code, String title) {
+		super();
+		this.code = code;
+		this.title = title;
+	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	@Override
+	public String toString() {
+		return getCode() + " " + getTitle();
+	}
 }

@@ -14,53 +14,55 @@
  */
 package ilarkesto.law;
 
+import ilarkesto.core.base.RuntimeTracker;
+import ilarkesto.core.logging.Log;
+
 import java.util.List;
 
-public abstract class Section {
+public abstract class BookCollection {
 
-	private Book book;
-	private Section parent;
+	private Log log = Log.get(getClass());
+	private List<Book> books;
+	private String code;
 	private String title;
-	private List<Section> subsections;
 
-	private Section(Book book, Section parent, String title) {
-		super();
-		this.book = book;
-		this.parent = parent;
+	protected abstract List<Book> loadBooks() throws DataLoadFailedException;
+
+	protected abstract String getInternetUrl();
+
+	public BookCollection(String code, String title) {
+		this.code = code;
 		this.title = title;
 	}
 
-	protected void addSubsection(Section section) {
-		subsections.add(section);
+	public List<Book> getBooks() {
+		if (books == null) {
+			log.info("Loading books:", toString());
+			RuntimeTracker rt = new RuntimeTracker();
+			books = loadBooks();
+			log.info(books.size(), "books loaded in", rt.getRuntimeFormated());
+		}
+		return books;
 	}
 
-	public List<Section> getSubsections() {
-		return subsections;
+	public Book getBookByCode(String code) {
+		for (Book book : books) {
+			if (code.equals(book.getCode())) return book;
+		}
+		return null;
 	}
 
-	public Book getBook() {
-		return book;
-	}
-
-	public Section getParent() {
-		return parent;
+	public String getCode() {
+		return code;
 	}
 
 	public String getTitle() {
 		return title;
 	}
 
-	public boolean isRoot() {
-		return parent == null;
-	}
-
 	@Override
 	public String toString() {
-		if (isRoot()) {
-			return getBook().getCode() + " > " + getTitle();
-		} else {
-			return getParent().toString() + " > " + getTitle();
-		}
+		return getCode() + " " + getTitle();
 	}
 
 }

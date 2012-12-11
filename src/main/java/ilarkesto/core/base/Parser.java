@@ -7,6 +7,7 @@ public class Parser {
 
 	public Parser(String data) {
 		super();
+		if (data == null) throw new IllegalArgumentException("data == null");
 		this.data = data;
 	}
 

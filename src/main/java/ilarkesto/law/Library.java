@@ -19,9 +19,9 @@ import java.util.List;
 
 public class Library {
 
-	private List<ABookCollection> collections = new ArrayList<ABookCollection>();
+	private List<BookCollection> collections = new ArrayList<BookCollection>();
 
-	public List<ABookCollection> getCollections() {
+	public List<BookCollection> getCollections() {
 		return collections;
 	}
 
