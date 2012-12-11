@@ -1022,35 +1022,6 @@ public class Str extends ilarkesto.core.base.Str {
 		return sb.toString();
 	}
 
-	public static String fillUpLeft(String s, String filler, int minLength) {
-		// TODO: optimize algorithm
-		while (s.length() < minLength) {
-			s = filler + s;
-		}
-		return s;
-	}
-
-	public static String cutLeft(String s, int maxlength, String fillerOnCut) {
-		if (s == null) return null;
-		if (s.length() > maxlength) {
-			return fillerOnCut + s.substring(s.length() - maxlength + fillerOnCut.length());
-		} else return s;
-	}
-
-	public static String cutRight(String s, int maxlength) {
-		if (s == null) return null;
-		if (s.length() > maxlength) {
-			return s.substring(0, maxlength);
-		} else return s;
-	}
-
-	public static String cutRight(String s, int maxlength, String fillerOnCut) {
-		if (s == null) return null;
-		if (s.length() > maxlength) {
-			return s.substring(0, maxlength - fillerOnCut.length()) + fillerOnCut;
-		} else return s;
-	}
-
 	public static String cutHtmlAndHeaderAndBody(String s) {
 		if (s == null) return null;
 		if (s.startsWith("<html")) {
@@ -1275,21 +1246,6 @@ public class Str extends ilarkesto.core.base.Str {
 		while (tokenizer.hasMoreTokens())
 			result = tokenizer.nextToken();
 		return result;
-	}
-
-	public static String concat(Object[] sa, String delimiter) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < sa.length; i++) {
-			sb.append(sa[i]);
-			if (i < sa.length - 1) {
-				sb.append(delimiter);
-			}
-		}
-		return sb.toString();
-	}
-
-	public static String concat(Object[] sa) {
-		return concat(sa, " ");
 	}
 
 	/**

@@ -264,24 +264,28 @@ public abstract class IO {
 	}
 
 	public static void closeQuiet(InputStream in) {
+		if (in == null) return;
 		try {
 			in.close();
 		} catch (IOException ex) {}
 	}
 
 	public static void closeQuiet(OutputStream out) {
+		if (out == null) return;
 		try {
 			out.close();
 		} catch (IOException ex) {}
 	}
 
 	public static void closeQuiet(Socket socket) {
+		if (socket == null) return;
 		try {
 			socket.close();
 		} catch (IOException ex) {}
 	}
 
 	public static void close(Socket socket) {
+		if (socket == null) return;
 		try {
 			socket.close();
 		} catch (IOException ex) {

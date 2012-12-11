@@ -1,5 +1,6 @@
 package ilarkesto.android;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log.Level;
 import ilarkesto.core.logging.LogRecord;
 import ilarkesto.core.logging.LogRecordHandler;
@@ -24,22 +25,27 @@ public class AndroidLogDatahandler implements LogRecordHandler {
 			return;
 		}
 		int androidLevel = toAndroidLevel(record.level);
-		if (!android.util.Log.isLoggable(record.name, androidLevel)) return;
+		String androidTag = getLogTag(record);
+		if (!android.util.Log.isLoggable(androidTag, androidLevel)) return;
 		switch (androidLevel) {
 			case Log.ERROR:
-				Log.e(record.name, record.getText());
+				Log.e(androidTag, record.getText());
 				return;
 			case Log.WARN:
-				Log.w(record.name, record.getText());
+				Log.w(androidTag, record.getText());
 				return;
 			case Log.INFO:
-				Log.i(record.name, record.getText());
+				Log.i(androidTag, record.getText());
 				return;
 			case Log.DEBUG:
-				Log.d(record.name, record.getText());
+				Log.d(androidTag, record.getText());
 				return;
 		}
-		Log.v(record.name, record.getText());
+		Log.v(androidTag, record.getText());
+	}
+
+	private String getLogTag(LogRecord record) {
+		return Str.cutRight(record.name, 23);
 	}
 
 	private int toAndroidLevel(Level level) {
