@@ -29,6 +29,12 @@ public class Parser {
 		return data.substring(pos, idx);
 	}
 
+	public String getUntilAndGotoAfter(String... ss) throws ParseException {
+		String ret = getUntil(ss);
+		gotoAfter(ss);
+		return ret;
+	}
+
 	private int indexOf(String s, int start, String... subs) {
 		int lowest = -1;
 		for (String sub : subs) {

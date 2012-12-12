@@ -9,12 +9,40 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
  * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.law;
 
+import ilarkesto.json.AJsonWrapper;
+import ilarkesto.json.JsonObject;
 
-public interface Norm {
+public class Norm extends AJsonWrapper {
+
+	public Norm(JsonObject json) {
+		super(json);
+	}
+
+	public Norm(NormRef ref, String title) {
+		putMandatory("ref", ref);
+		putMandatory("title", title);
+	}
+
+	public String getTitle() {
+		return getMandatoryString("title");
+	}
+
+	public Section getSection() {
+		return getParent(Section.class);
+	}
+
+	public NormRef getRef() {
+		return createFromObject("ref", NormRef.class);
+	}
+
+	@Override
+	public String toString() {
+		return getRef().toString();
+	}
 
 }

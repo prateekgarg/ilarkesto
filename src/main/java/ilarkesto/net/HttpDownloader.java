@@ -2,6 +2,12 @@ package ilarkesto.net;
 
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
+import ilarkesto.io.zip.ZipEntry;
+import ilarkesto.io.zip.ZipInputStream;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class HttpDownloader {
 
@@ -12,10 +18,37 @@ public class HttpDownloader {
 	private String password;
 	private String baseUrl;
 
+	public String downloadZippedText(String url, String zipContentCharset) {
+		url = getFullUrl(url);
+		log.info(url);
+		InputStream is = null;
+		ZipInputStream zis = null;
+		try {
+			is = IO.openUrlInputStream(url, username, password);
+			zis = new ZipInputStream(new BufferedInputStream(is));
+			ZipEntry ze;
+			try {
+				ze = zis.getNextEntry();
+			} catch (IOException ex) {
+				throw new RuntimeException("Extracting zip file failed: " + url, ex);
+			}
+			if (ze == null) throw new RuntimeException("Zip file is empty: " + url);
+			return IO.readToString(zis, zipContentCharset);
+		} finally {
+			IO.closeQuiet(zis);
+			IO.closeQuiet(is);
+		}
+	}
+
 	public String downloadText(String url) {
-		if (baseUrl != null) url = baseUrl + url;
+		url = getFullUrl(url);
 		log.info(url);
 		return IO.downloadUrlToString(url, charset, username, password);
+	}
+
+	private String getFullUrl(String url) {
+		if (baseUrl == null) return url;
+		return baseUrl + url;
 	}
 
 	public HttpDownloader setCharset(String charset) {

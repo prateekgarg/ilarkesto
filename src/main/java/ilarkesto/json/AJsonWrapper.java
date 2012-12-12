@@ -14,6 +14,7 @@
  */
 package ilarkesto.json;
 
+import ilarkesto.core.base.Utl;
 import ilarkesto.json.Json.JsonWrapper;
 
 import java.lang.reflect.Constructor;
@@ -32,6 +33,50 @@ public abstract class AJsonWrapper implements JsonWrapper {
 
 	public AJsonWrapper() {
 		this(new JsonObject());
+	}
+
+	protected void putMandatory(String name, Object value) {
+		if (value == null) throw new IllegalArgumentException("Mandatory property \"" + name + "\" is null.");
+		json.put(name, value);
+	}
+
+	protected String getMandatoryString(String name) {
+		return assertNotNull(name, json.getString(name));
+	}
+
+	private <T> T assertNotNull(String name, T value) {
+		if (value == null)
+			throw new IllegalStateException("Mandatory property \"" + name + "\" does not exist: " + toString());
+		return value;
+	}
+
+	protected boolean checkEquals(Object obj, String... properties) {
+		if (obj == null) return false;
+		if (!getClass().equals(obj.getClass())) return false;
+		AJsonWrapper other = (AJsonWrapper) obj;
+		if (properties.length == 0) return json.equals(other.json);
+		for (String property : properties) {
+			if (!Utl.equals(json.get(property), other.json.getString(property))) return false;
+		}
+		return true;
+	}
+
+	protected int hashCode(String... properties) {
+		if (properties.length == 0) return json.hashCode();
+		int hash = 1;
+		for (String property : properties) {
+			Object value = json.get(property);
+			if (value == null) {
+				hash = hash * 13 + property.hashCode();
+				continue;
+			}
+			hash = hash * 17 + value.hashCode();
+		}
+		return hash;
+	}
+
+	protected <P extends AJsonWrapper> P getParent(Class<P> type) {
+		return createWrapper(json.getParent(), type);
 	}
 
 	protected void putArray(String name, Iterable<? extends AJsonWrapper> wrappers) {

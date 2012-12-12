@@ -1,22 +1,21 @@
 package ilarkesto.integration.gesetzeiminternet;
 
-import ilarkesto.law.Book;
+import ilarkesto.law.BookIndex;
+import ilarkesto.law.BookRef;
 import ilarkesto.testng.ATest;
-
-import java.util.List;
 
 import org.testng.annotations.Test;
 
 public class GiiTest extends ATest {
 
 	@Test
-	public void books() {
-		GiiBookCollection collection = new GiiBookCollection();
+	public void test() {
+		GiiLawProvider gii = new GiiLawProvider();
 
-		List<Book> books = collection.getBooks();
-		assertNotEmpty(books);
+		BookIndex index = gii.getBookIndex();
+		assertNotEmpty(index.getBooks());
 
-		Book binSchStrOAbweichV = collection.getBookByCode("64. BinSchStrOAbweichV");
+		BookRef binSchStrOAbweichV = index.getBookByCode("64. BinSchStrOAbweichV");
 		assertNotNull(binSchStrOAbweichV);
 		assertEquals(binSchStrOAbweichV.getTitle(),
 			"Vierundsechzigste Verordnung zur vorübergehenden Abweichung von der Binnenschifffahrtsstraßen-Ordnung");

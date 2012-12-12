@@ -1,8 +1,6 @@
-package ilarkesto.core.json;
+package ilarkesto.json;
 
 import ilarkesto.core.base.Utl;
-import ilarkesto.json.Json;
-import ilarkesto.json.JsonObject;
 import ilarkesto.testng.ATest;
 
 import org.testng.annotations.Test;
@@ -102,6 +100,24 @@ public class JsonTest extends ATest {
 		assertEquals(new JsonObject("{\"list\":[1,2]}").toString(), "{\"list\":[1,2]}");
 		assertEquals(new JsonObject(" { \"list\" : [  ] }").toString(), "{\"list\":[]}");
 		assertEquals(new JsonObject("{\"list\":[[]]}").toString(), "{\"list\":[[]]}");
+	}
+
+	@Test
+	public void getParent() {
+		JsonObject witek = new JsonObject();
+		JsonObject address = new JsonObject();
+		witek.put("address", address);
+		assertSame(witek, address.getParent());
+
+		witek = new JsonObject(witek.toString());
+		address = witek.getObject("address");
+		assertSame(witek, address.getParent());
+	}
+
+	@Test
+	public void equals() {
+		assertEquals(new JsonObject("{\"list\":[[]]}"), new JsonObject("{\"list\":[[]]}"));
+		assertNotEquals(new JsonObject("{\"list\":[[{}]]}"), new JsonObject("{\"list\":[[]]}"));
 	}
 
 	// --- helper ---

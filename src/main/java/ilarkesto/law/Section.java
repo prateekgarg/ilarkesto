@@ -14,53 +14,84 @@
  */
 package ilarkesto.law;
 
+import ilarkesto.json.AJsonWrapper;
+import ilarkesto.json.JsonObject;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-public abstract class Section {
+public class Section extends AJsonWrapper {
 
-	private Book book;
-	private Section parent;
-	private String title;
-	private List<Section> subsections;
-
-	private Section(Book book, Section parent, String title) {
-		super();
-		this.book = book;
-		this.parent = parent;
-		this.title = title;
+	public Section(JsonObject json) {
+		super(json);
 	}
 
-	protected void addSubsection(Section section) {
-		subsections.add(section);
+	public Section(String title) {
+		putMandatory("title", title);
 	}
 
-	public List<Section> getSubsections() {
-		return subsections;
+	public boolean isTop() {
+		JsonObject parent = json.getParent();
+		if (parent == null) return true;
+		return parent.contains("ref");
+	}
+
+	public Section getParentSection() {
+		if (isTop()) return null;
+		return getParent(Section.class);
 	}
 
 	public Book getBook() {
-		return book;
+		Section parentSection = getParentSection();
+		if (parentSection != null) return parentSection.getBook();
+		return getParent(Book.class);
 	}
 
-	public Section getParent() {
-		return parent;
+	public List<Section> getSectionPath() {
+		LinkedList<Section> ret = new LinkedList<Section>();
+		Section section = this;
+		while (section != null) {
+			ret.addFirst(section);
+			section = section.getParentSection();
+		}
+		return ret;
 	}
 
 	public String getTitle() {
-		return title;
+		return getMandatoryString("title");
 	}
 
-	public boolean isRoot() {
-		return parent == null;
+	public List<Norm> getNorms() {
+		List<Norm> ret = new ArrayList<Norm>();
+		ret.addAll(createFromArray("norms", Norm.class));
+		for (Section section : getSections()) {
+			ret.addAll(section.getNorms());
+		}
+		return ret;
+	}
+
+	public void addNorm(Norm norm) {
+		json.addToArray("norms", norm);
+	}
+
+	public List<Section> getSections() {
+		return createFromArray("sections", Section.class);
+	}
+
+	public void addSection(Section section) {
+		json.addToArray("sections", section);
 	}
 
 	@Override
 	public String toString() {
-		if (isRoot()) {
-			return getBook().getCode() + " > " + getTitle();
-		} else {
-			return getParent().toString() + " > " + getTitle();
+		StringBuilder sb = new StringBuilder();
+		sb.append(getBook().getRef().getCode());
+		for (Section section : getSectionPath()) {
+			sb.append(" > ");
+			sb.append(section.getTitle());
 		}
+		return sb.toString();
 	}
 
 }

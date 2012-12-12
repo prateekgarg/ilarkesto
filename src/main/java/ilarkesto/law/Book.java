@@ -14,27 +14,50 @@
  */
 package ilarkesto.law;
 
-public abstract class Book {
+import ilarkesto.json.AJsonWrapper;
+import ilarkesto.json.JsonObject;
 
-	private String code;
-	private String title;
+import java.util.ArrayList;
+import java.util.List;
 
-	public Book(String code, String title) {
-		super();
-		this.code = code;
-		this.title = title;
+public class Book extends AJsonWrapper {
+
+	public Book(JsonObject json) {
+		super(json);
 	}
 
-	public String getCode() {
-		return code;
+	public Book(BookRef ref) {
+		json.put("ref", ref);
 	}
 
-	public String getTitle() {
-		return title;
+	public BookRef getRef() {
+		return createFromObject("ref", BookRef.class);
+	}
+
+	public List<Section> getSections() {
+		return createFromArray("sections", Section.class);
+	}
+
+	public void addSection(Section section) {
+		json.addToArray("sections", section);
+	}
+
+	public List<Norm> getNorms() {
+		List<Norm> ret = new ArrayList<Norm>();
+		ret.addAll(createFromArray("norms", Norm.class));
+		for (Section section : getSections()) {
+			ret.addAll(section.getNorms());
+		}
+		return ret;
+	}
+
+	public void addNorm(Norm norm) {
+		json.addToArray("norms", norm);
 	}
 
 	@Override
 	public String toString() {
-		return getCode() + " " + getTitle();
+		return getRef().toString();
 	}
+
 }

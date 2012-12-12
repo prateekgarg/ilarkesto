@@ -14,55 +14,58 @@
  */
 package ilarkesto.law;
 
-import ilarkesto.core.base.RuntimeTracker;
-import ilarkesto.core.logging.Log;
+import ilarkesto.json.AJsonWrapper;
+import ilarkesto.json.JsonObject;
 
 import java.util.List;
 
-public abstract class BookCollection {
+public class BookIndex extends AJsonWrapper {
 
-	private Log log = Log.get(getClass());
-	private List<Book> books;
-	private String code;
-	private String title;
-
-	protected abstract List<Book> loadBooks() throws DataLoadFailedException;
-
-	protected abstract String getInternetUrl();
-
-	public BookCollection(String code, String title) {
-		this.code = code;
-		this.title = title;
+	public BookIndex(JsonObject json) {
+		super(json);
 	}
 
-	public List<Book> getBooks() {
-		if (books == null) {
-			log.info("Loading books:", toString());
-			RuntimeTracker rt = new RuntimeTracker();
-			books = loadBooks();
-			log.info(books.size(), "books loaded in", rt.getRuntimeFormated());
-		}
-		return books;
+	public BookIndex(String code, String title) {
+		json.put("code", code);
+		json.put("title", title);
 	}
 
-	public Book getBookByCode(String code) {
-		for (Book book : books) {
-			if (code.equals(book.getCode())) return book;
+	public BookRef getBookByCode(String code) {
+		for (BookRef book : getBooks()) {
+			if (book.getCode().equals(code)) return book;
 		}
 		return null;
 	}
 
 	public String getCode() {
-		return code;
+		return json.getString("code");
 	}
 
 	public String getTitle() {
-		return title;
+		return json.getString("title");
+	}
+
+	public List<BookRef> getBooks() {
+		return createFromArray("books", BookRef.class);
+	}
+
+	public void addBook(BookRef book) {
+		json.addToArray("books", book);
 	}
 
 	@Override
 	public String toString() {
 		return getCode() + " " + getTitle();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return checkEquals(obj, "code");
+	}
+
+	@Override
+	public int hashCode() {
+		return getCode().hashCode();
 	}
 
 }

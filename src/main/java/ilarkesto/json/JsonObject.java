@@ -36,6 +36,7 @@ public class JsonObject {
 
 	private final Map<String, Object> elements = new LinkedHashMap<String, Object>();
 	private int idx = -1;
+	private JsonObject parent;
 
 	public JsonObject() {}
 
@@ -50,13 +51,23 @@ public class JsonObject {
 	public JsonObject(Map<?, ?> map) {
 		for (Map.Entry entry : map.entrySet()) {
 			String name = entry.getKey().toString();
-			Object value = Json.convertValue(entry.getValue());
-			put(name, value);
+			put(name, entry.getValue());
 		}
 	}
 
 	public JsonObject(File file) {
 		this(load(file));
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof JsonObject)) return false;
+		return elements.equals(((JsonObject) obj).elements);
+	}
+
+	@Override
+	public int hashCode() {
+		return elements.hashCode();
 	}
 
 	// --- inspecting ---
@@ -165,11 +176,15 @@ public class JsonObject {
 		return ret;
 	}
 
+	public JsonObject getParent() {
+		return parent;
+	}
+
 	// --- manipulating ---
 
 	public <V> V put(String name, V value) {
 		if (name == null || name.length() == 0) throw new RuntimeException("name required");
-		elements.put(name, Json.convertValue(value));
+		elements.put(name, adopt(value));
 		return value;
 	}
 
@@ -179,7 +194,7 @@ public class JsonObject {
 			array = new ArrayList();
 			put(name, array);
 		}
-		array.add(value);
+		array.add(adopt(value));
 		return array;
 	}
 
@@ -190,6 +205,22 @@ public class JsonObject {
 
 	public JsonObject putNewObject(String name) {
 		return put(name, new JsonObject());
+	}
+
+	private Object adopt(Object childToAdopt) {
+		Object child = Json.convertValue(childToAdopt);
+		if (child instanceof JsonObject) {
+			((JsonObject) child).parent = this;
+			return child;
+		}
+		if (child instanceof Iterable) {
+			List list = new ArrayList();
+			for (Object item : ((Iterable) child)) {
+				list.add(adopt(item));
+			}
+			return list;
+		}
+		return child;
 	}
 
 	// --- formating ---

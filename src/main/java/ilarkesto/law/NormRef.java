@@ -14,8 +14,41 @@
  */
 package ilarkesto.law;
 
-public interface Paragraph {
+import ilarkesto.json.AJsonWrapper;
+import ilarkesto.json.JsonObject;
 
-	String getText();
+public class NormRef extends AJsonWrapper {
+
+	public NormRef(JsonObject json) {
+		super(json);
+	}
+
+	public NormRef(String bookCode, String code) {
+		putMandatory("bookCode", bookCode);
+		putMandatory("code", code);
+	}
+
+	public String getCode() {
+		return getMandatoryString("code");
+	}
+
+	public String getBookCode() {
+		return getMandatoryString("bookCode");
+	}
+
+	@Override
+	public String toString() {
+		return getBookCode() + " " + getCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return checkEquals(obj, "bookCode", "code");
+	}
+
+	@Override
+	public int hashCode() {
+		return hashCode("bookCode", "code");
+	}
 
 }
