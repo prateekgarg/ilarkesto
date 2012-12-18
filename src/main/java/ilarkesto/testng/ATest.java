@@ -16,6 +16,7 @@ package ilarkesto.testng;
 
 import ilarkesto.core.logging.Log;
 
+import java.io.File;
 import java.util.Collection;
 
 import org.testng.Assert;
@@ -26,6 +27,14 @@ public class ATest extends Assert {
 	public static final String INPUT_DIR = "test-input";
 
 	protected Log log = Log.get(getClass());
+
+	// --- files ---
+
+	protected File getTestOutputFile(String name) {
+		return new File(OUTPUT_DIR + "/" + getClass().getSimpleName() + "/" + name);
+	}
+
+	// --- asserts ---
 
 	public static void assertNotEquals(Object a, Object b) {
 		assertFalse(a.equals(b), "Objects expected not to be equal: <" + a + "> and <" + b + ">");

@@ -31,6 +31,7 @@ public class Android {
 		ConnectivityManager connectivityManager = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+		if (networkInfo == null) return false;
 		return networkInfo.isConnected();
 	}
 
@@ -38,7 +39,15 @@ public class Android {
 		ConnectivityManager connectivityManager = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		if (networkInfo == null) return false;
 		return networkInfo.isConnected();
+	}
+
+	public static boolean isOnline(Context context) {
+		NetworkInfo netInfo = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+		if (netInfo == null) return false;
+		return netInfo.isConnectedOrConnecting();
 	}
 
 	public static void startSendEmail(Context context, String email, String subject) {
@@ -148,13 +157,6 @@ public class Android {
 		});
 		if (showAsAction) item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		return item;
-	}
-
-	public static boolean isOnline(Context context) {
-		NetworkInfo netInfo = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE))
-				.getActiveNetworkInfo();
-		if (netInfo != null && netInfo.isConnectedOrConnecting()) return true;
-		return false;
 	}
 
 	public static void postNotification(Context context, int smallIconResId, Bitmap largeIcon,

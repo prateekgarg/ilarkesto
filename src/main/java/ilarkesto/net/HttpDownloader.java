@@ -2,12 +2,12 @@ package ilarkesto.net;
 
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
-import ilarkesto.io.zip.ZipEntry;
-import ilarkesto.io.zip.ZipInputStream;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class HttpDownloader {
 

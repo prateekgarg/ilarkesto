@@ -4,6 +4,8 @@ import android.app.Activity;
 
 public abstract class AActivity<A extends AApp> extends Activity {
 
+	protected AActivity context = this;
+
 	@Override
 	protected void onStart() {
 		super.onStart();

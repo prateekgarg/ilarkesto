@@ -37,6 +37,7 @@ public class JsonObject {
 	private final Map<String, Object> elements = new LinkedHashMap<String, Object>();
 	private int idx = -1;
 	private JsonObject parent;
+	private File file;
 
 	public JsonObject() {}
 
@@ -45,7 +46,7 @@ public class JsonObject {
 	}
 
 	public JsonObject(String json) {
-		this(json, 0);
+		if (json != null) parse(json, 0);
 	}
 
 	public JsonObject(Map<?, ?> map) {
@@ -57,6 +58,16 @@ public class JsonObject {
 
 	public JsonObject(File file) {
 		this(load(file));
+		this.file = file;
+	}
+
+	public void save(boolean formated) {
+		if (file == null) throw new IllegalStateException("file == null");
+		write(file, formated);
+	}
+
+	public void save() {
+		save(true);
 	}
 
 	@Override
@@ -196,6 +207,12 @@ public class JsonObject {
 		}
 		array.add(adopt(value));
 		return array;
+	}
+
+	public boolean removeFromArray(String name, Object value) {
+		List array = getArray(name);
+		if (array == null) return false;
+		return array.remove(value);
 	}
 
 	public Object remove(String name) {
@@ -425,6 +442,7 @@ public class JsonObject {
 	}
 
 	private static String load(File file) {
+		if (!file.exists()) return null;
 		try {
 			StringBuilder sb = new StringBuilder();
 			BufferedReader in = new BufferedReader(new FileReader(file));
