@@ -71,82 +71,6 @@ public class Views {
 		};
 	}
 
-	// public static View phone(final Context context, final CharSequence phoneNumber, CharSequence
-	// optionalText) {
-	// if (phoneNumber == null) return null;
-	// if (optionalText == null) optionalText = phoneNumber;
-	// return textWithButton(context, optionalText, android.R.drawable.sym_action_call, new
-	// View.OnClickListener() {
-	//
-	// @Override
-	// public void onClick(View v) {
-	// context.track("/call/" + phoneNumber);
-	// Android.startCallTelephoneActivity(context, RintelnUtl.getQualifiedPhone(phoneNumber));
-	// }
-	// });
-	// }
-
-	// public static View email(final Context context, final String email, final String subject) {
-	// if (email == null) return null;
-	// return textWithButton(context, email, android.R.drawable.sym_action_email, new View.OnClickListener() {
-	//
-	// @Override
-	// public void onClick(View v) {
-	// context.track("/sendEmail/" + email);
-	// Android.startSendEmail(context, email, subject);
-	// }
-	// });
-	// }
-
-	// public static View link(final Context context, final String href) {
-	// if (href == null) return null;
-	// return textWithButton(context, href, android.R.drawable.ic_menu_send, new View.OnClickListener() {
-	//
-	// @Override
-	// public void onClick(View v) {
-	// context.track("/viewLink/" + href);
-	// Android.startViewActivity(context, href);
-	// }
-	// });
-	// }
-
-	// public static View geoLocation(final Context context, final String location, String alternateText) {
-	// if (location == null) return null;
-	// if (alternateText == null) alternateText = location;
-	// return textWithButton(context, alternateText, android.R.drawable.ic_menu_mylocation,
-	// new View.OnClickListener() {
-	//
-	// @Override
-	// public void onClick(View v) {
-	// context.track("/viewGeoLocation/" + location);
-	// Android.startViewGeoLocationActivity(context, location);
-	// }
-	// });
-	// }
-
-	// public static View title(Context context, CharSequence text) {
-	// return titleWithRemoteImage(context, text, null);
-	// }
-
-	// public static View titleWithRemoteImage(Context context, CharSequence text, String imageUrl) {
-	// LinearLayout titleWrapper = titleWrapper(context);
-	//
-	// ImageView image = remoteImage(context, imageUrl);
-	// if (image != null) {
-	// image.setPadding(0, 5, DEFAULT_PADDING, 0);
-	// titleWrapper.addView(image, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-	// }
-	//
-	// TextView tv = text(context, text);
-	// tv.setTextSize(20);
-	// // tv.setTypeface(null, Typeface.BOLD);
-	// Resources resources = context.getResources();
-	// tv.setTextColor(resources.getColor(R.color.title));
-	// titleWrapper.addView(tv, lp());
-	//
-	// return titleWrapper;
-	// }
-
 	public static ImageView remoteImage(Context context, String imageUrl) {
 		if (imageUrl == null) return null;
 		ImageView image = new ImageView(context);
@@ -154,28 +78,6 @@ public class Views {
 		new ImageDownloader(imageUrl, image, AApp.get(context).getFilesCache());
 		return image;
 	}
-
-	// public static View textWithButton(Context context, CharSequence text, int imageResId,
-	// View.OnClickListener onClickListener) {
-	// if (text == null) return null;
-	//
-	// View textWithButton = View.inflate(context, R.layout.text_with_button, null);
-	// updateTextView(textWithButton, R.id.text, text);
-	//
-	// ImageButton button = (ImageButton) textWithButton.findViewById(R.id.button);
-	// button.setImageResource(imageResId);
-	// button.setOnClickListener(onClickListener);
-	//
-	// return textWithButton;
-	// }
-
-	// public static LinearLayout titleWrapper(Context context) {
-	// LinearLayout ll = horizontal(context);
-	// ll.setBackgroundColor(context.getResources().getColor(R.color.title_bg));
-	// int padding = DEFAULT_PADDING;
-	// ll.setPadding(padding, padding, padding, padding);
-	// return ll;
-	// }
 
 	public static Button button(Context context, CharSequence text, OnClickListener onClickListener) {
 		Button button = new Button(context);
