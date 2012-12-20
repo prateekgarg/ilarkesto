@@ -40,6 +40,10 @@
 	<classpathentry exported="true" kind="lib" path="lib/iTextAsian.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.20-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdom-2.0.2.jar" sourcepath="lib/src/jdom-2.0.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/android-14.jar"/>
+	<classpathentry kind="lib" path="lib/android-14.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/opt/android-sdk/docs/reference"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

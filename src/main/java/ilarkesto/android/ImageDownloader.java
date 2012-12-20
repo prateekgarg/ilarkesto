@@ -9,6 +9,8 @@ import java.net.URL;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
 public class ImageDownloader {
@@ -19,7 +21,11 @@ public class ImageDownloader {
 	private final ImageView imageView;
 	private final FilesCache cache;
 
-	public ImageDownloader(String imageUrl, ImageView imageView, FilesCache cache) {
+	public ImageDownloader(String imageUrl, ImageView imageView) {
+		this(imageUrl, imageView, AApp.get().getFilesCache());
+	}
+
+	private ImageDownloader(String imageUrl, ImageView imageView, FilesCache cache) {
 		super();
 		this.imageUrl = imageUrl;
 		this.imageView = imageView;
@@ -87,6 +93,20 @@ public class ImageDownloader {
 			}
 		}
 
+	}
+
+	public static void updateImage(String imageUrl, ViewGroup container) {
+		if (container == null) return;
+		container.removeAllViews();
+		if (imageUrl != null) {
+			ImageView view = new ImageView(container.getContext());
+			view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+			container.addView(view);
+			new ImageDownloader(imageUrl, view);
+			container.setVisibility(View.VISIBLE);
+		} else {
+			container.setVisibility(View.GONE);
+		}
 	}
 
 }

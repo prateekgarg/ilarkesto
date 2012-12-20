@@ -1,6 +1,5 @@
 package ilarkesto.android.view;
 
-import ilarkesto.android.AApp;
 import ilarkesto.android.Android;
 import ilarkesto.android.ImageDownloader;
 import android.app.Activity;
@@ -75,7 +74,7 @@ public class Views {
 		if (imageUrl == null) return null;
 		ImageView image = new ImageView(context);
 		image.setScaleType(ScaleType.FIT_CENTER);
-		new ImageDownloader(imageUrl, image, AApp.get(context).getFilesCache());
+		new ImageDownloader(imageUrl, image);
 		return image;
 	}
 

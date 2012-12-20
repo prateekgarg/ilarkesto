@@ -22,10 +22,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class Android {
 
 	private static Log log = Log.get(Android.class);
+
+	public static void showToast(CharSequence text, Context context) {
+		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+	}
 
 	public static boolean isInternetConnected(Context context) {
 		ConnectivityManager connectivityManager = (ConnectivityManager) context

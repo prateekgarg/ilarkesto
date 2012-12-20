@@ -8,7 +8,7 @@ import android.content.Context;
 public abstract class AApp extends Application {
 
 	private Log log = Log.get(getClass());
-	protected Context context = this;
+	protected static Context context;
 
 	private AUserTracker userTracker;
 	private FilesCache filesCache;
@@ -16,6 +16,14 @@ public abstract class AApp extends Application {
 
 	static {
 		Log.setLogRecordHandler(new AndroidLogDatahandler());
+	}
+
+	public abstract Class<? extends AActivity<? extends AApp>> getHomeActivity();
+
+	@Override
+	public void onCreate() {
+		context = this;
+		super.onCreate();
 	}
 
 	public AUserTracker getUserTracker() {
@@ -44,7 +52,8 @@ public abstract class AApp extends Application {
 		return filesCache;
 	}
 
-	public static AApp get(Context context) {
+	public static AApp get() {
+		if (context == null) throw new IllegalStateException("context == null -> AApp.onCreate() not caled yet.");
 		return (AApp) context.getApplicationContext();
 	}
 
