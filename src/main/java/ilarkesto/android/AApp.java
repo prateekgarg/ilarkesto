@@ -20,11 +20,17 @@ public abstract class AApp extends Application {
 
 	public abstract Class<? extends AActivity<? extends AApp>> getHomeActivity();
 
+	public AApp() {
+		initResources();
+	}
+
 	@Override
 	public void onCreate() {
 		context = this;
 		super.onCreate();
 	}
+
+	protected void initResources() {}
 
 	public AUserTracker getUserTracker() {
 		if (userTracker == null) {

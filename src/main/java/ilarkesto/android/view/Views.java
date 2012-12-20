@@ -4,6 +4,7 @@ import ilarkesto.android.Android;
 import ilarkesto.android.ImageDownloader;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,6 +20,44 @@ import android.widget.TextView;
 public class Views {
 
 	public static final int DEFAULT_PADDING = 20;
+
+	public static final class color {
+
+		public static int title = -1;
+		public static int title_bg = -1;
+
+	}
+
+	public static View title(Context context, CharSequence text) {
+		return titleWithRemoteImage(context, text, null);
+	}
+
+	public static View titleWithRemoteImage(Context context, CharSequence text, String imageUrl) {
+		LinearLayout titleWrapper = titleWrapper(context);
+
+		ImageView image = remoteImage(context, imageUrl);
+		if (image != null) {
+			image.setPadding(0, 5, DEFAULT_PADDING, 0);
+			titleWrapper.addView(image, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		}
+
+		TextView tv = text(context, text);
+		tv.setTextSize(20);
+		// tv.setTypeface(null, Typeface.BOLD);
+		Resources resources = context.getResources();
+		tv.setTextColor(resources.getColor(color.title));
+		titleWrapper.addView(tv, lp());
+
+		return titleWrapper;
+	}
+
+	public static LinearLayout titleWrapper(Context context) {
+		LinearLayout ll = horizontal(context);
+		ll.setBackgroundColor(context.getResources().getColor(color.title_bg));
+		int padding = DEFAULT_PADDING;
+		ll.setPadding(padding, padding, padding, padding);
+		return ll;
+	}
 
 	public static void updateTextView(View view, int textViewResId, CharSequence text) {
 		TextView textView = (TextView) view.findViewById(textViewResId);
