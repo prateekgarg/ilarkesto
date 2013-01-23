@@ -19,6 +19,10 @@ public final class BookRef extends AJsonWrapper {
 		return json.getString("code");
 	}
 
+	public boolean isCode(String code) {
+		return getCode().equals(code);
+	}
+
 	public String getTitle() {
 		return json.getString("title");
 	}

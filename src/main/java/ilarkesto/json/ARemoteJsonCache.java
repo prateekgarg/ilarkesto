@@ -20,7 +20,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 		return createFromObject("payload", getPayloadType());
 	}
 
-	public P getPayloadUpdateIfNull() {
+	public P getPayload_ButUpdateIfNull() {
 		P payload = getPayload();
 		if (payload == null) {
 			update(true);

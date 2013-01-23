@@ -1,5 +1,6 @@
 package ilarkesto.android;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 
 import java.net.URLEncoder;
@@ -28,8 +29,24 @@ public class Android {
 
 	private static Log log = Log.get(Android.class);
 
+	public static String text(Context context, int resId) {
+		CharSequence text = context.getResources().getText(resId);
+		String s = String.valueOf(text);
+		s = s.replace("\\\\", "\\");
+		s = s.replace("\\n", "\n");
+		return s;
+	}
+
+	public static String text(Context context, int resId, Object... params) {
+		return Str.replaceIndexedParams(text(context, resId), params);
+	}
+
 	public static void showToast(CharSequence text, Context context) {
 		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+	}
+
+	public static void showToast(int textResId, Context context) {
+		Toast.makeText(context, textResId, Toast.LENGTH_SHORT).show();
 	}
 
 	public static boolean isInternetConnected(Context context) {
@@ -160,7 +177,7 @@ public class Android {
 				return true;
 			}
 		});
-		if (showAsAction) item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		if (showAsAction) item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 		return item;
 	}
 

@@ -95,6 +95,11 @@ public class JsonObject {
 		return elements.containsKey(name);
 	}
 
+	public boolean isSet(String name) {
+		if (!elements.containsKey(name)) return false;
+		return get(name) != null;
+	}
+
 	public boolean containsString(String name, String expected) {
 		String value = getString(name);
 		return value == expected || (value != null && value.equals(expected));
@@ -204,6 +209,7 @@ public class JsonObject {
 		if (array == null) {
 			array = new ArrayList();
 			put(name, array);
+			return addToArray(name, value);
 		}
 		array.add(adopt(value));
 		return array;

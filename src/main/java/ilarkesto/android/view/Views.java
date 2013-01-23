@@ -2,6 +2,7 @@ package ilarkesto.android.view;
 
 import ilarkesto.android.Android;
 import ilarkesto.android.ImageDownloader;
+import ilarkesto.android.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -21,13 +22,6 @@ public class Views {
 
 	public static final int DEFAULT_PADDING = 20;
 
-	public static final class color {
-
-		public static int title = -1;
-		public static int title_bg = -1;
-
-	}
-
 	public static View title(Context context, CharSequence text) {
 		return titleWithRemoteImage(context, text, null);
 	}
@@ -45,7 +39,7 @@ public class Views {
 		tv.setTextSize(20);
 		// tv.setTypeface(null, Typeface.BOLD);
 		Resources resources = context.getResources();
-		tv.setTextColor(resources.getColor(color.title));
+		tv.setTextColor(resources.getColor(R.color.title));
 		titleWrapper.addView(tv, lp());
 
 		return titleWrapper;
@@ -53,7 +47,7 @@ public class Views {
 
 	public static LinearLayout titleWrapper(Context context) {
 		LinearLayout ll = horizontal(context);
-		ll.setBackgroundColor(context.getResources().getColor(color.title_bg));
+		ll.setBackgroundColor(context.getResources().getColor(R.color.title_bg));
 		int padding = DEFAULT_PADDING;
 		ll.setPadding(padding, padding, padding, padding);
 		return ll;
@@ -137,6 +131,12 @@ public class Views {
 			ll.addView(new FrameLayout(ll.getContext()), new LayoutParams(width, height));
 		}
 		return ll;
+	}
+
+	public static LinearLayout verticalSpacer(Context context, int height) {
+		LinearLayout spacer = vertical(context);
+		addSpacer(spacer, height);
+		return spacer;
 	}
 
 	public static FrameLayout frame(View content, int padding) {

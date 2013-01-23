@@ -58,4 +58,13 @@ public abstract class AActivity<A extends AApp> extends Activity {
 	public void showToast(CharSequence text) {
 		Android.showToast(text, context);
 	}
+
+	public void showToast(int textResId) {
+		Android.showToast(textResId, context);
+	}
+
+	public Localizer getLocalizer() {
+		return getApp().getLocalizer();
+	}
+
 }

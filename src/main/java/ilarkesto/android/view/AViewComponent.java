@@ -21,6 +21,12 @@ public abstract class AViewComponent {
 		return view;
 	}
 
+	protected void onUpdate() {}
+
+	public final void update() {
+		onUpdate();
+	}
+
 	protected final View createView(Object element) {
 		if (element == null) return null;
 		if (element instanceof View) return (View) element;

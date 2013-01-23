@@ -32,6 +32,8 @@ public class GiiBookXmlParser extends Parser {
 
 	public void parseInto(Book book) throws ParseException {
 		this.book = book;
+		gotoAfter("<norm");
+		gotoAfter("</norm");
 		while (gotoAfterIf("<norm")) {
 			parseNorm();
 		}
@@ -61,9 +63,12 @@ public class GiiBookXmlParser extends Parser {
 		}
 		gotoAfter("<enbez>");
 		String enbez = getUntilAndGotoAfter("</enbez>");
-		gotoAfter("<titel");
-		gotoAfter(">");
-		String titel = getUntil("</titel");
+		String titel = null;
+		if (isBefore("<titel", "</metadaten>")) {
+			gotoAfter("<titel");
+			gotoAfter(">");
+			titel = getUntil("</titel");
+		}
 		NormRef ref = new NormRef(book.getRef().getCode(), enbez);
 		Norm norm = new Norm(ref, titel);
 		if (section == null) {
@@ -71,5 +76,6 @@ public class GiiBookXmlParser extends Parser {
 		} else {
 			section.addNorm(norm);
 		}
+		gotoAfter("</norm>");
 	}
 }

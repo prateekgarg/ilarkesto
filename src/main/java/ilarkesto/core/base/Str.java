@@ -34,6 +34,19 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String replaceIndexedParams(String s, Object... params) {
+		if (params == null || params.length == 0) return s;
+		for (int i = 0; i < params.length; i++) {
+			s = s.replace("{" + i + "}", format(params[i]));
+		}
+		return s;
+	}
+
+	public static String uppercase(CharSequence text) {
+		if (text == null) return null;
+		return String.valueOf(text).toUpperCase();
+	}
+
 	public static String fillUpLeft(String s, String filler, int minLength) {
 		// TODO: optimize algorithm
 		while (s.length() < minLength) {

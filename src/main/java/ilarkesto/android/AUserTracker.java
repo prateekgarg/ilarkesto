@@ -9,6 +9,10 @@ public abstract class AUserTracker {
 
 	protected abstract void onTrack(String path);
 
+	protected abstract void onFlush();
+
+	protected abstract void onShutdown();
+
 	public final void track(String location) {
 		log.info(location);
 		onTrack(location);
@@ -35,6 +39,15 @@ public abstract class AUserTracker {
 		String s = o == null ? "/" : o.toString();
 		if (!s.startsWith("/")) s = "/" + s;
 		return s;
+	}
+
+	public final void flush() {
+		onFlush();
+	}
+
+	public final void shutdown() {
+		flush();
+		onShutdown();
 	}
 
 }

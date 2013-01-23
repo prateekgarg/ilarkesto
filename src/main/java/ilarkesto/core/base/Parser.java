@@ -11,6 +11,14 @@ public class Parser {
 		this.data = data;
 	}
 
+	public boolean isBefore(String s, String... others) {
+		int idx = data.indexOf(s, pos);
+		if (idx < 0) return false;
+		int othersIdx = indexOf(data, pos, others);
+		if (othersIdx < 0) return true;
+		return idx < othersIdx;
+	}
+
 	public boolean isNext(String s) {
 		return data.startsWith(s, pos);
 	}

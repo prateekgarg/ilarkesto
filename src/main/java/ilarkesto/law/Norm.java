@@ -25,11 +25,19 @@ public class Norm extends AJsonWrapper {
 
 	public Norm(NormRef ref, String title) {
 		putMandatory("ref", ref);
-		putMandatory("title", title);
+		json.put("title", title);
+	}
+
+	public String getTextAsString() {
+		return "dummy";
 	}
 
 	public String getTitle() {
-		return getMandatoryString("title");
+		return json.getString("title");
+	}
+
+	public boolean isTitleAvailable() {
+		return json.isSet("title");
 	}
 
 	public Section getSection() {
