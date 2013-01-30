@@ -17,6 +17,8 @@ package ilarkesto.law;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
 
+import java.util.List;
+
 public class Norm extends AJsonWrapper {
 
 	public Norm(JsonObject json) {
@@ -28,8 +30,26 @@ public class Norm extends AJsonWrapper {
 		json.put("title", title);
 	}
 
+	public List<Paragraph> getParagraphs() {
+		return createFromArray("paragraphs", Paragraph.class);
+	}
+
+	public void addParagraph(Paragraph p) {
+		json.addToArray("paragraphs", p);
+	}
+
 	public String getTextAsString() {
-		return "dummy";
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (Paragraph p : getParagraphs()) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append("\n\n");
+			}
+			sb.append(p.getTextAsString());
+		}
+		return sb.toString();
 	}
 
 	public String getTitle() {

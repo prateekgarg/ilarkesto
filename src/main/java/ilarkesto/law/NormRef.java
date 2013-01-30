@@ -38,7 +38,7 @@ public class NormRef extends AJsonWrapper {
 
 	@Override
 	public String toString() {
-		return getBookCode() + " " + getCode();
+		return getCode() + " " + getBookCode();
 	}
 
 	@Override

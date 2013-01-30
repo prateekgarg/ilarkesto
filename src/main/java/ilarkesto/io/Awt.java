@@ -1,5 +1,6 @@
 package ilarkesto.io;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -10,6 +11,25 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class Awt {
+
+	public static String toHtmlColor(Color c) {
+		StringBuilder sb = new StringBuilder("#");
+		String s;
+
+		s = Integer.toHexString(c.getRed());
+		if (s.length() == 1) sb.append('0');
+		sb.append(s);
+
+		s = Integer.toHexString(c.getGreen());
+		if (s.length() == 1) sb.append('0');
+		sb.append(s);
+
+		s = Integer.toHexString(c.getBlue());
+		if (s.length() == 1) sb.append('0');
+		sb.append(s);
+
+		return sb.toString();
+	}
 
 	public static void writeImage(Image image, String type, String file) {
 		writeImage(image, type, new File(file));

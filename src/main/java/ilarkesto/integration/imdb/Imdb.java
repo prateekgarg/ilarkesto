@@ -15,6 +15,7 @@
 package ilarkesto.integration.imdb;
 
 import ilarkesto.base.Str;
+import ilarkesto.core.html.Html;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.httpunit.HttpUnit;
 import ilarkesto.io.IO;
@@ -126,7 +127,7 @@ public class Imdb {
 		text = Str.cutFrom(text, "<div class=\"info-content\">");
 		if (text == null) return null;
 		if (text.contains("<a ")) text = Str.cutTo(text, "<a ");
-		return Str.html2text(text.trim());
+		return Html.convertHtmlToText(text.trim());
 	}
 
 	private static Integer parseYear(WebResponse response) {

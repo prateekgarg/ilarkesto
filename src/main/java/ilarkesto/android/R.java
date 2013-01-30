@@ -32,6 +32,8 @@ public class R {
 		public static int label = -1;
 		public static int listContainer = -1;
 		public static int detailContainer = -1;
+		public static int listEmptyProgressBar = -1;
+		public static int listEmptyText = -1;
 
 	}
 

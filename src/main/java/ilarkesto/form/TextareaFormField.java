@@ -14,7 +14,7 @@
  */
 package ilarkesto.form;
 
-import ilarkesto.base.Str;
+import ilarkesto.core.html.Html;
 
 public class TextareaFormField extends TextFormField {
 
@@ -27,7 +27,7 @@ public class TextareaFormField extends TextFormField {
 		if (s == null) return null;
 		if (!html) return super.preProcessValue(s);
 		if (s.startsWith("<html")) {
-			String plain = Str.removeHtmlTags(s).trim();
+			String plain = Html.removeHtmlTags(s).trim();
 			if (plain.length() == 0 && !s.toLowerCase().contains("<img")) s = plain;
 			if (s.length() > 0) s = "<html>" + cleanupEditorsHtml(s);
 		}
@@ -37,7 +37,7 @@ public class TextareaFormField extends TextFormField {
 	private String cleanupEditorsHtml(String s) {
 		if (s == null) return null;
 		if (s.length() == 0) return s;
-		s = Str.cutHtmlAndHeaderAndBody(s);
+		s = Html.cutHtmlAndHeaderAndBody(s);
 		s = s.replace("<title></title>", "");
 		return s;
 	}

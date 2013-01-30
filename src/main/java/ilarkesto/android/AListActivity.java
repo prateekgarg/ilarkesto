@@ -12,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 	protected ListView listView;
+	protected View emptyView;
 	private final MyListAdapter listAdapter = new MyListAdapter();
 	protected ViewGroup wrapper;
 
@@ -41,13 +43,20 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		wrapper = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.animator, null);
 		setContentView(wrapper);
 
-		View emptyView = LayoutInflater.from(this).inflate(R.layout.list_empty, null);
+		emptyView = LayoutInflater.from(this).inflate(R.layout.list_empty, null);
 		emptyView.setVisibility(View.GONE);
 		wrapper.addView(emptyView);
 		listView.setEmptyView(emptyView);
 
 		wrapper.addView(listView);
 
+	}
+
+	protected void disableLoadIndicator(String emptyListText) {
+		emptyView.findViewById(R.id.listEmptyProgressBar).setVisibility(View.GONE);
+		TextView tv = (TextView) emptyView.findViewById(R.id.listEmptyText);
+		tv.setVisibility(View.VISIBLE);
+		if (emptyListText != null) tv.setText(emptyListText);
 	}
 
 	@Override
@@ -70,7 +79,12 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 	}
 
 	protected void onItemsLoaded(List<I> items) {
+		disableLoadIndicator(getEmptyItemsListText());
 		listAdapter.setItems(items);
+	}
+
+	protected String getEmptyItemsListText() {
+		return null;
 	}
 
 	protected void updateItemView(I item, View view) {
@@ -87,6 +101,10 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 	public void onListItemClick(I item) {
 		showToast(getItemTitle(item));
+	}
+
+	protected int getAdditionalItemLoadTrials() {
+		return 0;
 	}
 
 	class MyListAdapter extends AListAdapter<I> {
@@ -114,7 +132,9 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 				log.info("Loading items took " + (System.currentTimeMillis() - start) + " ms. ->", items);
 				return items;
 			}
-			for (int i = 0; i < 42; i++) {
+
+			int additionalLoadTrials = getAdditionalItemLoadTrials();
+			for (int i = 0; i < additionalLoadTrials; i++) {
 				sleep(i);
 				items = loadItems();
 				if (!items.isEmpty()) break;

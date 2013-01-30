@@ -1,5 +1,6 @@
 package ilarkesto.json;
 
+import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.logging.Log;
 
 import java.io.File;
@@ -22,16 +23,24 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 
 	public P getPayload_ButUpdateIfNull() {
 		P payload = getPayload();
-		if (payload == null) {
+		if (payload == null || isInvalidated()) {
 			update(true);
-			payload = getPayload();
+			return getPayload();
 		}
 		return payload;
 	}
 
 	public synchronized void update(boolean force) {
 		P payload = getPayload();
-		payload = onUpdate(payload, force);
+		log.info("Updating payload", force ? "(forced)" : "");
+		RuntimeTracker rt = new RuntimeTracker();
+		try {
+			payload = onUpdate(payload, force);
+		} catch (Throwable ex) {
+			log.error("Updating payload failed.", ex);
+			payload = null;
+		}
+		log.info("Payload updated in", rt.getRuntimeFormated());
 		if (payload == null) return;
 		json.put("payload", payload);
 		json.put("lastUpdated", System.currentTimeMillis());
@@ -41,6 +50,15 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 	public synchronized void save() {
 		log.info("Saving");
 		json.save();
+	}
+
+	public synchronized void invalidatePayload() {
+		json.put("invalidated", true);
+		save();
+	}
+
+	public boolean isInvalidated() {
+		return json.isTrue("invalidated");
 	}
 
 	public Long getLastUpdated() {

@@ -14,7 +14,7 @@
  */
 package ilarkesto.pdf;
 
-import ilarkesto.base.Str;
+import ilarkesto.core.html.Html;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,11 +54,11 @@ public abstract class AParagraph extends APdfElement {
 	}
 
 	public AParagraph html(String html, FontStyle fontStyle) {
-		return text(Str.html2text(html), fontStyle);
+		return text(Html.convertHtmlToText(html), fontStyle);
 	}
 
 	public AParagraph html(String html) {
-		return text(Str.html2text(html));
+		return text(Html.convertHtmlToText(html));
 	}
 
 	public AParagraph text(Object text, FontStyle fontStyle) {

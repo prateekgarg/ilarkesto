@@ -20,6 +20,7 @@ import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
+import ilarkesto.core.html.Html;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.io.IO;
@@ -204,9 +205,9 @@ public class Eml {
 	public static String getContentAsText(Part part) {
 		String result = getPlainTextContent(part);
 		if (result == null) {
-			result = Str.html2text(getHtmlTextContent(part));
+			result = Html.convertHtmlToText(getHtmlTextContent(part));
 		} else {
-			if (result != null && result.trim().startsWith("<!DOCTYPE HTML")) result = Str.html2text(result);
+			if (result != null && result.trim().startsWith("<!DOCTYPE HTML")) result = Html.convertHtmlToText(result);
 		}
 		return result;
 	}

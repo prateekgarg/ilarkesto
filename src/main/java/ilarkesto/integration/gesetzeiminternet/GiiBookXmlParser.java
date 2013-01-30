@@ -15,9 +15,11 @@
 package ilarkesto.integration.gesetzeiminternet;
 
 import ilarkesto.core.base.Parser;
+import ilarkesto.core.base.Str;
 import ilarkesto.law.Book;
 import ilarkesto.law.Norm;
 import ilarkesto.law.NormRef;
+import ilarkesto.law.Paragraph;
 import ilarkesto.law.Section;
 
 public class GiiBookXmlParser extends Parser {
@@ -63,6 +65,7 @@ public class GiiBookXmlParser extends Parser {
 		}
 		gotoAfter("<enbez>");
 		String enbez = getUntilAndGotoAfter("</enbez>");
+		enbez = Str.removePrefix(enbez, "(XXXX) ");
 		String titel = null;
 		if (isBefore("<titel", "</metadaten>")) {
 			gotoAfter("<titel");
@@ -71,6 +74,16 @@ public class GiiBookXmlParser extends Parser {
 		}
 		NormRef ref = new NormRef(book.getRef().getCode(), enbez);
 		Norm norm = new Norm(ref, titel);
+
+		gotoAfter("<textdaten");
+		gotoAfter("<Content>");
+		while (isNext("<P>")) {
+			gotoAfter("<P>");
+			String content = getUntil("</P>");
+			norm.addParagraph(new Paragraph(content));
+			gotoAfter("</P>");
+		}
+
 		if (section == null) {
 			book.addNorm(norm);
 		} else {

@@ -15,6 +15,7 @@
 package ilarkesto.richtext;
 
 import ilarkesto.base.Str;
+import ilarkesto.core.html.Html;
 import ilarkesto.integration.links.MultiLinkConverter;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class RichTextFormatter {
 		if (!s.startsWith("<html")) {
 			s = textToHtml(s);
 		}
-		String html = Str.cutHtmlAndHeaderAndBody(s);
+		String html = Html.cutHtmlAndHeaderAndBody(s);
 		html = Str.activateLinksInHtml(html, MultiLinkConverter.ALL);
 		return html;
 	}
