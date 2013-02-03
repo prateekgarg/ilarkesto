@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
@@ -196,6 +197,13 @@ public class Views {
 	public static ScrollView scroller(View content) {
 		ScrollView scroller = new ScrollView(content.getContext());
 		scroller.addView(content, lp());
+		return scroller;
+	}
+
+	public static HorizontalScrollView horizontalScroller(View content) {
+		HorizontalScrollView scroller = new HorizontalScrollView(content.getContext());
+		scroller.setScrollbarFadingEnabled(false);
+		scroller.addView(content, lpWrap());
 		return scroller;
 	}
 

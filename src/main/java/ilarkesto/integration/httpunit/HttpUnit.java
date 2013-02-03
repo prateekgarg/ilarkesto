@@ -16,9 +16,12 @@ package ilarkesto.integration.httpunit;
 
 import ilarkesto.base.Sys;
 
+import java.util.Locale;
+
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.ClientProperties;
+import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HTMLElement;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebConversation;
@@ -62,8 +65,11 @@ public class HttpUnit {
 	}
 
 	public static WebResponse loadPage(String url, String proxyHost, Integer proxyPort) {
+		WebConversation conversation = createWebConversation(false, proxyHost, proxyPort);
+		GetMethodWebRequest request = new GetMethodWebRequest(url);
+		request.setHeaderField("Accept-Language", Locale.getDefault().getLanguage());
 		try {
-			return createWebConversation(false, proxyHost, proxyPort).getResponse(url);
+			return conversation.getResponse(request);
 		} catch (Exception ex) {
 			throw new RuntimeException("Loading URL failed: " + url, ex);
 		}

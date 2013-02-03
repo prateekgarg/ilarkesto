@@ -71,6 +71,7 @@ public class GiiBookXmlParser extends Parser {
 			gotoAfter("<titel");
 			gotoAfter(">");
 			titel = getUntil("</titel");
+			titel = titel.replace("<BR/>", "\n");
 		}
 		NormRef ref = new NormRef(book.getRef().getCode(), enbez);
 		Norm norm = new Norm(ref, titel);
