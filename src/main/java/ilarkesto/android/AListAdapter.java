@@ -72,4 +72,8 @@ public class AListAdapter<T> extends BaseAdapter {
 		return convertView;
 	}
 
+	public int getIndexOf(T item) {
+		return items == null ? -1 : items.indexOf(item);
+	}
+
 }

@@ -22,7 +22,7 @@ public class BookIndexCache extends ARemoteJsonCache<BookIndex> {
 	protected BookIndex onUpdate(BookIndex index, boolean forced) {
 		if (!forced) {
 			if (index != null && !index.getBooks().isEmpty()) {
-				if (getDaysSinceLastUpdated() < 30) return null;
+				if (getDaysSinceLastUpdated() < 90) return null;
 			}
 		}
 		return lawProvider.loadBookIndex();

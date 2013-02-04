@@ -2,8 +2,8 @@ package ilarkesto.integration.twitter;
 
 import ilarkesto.auth.LoginData;
 import ilarkesto.auth.LoginDataProvider;
-import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.jdom.JDom;
 import ilarkesto.integration.oauth.OAuth;
@@ -105,7 +105,7 @@ public class Twitter {
 				loginData.getLogin(), loginData.getPassword());
 		} catch (Throwable ex) {
 			throw new RuntimeException("Senden der Update-Nachricht zu Twitter (" + login.getLoginData().getLogin()
-					+ ") fehlgeschlagen: " + Str.getRootCauseMessage(ex), ex);
+					+ ") fehlgeschlagen: " + Utl.getRootCauseMessage(ex), ex);
 		}
 		log.debug("update result:", result);
 		Document doc = JDom.createDocument(result);
@@ -123,7 +123,7 @@ public class Twitter {
 				loginData.getPassword(), null, response);
 		} catch (Throwable ex) {
 			throw new RuntimeException("Destroying twitter status <" + status + "> failed: "
-					+ Str.getRootCauseMessage(ex));
+					+ Utl.getRootCauseMessage(ex));
 		}
 
 		if (rc != 200)

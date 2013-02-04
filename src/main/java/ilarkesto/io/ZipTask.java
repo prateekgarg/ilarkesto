@@ -14,8 +14,8 @@
  */
 package ilarkesto.io;
 
-import ilarkesto.base.Str;
 import ilarkesto.concurrent.ATask;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 
 import java.io.File;
@@ -125,7 +125,7 @@ public class ZipTask extends ATask {
 
 		@Override
 		public String toString() {
-			return file.getName() + ": " + Str.getRootCauseMessage(exception);
+			return file.getName() + ": " + Utl.getRootCauseMessage(exception);
 		}
 
 	}

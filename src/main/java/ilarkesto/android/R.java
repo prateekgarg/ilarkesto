@@ -37,4 +37,10 @@ public class R {
 
 	}
 
+	public static final class string {
+
+		public static int loading_data_failed = -1;
+
+	}
+
 }

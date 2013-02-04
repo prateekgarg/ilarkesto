@@ -57,6 +57,7 @@ public abstract class AApp extends Application {
 		copyResourceIds(source, R.class, "color");
 		copyResourceIds(source, R.class, "id");
 		copyResourceIds(source, R.class, "drawable");
+		copyResourceIds(source, R.class, "string");
 	}
 
 	private void copyResourceIds(Class source, Class destination, String subclassname) {

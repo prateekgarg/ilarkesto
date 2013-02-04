@@ -1,16 +1,18 @@
 package ilarkesto.android;
 
 import ilarkesto.android.view.Views;
+import ilarkesto.core.base.Utl;
 
+import java.util.Collections;
 import java.util.List;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,8 +20,8 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 	protected ListView listView;
 	protected View emptyView;
-	private final MyListAdapter listAdapter = new MyListAdapter();
-	protected ViewGroup wrapper;
+	protected final MyListAdapter listAdapter = new MyListAdapter();
+	protected FrameLayout wrapper;
 
 	protected abstract List<I> loadItems();
 
@@ -40,7 +42,7 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 			}
 		});
 
-		wrapper = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.animator, null);
+		wrapper = new FrameLayout(context);
 		setContentView(wrapper);
 
 		emptyView = LayoutInflater.from(this).inflate(R.layout.list_empty, null);
@@ -49,24 +51,37 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		listView.setEmptyView(emptyView);
 
 		wrapper.addView(listView);
-
 	}
 
-	protected void disableLoadIndicator(String emptyListText) {
+	protected void disableLoadIndicator() {
 		emptyView.findViewById(R.id.listEmptyProgressBar).setVisibility(View.GONE);
+		emptyView.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
+	}
+
+	protected void enableLoadIndicator() {
+		emptyView.findViewById(R.id.listEmptyProgressBar).setVisibility(View.VISIBLE);
+		emptyView.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
+	}
+
+	protected void setEmptyListText(String emptyListText) {
 		TextView tv = (TextView) emptyView.findViewById(R.id.listEmptyText);
-		tv.setVisibility(View.VISIBLE);
 		if (emptyListText != null) tv.setText(emptyListText);
+	}
+
+	protected void setEmptyListText(int emptyListTextResId) {
+		TextView tv = (TextView) emptyView.findViewById(R.id.listEmptyText);
+		tv.setText(emptyListTextResId);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		listAdapter.clear();
+		enableLoadIndicator();
 		new ItemLoader().execute();
 	}
 
-	protected void setContentViewToList() {
+	protected void changeContentViewToList() {
 		track();
 		Android.removeFromParent(listView);
 		changeContentView(listView);
@@ -74,17 +89,16 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 	protected void changeContentView(View view) {
 		Android.removeFromParent(view);
-		wrapper.removeAllViews();
+		if (wrapper.getChildCount() > 0) {
+			if (wrapper.getChildAt(0) == view) return;
+			wrapper.removeAllViews();
+		}
 		wrapper.addView(view);
 	}
 
 	protected void onItemsLoaded(List<I> items) {
-		disableLoadIndicator(getEmptyItemsListText());
+		disableLoadIndicator();
 		listAdapter.setItems(items);
-	}
-
-	protected String getEmptyItemsListText() {
-		return null;
 	}
 
 	protected void updateItemView(I item, View view) {
@@ -127,7 +141,7 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		@Override
 		protected List<I> doInBackground(Object... params) {
 			long start = System.currentTimeMillis();
-			List<I> items = loadItems();
+			List<I> items = doLoadItems();
 			if (items != null && !items.isEmpty()) {
 				log.info("Loading items took " + (System.currentTimeMillis() - start) + " ms. ->", items);
 				return items;
@@ -136,11 +150,21 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 			int additionalLoadTrials = getAdditionalItemLoadTrials();
 			for (int i = 0; i < additionalLoadTrials; i++) {
 				sleep(i);
-				items = loadItems();
+				items = doLoadItems();
 				if (!items.isEmpty()) break;
 			}
 
 			return items;
+		}
+
+		private List<I> doLoadItems() {
+			try {
+				return loadItems();
+			} catch (Throwable ex) {
+				log.error("Loading items failed:", ex);
+				setEmptyListText(Android.text(context, R.string.loading_data_failed, Utl.getRootCauseMessage(ex)));
+				return Collections.emptyList();
+			}
 		}
 
 		private void sleep(int count) {

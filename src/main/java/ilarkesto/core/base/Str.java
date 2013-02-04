@@ -67,9 +67,12 @@ public class Str {
 	}
 
 	public static String replaceIndexedParams(String s, Object... params) {
+		if (s == null) return null;
 		if (params == null || params.length == 0) return s;
 		for (int i = 0; i < params.length; i++) {
-			s = s.replace("{" + i + "}", format(params[i]));
+			String param = format(params[i]);
+			if (param == null) continue;
+			s = s.replace("{" + i + "}", param);
 		}
 		return s;
 	}

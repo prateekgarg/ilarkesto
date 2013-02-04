@@ -18,6 +18,7 @@ import ilarkesto.base.BeanMap;
 import ilarkesto.base.Factory;
 import ilarkesto.base.Money;
 import ilarkesto.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.Time;
@@ -361,7 +362,7 @@ public class BeanForm<O> extends Form {
 					beanMap.put(field.getName(), field.getValueAsString());
 				} catch (Throwable ex) {
 					LOG.debug(ex);
-					field.setErrorMessage("Eingabe ung\u00FCltig: " + Str.getRootCauseMessage(ex));
+					field.setErrorMessage("Eingabe ung\u00FCltig: " + Utl.getRootCauseMessage(ex));
 					throw new ValidationException(ERROR_MSG);
 				}
 			}
