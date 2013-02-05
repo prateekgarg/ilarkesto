@@ -38,6 +38,16 @@ public class Norm extends AJsonWrapper {
 		json.addToArray("paragraphs", p);
 	}
 
+	public String getTextAsHtml() {
+		StringBuilder sb = new StringBuilder();
+		for (Paragraph p : getParagraphs()) {
+			sb.append("<P>");
+			sb.append(p.getTextAsHtml());
+			sb.append("</P>");
+		}
+		return sb.toString();
+	}
+
 	public String getTextAsString() {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;

@@ -14,7 +14,7 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 	private I selectedItem;
 	private Boolean doubleView;
 	private ViewGroup detailWrapper;
-	private View listWithDetailView;
+	private View detailViewWrapper;
 
 	protected void onSelectedItemChanged(I selectedItem) {}
 
@@ -23,13 +23,6 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 		super.onCreate(savedInstanceState);
 
 		detailWrapper = new FrameLayout(context);
-		if (isDoubleView()) {
-			View listWithDetail = LayoutInflater.from(this).inflate(R.layout.list_with_detail, null);
-			Android.addToContainer(listWithDetail, R.id.listContainer, listView);
-			Android.addToContainer(listWithDetail, R.id.detailContainer, detailWrapper);
-		} else {
-			listWithDetailView = detailWrapper;
-		}
 	}
 
 	@Override
@@ -40,7 +33,7 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 	@Override
 	protected final void updateItemView(I item, View view) {
 		if (item == selectedItem) {
-			view.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_dark));
+			view.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
 		} else {
 			view.setBackgroundColor(Color.TRANSPARENT);
 		}
@@ -76,26 +69,42 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 	}
 
 	public void selectItem(I item, int swipeAnimationMode) {
+		if (item == selectedItem) return;
 		selectedItem = item;
 
-		View detailView = createItemDetailView(item);
+		View detailView = createItemDetailView(selectedItem);
 		Swipe.attachOnSwipeListener(detailView, this);
+
 		if (detailView == null) {
 			changeContentViewToList();
 			return;
 		} else {
-			changeContentView(listWithDetailView);
+
+			if (isDoubleView()) {
+				if (detailViewWrapper == null || detailViewWrapper == detailWrapper) {
+					detailViewWrapper = LayoutInflater.from(this).inflate(R.layout.list_with_detail, null);
+					Android.addToContainer(detailViewWrapper, R.id.listContainer, listView);
+					Android.addToContainer(detailViewWrapper, R.id.detailContainer, detailWrapper);
+					Swipe.attachOnSwipeListener(detailViewWrapper.findViewById(R.id.detailContainer), this);
+				}
+			} else {
+				detailViewWrapper = detailWrapper;
+			}
+
+			changeContentView(detailViewWrapper);
 			if (detailWrapper.getChildCount() > 0) {
 				Swipe.animate(swipeAnimationMode, detailWrapper, detailWrapper.getChildAt(0), detailView);
 			} else {
 				detailWrapper.addView(detailView);
 			}
 		}
+		listView.setSelection(listAdapter.getIndexOf(item));
 
 		onSelectedItemChanged(selectedItem);
 	}
 
 	protected View createItemDetailView(I item) {
+		if (item == null) return null;
 		return LayoutBuilder.page(this, getItemTitle(item)).getView();
 	}
 

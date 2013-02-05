@@ -93,7 +93,7 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 			if (wrapper.getChildAt(0) == view) return;
 			wrapper.removeAllViews();
 		}
-		wrapper.addView(view);
+		if (view != null) wrapper.addView(view);
 	}
 
 	protected void onItemsLoaded(List<I> items) {

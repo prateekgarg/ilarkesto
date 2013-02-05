@@ -156,6 +156,7 @@ public class Android {
 	}
 
 	public static <V extends View> V removeFromParent(V view) {
+		if (view == null) return null;
 		ViewParent parent = view.getParent();
 		if (parent == null) return view;
 		if (parent instanceof ViewGroup) {

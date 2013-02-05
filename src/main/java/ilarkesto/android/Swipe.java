@@ -19,8 +19,8 @@ public class Swipe {
 	public static final int SWIPE_LEFT = 1;
 	public static final int SWIPE_RIGHT = 2;
 
-	private static final int SWIPE_MIN_DISTANCE = 120;
-	private static final int SWIPE_MAX_OFF_PATH = 120;
+	private static final int SWIPE_MIN_DISTANCE = 80;
+	private static final int SWIPE_MAX_OFF_PATH = 240;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
 	public static void attachOnSwipeListener(View view, final OnSwipeListener listener) {
@@ -28,6 +28,7 @@ public class Swipe {
 
 			@Override
 			public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+				if (e1 == null || e1 == null) return false;
 				try {
 					if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH) return false;
 					if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
@@ -40,7 +41,6 @@ public class Swipe {
 					log.error(e);
 				}
 				return false;
-
 			}
 
 		});
