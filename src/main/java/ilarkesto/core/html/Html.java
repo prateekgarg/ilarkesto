@@ -25,10 +25,12 @@ public class Html {
 				if (c == '>') {
 					inside = false;
 					String t = tag.toString().toLowerCase();
-					if (isTag(t, "br") || isTag(t, "ul") || isTag(t, "/ul") || isTag(t, "div")) {
+					if (isTag(t, "br") || isTag(t, "ul") || isTag(t, "/ul") || isTag(t, "/dl") || isTag(t, "div")) {
 						sb.append("\n");
+					} else if (isTag(t, "dd") || isTag(t, "/td")) {
+						sb.append("    ");
 					} else if (isTag(t, "p") || isTag(t, "h1") || isTag(t, "h2") || isTag(t, "h3") || isTag(t, "h4")
-							|| isTag(t, "h5") || isTag(t, "h6")) {
+							|| isTag(t, "h5") || isTag(t, "h6") || isTag(t, "dt") || isTag(t, "tr")) {
 						sb.append("\n\n");
 					} else if (isTag(t, "li")) {
 						sb.append("\n- ");
