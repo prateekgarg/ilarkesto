@@ -3,6 +3,9 @@ package ilarkesto.android.view;
 import ilarkesto.android.Android;
 import ilarkesto.android.ImageDownloader;
 import ilarkesto.android.R;
+
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -10,6 +13,7 @@ import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
@@ -17,11 +21,18 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class Views {
 
 	public static final int DEFAULT_PADDING = 20;
+
+	public static <T> Spinner spinner(Context context, List<T> items) {
+		Spinner spinner = new Spinner(context);
+		spinner.setAdapter(new ArrayAdapter<T>(context, R.layout.adapteritem, items));
+		return spinner;
+	}
 
 	public static View title(Context context, CharSequence text) {
 		return titleWithRemoteImage(context, text, null);

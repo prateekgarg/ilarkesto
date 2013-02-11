@@ -51,6 +51,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 		}
 		if (payload == null) {
 			// payload not updated (perhaps not due)
+			log.info("Payload not updated after", rt.getRuntimeFormated());
 			if (!force) return;
 			throw new RemoteUpdateFailedException("Loading payload failed.");
 		}
@@ -83,6 +84,10 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 		Long lastUpdated = getLastUpdated();
 		if (lastUpdated == null) return Long.MAX_VALUE;
 		return System.currentTimeMillis() - lastUpdated;
+	}
+
+	public long getHoursSinceLastUpdated() {
+		return getTimeSinceLastUpdated() / 3600000l;
 	}
 
 	public long getDaysSinceLastUpdated() {

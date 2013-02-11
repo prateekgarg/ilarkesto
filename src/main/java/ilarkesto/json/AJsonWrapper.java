@@ -44,6 +44,10 @@ public abstract class AJsonWrapper implements JsonWrapper {
 		return assertNotNull(name, json.getString(name));
 	}
 
+	protected Integer getMandatoryInteger(String name) {
+		return assertNotNull(name, json.getInteger(name));
+	}
+
 	private <T> T assertNotNull(String name, T value) {
 		if (value == null)
 			throw new IllegalStateException("Mandatory property \"" + name + "\" does not exist: " + toString());

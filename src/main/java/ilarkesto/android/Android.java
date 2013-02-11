@@ -2,9 +2,17 @@ package ilarkesto.android;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.io.IO;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,9 +21,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,11 +33,88 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class Android {
 
 	private static Log log = Log.get(Android.class);
+
+	public static void saveBitmapAsJpg(Bitmap bitmap, File file) {
+		saveBitmap(bitmap, file, Bitmap.CompressFormat.JPEG);
+	}
+
+	public static void saveBitmap(Bitmap bitmap, File file, Bitmap.CompressFormat format) {
+		IO.createDirectory(file.getParent());
+		FileOutputStream out;
+		try {
+			out = new FileOutputStream(file);
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
+		bitmap.compress(format, 90, out);
+		IO.closeQuiet(out);
+	}
+
+	public static Bitmap loadBitmap(File file, int reqWidth, int reqHeight) {
+
+		// First decode with inJustDecodeBounds=true to check dimensions
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(file.getPath(), options);
+
+		// Calculate inSampleSize
+		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+		// Decode bitmap with inSampleSize set
+		options.inJustDecodeBounds = false;
+		return BitmapFactory.decodeFile(file.getPath(), options);
+	}
+
+	private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		// Raw height and width of image
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
+
+		if (height > reqHeight || width > reqWidth) {
+
+			// Calculate ratios of height and width to requested height and width
+			final int heightRatio = Math.round((float) height / (float) reqHeight);
+			final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+			// Choose the smallest ratio as inSampleSize value, this will guarantee
+			// a final image with both dimensions larger than or equal to the
+			// requested height and width.
+			inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+		}
+
+		return inSampleSize;
+	}
+
+	/**
+	 * Required permission: android.permission.GET_ACCOUNTS
+	 */
+	public static List<String> getUsersEmailAddressesFromAccounts(Context context) {
+		List<String> ret = new ArrayList<String>();
+		for (Account account : AccountManager.get(context).getAccounts()) {
+			if (Str.isEmail(account.name) && !ret.contains(account.name)) ret.add(account.name);
+		}
+		return ret;
+	}
+
+	public static String getText(EditText editor) {
+		if (editor == null) return null;
+		Editable text = editor.getText();
+		return text == null ? null : text.toString();
+	}
+
+	public static Integer getTextAsInteger(EditText editor) {
+		String text = getText(editor);
+		if (text == null) return null;
+		if (text.trim().length() == 0) return null;
+		return Integer.parseInt(text);
+	}
 
 	public static String text(Context context, int resId) {
 		CharSequence text = context.getResources().getText(resId);
@@ -70,6 +157,17 @@ public class Android {
 				.getActiveNetworkInfo();
 		if (netInfo == null) return false;
 		return netInfo.isConnectedOrConnecting();
+	}
+
+	public static void startPickImage(Activity context, int requestCode) {
+		Intent intent = new Intent(Intent.ACTION_PICK);
+		intent.setType("image/*");
+		context.startActivityForResult(intent, requestCode);
+	}
+
+	public static void startCameraPicture(Activity context, int requestCode) {
+		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		context.startActivityForResult(intent, requestCode);
 	}
 
 	public static void startSendEmail(Context context, String email, String subject) {

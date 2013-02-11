@@ -24,6 +24,7 @@ public class R {
 		public static int animator = -1;
 		public static int list_empty = -1;
 		public static int list_with_detail = -1;
+		public static int adapteritem = -1;
 
 	}
 
