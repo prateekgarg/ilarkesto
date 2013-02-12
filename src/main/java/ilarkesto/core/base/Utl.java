@@ -48,7 +48,7 @@ public class Utl {
 	}
 
 	public static String getUserMessage(Throwable ex) {
-		if (ex instanceof NullPointerException) return "NullPointerException";
+		if (ex instanceof NullPointerException && ex.getMessage() == null) return "NullPointerException";
 		if (ex instanceof RuntimeException) return ex.getMessage();
 		return Str.getSimpleName(ex.getClass()) + ": " + ex.getMessage();
 	}
