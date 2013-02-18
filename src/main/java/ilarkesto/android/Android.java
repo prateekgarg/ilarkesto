@@ -162,6 +162,7 @@ public class Android {
 	public static void startPickImage(Activity context, int requestCode) {
 		Intent intent = new Intent(Intent.ACTION_PICK);
 		intent.setType("image/*");
+		intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
 		context.startActivityForResult(intent, requestCode);
 	}
 
