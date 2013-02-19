@@ -284,15 +284,22 @@ public class Android {
 	}
 
 	public static void postNotification(Context context, int smallIconResId, Bitmap largeIcon,
+			CharSequence contentTitle, CharSequence contentText, Intent notificationIntent, int notificationId) {
+		postNotification(context, smallIconResId, largeIcon, contentTitle, contentText, contentTitle,
+			notificationIntent, notificationId);
+	}
+
+	public static void postNotification(Context context, int smallIconResId, Bitmap largeIcon,
 			CharSequence contentTitle, CharSequence contentText, CharSequence tickerText, Intent notificationIntent,
 			int notificationId) {
 		log.info("Posting notification:", "#" + notificationId, "->", tickerText);
+
 		PendingIntent pendingNotificationIntent = PendingIntent.getActivity(context, notificationId,
 			notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		Notification notification = new Notification.Builder(context).setContentTitle(contentTitle)
 				.setContentText(contentText).setTicker(tickerText).setSmallIcon(smallIconResId).setLargeIcon(largeIcon)
-				.setContentIntent(pendingNotificationIntent).getNotification();
+				.setContentIntent(pendingNotificationIntent).setAutoCancel(true).getNotification();
 
 		notification.setLatestEventInfo(context, contentTitle, contentText, pendingNotificationIntent);
 

@@ -72,14 +72,15 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 		if (item == selectedItem) return;
 		selectedItem = item;
 
-		View detailView = createItemDetailView(selectedItem);
-		Swipe.attachOnSwipeListener(detailView, this);
+		View detailView = null;
+		if (selectedItem != null) {
+			detailView = createItemDetailView(selectedItem);
+			Swipe.attachOnSwipeListener(detailView, this);
+		}
 
 		if (detailView == null) {
 			changeContentViewToList();
-			return;
 		} else {
-
 			if (isDoubleView()) {
 				if (detailViewWrapper == null || detailViewWrapper == detailWrapper) {
 					detailViewWrapper = LayoutInflater.from(this).inflate(R.layout.list_with_detail, null);
@@ -97,9 +98,8 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 			} else {
 				detailWrapper.addView(detailView);
 			}
+			listView.setSelection(listAdapter.getIndexOf(item));
 		}
-		listView.setSelection(listAdapter.getIndexOf(item));
-
 		onSelectedItemChanged(selectedItem);
 	}
 
