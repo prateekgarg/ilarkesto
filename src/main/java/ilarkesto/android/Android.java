@@ -52,7 +52,7 @@ public class Android {
 		} catch (FileNotFoundException ex) {
 			throw new RuntimeException(ex);
 		}
-		bitmap.compress(format, 90, out);
+		bitmap.compress(format, 100, out);
 		IO.closeQuiet(out);
 	}
 
@@ -168,6 +168,8 @@ public class Android {
 
 	public static void startCameraPicture(Activity context, int requestCode) {
 		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		// EXTRA_OUTPUT is buggy :-(
+		// intent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 		context.startActivityForResult(intent, requestCode);
 	}
 
