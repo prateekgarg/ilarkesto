@@ -79,7 +79,7 @@ public class Html {
 					cPrev = c;
 					continue;
 				}
-				if (c == '\n' || c == '\r' || (Character.isWhitespace(c) && Character.isWhitespace(cPrev))) {
+				if (c == '\n' || c == '\r' || (isWhitespace(c) && isWhitespace(cPrev))) {
 					// skip
 				} else {
 					sb.append(c);
@@ -116,6 +116,12 @@ public class Html {
 		html = html.replace("\n\n\n", "\n\n");
 
 		return html.trim();
+	}
+
+	public static boolean isWhitespace(char c) {
+		// return Character.isWhitespace(c);
+		if (c == ' ' || c == '\n' || c == '\r' || c == '\t') return true;
+		return false;
 	}
 
 	public static String getHtmlBody(String html) {
