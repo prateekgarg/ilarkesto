@@ -284,7 +284,11 @@ public abstract class AViewEditWidget extends AWidget {
 				if (nativeEventTarget != null) {
 					String key = nativeEventTarget.toString();
 					log.debug("Native event target:", key);
-					if (key.startsWith("<a")) return true; // devMode
+
+					// devMode
+					if (key.startsWith("<div")) return false;
+					if (key.startsWith("<a")) return true;
+
 					if (key.startsWith("[object")) return false; // all browsers
 					return true;
 				}
