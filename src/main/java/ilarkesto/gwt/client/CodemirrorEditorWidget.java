@@ -35,8 +35,8 @@ public class CodemirrorEditorWidget extends AWidget {
 	/*-{
 		var editor = new $wnd.CodeMirror($wnd.CodeMirror.replace(textAreaId), {
 			parserfile: ["parsewiki.js"],
-			path: "codemirror/js/",
-			stylesheet: "codemirror/css/wikicolors.css",
+			path: "/codemirror/js/",
+			stylesheet: "/codemirror/css/wikicolors.css",
 			height: height,
 			lineNumbers: false,
 			enterMode: "flat",
@@ -45,6 +45,8 @@ public class CodemirrorEditorWidget extends AWidget {
 		
 		editor.ensureWindowLoaded = function() {
 			if (this.editor == null) alert("Waiting for internal frame to load. This is a temporary workaround.");
+			if (this.editor == null) return false;
+			return true;
 		}
 		
 		editor.execute = function(funct) {
@@ -138,14 +140,14 @@ public class CodemirrorEditorWidget extends AWidget {
 
 	private native String selection(JavaScriptObject editor)
 	/*-{
-	    editor.ensureWindowLoaded();
-		return editor.selection();
+	    if (editor.ensureWindowLoaded()) return editor.selection();
+	    return '';
 	}-*/;
 
 	private native String editorGetCode(JavaScriptObject editor)
 	/*-{
-	    editor.ensureWindowLoaded();
-		return editor.getCode();
+	    if (editor.ensureWindowLoaded()) return editor.getCode();
+	    return '';
 	}-*/;
 
 	private native void setCode(JavaScriptObject editor, String text)
