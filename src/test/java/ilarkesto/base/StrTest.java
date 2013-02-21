@@ -22,6 +22,15 @@ import org.testng.annotations.Test;
 public class StrTest extends Assert {
 
 	@Test
+	public void getLine() {
+		String s = "line 0\nline 1\r\nline 2\nline 3";
+		assertEquals(Str.getLine(s, 0, 100, null), "line 0");
+		assertEquals(Str.getLine(s, 1, 100, null), "line 1");
+		assertEquals(Str.getLine(s, 2, 100, null), "line 2");
+		assertEquals(Str.getLine(s, 3, 100, null), "line 3");
+	}
+
+	@Test
 	public void htmlToText() {
 		String html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><head><title>HTML Page</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-15\"><style type=\"text/css\">\n"
 				+ "<!--\n"

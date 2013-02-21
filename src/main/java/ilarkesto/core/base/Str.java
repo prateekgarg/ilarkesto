@@ -14,9 +14,6 @@
  */
 package ilarkesto.core.base;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -46,24 +43,27 @@ public class Str {
 	}
 
 	public static String getLine(String s, int index, int cutAfterLength, String appendAfterCut) {
-		if (s == null) return null;
-		BufferedReader in = new BufferedReader(new StringReader(s));
-		String ret = null;
-		try {
-			for (int i = 0; i <= index; i++) {
-				ret = in.readLine();
-				if (ret == null) return "";
-			}
-			in.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		String ret = getLine(s, index);
 		if (ret == null) return "";
 		if (ret.length() > cutAfterLength) {
 			ret = ret.substring(0, cutAfterLength);
 			if (appendAfterCut != null) ret += appendAfterCut;
 		}
 		return ret;
+	}
+
+	public static String getLine(String s, int index) {
+		if (s == null) return null;
+
+		for (int i = 0; i < index; i++) {
+			int idx = s.indexOf('\n');
+			if (idx < 0) return null;
+			s = s.substring(idx + 1);
+		}
+
+		int idx = indexOf(s, new String[] { "\r\n", "\n" }, 0);
+		if (idx < 0) return s;
+		return s.substring(0, idx);
 	}
 
 	public static String replaceIndexedParams(String s, Object... params) {
