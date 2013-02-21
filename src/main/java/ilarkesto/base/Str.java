@@ -51,6 +51,15 @@ public class Str extends ilarkesto.core.base.Str {
 
 	private static final Object UIDLOCK = new Object();
 
+	public static List<String> tokenize(String s, String delimiters) {
+		List<String> ret = new ArrayList<String>();
+		StringTokenizer tokenizer = new StringTokenizer(s, delimiters);
+		while (tokenizer.hasMoreTokens()) {
+			ret.add(tokenizer.nextToken());
+		}
+		return ret;
+	}
+
 	public static String getCharsetFromHtml(String html, String defaultCharset) {
 		String charset = Str.cutFromTo(html, "charset=", "\"");
 		if (Str.isBlank(charset)) charset = defaultCharset;
