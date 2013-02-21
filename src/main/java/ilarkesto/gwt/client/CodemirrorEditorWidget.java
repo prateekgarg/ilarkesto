@@ -17,6 +17,7 @@ package ilarkesto.gwt.client;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.time.Tm;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.TextArea;
@@ -31,12 +32,12 @@ public class CodemirrorEditorWidget extends AWidget {
 	private Observer observer;
 	private boolean burned;
 
-	private native JavaScriptObject createEditor(String textAreaId, String height)
+	private native JavaScriptObject createEditor(String textAreaId, String height, String pathPrefix)
 	/*-{
 		var editor = new $wnd.CodeMirror($wnd.CodeMirror.replace(textAreaId), {
 			parserfile: ["parsewiki.js"],
-			path: "/codemirror/js/",
-			stylesheet: "/codemirror/css/wikicolors.css",
+			path: pathPrefix + "codemirror/js/",
+			stylesheet: pathPrefix + "codemirror/css/wikicolors.css",
 			height: height,
 			lineNumbers: false,
 			enterMode: "flat",
@@ -78,7 +79,7 @@ public class CodemirrorEditorWidget extends AWidget {
 			String text = textArea.getText();
 			// Log.DEBUG("Creating editor for:", text);
 			String id = textArea.getElement().getId();
-			editor = createEditor(id, height);
+			editor = createEditor(id, height, GWT.getHostPageBaseURL());
 			setText(prepareText(text));
 			focus(editor);
 		}
