@@ -85,7 +85,6 @@ public abstract class AViewEditWidget extends AWidget {
 	public void switchToEditMode() {
 		if (isEditMode()) return;
 		if (!isEditable()) return;
-		Log.DEBUG("Switching to edit mode: " + toString());
 		ensureEditorInitialized();
 		viewMode = false;
 		if (currentEditor != null) {
@@ -112,18 +111,13 @@ public abstract class AViewEditWidget extends AWidget {
 	}
 
 	public void switchToViewMode() {
-		switchToViewMode(isAttached());
-	}
-
-	public void switchToViewMode(boolean update) {
 		if (isViewMode()) return;
-		Log.DEBUG("Switching to view mode: " + toString());
 		viewMode = true;
 		onEditorClose();
 		if (currentEditor == this) currentEditor = null;
 		if (modeSwitchHandler != null) modeSwitchHandler.onViewerActivated(this);
 		if (globalModeSwitchHandler != null) globalModeSwitchHandler.onViewerActivated(this);
-		if (update) update();
+		update();
 	}
 
 	public final boolean submitEditor() {
@@ -153,6 +147,7 @@ public abstract class AViewEditWidget extends AWidget {
 
 	protected final void cancelEditor() {
 		if (!isEditMode()) throw new RuntimeException("cancelEditor() not allowed. Not in edit mode: " + toString());
+		setEditorError(null);
 		switchToViewMode();
 	}
 
