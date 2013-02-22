@@ -396,6 +396,12 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln("        propertyChanged(\"" + p.getName() + "Id\", this." + p.getName() + "Id);");
 				ln("        return (" + bean.getName() + ")this;");
 				ln("    }");
+				ln();
+				ln("    public final boolean is" + nameUpper + "(" + type.replace(".server.", ".client."), p.getName()
+						+ ") {");
+				ln("        String id = " + p.getName() + "==null ? null : " + p.getName() + ".getId();");
+				ln("        return equals(this." + p.getName() + "Id" + ", id);");
+				ln("    }");
 			} else {
 				// simple property
 				ln("    private", type, p.getName(), ";");
@@ -424,6 +430,11 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln("        propertyChanged(\"" + p.getName() + "\", this." + p.getName() + ");");
 				ln("        return (" + bean.getName() + ")this;");
 				ln("    }");
+				ln();
+				ln("    public final boolean is" + nameUpper + "(" + type.replace(".server.", ".client."), p.getName()
+						+ ") {");
+				ln("        return equals(this." + p.getName() + ", " + p.getName() + ");");
+				ln("    }");
 				if (p.isOptionRestricted()) {
 					String optionType = type;
 					if (optionType.equals(int.class.getName())) optionType = Integer.class.getName();
@@ -438,12 +449,6 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 					}
 				}
 			}
-			ln();
-			ln("    public final boolean is" + nameUpper + "(" + type.replace(".server.", ".client."), p.getName()
-					+ ") {");
-			ln("        return equals(this." + (p.isReference() ? p.getName() + "Id" : p.getName()) + ", "
-					+ p.getName() + ");");
-			ln("    }");
 		}
 		editor(p);
 	}
