@@ -48,6 +48,10 @@ public class JsonObject {
 		parse(json, offset);
 	}
 
+	public JsonObject(String json) {
+		this(json, 0);
+	}
+
 	public JsonObject(Map<?, ?> map) {
 		for (Map.Entry entry : map.entrySet()) {
 			String name = entry.getKey().toString();
