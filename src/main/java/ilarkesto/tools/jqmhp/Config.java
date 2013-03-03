@@ -29,11 +29,11 @@ public class Config extends AJsonWrapper {
 	}
 
 	public Jqm getJqm() {
-		return createFromObject("jqm", Jqm.class);
+		return getWrapper("jqm", Jqm.class);
 	}
 
 	public Content getContent() {
-		return createFromObject("content", Content.class);
+		return getWrapper("content", Content.class);
 	}
 
 	public static class Content extends AJsonWrapper {
@@ -65,7 +65,7 @@ public class Config extends AJsonWrapper {
 	}
 
 	public static Config load(File file) {
-		return new Config(new JsonObject(file));
+		return new Config(JsonObject.loadFile(file, true));
 	}
 
 }

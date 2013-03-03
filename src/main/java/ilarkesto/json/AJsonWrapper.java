@@ -19,7 +19,8 @@ import ilarkesto.json.Json.JsonWrapper;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AJsonWrapper implements JsonWrapper {
@@ -111,32 +112,57 @@ public abstract class AJsonWrapper implements JsonWrapper {
 		}
 	}
 
-	protected <T extends AJsonWrapper> List<T> createFromArray(String name, Class<T> type) {
-		return getArrayAsWrapperList(json, name, type);
+	protected <T extends AJsonWrapper> List<T> getWrapperArray(String name, Class<T> type) {
+		// TODO list caching
+		List<JsonObject> array = json.getArrayOfObjects(name);
+		if (array == null) {
+			json.put(name, new LinkedList<JsonObject>());
+			return getWrapperArray(name, type);
+		}
+		return new JsonWrapperList<T>(type, array);
 	}
 
-	protected <T extends AJsonWrapper> T createFromObject(String name, Class<T> type) {
+	protected <T extends AJsonWrapper> T getWrapper(String name, Class<T> type) {
+		// TODO wrapper caching
 		return getAsWrapper(json, name, type);
 	}
 
-	public static <T extends AJsonWrapper> T getAsWrapper(JsonObject json, String name, Class<T> type) {
+	@Override
+	public int hashCode() {
+		return json.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return false;
+		if (!(obj instanceof AJsonWrapper)) return false;
+		return json.equals(((AJsonWrapper) obj).json);
+	}
+
+	@Override
+	public JsonObject getJson() {
+		return json;
+	}
+
+	@Override
+	public String toString() {
+		return json.toFormatedString();
+	}
+
+	// --- static helper ---
+
+	static List<JsonObject> getJsonObjects(Collection<? extends AJsonWrapper> wrappers) {
+		List<JsonObject> ret = new ArrayList<JsonObject>(wrappers.size());
+		for (AJsonWrapper wrapper : wrappers) {
+			ret.add(wrapper.json);
+		}
+		return ret;
+	}
+
+	static <T extends AJsonWrapper> T getAsWrapper(JsonObject json, String name, Class<T> type) {
 		JsonObject object = json.getObject(name);
 		if (object == null) return null;
 		return createWrapper(object, type);
-	}
-
-	public static <T extends AJsonWrapper> List<T> getArrayAsWrapperList(JsonObject json, String name, Class<T> type) {
-		if (json == null) return Collections.emptyList();
-		List<JsonObject> array = json.getArrayOfObjects(name);
-		if (array == null || array.isEmpty()) return Collections.emptyList();
-
-		List<T> wrappers = new ArrayList<T>(array.size());
-		for (JsonObject object : array) {
-			T wrapper = createWrapper(object, type);
-			wrappers.add(wrapper);
-		}
-
-		return wrappers;
 	}
 
 	public static <T extends AJsonWrapper> T createWrapper(JsonObject json, Class<T> type) {
@@ -154,16 +180,6 @@ public abstract class AJsonWrapper implements JsonWrapper {
 			throw new RuntimeException("Instantiating " + type.getName() + " failed.", ex);
 		}
 		return wrapper;
-	}
-
-	@Override
-	public JsonObject getJson() {
-		return json;
-	}
-
-	@Override
-	public String toString() {
-		return json.toFormatedString();
 	}
 
 }

@@ -13,6 +13,7 @@ import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -130,9 +131,13 @@ public class Views {
 		return button;
 	}
 
-	public static View html(Context context, String html) {
+	public static WebView html(Context context, String html) {
 		if (html == null) return null;
-		return text(context, Html.fromHtml(html));
+		// return text(context, Html.fromHtml(html));
+
+		WebView view = new WebView(context);
+		view.loadData(html, "text/html; charset=UTF-8", null);
+		return view;
 	}
 
 	public static LinearLayout addSpacer(LinearLayout ll, int size) {

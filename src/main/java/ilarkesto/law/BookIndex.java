@@ -46,7 +46,7 @@ public class BookIndex extends AJsonWrapper {
 	}
 
 	public List<BookRef> getBooks() {
-		return createFromArray("books", BookRef.class);
+		return getWrapperArray("books", BookRef.class);
 	}
 
 	public void addBook(BookRef book) {

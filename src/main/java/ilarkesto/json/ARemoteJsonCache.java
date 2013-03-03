@@ -7,18 +7,30 @@ import java.io.File;
 
 public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrapper {
 
-	private Log log = Log.get(getClass());
-
-	protected abstract Class<P> getPayloadType();
+	protected Log log = Log.get(getClass());
 
 	protected abstract P onUpdate(P payload, boolean forced);
 
-	public ARemoteJsonCache(File file) {
-		super(new JsonObject(file));
+	private Class<P> payloadType;
+	private File file;
+
+	public ARemoteJsonCache(Class<P> payloadType, File file) {
+		super(JsonObject.loadFile(file, true));
+		this.payloadType = payloadType;
+		this.file = file;
 	}
 
 	public P getPayload() {
-		return createFromObject("payload", getPayloadType());
+		P payload = getWrapper("payload", payloadType);
+		if (payload == null) {
+			payload = createInitialPayload();
+			if (payload != null) json.put("payload", payload.json);
+		}
+		return payload;
+	}
+
+	protected P createInitialPayload() {
+		return null;
 	}
 
 	public P getPayload_ButUpdateIfNull() throws RemoteUpdateFailedException {
@@ -64,12 +76,22 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 
 	public synchronized void save() {
 		log.info("Saving");
-		json.save();
+		json.write(file, false);
+	}
+
+	public synchronized void delete() {
+		log.info("Deleting");
+		json.remove("payload");
+		file.delete();
 	}
 
 	public synchronized void invalidatePayload() {
 		json.put("invalidated", true);
 		save();
+	}
+
+	public File getFile() {
+		return file;
 	}
 
 	public boolean isInvalidated() {

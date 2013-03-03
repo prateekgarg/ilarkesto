@@ -22,7 +22,7 @@ public class OAuth {
 
 	public static JsonObject loadUrlAsJson(OAuthService service, LoginDataProvider accessToken, String url) {
 		String json = loadUrlAsString(service, accessToken, url);
-		return new JsonObject(json);
+		return JsonObject.parse(json);
 	}
 
 	public static String loadUrlAsString(OAuthService service, LoginDataProvider accessToken, String url) {

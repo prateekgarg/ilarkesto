@@ -184,7 +184,7 @@ public class RequestWrapper<S extends AWebSession> {
 	public JsonObject readContentToJson() {
 		String s = readContentToString();
 		if (Str.isBlank(s)) throw new RuntimeException("Illegal request. Missing JSON content.");
-		return new JsonObject(s);
+		return JsonObject.parse(s);
 	}
 
 	public String readContentToString() {

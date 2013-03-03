@@ -50,11 +50,11 @@ public class Profile extends AJsonWrapper {
 	}
 
 	public List<Photo> getPhotos() {
-		return createFromArray("photos", Photo.class);
+		return getWrapperArray("photos", Photo.class);
 	}
 
 	public Name getName() {
-		return createFromObject("name", Name.class);
+		return getWrapper("name", Name.class);
 	}
 
 	public String getDisplayName() {
@@ -70,19 +70,19 @@ public class Profile extends AJsonWrapper {
 	}
 
 	public List<Email> getEmails() {
-		return createFromArray("emails", Email.class);
+		return getWrapperArray("emails", Email.class);
 	}
 
 	public List<Im> getIms() {
-		return createFromArray("ims", Im.class);
+		return getWrapperArray("ims", Im.class);
 	}
 
 	public List<Url> getUrls() {
-		return createFromArray("urls", Url.class);
+		return getWrapperArray("urls", Url.class);
 	}
 
 	public List<Account> getAccounts() {
-		return createFromArray("accounts", Account.class);
+		return getWrapperArray("accounts", Account.class);
 	}
 
 	public static class Account extends AJsonWrapper {

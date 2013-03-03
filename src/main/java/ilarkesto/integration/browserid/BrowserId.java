@@ -49,7 +49,7 @@ public class BrowserId {
 	}
 
 	public static JsonObject getVerificationAsJson(String audience, String assertion) {
-		return new JsonObject(getVerificationAsString(audience, assertion));
+		return JsonObject.parse(getVerificationAsString(audience, assertion));
 	}
 
 	public static String getVerificationAsString(String audience, String assertion) {

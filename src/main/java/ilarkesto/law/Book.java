@@ -31,11 +31,11 @@ public class Book extends AJsonWrapper {
 	}
 
 	public BookRef getRef() {
-		return createFromObject("ref", BookRef.class);
+		return getWrapper("ref", BookRef.class);
 	}
 
 	public List<Section> getSections() {
-		return createFromArray("sections", Section.class);
+		return getWrapperArray("sections", Section.class);
 	}
 
 	public void addSection(Section section) {
@@ -44,7 +44,7 @@ public class Book extends AJsonWrapper {
 
 	public List<Norm> getNorms() {
 		List<Norm> ret = new ArrayList<Norm>();
-		ret.addAll(createFromArray("norms", Norm.class));
+		ret.addAll(getWrapperArray("norms", Norm.class));
 		for (Section section : getSections()) {
 			ret.addAll(section.getNorms());
 		}

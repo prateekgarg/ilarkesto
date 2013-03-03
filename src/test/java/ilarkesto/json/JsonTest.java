@@ -53,7 +53,7 @@ public class JsonTest extends ATest {
 	@Test
 	public void parseWithEscaping() {
 		assertEquals(Json.parseString("new\\nline"), "new\nline");
-		JsonObject jo = new JsonObject("{\"a\":\"new\\nline\"}");
+		JsonObject jo = JsonObject.parse("{\"a\":\"new\\nline\"}");
 		assertEquals(jo.get("a"), "new\nline");
 	}
 
@@ -70,36 +70,36 @@ public class JsonTest extends ATest {
 
 	@Test
 	public void parseEmpty() {
-		assertEquals(new JsonObject("{}").toString(), "{}");
-		assertEquals(new JsonObject(" { } ").toString(), "{}");
-		assertEquals(new JsonObject(" \n\t\r {\n\t}\n } ").toString(), "{}");
+		assertEquals(JsonObject.parse("{}").toString(), "{}");
+		assertEquals(JsonObject.parse(" { } ").toString(), "{}");
+		assertEquals(JsonObject.parse(" \n\t\r {\n\t}\n } ").toString(), "{}");
 	}
 
 	@Test
 	public void parseBasic() {
-		assertEquals(new JsonObject("{\"a\":null}").toString(), "{\"a\":null}");
-		assertEquals(new JsonObject(" {\t\"a\" :\nnull } ").toString(), "{\"a\":null}");
-		assertEquals(new JsonObject("{\"a\":true}").toString(), "{\"a\":true}");
-		assertEquals(new JsonObject("{\"a\":false}").toString(), "{\"a\":false}");
-		assertEquals(new JsonObject("{\"a\":5}").toString(), "{\"a\":5}");
-		assertEquals(new JsonObject("{\"a\":5,\"b\":7}").toString(), "{\"a\":5,\"b\":7}");
-		assertEquals(new JsonObject("{\"a\":\"string\"}").toString(), "{\"a\":\"string\"}");
-		assertEquals(new JsonObject("{\"a\":null,\"b\":null}").toString(), "{\"a\":null,\"b\":null}");
+		assertEquals(JsonObject.parse("{\"a\":null}").toString(), "{\"a\":null}");
+		assertEquals(JsonObject.parse(" {\t\"a\" :\nnull } ").toString(), "{\"a\":null}");
+		assertEquals(JsonObject.parse("{\"a\":true}").toString(), "{\"a\":true}");
+		assertEquals(JsonObject.parse("{\"a\":false}").toString(), "{\"a\":false}");
+		assertEquals(JsonObject.parse("{\"a\":5}").toString(), "{\"a\":5}");
+		assertEquals(JsonObject.parse("{\"a\":5,\"b\":7}").toString(), "{\"a\":5,\"b\":7}");
+		assertEquals(JsonObject.parse("{\"a\":\"string\"}").toString(), "{\"a\":\"string\"}");
+		assertEquals(JsonObject.parse("{\"a\":null,\"b\":null}").toString(), "{\"a\":null,\"b\":null}");
 	}
 
 	@Test
 	public void parseNested() {
-		assertEquals(new JsonObject("{\"sub\":{}}").toString(), "{\"sub\":{}}");
-		assertEquals(new JsonObject(" { \"sub\" : { } } ").toString(), "{\"sub\":{}}");
-		assertEquals(new JsonObject("{\"sub\":{\"a\":null}}").toString(), "{\"sub\":{\"a\":null}}");
+		assertEquals(JsonObject.parse("{\"sub\":{}}").toString(), "{\"sub\":{}}");
+		assertEquals(JsonObject.parse(" { \"sub\" : { } } ").toString(), "{\"sub\":{}}");
+		assertEquals(JsonObject.parse("{\"sub\":{\"a\":null}}").toString(), "{\"sub\":{\"a\":null}}");
 	}
 
 	@Test
 	public void parseArray() {
-		assertEquals(new JsonObject("{\"list\":[]}").toString(), "{\"list\":[]}");
-		assertEquals(new JsonObject("{\"list\":[1,2]}").toString(), "{\"list\":[1,2]}");
-		assertEquals(new JsonObject(" { \"list\" : [  ] }").toString(), "{\"list\":[]}");
-		assertEquals(new JsonObject("{\"list\":[[]]}").toString(), "{\"list\":[[]]}");
+		assertEquals(JsonObject.parse("{\"list\":[]}").toString(), "{\"list\":[]}");
+		assertEquals(JsonObject.parse("{\"list\":[1,2]}").toString(), "{\"list\":[1,2]}");
+		assertEquals(JsonObject.parse(" { \"list\" : [  ] }").toString(), "{\"list\":[]}");
+		assertEquals(JsonObject.parse("{\"list\":[[]]}").toString(), "{\"list\":[[]]}");
 	}
 
 	@Test
@@ -109,15 +109,15 @@ public class JsonTest extends ATest {
 		witek.put("address", address);
 		assertSame(witek, address.getParent());
 
-		witek = new JsonObject(witek.toString());
+		witek = JsonObject.parse(witek.toString());
 		address = witek.getObject("address");
 		assertSame(witek, address.getParent());
 	}
 
 	@Test
 	public void equals() {
-		assertEquals(new JsonObject("{\"list\":[[]]}"), new JsonObject("{\"list\":[[]]}"));
-		assertNotEquals(new JsonObject("{\"list\":[[{}]]}"), new JsonObject("{\"list\":[[]]}"));
+		assertEquals(JsonObject.parse("{\"list\":[[]]}"), JsonObject.parse("{\"list\":[[]]}"));
+		assertNotEquals(JsonObject.parse("{\"list\":[[{}]]}"), JsonObject.parse("{\"list\":[[]]}"));
 	}
 
 	// --- helper ---

@@ -31,7 +31,7 @@ public class Norm extends AJsonWrapper {
 	}
 
 	public List<Paragraph> getParagraphs() {
-		return createFromArray("paragraphs", Paragraph.class);
+		return getWrapperArray("paragraphs", Paragraph.class);
 	}
 
 	public void addParagraph(Paragraph p) {
@@ -75,7 +75,7 @@ public class Norm extends AJsonWrapper {
 	}
 
 	public NormRef getRef() {
-		return createFromObject("ref", NormRef.class);
+		return getWrapper("ref", NormRef.class);
 	}
 
 	@Override

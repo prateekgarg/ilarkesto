@@ -146,6 +146,16 @@ public class Utl {
 		return ret;
 	}
 
+	public static <T> T[] toArray(Collection<T> elements, T[] a) {
+		int i = 0;
+		for (T element : elements) {
+			if (i >= a.length) break;
+			a[i] = element;
+			i++;
+		}
+		return a;
+	}
+
 	/**
 	 * Check if the first given parameter equals at least one of the other parameters
 	 */

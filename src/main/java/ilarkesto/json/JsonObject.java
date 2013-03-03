@@ -3,14 +3,17 @@ package ilarkesto.json;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +34,7 @@ public class JsonObject {
 		String s = json.toFormatedString();
 		System.out.println(s);
 
-		new JsonObject(s);
+		JsonObject.parse(s);
 	}
 
 	private final Map<String, Object> elements = new LinkedHashMap<String, Object>();
@@ -45,10 +48,6 @@ public class JsonObject {
 		parse(json, offset);
 	}
 
-	public JsonObject(String json) {
-		if (json != null) parse(json, 0);
-	}
-
 	public JsonObject(Map<?, ?> map) {
 		for (Map.Entry entry : map.entrySet()) {
 			String name = entry.getKey().toString();
@@ -56,8 +55,36 @@ public class JsonObject {
 		}
 	}
 
-	public JsonObject(File file) {
-		this(load(file));
+	public static JsonObject parse(String json) {
+		if (json == null || json.length() == 0) return new JsonObject();
+		return new JsonObject(json, 0);
+	}
+
+	public static JsonObject loadFile(File file, boolean createEmptyIfNoFile) {
+		if (!file.exists()) {
+			if (createEmptyIfNoFile) return new JsonObject();
+			return null;
+		}
+		JsonObject object = parse(load(file));
+		object.assignFile(file);
+		return object;
+	}
+
+	public static JsonObject loadResource(String resourceName, Class<?> resourcePackageClass,
+			boolean createemptyIfNoResource) {
+		InputStream is = resourcePackageClass.getResourceAsStream(resourceName);
+		if (is == null) {
+			if (createemptyIfNoResource) return new JsonObject();
+			return null;
+		}
+		return parse(load(is));
+	}
+
+	public static JsonObject loadFromStream(InputStream is) {
+		return parse(load(is));
+	}
+
+	public void assignFile(File file) {
 		this.file = file;
 	}
 
@@ -122,6 +149,10 @@ public class JsonObject {
 		return (List) get(name);
 	}
 
+	public <T> List<T> getArray(String name, Class<T> type) {
+		return (List<T>) get(name);
+	}
+
 	public Number getNumber(String name) {
 		return (Number) get(name);
 	}
@@ -176,11 +207,11 @@ public class JsonObject {
 	}
 
 	public List<String> getArrayOfStrings(String name) {
-		return (List<String>) get(name);
+		return getArray(name, String.class);
 	}
 
 	public List<JsonObject> getArrayOfObjects(String name) {
-		return (List<JsonObject>) get(name);
+		return getArray(name, JsonObject.class);
 	}
 
 	public List<Integer> getArrayOfIntegers(String name) {
@@ -212,6 +243,19 @@ public class JsonObject {
 			return addToArray(name, value);
 		}
 		array.add(adopt(value));
+		return array;
+	}
+
+	public List addToArray(String name, Collection values) {
+		List array = getArray(name);
+		if (array == null) {
+			array = new ArrayList();
+			put(name, array);
+			return addToArray(name, values);
+		}
+		for (Object value : values) {
+			array.add(adopt(value));
+		}
 		return array;
 	}
 
@@ -450,15 +494,28 @@ public class JsonObject {
 	private static String load(File file) {
 		if (!file.exists()) return null;
 		try {
+			return load(new FileInputStream(file));
+		} catch (Exception ex) {
+			throw new RuntimeException("Loading file failed: +" + file.getAbsolutePath(), ex);
+		}
+	}
+
+	private static String load(InputStream is) {
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new InputStreamReader(is));
 			StringBuilder sb = new StringBuilder();
-			BufferedReader in = new BufferedReader(new FileReader(file));
 			String line = null;
 			while ((line = in.readLine()) != null) {
 				sb.append(line).append('\n');
 			}
 			return sb.toString();
-		} catch (IOException ex) {
-			throw new RuntimeException("Loading file failed: +" + file.getAbsolutePath(), ex);
+		} catch (Exception ex) {
+			throw new RuntimeException("Loading JSON failed", ex);
+		} finally {
+			if (in != null) try {
+				in.close();
+			} catch (Exception e) {}
 		}
 	}
 

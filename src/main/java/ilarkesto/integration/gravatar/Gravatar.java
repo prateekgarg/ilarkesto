@@ -38,7 +38,7 @@ public class Gravatar {
 		log.debug("Loading Gravatar profile for", email, "->", email);
 		String json = IO.downloadUrlToString(url);
 		if (Str.isBlank(json)) return null;
-		return new Profile(new JsonObject(json));
+		return new Profile(JsonObject.parse(json));
 	}
 
 	public static final String createJsonProfileUrl(String email) {

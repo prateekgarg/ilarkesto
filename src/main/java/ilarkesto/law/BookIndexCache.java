@@ -9,13 +9,8 @@ public class BookIndexCache extends ARemoteJsonCache<BookIndex> {
 	private ALawProvider lawProvider;
 
 	public BookIndexCache(File file, ALawProvider lawProvider) {
-		super(file);
+		super(BookIndex.class, file);
 		this.lawProvider = lawProvider;
-	}
-
-	@Override
-	protected Class<BookIndex> getPayloadType() {
-		return BookIndex.class;
 	}
 
 	@Override

@@ -81,6 +81,7 @@ public class GiiBookXmlParser extends Parser {
 		while (isNext("<P>")) {
 			gotoAfter("<P>");
 			String content = getUntil("</P>");
+			content = xmlToHtml(content);
 			norm.addParagraph(new Paragraph(content));
 			gotoAfter("</P>");
 		}
@@ -91,5 +92,15 @@ public class GiiBookXmlParser extends Parser {
 			section.addNorm(norm);
 		}
 		gotoAfter("</norm>");
+	}
+
+	private String xmlToHtml(String s) {
+		s = s.replace("<row", "<tr");
+		s = s.replace("</row>", "</tr>");
+
+		s = s.replace("<entry", "<td");
+		s = s.replace("</entry>", "</td>");
+
+		return s;
 	}
 }

@@ -37,11 +37,11 @@ public class Person extends AIdentity {
 	}
 
 	public City getHometown() {
-		return createFromObject("hometown", City.class);
+		return getWrapper("hometown", City.class);
 	}
 
 	public City getLocation() {
-		return createFromObject("location", City.class);
+		return getWrapper("location", City.class);
 	}
 
 }

@@ -17,7 +17,7 @@ public class Like extends AIdentity {
 	}
 
 	public Subject getSubject() {
-		return createFromObject("id__loaded", Subject.class);
+		return getWrapper("id__loaded", Subject.class);
 	}
 
 }

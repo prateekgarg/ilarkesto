@@ -10,14 +10,9 @@ public class BookCache extends ARemoteJsonCache<Book> {
 	private BookRef bookRef;
 
 	public BookCache(BookRef bookRef, File file, ALawProvider lawProvider) {
-		super(file);
+		super(Book.class, file);
 		this.bookRef = bookRef;
 		this.lawProvider = lawProvider;
-	}
-
-	@Override
-	protected Class<Book> getPayloadType() {
-		return Book.class;
 	}
 
 	@Override

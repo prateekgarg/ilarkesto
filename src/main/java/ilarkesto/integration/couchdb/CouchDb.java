@@ -50,7 +50,7 @@ public class CouchDb extends AJsonDb {
 		log.debug("Loading document:", id);
 		String json = IO.downloadUrlToString(url + id);
 		if (json == null) return null;
-		return new JsonObject(json);
+		return JsonObject.parse(json);
 	}
 
 	@Override

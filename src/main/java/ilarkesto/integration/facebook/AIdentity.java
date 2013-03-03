@@ -24,7 +24,7 @@ public abstract class AIdentity extends AObject {
 	}
 
 	public final Person getFrom() {
-		return createFromObject("from", Person.class);
+		return getWrapper("from", Person.class);
 	}
 
 	public final String getFacebookGraphUrl() {
