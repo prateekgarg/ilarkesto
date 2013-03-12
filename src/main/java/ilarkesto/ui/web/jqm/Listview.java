@@ -23,8 +23,17 @@ public class Listview extends AContainerElement {
 	private boolean dataFilter;
 	private Theme dataTheme;
 
+	public Listview(JqmHtmlPage htmlPage) {
+		super(htmlPage);
+	}
+
 	public Listview setDataFilter(boolean dataFilter) {
 		this.dataFilter = dataFilter;
+		return this;
+	}
+
+	public Listview setDataInset(boolean dataInset) {
+		this.dataInset = dataInset;
 		return this;
 	}
 
@@ -45,11 +54,11 @@ public class Listview extends AContainerElement {
 	}
 
 	public ListItem addItem(String href, Object text) {
-		return addItem(text).setHref(href);
+		return addItem(text).setLinkHref(href);
 	}
 
 	public ListItem addItem() {
-		return addChild(new ListItem());
+		return addChild(new ListItem(getHtmlPage()));
 	}
 
 	@Override

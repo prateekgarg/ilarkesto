@@ -19,12 +19,18 @@ import ilarkesto.ui.web.HtmlRenderer.Tag;
 
 public class ListItem extends AHtmlContainerElement {
 
-	private String href;
-	private String dataRel;
 	private String dataRole;
 
-	public ListItem setHref(String href) {
-		this.href = href;
+	private String linkHref;
+	private String linkDataRel;
+	private String linkRel;
+
+	public ListItem(JqmHtmlPage htmlPage) {
+		super(htmlPage);
+	}
+
+	public ListItem setLinkHref(String href) {
+		this.linkHref = href;
 		return this;
 	}
 
@@ -37,23 +43,33 @@ public class ListItem extends AHtmlContainerElement {
 		return setDataRole("list-divider");
 	}
 
-	public ListItem setDataRel(String dataRel) {
-		this.dataRel = dataRel;
+	public ListItem setLinkDataRel(String dataRel) {
+		this.linkDataRel = dataRel;
 		return this;
+	}
+
+	public ListItem setLinkRel(String linkRel) {
+		this.linkRel = linkRel;
+		return this;
+	}
+
+	public ListItem setLinkRelToExternal() {
+		return setLinkRel("external");
 	}
 
 	@Override
 	protected void renderHeader(HtmlRenderer html) {
 		html.startLI().setDataRole(dataRole);
-		if (href != null) {
-			Tag a = html.startA(href);
-			if (dataRel != null) a.setDataRel(dataRel);
+		if (linkHref != null) {
+			Tag a = html.startA(linkHref);
+			if (linkDataRel != null) a.setDataRel(linkDataRel);
+			if (linkRel != null) a.setRel(linkRel);
 		}
 	}
 
 	@Override
 	protected void renderFooter(HtmlRenderer html) {
-		if (href != null) html.endA();
+		if (linkHref != null) html.endA();
 		html.endLI();
 	}
 

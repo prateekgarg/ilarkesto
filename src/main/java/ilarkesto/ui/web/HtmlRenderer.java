@@ -1126,6 +1126,10 @@ public class HtmlRenderer {
 			return set("data-role", value);
 		}
 
+		public Tag setRel(String value) {
+			return set("rel", value);
+		}
+
 		public Tag setDataRel(String value) {
 			return set("data-rel", value);
 		}

@@ -22,7 +22,8 @@ public abstract class AFieldElement extends AElement {
 	protected String name;
 	protected String label;
 
-	public AFieldElement(String id, String label) {
+	public AFieldElement(JqmHtmlPage htmlPage, String id, String label) {
+		super(htmlPage);
 		this.id = id;
 		this.label = label;
 

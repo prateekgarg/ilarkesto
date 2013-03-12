@@ -19,6 +19,10 @@ import ilarkesto.ui.web.HtmlRenderer.Tag;
 
 public abstract class AHtmlContainerElement extends AContainerElement {
 
+	public AHtmlContainerElement(JqmHtmlPage htmlPage) {
+		super(htmlPage);
+	}
+
 	public void addDialogButton(String href, String text, DataIcon icon, Theme theme) {
 		addLinkButton(href, text, null, null, icon, theme, "dialog");
 	}
@@ -48,7 +52,7 @@ public abstract class AHtmlContainerElement extends AContainerElement {
 	}
 
 	public HtmlElement addHtml() {
-		return addChild(new HtmlElement());
+		return addChild(new HtmlElement(getHtmlPage()));
 	}
 
 	public HtmlRenderer addHtmlRenderer() {

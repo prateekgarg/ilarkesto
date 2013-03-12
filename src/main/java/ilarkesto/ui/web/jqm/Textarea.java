@@ -20,8 +20,8 @@ public class Textarea extends AFieldElement {
 
 	private String value;
 
-	public Textarea(String id, String label) {
-		super(id, label);
+	public Textarea(JqmHtmlPage htmlPage, String id, String label) {
+		super(htmlPage, id, label);
 	}
 
 	@Override

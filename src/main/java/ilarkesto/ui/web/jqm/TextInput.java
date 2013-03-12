@@ -25,8 +25,8 @@ public class TextInput extends AFieldElement {
 	private Boolean autocomplete;
 	private String step;
 
-	public TextInput(String id, String label) {
-		super(id, label);
+	public TextInput(JqmHtmlPage htmlPage, String id, String label) {
+		super(htmlPage, id, label);
 	}
 
 	@Override

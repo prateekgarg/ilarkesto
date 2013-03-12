@@ -21,6 +21,10 @@ public class Header extends AHtmlContainerElement {
 
 	private Theme theme;
 
+	public Header(JqmHtmlPage htmlPage) {
+		super(htmlPage);
+	}
+
 	public Header setDataTheme(Theme theme) {
 		this.theme = theme;
 		return this;

@@ -21,6 +21,10 @@ import java.util.List;
 
 public abstract class AContainerElement extends AElement {
 
+	public AContainerElement(JqmHtmlPage htmlPage) {
+		super(htmlPage);
+	}
+
 	private List<AElement> children = new ArrayList<AElement>();
 
 	protected abstract void renderHeader(HtmlRenderer html);

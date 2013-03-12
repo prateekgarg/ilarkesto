@@ -21,7 +21,8 @@ public class Popup extends Content {
 
 	private String id;
 
-	public Popup(String id) {
+	public Popup(JqmHtmlPage htmlPage, String id) {
+		super(htmlPage);
 		this.id = id;
 	}
 

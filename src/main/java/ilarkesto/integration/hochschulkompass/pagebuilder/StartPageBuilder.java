@@ -33,7 +33,7 @@ public class StartPageBuilder extends AJqmPageBuilder {
 		List<Subjectgroup> subjectgroups = context.getValuesCache().getPayload().getSubjectgroups();
 		for (Subjectgroup subjectgroup : subjectgroups) {
 			ListItem item = list.addItem(subjectgroup.getValue());
-			item.setHref(context.href(subjectgroup));
+			item.setLinkHref(context.href(subjectgroup));
 			if (subjectgroup.isTop()) item.setDataRoleToListDivider();
 		}
 	}

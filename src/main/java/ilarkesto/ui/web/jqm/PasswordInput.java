@@ -14,11 +14,10 @@
  */
 package ilarkesto.ui.web.jqm;
 
-
 public class PasswordInput extends TextInput {
 
-	public PasswordInput(String id, String label) {
-		super(id, label);
+	public PasswordInput(JqmHtmlPage htmlPage, String id, String label) {
+		super(htmlPage, id, label);
 		setType(InputType.Password);
 	}
 

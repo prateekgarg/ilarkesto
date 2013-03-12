@@ -26,7 +26,8 @@ public class Form extends AHtmlContainerElement {
 	private String method = "POST";
 	private boolean ajax = false;
 
-	public Form(String id, String action) {
+	public Form(JqmHtmlPage htmlPage, String id, String action) {
+		super(htmlPage);
 		this.id = id;
 		this.action = action;
 
@@ -47,23 +48,23 @@ public class Form extends AHtmlContainerElement {
 	}
 
 	public Textarea addTextarea(String id, String label) {
-		return addChild(new Textarea(id, label));
+		return addChild(new Textarea(getHtmlPage(), id, label));
 	}
 
 	public TextInput addTextInput(String id, String label) {
-		return addChild(new TextInput(id, label));
+		return addChild(new TextInput(getHtmlPage(), id, label));
 	}
 
 	public PasswordInput addPasswordInput(String id, String label) {
-		return addChild(new PasswordInput(id, label));
+		return addChild(new PasswordInput(getHtmlPage(), id, label));
 	}
 
 	public FlipToggleSwitch addFlipToggleSwitch(String id, String label, String trueLabel, String falseLabel) {
-		return addChild(new FlipToggleSwitch(id, label, trueLabel, falseLabel));
+		return addChild(new FlipToggleSwitch(getHtmlPage(), id, label, trueLabel, falseLabel));
 	}
 
 	public Select addSelect(String id, String label) {
-		return addChild(new Select(id, label));
+		return addChild(new Select(getHtmlPage(), id, label));
 	}
 
 	@Override

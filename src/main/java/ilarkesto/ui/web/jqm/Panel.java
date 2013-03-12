@@ -14,9 +14,10 @@
  */
 package ilarkesto.ui.web.jqm;
 
-
 public class Panel extends Content {
 
-	public Panel() {}
+	public Panel(JqmHtmlPage htmlPage) {
+		super(htmlPage);
+	}
 
 }

@@ -27,8 +27,8 @@ public class Select extends AFieldElement {
 	private Map<String, String> options = new LinkedHashMap<String, String>();
 	private boolean optional = true;
 
-	public Select(String id, String label) {
-		super(id, label);
+	public Select(JqmHtmlPage htmlPage, String id, String label) {
+		super(htmlPage, id, label);
 	}
 
 	@Override

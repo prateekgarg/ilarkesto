@@ -20,7 +20,8 @@ public class HtmlElement extends AElement {
 
 	private HtmlRenderer renderer;
 
-	public HtmlElement() {
+	public HtmlElement(JqmHtmlPage htmlPage) {
+		super(htmlPage);
 		renderer = new HtmlRenderer();
 		// renderer.setIndentationDepth(indentationDepth);
 	}

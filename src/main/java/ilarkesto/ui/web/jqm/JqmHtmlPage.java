@@ -34,7 +34,7 @@ public class JqmHtmlPage extends AContainerElement {
 	private List<String> csss = new ArrayList<String>();
 
 	public JqmHtmlPage(String title, String language) {
-		super();
+		super(null);
 		this.title = title;
 		this.language = language;
 	}
@@ -48,7 +48,7 @@ public class JqmHtmlPage extends AContainerElement {
 	}
 
 	public Page addPage() {
-		return addChild(new Page());
+		return addChild(new Page(getHtmlPage()));
 	}
 
 	@Override
@@ -109,6 +109,11 @@ public class JqmHtmlPage extends AContainerElement {
 
 	public void setJqmVersion(String jqueryMobileVersion) {
 		this.jqmVersion = jqueryMobileVersion;
+	}
+
+	@Override
+	public JqmHtmlPage getHtmlPage() {
+		return this;
 	}
 
 }

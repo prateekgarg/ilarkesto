@@ -21,17 +21,21 @@ public class Page extends AHtmlContainerElement {
 
 	private String[] style;
 
+	public Page(JqmHtmlPage htmlPage) {
+		super(htmlPage);
+	}
+
 	public Page setStyle(String... style) {
 		this.style = style;
 		return this;
 	}
 
 	public Header addHeader() {
-		return addChild(new Header());
+		return addChild(new Header(getHtmlPage()));
 	}
 
 	public Content addContent() {
-		return addChild(new Content());
+		return addChild(new Content(getHtmlPage()));
 	}
 
 	public void addHeaderWithH1(String h1) {

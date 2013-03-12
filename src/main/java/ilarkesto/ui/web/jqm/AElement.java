@@ -18,6 +18,17 @@ import ilarkesto.ui.web.HtmlRenderer;
 
 public abstract class AElement {
 
+	private JqmHtmlPage htmlPage;
+
 	public abstract void render(HtmlRenderer html);
+
+	public AElement(JqmHtmlPage htmlPage) {
+		super();
+		this.htmlPage = htmlPage;
+	}
+
+	public JqmHtmlPage getHtmlPage() {
+		return htmlPage;
+	}
 
 }

@@ -23,8 +23,8 @@ public class FlipToggleSwitch extends AFieldElement {
 	private String falseLabel;
 	private boolean value;
 
-	public FlipToggleSwitch(String id, String label, String trueLabel, String falseLabel) {
-		super(id, label);
+	public FlipToggleSwitch(JqmHtmlPage htmlPage, String id, String label, String trueLabel, String falseLabel) {
+		super(htmlPage, id, label);
 		this.trueLabel = trueLabel;
 		this.falseLabel = falseLabel;
 	}

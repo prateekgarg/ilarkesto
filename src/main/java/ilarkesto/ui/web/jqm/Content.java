@@ -24,13 +24,17 @@ public class Content extends AHtmlContainerElement {
 
 	private Integer maxWidth;
 
+	public Content(JqmHtmlPage htmlPage) {
+		super(htmlPage);
+	}
+
 	public Content setMaxWidth(Integer maxWidth) {
 		this.maxWidth = maxWidth;
 		return this;
 	}
 
 	public Panel addPanel() {
-		return addChild(new Panel());
+		return addChild(new Panel(getHtmlPage()));
 	}
 
 	public Form addForm(Url action) {
@@ -38,19 +42,19 @@ public class Content extends AHtmlContainerElement {
 	}
 
 	public Form addForm(String action) {
-		return addChild(new Form("jqmform_" + UUID.randomUUID().toString(), action));
+		return addChild(new Form(getHtmlPage(), "jqmform_" + UUID.randomUUID().toString(), action));
 	}
 
 	public Form addForm(String id, String action) {
-		return addChild(new Form(id, action));
+		return addChild(new Form(getHtmlPage(), id, action));
 	}
 
 	public Listview addListview() {
-		return addChild(new Listview());
+		return addChild(new Listview(getHtmlPage()));
 	}
 
 	public Popup addPopup(String id) {
-		return addChild(new Popup(id));
+		return addChild(new Popup(getHtmlPage(), id));
 	}
 
 	@Override
