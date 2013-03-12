@@ -28,21 +28,24 @@ public class Listview extends AContainerElement {
 		return this;
 	}
 
-	public ListDivider addDivider(Object text) {
-		ListDivider divider = addDivider();
+	public ListItem addDivider() {
+		return addItem().setDataRoleToListDivider();
+	}
+
+	public ListItem addDivider(Object text) {
+		ListItem divider = addDivider();
 		divider.addText(text);
 		return divider;
 	}
 
-	public ListDivider addDivider() {
-		return addChild(new ListDivider());
+	public ListItem addItem(Object text) {
+		ListItem item = addItem();
+		item.addText(text);
+		return item;
 	}
 
 	public ListItem addItem(String href, Object text) {
-		ListItem item = addItem();
-		item.setHref(href);
-		item.addText(text);
-		return item;
+		return addItem(text).setHref(href);
 	}
 
 	public ListItem addItem() {

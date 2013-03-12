@@ -12,20 +12,27 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.ui.web.jqm;
+package ilarkesto.integration.hochschulkompass;
 
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.json.JsonObject;
 
-public class ListDivider extends AHtmlContainerElement {
+public class Subjectgroup extends Value {
 
-	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		html.startLI().setDataRole("list-divider");
+	public Subjectgroup(JsonObject json) {
+		super(json);
 	}
 
-	@Override
-	protected void renderFooter(HtmlRenderer html) {
-		html.endLI();
+	public Subjectgroup(String key, String value, boolean top) {
+		super(key, value);
+		setTop(top);
+	}
+
+	public boolean isTop() {
+		return json.isTrue("top");
+	}
+
+	public void setTop(boolean top) {
+		json.put("top", top);
 	}
 
 }

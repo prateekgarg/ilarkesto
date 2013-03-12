@@ -11,22 +11,27 @@ import ilarkesto.law.DataLoadFailedException;
 import ilarkesto.law.Norm;
 import ilarkesto.net.HttpDownloader;
 
+import java.io.File;
 import java.util.List;
 
 public class GiiLawProvider extends ALawProvider {
 
 	public static void main(String[] args) {
-		BookRef ref = new BookRef("AAppO", "AAppO...");
-		ref.getJson().put("giiReference", "aappo");
-		List<Norm> norms = new GiiLawProvider().getBook(ref).getNorms();
+		BookRef ref = new BookRef("StVo", "Straßenverkehrs-Ordnung");
+		ref.getJson().put("giiReference", "stvo");
+		List<Norm> norms = new GiiLawProvider(new File("runtimedata/gii")).getBook(ref).getNorms();
 		for (Norm norm : norms) {
+			System.out.println("\n-------------------------------------");
 			System.out.println(norm);
+			System.out.println(norm.getTextAsHtml());
 		}
 	}
 
 	private HttpDownloader downloader;
+	private File dataDir;
 
-	public GiiLawProvider() {
+	public GiiLawProvider(File dataDir) {
+		this.dataDir = dataDir;
 		this.downloader = new HttpDownloader().setCharset(IO.ISO_LATIN_1).setBaseUrl(
 			"http://www.gesetze-im-internet.de/");
 	}
@@ -36,14 +41,38 @@ public class GiiLawProvider extends ALawProvider {
 		String reference = bookRef.getJson().getString("giiReference");
 		if (reference == null)
 			throw new DataLoadFailedException("Book reference has no giiReference property: " + bookRef.getJson(), null);
-		String data = downloader.downloadZippedText(reference + "/xml.zip", IO.UTF_8);
+
+		File tempDir = getTempBookDataDir(bookRef.getCode());
+		downloader.downloadZipAndExtract(reference + "/xml.zip", tempDir);
+		String data = loadXmlFileFromDir(tempDir);
+
 		Book book = new Book(bookRef);
 		try {
 			new GiiBookXmlParser(data).parseInto(book);
 		} catch (ParseException ex) {
 			throw new RuntimeException("Parsing book failed: " + bookRef, ex);
 		}
+
+		File dir = getBookDataDir(bookRef.getCode());
+		IO.delete(dir);
+		IO.move(tempDir, dir);
+
 		return book;
+	}
+
+	private String loadXmlFileFromDir(File dir) {
+		for (File file : dir.listFiles()) {
+			if (file.getName().endsWith(".xml")) return IO.readFile(file, IO.UTF_8);
+		}
+		throw new RuntimeException("Missing XML file in downloaded ZIP: " + dir);
+	}
+
+	public File getBookDataDir(String bookCode) {
+		return new File(dataDir.getPath() + "/" + bookCode);
+	}
+
+	private File getTempBookDataDir(String bookCode) {
+		return new File(dataDir.getPath() + "/~" + bookCode);
 	}
 
 	@Override

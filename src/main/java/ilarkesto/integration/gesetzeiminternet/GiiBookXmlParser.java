@@ -19,7 +19,6 @@ import ilarkesto.core.base.Str;
 import ilarkesto.law.Book;
 import ilarkesto.law.Norm;
 import ilarkesto.law.NormRef;
-import ilarkesto.law.Paragraph;
 import ilarkesto.law.Section;
 
 public class GiiBookXmlParser extends Parser {
@@ -34,6 +33,8 @@ public class GiiBookXmlParser extends Parser {
 
 	public void parseInto(Book book) throws ParseException {
 		this.book = book;
+		this.section = null;
+		this.currentDepth = 0;
 		gotoAfter("<norm");
 		gotoAfter("</norm");
 		while (gotoAfterIf("<norm")) {
@@ -46,20 +47,38 @@ public class GiiBookXmlParser extends Parser {
 		if (isNext("<gliederungseinheit>")) {
 			gotoAfter("<gliederungskennzahl>");
 			String gliederungskennzahl = getUntilAndGotoAfter("</gliederungskennzahl>");
+			int depth = gliederungskennzahl.length() / 3;
 			gotoAfter("<gliederungsbez>");
 			String gliederungsbez = getUntilAndGotoAfter("</gliederungsbez>");
 			Section s = new Section(gliederungsbez);
-			int depth = gliederungskennzahl.length() / 3;
+			// Log.TEST("Gliederung:", depth, gliederungskennzahl, gliederungsbez);
 			if (depth > currentDepth) {
 				if (section == null) {
 					book.addSection(s);
 				} else {
 					section.addSection(s);
 				}
-				section = s;
+				currentDepth++;
+			} else if (depth == currentDepth) {
+				Section parentSection = section.getParentSection();
+				if (parentSection == null) {
+					section.getBook().addSection(s);
+				} else {
+					parentSection.addSection(s);
+				}
 			} else if (depth < currentDepth) {
-				section = s.getParentSection();
+				while (depth < currentDepth) {
+					section = section.getParentSection();
+					currentDepth--;
+				}
+				Section parentSection = section.getParentSection();
+				if (parentSection == null) {
+					section.getBook().addSection(s);
+				} else {
+					parentSection.addSection(s);
+				}
 			}
+			section = s;
 			// TODO sections
 			return;
 		}
@@ -71,6 +90,8 @@ public class GiiBookXmlParser extends Parser {
 			gotoAfter("<titel");
 			gotoAfter(">");
 			titel = getUntil("</titel");
+			titel = titel.replace("\n<BR/>\n", "\n");
+			titel = titel.replace("<BR/>\n", "\n");
 			titel = titel.replace("<BR/>", "\n");
 		}
 		NormRef ref = new NormRef(book.getRef().getCode(), enbez);
@@ -78,13 +99,9 @@ public class GiiBookXmlParser extends Parser {
 
 		gotoAfter("<textdaten");
 		gotoAfter("<Content>");
-		while (isNext("<P>")) {
-			gotoAfter("<P>");
-			String content = getUntil("</P>");
-			content = xmlToHtml(content);
-			norm.addParagraph(new Paragraph(content));
-			gotoAfter("</P>");
-		}
+		String content = getUntil("</Content>");
+		content = xmlToHtml(content);
+		norm.setTextAsHtml(content);
 
 		if (section == null) {
 			book.addNorm(norm);
@@ -95,11 +112,19 @@ public class GiiBookXmlParser extends Parser {
 	}
 
 	private String xmlToHtml(String s) {
+		if (s == null) return null;
 		s = s.replace("<row", "<tr");
 		s = s.replace("</row>", "</tr>");
 
 		s = s.replace("<entry", "<td");
 		s = s.replace("</entry>", "</td>");
+
+		s = s.replace("nameend=\"col2\"", "colspan=\"2\"");
+		s = s.replace("nameend=\"col3\"", "colspan=\"3\"");
+		s = s.replace("nameend=\"col4\"", "colspan=\"4\"");
+
+		s = s.replace(" Type=\"TIF\"", "");
+		s = s.replace(" Units=\"", "width=\"");
 
 		return s;
 	}

@@ -3,7 +3,9 @@ package ilarkesto.android.view;
 import ilarkesto.android.Android;
 import ilarkesto.android.ImageDownloader;
 import ilarkesto.android.R;
+import ilarkesto.io.IO;
 
+import java.io.File;
 import java.util.List;
 
 import android.app.Activity;
@@ -132,11 +134,23 @@ public class Views {
 	}
 
 	public static WebView html(Context context, String html) {
+		return html(context, html, (String) null);
+	}
+
+	public static WebView html(Context context, String html, File baseUrlDir) {
+		return html(context, html, baseUrlDir == null ? null : "file://" + baseUrlDir.getAbsolutePath() + "/");
+	}
+
+	public static WebView html(Context context, String html, String baseUrl) {
 		if (html == null) return null;
 		// return text(context, Html.fromHtml(html));
 
 		WebView view = new WebView(context);
-		view.loadData(html, "text/html; charset=UTF-8", null);
+		if (baseUrl == null) {
+			view.loadData(html, "text/html; charset=" + IO.UTF_8, IO.UTF_8);
+		} else {
+			view.loadDataWithBaseURL(baseUrl, html, "text/html", IO.UTF_8, baseUrl);
+		}
 		return view;
 	}
 

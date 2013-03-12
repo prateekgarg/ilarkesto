@@ -21,10 +21,20 @@ public class ListItem extends AHtmlContainerElement {
 
 	private String href;
 	private String dataRel;
+	private String dataRole;
 
 	public ListItem setHref(String href) {
 		this.href = href;
 		return this;
+	}
+
+	public ListItem setDataRole(String dataRole) {
+		this.dataRole = dataRole;
+		return this;
+	}
+
+	public ListItem setDataRoleToListDivider() {
+		return setDataRole("list-divider");
 	}
 
 	public ListItem setDataRel(String dataRel) {
@@ -34,7 +44,7 @@ public class ListItem extends AHtmlContainerElement {
 
 	@Override
 	protected void renderHeader(HtmlRenderer html) {
-		html.startLI();
+		html.startLI().setDataRole(dataRole);
 		if (href != null) {
 			Tag a = html.startA(href);
 			if (dataRel != null) a.setDataRel(dataRel);

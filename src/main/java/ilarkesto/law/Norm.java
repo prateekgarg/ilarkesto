@@ -14,10 +14,9 @@
  */
 package ilarkesto.law;
 
+import ilarkesto.core.html.Html;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
-
-import java.util.List;
 
 public class Norm extends AJsonWrapper {
 
@@ -30,36 +29,16 @@ public class Norm extends AJsonWrapper {
 		json.put("title", title);
 	}
 
-	public List<Paragraph> getParagraphs() {
-		return getWrapperArray("paragraphs", Paragraph.class);
-	}
-
-	public void addParagraph(Paragraph p) {
-		json.addToArray("paragraphs", p);
-	}
-
 	public String getTextAsHtml() {
-		StringBuilder sb = new StringBuilder();
-		for (Paragraph p : getParagraphs()) {
-			sb.append("<P>");
-			sb.append(p.getTextAsHtml());
-			sb.append("</P>");
-		}
-		return sb.toString();
+		return json.getString("textAsHtml");
+	}
+
+	public void setTextAsHtml(String html) {
+		json.put("textAsHtml", html);
 	}
 
 	public String getTextAsString() {
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (Paragraph p : getParagraphs()) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append("\n\n");
-			}
-			sb.append(p.getTextAsString());
-		}
-		return sb.toString();
+		return Html.convertHtmlToText(getTextAsHtml());
 	}
 
 	public String getTitle() {
@@ -72,6 +51,10 @@ public class Norm extends AJsonWrapper {
 
 	public Section getSection() {
 		return getParent(Section.class);
+	}
+
+	public Book getBook() {
+		return getSection().getBook();
 	}
 
 	public NormRef getRef() {
