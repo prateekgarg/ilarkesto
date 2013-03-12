@@ -190,6 +190,11 @@ public abstract class AUi {
 		return new Url("service/" + serviceName);
 	}
 
+	public static boolean isServiceUrl(Url url) {
+		if (url == null) return false;
+		return url.getBase().startsWith("service/");
+	}
+
 	public static Url getViewUrl(Class<? extends AView> viewClass) {
 		return new Url(getViewId(viewClass));
 	}
