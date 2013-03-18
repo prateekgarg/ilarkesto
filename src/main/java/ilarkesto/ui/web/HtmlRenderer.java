@@ -642,12 +642,18 @@ public class HtmlRenderer {
 
 	public void IMG(String src, String alternatieText, String id, String align, Integer width, Integer height,
 			String style) {
+		IMG(src, alternatieText, id, align, width, height, style, null);
+	}
+
+	public void IMG(String src, String alternatieText, String id, String align, Integer width, Integer height,
+			String style, String styleClass) {
 		Tag tag = startTag(IMG).setSrc(src).setAlt(alternatieText).setBorder(0);
 		if (id != null) tag.setId(id);
 		if (width != null) tag.setWidth(width);
 		if (height != null) tag.set("height", height);
 		if (align != null) tag.setAlign(align);
 		if (style != null) tag.setStyle(style);
+		if (styleClass != null) tag.setClass(styleClass);
 		tag.end();
 	}
 

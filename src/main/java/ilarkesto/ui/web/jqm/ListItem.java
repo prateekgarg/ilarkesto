@@ -57,6 +57,10 @@ public class ListItem extends AHtmlContainerElement {
 		return setLinkRel("external");
 	}
 
+	public ListItem setLinkDataRelToPopup() {
+		return setLinkDataRel("popup");
+	}
+
 	@Override
 	protected void renderHeader(HtmlRenderer html, String id) {
 		html.startLI().setId(id).setDataRole(dataRole);
