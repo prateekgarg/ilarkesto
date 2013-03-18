@@ -41,8 +41,8 @@ public class Header extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag div = html.startDIV();
+	protected void renderHeader(HtmlRenderer html, String id) {
+		Tag div = html.startDIV().setId(id);
 		div.setDataRole("header");
 		if (theme != null) div.set("data-theme", theme.getName());
 	}

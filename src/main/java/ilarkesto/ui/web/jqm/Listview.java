@@ -62,8 +62,8 @@ public class Listview extends AContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag ul = html.startUL();
+	protected void renderHeader(HtmlRenderer html, String id) {
+		Tag ul = html.startUL().setId(id);
 		ul.setDataRole("listview");
 		ul.set("data-inset", dataInset);
 		if (dataTheme != null) ul.set("data-theme", dataTheme.getName());

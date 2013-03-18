@@ -33,8 +33,8 @@ public abstract class AFieldElement extends AElement {
 	protected abstract void renderElement(HtmlRenderer html);
 
 	@Override
-	public void render(HtmlRenderer html) {
-		html.startDIV().setDataRole("fieldcontain");
+	protected void render(HtmlRenderer html, String id) {
+		html.startDIV().setId(id).setDataRole("fieldcontain");
 
 		html.LABEL(id, label);
 

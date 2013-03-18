@@ -43,9 +43,9 @@ public class Page extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
+	protected void renderHeader(HtmlRenderer html, String id) {
 		html.nl();
-		Tag div = html.startDIV();
+		Tag div = html.startDIV().setId(id);
 		div.setDataRole("page");
 		if (style != null) div.setStyle(style);
 	}

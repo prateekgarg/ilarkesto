@@ -18,9 +18,16 @@ import ilarkesto.ui.web.HtmlRenderer;
 
 public abstract class AElement {
 
-	private JqmHtmlPage htmlPage;
+	private static long ids;
 
-	public abstract void render(HtmlRenderer html);
+	private JqmHtmlPage htmlPage;
+	private String id;
+
+	protected abstract void render(HtmlRenderer html, String id);
+
+	public final void render(HtmlRenderer html) {
+		render(html, id);
+	}
 
 	public AElement(JqmHtmlPage htmlPage) {
 		super();
@@ -29,6 +36,16 @@ public abstract class AElement {
 
 	public JqmHtmlPage getHtmlPage() {
 		return htmlPage;
+	}
+
+	public final String getId() {
+		if (id == null) id = "jqm" + (++ids);
+		return id;
+	}
+
+	public AElement setId(String id) {
+		this.id = id;
+		return this;
 	}
 
 }

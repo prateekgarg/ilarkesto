@@ -19,16 +19,13 @@ import ilarkesto.ui.web.HtmlRenderer.Tag;
 
 public class Popup extends Content {
 
-	private String id;
-
-	public Popup(JqmHtmlPage htmlPage, String id) {
+	public Popup(JqmHtmlPage htmlPage) {
 		super(htmlPage);
-		this.id = id;
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag div = html.startDIV();
+	protected void renderHeader(HtmlRenderer html, String id) {
+		Tag div = html.startDIV().setId(id);
 		div.setId(id);
 		div.setClass("ui-content");
 		div.setDataRole("popup");

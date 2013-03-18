@@ -68,8 +68,8 @@ public class Form extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag form = html.startFORM(new Url(action), method, name, false);
+	protected void renderHeader(HtmlRenderer html, String id) {
+		Tag form = html.startFORM(new Url(action), method, name, false).setId(id);
 		form.setId(id);
 		form.set("data-ajax", ajax);
 		html.startFIELDSET();

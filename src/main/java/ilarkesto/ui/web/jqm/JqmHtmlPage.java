@@ -52,7 +52,7 @@ public class JqmHtmlPage extends AContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
+	protected void renderHeader(HtmlRenderer html, String id) {
 		html.startHTML();
 		html.startHEAD(title, language);
 
@@ -81,7 +81,7 @@ public class JqmHtmlPage extends AContainerElement {
 		}
 
 		html.endHEAD();
-		html.startBODY();
+		html.startBODY().setId(id);
 	}
 
 	@Override

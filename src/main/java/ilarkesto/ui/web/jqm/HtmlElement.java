@@ -31,8 +31,14 @@ public class HtmlElement extends AElement {
 	}
 
 	@Override
-	public void render(HtmlRenderer html) {
+	protected void render(HtmlRenderer html, String id) {
+		if (id == null) {
+			html.html(getRenderer().toString());
+			return;
+		}
+		html.startSPAN(null).setId(id);
 		html.html(getRenderer().toString());
+		html.endSPAN();
 	}
 
 }

@@ -53,13 +53,13 @@ public class Content extends AHtmlContainerElement {
 		return addChild(new Listview(getHtmlPage()));
 	}
 
-	public Popup addPopup(String id) {
-		return addChild(new Popup(getHtmlPage(), id));
+	public Popup addPopup() {
+		return addChild(new Popup(getHtmlPage()));
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		Tag div = html.startDIV();
+	protected void renderHeader(HtmlRenderer html, String id) {
+		Tag div = html.startDIV().setId(id);
 		div.setDataRole("content");
 		if (maxWidth != null) div.setStyle("max-width: " + maxWidth + "px", "margin: 0 auto");
 	}

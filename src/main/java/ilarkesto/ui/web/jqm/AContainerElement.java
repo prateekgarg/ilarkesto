@@ -27,7 +27,7 @@ public abstract class AContainerElement extends AElement {
 
 	private List<AElement> children = new ArrayList<AElement>();
 
-	protected abstract void renderHeader(HtmlRenderer html);
+	protected abstract void renderHeader(HtmlRenderer html, String id);
 
 	protected void renderFooter(HtmlRenderer html) {
 		html.endDIV();
@@ -39,8 +39,8 @@ public abstract class AContainerElement extends AElement {
 	}
 
 	@Override
-	public final void render(HtmlRenderer html) {
-		renderHeader(html);
+	protected final void render(HtmlRenderer html, String id) {
+		renderHeader(html, id);
 		for (AElement child : children) {
 			child.render(html);
 		}

@@ -58,8 +58,8 @@ public class ListItem extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html) {
-		html.startLI().setDataRole(dataRole);
+	protected void renderHeader(HtmlRenderer html, String id) {
+		html.startLI().setId(id).setDataRole(dataRole);
 		if (linkHref != null) {
 			Tag a = html.startA(linkHref);
 			if (linkDataRel != null) a.setDataRel(linkDataRel);
