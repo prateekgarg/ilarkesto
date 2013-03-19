@@ -26,7 +26,7 @@ public class ImdbTest extends ATest {
 		assertEquals(killbill.getTitle(), "Kill Bill: Vol. 1");
 		assertEquals(killbill.getYear(), Integer.valueOf(2003));
 		assertEquals(killbill.getCoverId(), "MV5BMTU1NDg1Mzg4M15BMl5BanBnXkFtZTYwMDExOTc3");
-		assertEquals(killbill.getTrailerId(), "vi3102711321");
+		// assertEquals(killbill.getTrailerId(), "vi3102711321");
 	}
 
 	@Test
