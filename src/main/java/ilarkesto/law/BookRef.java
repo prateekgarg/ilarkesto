@@ -20,7 +20,8 @@ public final class BookRef extends AJsonWrapper {
 	}
 
 	public boolean isCode(String code) {
-		return getCode().equals(code);
+		if (code == null) return false;
+		return getCode().equalsIgnoreCase(code);
 	}
 
 	public String getTitle() {

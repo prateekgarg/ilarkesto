@@ -17,19 +17,19 @@ package ilarkesto.law;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.logging.Log;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
 
 public abstract class ALawProvider {
 
 	protected Log log = Log.get(getClass());
 
 	private BookIndex bookIndex;
-	private Map<BookRef, Book> books = new HashMap<BookRef, Book>();
 
 	protected abstract BookIndex loadBookIndex();
 
 	protected abstract Book loadBook(BookRef bookRef);
+
+	public abstract File getDataDir();
 
 	public final BookIndex getBookIndex() {
 		if (bookIndex == null) {
@@ -42,14 +42,10 @@ public abstract class ALawProvider {
 	}
 
 	public final Book getBook(BookRef bookRef) {
-		Book book = books.get(bookRef);
-		if (book == null) {
-			log.info("Loading book:", bookRef);
-			RuntimeTracker rt = new RuntimeTracker();
-			book = loadBook(bookRef);
-			log.info("Book with", book.getNorms().size(), "norms loaded loaded in", rt);
-			books.put(bookRef, book);
-		}
+		log.info("Loading book:", bookRef);
+		RuntimeTracker rt = new RuntimeTracker();
+		Book book = loadBook(bookRef);
+		log.info("Book with", book.getAllNorms().size(), "norms loaded loaded in", rt);
 		return book;
 	}
 

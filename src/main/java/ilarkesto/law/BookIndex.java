@@ -32,7 +32,7 @@ public class BookIndex extends AJsonWrapper {
 
 	public BookRef getBookByCode(String code) {
 		for (BookRef book : getBooks()) {
-			if (book.getCode().equals(code)) return book;
+			if (book.isCode(code)) return book;
 		}
 		return null;
 	}

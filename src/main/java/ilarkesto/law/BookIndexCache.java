@@ -8,7 +8,7 @@ public class BookIndexCache extends ARemoteJsonCache<BookIndex> {
 
 	private ALawProvider lawProvider;
 
-	public BookIndexCache(File file, ALawProvider lawProvider) {
+	BookIndexCache(File file, ALawProvider lawProvider) {
 		super(BookIndex.class, file);
 		this.lawProvider = lawProvider;
 	}

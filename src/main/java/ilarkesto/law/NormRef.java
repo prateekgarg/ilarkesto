@@ -32,12 +32,32 @@ public class NormRef extends AJsonWrapper {
 		return getMandatoryString("code");
 	}
 
+	public String getCodeNumber() {
+		String code = getCode();
+		int idx = code.lastIndexOf(' ');
+		if (idx < 0) return code;
+		return code.substring(idx + 1);
+	}
+
+	public boolean isCodeNumber(String codeNumber) {
+		if (codeNumber == null) return false;
+		return codeNumber.equals(getCodeNumber());
+	}
+
 	public String getBookCode() {
 		return getMandatoryString("bookCode");
 	}
 
+	public String getBookCodeAndCode() {
+		return getBookCode() + ", " + getCode();
+	}
+
 	@Override
 	public String toString() {
+		return getCodeAndBookCode();
+	}
+
+	private String getCodeAndBookCode() {
 		return getCode() + " " + getBookCode();
 	}
 

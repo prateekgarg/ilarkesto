@@ -42,11 +42,21 @@ public class Book extends AJsonWrapper {
 		json.addToArray("sections", section);
 	}
 
-	public List<Norm> getNorms() {
+	public Norm getNormByCodeNumber(String codeNumber) {
+		for (Norm norm : getAllNorms()) {
+			if (norm.getRef().isCodeNumber(codeNumber)) return norm;
+		}
+		return null;
+	}
+
+	/**
+	 * @return all norms from all sections and subsections
+	 */
+	public List<Norm> getAllNorms() {
 		List<Norm> ret = new ArrayList<Norm>();
 		ret.addAll(getWrapperArray("norms", Norm.class));
 		for (Section section : getSections()) {
-			ret.addAll(section.getNorms());
+			ret.addAll(section.getAllNorms());
 		}
 		return ret;
 	}

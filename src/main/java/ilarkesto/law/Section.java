@@ -62,11 +62,11 @@ public class Section extends AJsonWrapper {
 		return getMandatoryString("title");
 	}
 
-	public List<Norm> getNorms() {
+	public List<Norm> getAllNorms() {
 		List<Norm> ret = new ArrayList<Norm>();
 		ret.addAll(getWrapperArray("norms", Norm.class));
 		for (Section section : getSections()) {
-			ret.addAll(section.getNorms());
+			ret.addAll(section.getAllNorms());
 		}
 		return ret;
 	}

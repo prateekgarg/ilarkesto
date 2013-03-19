@@ -9,7 +9,7 @@ public class BookCache extends ARemoteJsonCache<Book> {
 	private ALawProvider lawProvider;
 	private BookRef bookRef;
 
-	public BookCache(BookRef bookRef, File file, ALawProvider lawProvider) {
+	BookCache(BookRef bookRef, File file, ALawProvider lawProvider) {
 		super(Book.class, file);
 		this.bookRef = bookRef;
 		this.lawProvider = lawProvider;

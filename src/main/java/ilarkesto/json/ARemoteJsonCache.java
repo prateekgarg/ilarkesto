@@ -5,7 +5,7 @@ import ilarkesto.core.logging.Log;
 
 import java.io.File;
 
-public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrapper {
+public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 
 	protected Log log = Log.get(getClass());
 
@@ -14,14 +14,21 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 	private Class<P> payloadType;
 	private File file;
 
+	private JsonObject wrapper;
+
 	public ARemoteJsonCache(Class<P> payloadType, File file) {
-		super(JsonObject.loadFile(file, true));
 		this.payloadType = payloadType;
 		this.file = file;
 	}
 
+	private synchronized JsonObject getJson() {
+		if (wrapper == null) wrapper = JsonObject.loadFile(file, true);
+		return wrapper;
+	}
+
 	public P getPayload() {
-		P payload = getWrapper("payload", payloadType);
+		JsonObject json = getJson();
+		P payload = AJsonWrapper.createWrapper(json.getObject("payload"), payloadType);
 		if (payload == null) {
 			payload = createInitialPayload();
 			if (payload != null) json.put("payload", payload.json);
@@ -68,6 +75,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 			throw new RemoteUpdateFailedException("Loading payload failed.");
 		}
 		log.info("Payload updated in", rt.getRuntimeFormated());
+		JsonObject json = getJson();
 		json.put("payload", payload);
 		json.put("lastUpdated", System.currentTimeMillis());
 		json.remove("invalidated");
@@ -76,17 +84,21 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 
 	public synchronized void save() {
 		log.info("Saving");
-		json.write(file, false);
+		if (wrapper != null) wrapper.write(file, false);
 	}
 
 	public synchronized void delete() {
 		log.info("Deleting");
-		json.remove("payload");
+		wrapper = null;
 		file.delete();
 	}
 
+	public synchronized void unload() {
+		wrapper = null;
+	}
+
 	public synchronized void invalidatePayload() {
-		json.put("invalidated", true);
+		getJson().put("invalidated", true);
 		save();
 	}
 
@@ -95,11 +107,11 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> extends AJsonWrap
 	}
 
 	public boolean isInvalidated() {
-		return json.isTrue("invalidated");
+		return getJson().isTrue("invalidated");
 	}
 
 	public Long getLastUpdated() {
-		return json.getLong("lastUpdated");
+		return getJson().getLong("lastUpdated");
 	}
 
 	public long getTimeSinceLastUpdated() {

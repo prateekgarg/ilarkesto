@@ -19,7 +19,7 @@ public class GiiLawProvider extends ALawProvider {
 	public static void main(String[] args) {
 		BookRef ref = new BookRef("StVo", "Straßenverkehrs-Ordnung");
 		ref.getJson().put("giiReference", "stvo");
-		List<Norm> norms = new GiiLawProvider(new File("runtimedata/gii")).getBook(ref).getNorms();
+		List<Norm> norms = new GiiLawProvider(new File("runtimedata/gii")).getBook(ref).getAllNorms();
 		for (Norm norm : norms) {
 			System.out.println("\n-------------------------------------");
 			System.out.println(norm);
@@ -58,6 +58,11 @@ public class GiiLawProvider extends ALawProvider {
 		IO.move(tempDir, dir);
 
 		return book;
+	}
+
+	@Override
+	public File getDataDir() {
+		return dataDir;
 	}
 
 	private String loadXmlFileFromDir(File dir) {
