@@ -98,8 +98,8 @@ public abstract class AWidget extends Composite implements Updatable {
 	protected boolean isUpdateRequired() {
 		String newSignature = getUpdateSignature();
 		boolean updateRequired = false;
-		if (newSignature == null) updateRequired = true;
-		if (!Utl.equals(newSignature, updateSignature)) updateRequired = true;
+		if (newSignature == null || updateSignature == null || !Utl.equals(newSignature, updateSignature))
+			updateRequired = true;
 		updateSignature = newSignature;
 		return updateRequired;
 	}
