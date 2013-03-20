@@ -1,7 +1,5 @@
 package ilarkesto.android;
 
-import ilarkesto.core.logging.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +25,6 @@ public class AsyncDataLoader<C> {
 	}
 
 	private void onDataLoaded(C data) {
-		Log.TEST("onDataLoaded", data);
 		synchronized (listeners) {
 			task = null;
 			for (OnDataLoadedListener<C> listener : listeners) {
@@ -46,9 +43,7 @@ public class AsyncDataLoader<C> {
 
 		@Override
 		protected C doInBackground(Void... arg0) {
-			Log.TEST("doInBackground");
 			C data = dataProvider.getData();
-			Log.TEST("doInBackground finished:", data);
 			return data;
 		}
 
