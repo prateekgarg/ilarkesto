@@ -134,7 +134,7 @@ public class Facebook {
 	public JsonObject loadJson(String oauthAccessToken, String id) {
 		JsonObject json = OAuth
 				.loadUrlAsJson(getOauthService(), new LoginData(oauthAccessToken, null), getGraphUrl(id));
-		log.info("Loaded", id, "->", json.toFormatedString());
+		log.debug("Loaded", id, "->", json.toFormatedString());
 		return json;
 	}
 
