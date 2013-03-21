@@ -109,8 +109,8 @@ public final class ActionPerformer {
 
 	private void autowireAction(AAction action, AUi ui, BeanProvider userParameters) {
 		if (action == null) return;
-		Context.get().autowire(action);
 		if (userParameters != null) userParameters.autowire(action);
+		Context.get().autowire(action);
 		action.setUi(ui);
 		autowireAction(action.getParentAction(), ui, userParameters); // autowire parents recursively
 	}
