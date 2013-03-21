@@ -95,7 +95,6 @@ public final class ActionPerformer {
 	private void startAction(AAction action, AUi ui, BeanProvider userParameters) {
 		LOG.debug("Starting action:", action);
 		autowireAction(action, ui, userParameters);
-		if (LOG.isDebugEnabled()) LOG.debug("Autowiring action", action, "->", userParameters.getAllBeans());
 		action.setUi(ui);
 		taskManager.start(action);
 	}
@@ -110,8 +109,8 @@ public final class ActionPerformer {
 
 	private void autowireAction(AAction action, AUi ui, BeanProvider userParameters) {
 		if (action == null) return;
-		if (userParameters != null) userParameters.autowire(action);
 		Context.get().autowire(action);
+		if (userParameters != null) userParameters.autowire(action);
 		action.setUi(ui);
 		autowireAction(action.getParentAction(), ui, userParameters); // autowire parents recursively
 	}
