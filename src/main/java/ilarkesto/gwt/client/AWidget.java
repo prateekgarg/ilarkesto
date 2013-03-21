@@ -30,6 +30,7 @@ public abstract class AWidget extends Composite implements Updatable {
 	private Wrapper wrapper;
 
 	private String updateSignature;
+	private String resetSignature;
 
 	protected abstract Widget onInitialization();
 
@@ -40,8 +41,16 @@ public abstract class AWidget extends Composite implements Updatable {
 		initWidget(wrapper);
 	}
 
+	protected String getResetSignature() {
+		return null;
+	}
+
 	protected boolean isResetRequired() {
-		return false;
+		String newSignature = getResetSignature();
+		boolean resetRequired = false;
+		if (!Utl.equals(newSignature, resetSignature)) resetRequired = true;
+		resetSignature = newSignature;
+		return resetRequired;
 	}
 
 	protected void onUpdate() {
@@ -67,6 +76,8 @@ public abstract class AWidget extends Composite implements Updatable {
 		Widget content = onInitialization();
 		wrapper.setContent(content);
 		wrapper.getElement().setId(getId());
+
+		resetSignature = getResetSignature();
 
 		initialized = true;
 		initializing = false;

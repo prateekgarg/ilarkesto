@@ -263,6 +263,11 @@ public abstract class AViewEditWidget extends AWidget {
 		AViewEditWidget.globalModeSwitchHandler = globalModeSwitchHandler;
 	}
 
+	@Override
+	public String toString() {
+		return super.toString() + ": " + (isEditMode() ? "editMode" : "viewMode");
+	}
+
 	private class ViewerClickListener implements ClickHandler {
 
 		@Override
@@ -281,8 +286,8 @@ public abstract class AViewEditWidget extends AWidget {
 					log.debug("Native event target:", key);
 
 					// devMode
-					if (key.startsWith("<div")) return false;
 					if (key.startsWith("<a")) return true;
+					if (key.startsWith("<")) return false;
 
 					if (key.startsWith("[object")) return false; // all browsers
 					return true;
