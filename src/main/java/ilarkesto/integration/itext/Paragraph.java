@@ -113,25 +113,27 @@ public class Paragraph extends AParagraph implements ItextElement {
 
 	public FontSelector createFontSelector(String preferredFont, FontStyle fontStyle) {
 		FontSelector selector = new FontSelector();
-		selector.addFont(createFont(preferredFont, fontStyle));
+		selector.addFont(createFont(preferredFont, BaseFont.IDENTITY_H, fontStyle));
 
 		// fallback from ilarkesto.jar
-		selector.addFont(createFont("fonts/HDZB_36.ttf", fontStyle)); // embeddable chinese
+		selector.addFont(createFont("fonts/HDZB_36.ttf", BaseFont.IDENTITY_H, fontStyle)); // embeddable
+																							// chinese
 
 		// fallback from iTextAsian.jar
-		selector.addFont(createFont("STSong-Light", fontStyle)); // simplified chinese
-		selector.addFont(createFont("MHei-Medium", fontStyle)); // traditional chinese
-		selector.addFont(createFont("HeiseiMin-W3", fontStyle)); // japanese
-		selector.addFont(createFont("KozMinPro-Regular", fontStyle)); // japanese
-		selector.addFont(createFont("HYGoThic-Medium", fontStyle)); // korean
+		selector.addFont(createFont("STSong-Light", "UniGB-UCS2-H", fontStyle)); // simplified chinese
+		// selector.addFont(createFont("STSong-Light", BaseFont.IDENTITY_H, fontStyle)); // simplified chinese
+		selector.addFont(createFont("MHei-Medium", BaseFont.IDENTITY_H, fontStyle)); // traditional chinese
+		selector.addFont(createFont("HeiseiMin-W3", BaseFont.IDENTITY_H, fontStyle)); // japanese
+		selector.addFont(createFont("KozMinPro-Regular", BaseFont.IDENTITY_H, fontStyle)); // japanese
+		selector.addFont(createFont("HYGoThic-Medium", BaseFont.IDENTITY_H, fontStyle)); // korean
 
 		return selector;
 	}
 
-	private Font createFont(String name, FontStyle fontStyle) {
+	private Font createFont(String name, String encoding, FontStyle fontStyle) {
 		Font font;
 		try {
-			font = new Font(BaseFont.createFont(name, BaseFont.IDENTITY_H, BaseFont.EMBEDDED));
+			font = new Font(BaseFont.createFont(name, encoding, BaseFont.EMBEDDED));
 		} catch (Exception ex) {
 			throw new RuntimeException("Loading font failed: " + name, ex);
 		}
