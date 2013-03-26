@@ -15,6 +15,7 @@
 package ilarkesto.di;
 
 import ilarkesto.base.Reflect;
+import ilarkesto.core.logging.Log;
 import ilarkesto.core.scope.In;
 
 import java.beans.BeanInfo;
@@ -79,6 +80,9 @@ public class Autowire {
 	public static <T> T autowire(T bean, final BeanProvider beanProvider, final ObjectStringMapper objectStringMapper) {
 		// Logger.DEBUG("***** autowiring", "<" + Utl.toStringWithType(bean) + ">", "with", "<"
 		// + Utl.toStringWithType(beanProvider) + ">");
+		boolean xxx = bean.getClass().getSimpleName().endsWith("Action");
+		if (xxx) Log.TEST("Autowiring:", bean, "->", beanProvider);
+
 		final Set<String> availableBeanNames = beanProvider.beanNames();
 		Class beanClass = bean.getClass();
 		BeanInfo beanInfo;
@@ -88,6 +92,7 @@ public class Autowire {
 			throw new RuntimeException(ex);
 		}
 		PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+		if (xxx) Log.TEST("    propertyDescriptors:", propertyDescriptors);
 		if (propertyDescriptors != null) {
 			for (int i = 0; i < propertyDescriptors.length; i++) {
 				PropertyDescriptor propertyDescriptor = propertyDescriptors[i];
@@ -95,6 +100,9 @@ public class Autowire {
 					String name = propertyDescriptor.getName();
 					// if ("parentContext".equals(name)) continue;
 					Method writeMethod = propertyDescriptor.getWriteMethod();
+					if (xxx)
+						Log.TEST("         name:", name, " writeMethod:", writeMethod,
+							" availableBeanNames.contains():", availableBeanNames.contains(name));
 					if (writeMethod != null) {
 						if (writeMethod.getAnnotation(AutowireHostile.class) != null) continue;
 						if (availableBeanNames.contains(name)) {
