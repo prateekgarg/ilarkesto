@@ -35,6 +35,8 @@ import java.util.Set;
  */
 public class Autowire {
 
+	private static Log log = Log.get(Autowire.class);
+
 	/**
 	 * Autowire the class <code>clazz</code> with beans provided by <code>beanProvider</code>. Use the given
 	 * <code>objectStringMapper</code> to convert from/to strings if required. For each bean provided by
@@ -75,25 +77,24 @@ public class Autowire {
 	 * @return the given <code>bean</code>
 	 */
 	public static <T> T autowire(T bean, final BeanProvider beanProvider, final ObjectStringMapper objectStringMapper) {
-		// Logger.DEBUG("***** autowiring", "<" + Utl.toStringWithType(bean) + ">", "with", "<"
-		// + Utl.toStringWithType(beanProvider) + ">");
 		boolean xxx = bean.getClass().getSimpleName().endsWith("Action");
-		if (xxx) Log.TEST("Autowiring:", bean, "->", beanProvider);
+		if (xxx) log.info("Autowiring:", bean, "->", beanProvider);
 
 		final Set<String> availableBeanNames = beanProvider.beanNames();
 		Class beanClass = bean.getClass();
 
-		List<String> properties = Reflect.getPropertyNamesByAvailableSetters(beanClass);
-		if (xxx) Log.TEST("    properties:", properties);
-		for (String propertyName : properties) {
-			Method setter = Reflect.getSetterMethod(beanClass, propertyName);
+		List<Method> setters = Reflect.getSetters(beanClass);
+		if (xxx) log.info("    properties:", setters);
+		for (Method setter : setters) {
+			String propertyName = Reflect.getPropertyNameFromSetter(setter);
 			if (xxx)
-				Log.TEST("         propertyName:", propertyName, " writeMethod:", setter,
-					" availableBeanNames.contains():", availableBeanNames.contains(propertyName));
+				log.info("         propertyName:", propertyName, " setter:", setter, " availableBeanNames.contains():",
+					availableBeanNames.contains(propertyName));
 			if (setter != null) {
 				if (setter.getAnnotation(AutowireHostile.class) != null) continue;
 				if (availableBeanNames.contains(propertyName)) {
-					invokeSetter(bean, setter, beanProvider.getBean(propertyName), objectStringMapper);
+					Object value = beanProvider.getBean(propertyName);
+					invokeSetter(bean, setter, value, objectStringMapper);
 				} else if ("beanProvider".equals(propertyName)) {
 					invokeSetter(bean, setter, beanProvider, objectStringMapper);
 				}

@@ -286,18 +286,32 @@ public abstract class Reflect {
 		return m;
 	}
 
-	public static List<String> getPropertyNamesByAvailableSetters(Class<?> clazz) {
-		List<String> properties = new LinkedList<String>();
+	public static List<Method> getSetters(Class<?> clazz) {
+		List<Method> setters = new LinkedList<Method>();
 		for (Method method : clazz.getDeclaredMethods()) {
 			String name = method.getName();
 			if (name.length() < 4 || !name.startsWith("set")) continue;
 			if (method.getParameterTypes().length != 1) continue;
-			String property = Character.toLowerCase(name.charAt(3)) + name.substring(3);
-			properties.add(property);
+			setters.add(method);
 		}
 		Class<?> superclass = clazz.getSuperclass();
-		if (superclass != null && superclass != Object.class)
-			properties.addAll(getPropertyNamesByAvailableSetters(superclass));
+		if (superclass != null && superclass != Object.class) setters.addAll(getSetters(superclass));
+		return setters;
+	}
+
+	public static String getPropertyNameFromSetter(Method setter) {
+		if (setter == null) return null;
+		String name = setter.getName();
+		if (name.length() < 4 || !name.startsWith("set") || setter.getParameterTypes().length != 1)
+			throw new IllegalArgumentException("Method is not a setter: " + setter.getName());
+		return Character.toLowerCase(name.charAt(3)) + name.substring(4);
+	}
+
+	public static List<String> getPropertyNamesByAvailableSetters(Class<?> clazz) {
+		List<String> properties = new LinkedList<String>();
+		for (Method setter : getSetters(clazz)) {
+			properties.add(getPropertyNameFromSetter(setter));
+		}
 		return properties;
 	}
 
