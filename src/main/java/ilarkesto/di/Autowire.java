@@ -18,10 +18,6 @@ import ilarkesto.base.Reflect;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.scope.In;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -29,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -85,32 +82,20 @@ public class Autowire {
 
 		final Set<String> availableBeanNames = beanProvider.beanNames();
 		Class beanClass = bean.getClass();
-		BeanInfo beanInfo;
-		try {
-			beanInfo = Introspector.getBeanInfo(beanClass);
-		} catch (IntrospectionException ex) {
-			throw new RuntimeException(ex);
-		}
-		PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-		if (xxx) Log.TEST("    propertyDescriptors:", propertyDescriptors);
-		if (propertyDescriptors != null) {
-			for (int i = 0; i < propertyDescriptors.length; i++) {
-				PropertyDescriptor propertyDescriptor = propertyDescriptors[i];
-				if (propertyDescriptor != null) {
-					String name = propertyDescriptor.getName();
-					// if ("parentContext".equals(name)) continue;
-					Method writeMethod = propertyDescriptor.getWriteMethod();
-					if (xxx)
-						Log.TEST("         name:", name, " writeMethod:", writeMethod,
-							" availableBeanNames.contains():", availableBeanNames.contains(name));
-					if (writeMethod != null) {
-						if (writeMethod.getAnnotation(AutowireHostile.class) != null) continue;
-						if (availableBeanNames.contains(name)) {
-							invokeSetter(bean, writeMethod, beanProvider.getBean(name), objectStringMapper);
-						} else if ("beanProvider".equals(name)) {
-							invokeSetter(bean, writeMethod, beanProvider, objectStringMapper);
-						}
-					}
+
+		List<String> properties = Reflect.getPropertyNamesByAvailableSetters(beanClass);
+		if (xxx) Log.TEST("    properties:", properties);
+		for (String propertyName : properties) {
+			Method setter = Reflect.getSetterMethod(beanClass, propertyName);
+			if (xxx)
+				Log.TEST("         propertyName:", propertyName, " writeMethod:", setter,
+					" availableBeanNames.contains():", availableBeanNames.contains(propertyName));
+			if (setter != null) {
+				if (setter.getAnnotation(AutowireHostile.class) != null) continue;
+				if (availableBeanNames.contains(propertyName)) {
+					invokeSetter(bean, setter, beanProvider.getBean(propertyName), objectStringMapper);
+				} else if ("beanProvider".equals(propertyName)) {
+					invokeSetter(bean, setter, beanProvider, objectStringMapper);
 				}
 			}
 		}

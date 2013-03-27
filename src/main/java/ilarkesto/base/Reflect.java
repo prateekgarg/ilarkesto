@@ -23,6 +23,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -282,6 +284,21 @@ public abstract class Reflect {
 			}
 		}
 		return m;
+	}
+
+	public static List<String> getPropertyNamesByAvailableSetters(Class<?> clazz) {
+		List<String> properties = new LinkedList<String>();
+		for (Method method : clazz.getDeclaredMethods()) {
+			String name = method.getName();
+			if (name.length() < 4 || !name.startsWith("set")) continue;
+			if (method.getParameterTypes().length != 1) continue;
+			String property = Character.toLowerCase(name.charAt(3)) + name.substring(3);
+			properties.add(property);
+		}
+		Class<?> superclass = clazz.getSuperclass();
+		if (superclass != null && superclass != Object.class)
+			properties.addAll(getPropertyNamesByAvailableSetters(superclass));
+		return properties;
 	}
 
 	public static Method getSetterMethod(Class<?> clazz, String property) {
