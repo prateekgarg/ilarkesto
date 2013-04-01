@@ -149,9 +149,9 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 			int additionalLoadTrials = getAdditionalItemLoadTrials();
 			for (int i = 0; i < additionalLoadTrials; i++) {
-				sleep(i);
+				sleep(i * 1000);
 				items = doLoadItems();
-				if (!items.isEmpty()) break;
+				if (items != null && !items.isEmpty()) break;
 			}
 
 			return items;
