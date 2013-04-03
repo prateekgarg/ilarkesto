@@ -549,6 +549,10 @@ public class HtmlRenderer {
 		startTag(LINK, true).set("rel", rel).set("type", type).set("title", title).setHref(href).end();
 	}
 
+	public void LINK(String rel, String href) {
+		LINK(rel, null, null, href);
+	}
+
 	public void LINK(String rel, String type, String href) {
 		LINK(rel, type, null, href);
 	}
