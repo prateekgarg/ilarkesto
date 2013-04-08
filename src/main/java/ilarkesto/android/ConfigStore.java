@@ -15,7 +15,11 @@ public class ConfigStore {
 	public ConfigStore(Context context, String id) {
 		super();
 		this.context = context;
-		this.id = id;
+		this.id = id == null ? getClass().getSimpleName() : id;
+	}
+
+	public ConfigStore(Context context) {
+		this(context, null);
 	}
 
 	public long getLong(String key, long defValue) {

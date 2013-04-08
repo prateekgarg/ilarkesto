@@ -70,6 +70,10 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		throw new EnsureIntegrityCompletedException();
 	}
 
+	public boolean isSkipLoadingEntityOnFailure() {
+		return false;
+	}
+
 	// --- basic ---
 
 	public abstract String getEntityName();

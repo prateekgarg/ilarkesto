@@ -49,7 +49,7 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 
 	public void addDao(ADao dao) {
 		daos.put(dao.getEntityClass(), dao);
-		entityStore.load(dao.getEntityClass(), dao.getEntityName());
+		entityStore.load(dao.getEntityClass(), dao.getEntityName(), dao.isSkipLoadingEntityOnFailure());
 	}
 
 	public ADao getDaoByName(String entityName) {
