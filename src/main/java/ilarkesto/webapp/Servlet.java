@@ -200,6 +200,7 @@ public abstract class Servlet {
 
 	public static final String getUriWithoutContext(HttpServletRequest httpRequest) {
 		String uri = httpRequest.getRequestURI();
+		if (uri == null) return null;
 		String context = httpRequest.getContextPath();
 		if (uri.length() <= context.length() + 1) return "";
 		return uri.substring(context.length() + 1);
