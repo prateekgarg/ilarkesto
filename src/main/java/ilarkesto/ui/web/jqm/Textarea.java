@@ -25,7 +25,7 @@ public class Textarea extends AFieldElement {
 	}
 
 	@Override
-	protected void renderElement(HtmlRenderer html) {
+	protected void renderField(HtmlRenderer html, String id) {
 		html.TEXTAREA(name, id, value);
 	}
 

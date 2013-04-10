@@ -30,7 +30,7 @@ public class FlipToggleSwitch extends AFieldElement {
 	}
 
 	@Override
-	protected void renderElement(HtmlRenderer html) {
+	protected void renderField(HtmlRenderer html, String id) {
 		Tag select = html.startSELECT(name);
 		select.setId(id);
 		select.setDataRole("slider");

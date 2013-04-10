@@ -18,27 +18,28 @@ import ilarkesto.ui.web.HtmlRenderer;
 
 public abstract class AFieldElement extends AElement {
 
-	protected String id;
 	protected String name;
 	protected String label;
 
-	public AFieldElement(JqmHtmlPage htmlPage, String id, String label) {
+	public AFieldElement(JqmHtmlPage htmlPage, String name, String label) {
 		super(htmlPage);
-		this.id = id;
+		this.name = name;
 		this.label = label;
-
-		this.name = id;
 	}
 
-	protected abstract void renderElement(HtmlRenderer html);
+	protected abstract void renderField(HtmlRenderer html, String id);
 
 	@Override
 	protected void render(HtmlRenderer html, String id) {
+		if (id == null) id = getId();
+
+		String fieldId = id + "_field";
+
 		html.startDIV().setId(id).setDataRole("fieldcontain");
 
-		html.LABEL(id, label);
+		html.LABEL(fieldId, label);
 
-		renderElement(html);
+		renderField(html, fieldId);
 
 		html.endDIV();
 	}
@@ -46,6 +47,10 @@ public abstract class AFieldElement extends AElement {
 	public AFieldElement setName(String name) {
 		this.name = name;
 		return this;
+	}
+
+	public String getLabel() {
+		return label;
 	}
 
 }

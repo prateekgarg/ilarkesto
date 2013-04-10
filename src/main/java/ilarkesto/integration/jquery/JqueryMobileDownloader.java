@@ -25,11 +25,11 @@ public class JqueryMobileDownloader {
 	private static Log log = Log.get(JqueryMobileDownloader.class);
 
 	public static String getStableVersion() {
-		return "1.3.0";
+		return "1.3.1";
 	}
 
 	public static String getPreviewVersion() {
-		return "1.3.0";
+		return "1.3.1";
 	}
 
 	public static String getCompatibleJqueryVersion(String jqueryMobileVersion) {

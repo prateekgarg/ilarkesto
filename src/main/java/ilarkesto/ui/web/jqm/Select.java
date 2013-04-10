@@ -26,15 +26,17 @@ public class Select extends AFieldElement {
 	private String value;
 	private Map<String, String> options = new LinkedHashMap<String, String>();
 	private boolean optional = true;
+	private String dataRole;
 
 	public Select(JqmHtmlPage htmlPage, String id, String label) {
 		super(htmlPage, id, label);
 	}
 
 	@Override
-	protected void renderElement(HtmlRenderer html) {
+	protected void renderField(HtmlRenderer html, String id) {
 		Tag select = html.startSELECT(name);
 		select.setId(id);
+		select.setDataRole(dataRole);
 
 		if (optional) {
 			html.OPTION("", "", Str.isBlank(value));
@@ -69,8 +71,19 @@ public class Select extends AFieldElement {
 	}
 
 	public Select addBooleanOptions(String trueLabel, String falseLabel) {
+		optional = false;
+		addOption("false", falseLabel);
 		addOption("true", trueLabel);
-		return addOption("false", falseLabel);
+		return this;
+	}
+
+	public Select setDataRole(String dataRole) {
+		this.dataRole = dataRole;
+		return this;
+	}
+
+	public Select setDataRoleToSlider() {
+		return setDataRole("slider");
 	}
 
 }

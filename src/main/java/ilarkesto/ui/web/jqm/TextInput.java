@@ -30,7 +30,7 @@ public class TextInput extends AFieldElement {
 	}
 
 	@Override
-	protected void renderElement(HtmlRenderer html) {
+	protected void renderField(HtmlRenderer html, String id) {
 		Tag input = html.startINPUT(type.getName(), name);
 		input.setId(id);
 		input.setValue(value);
