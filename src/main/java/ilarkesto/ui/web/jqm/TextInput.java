@@ -35,7 +35,7 @@ public class TextInput extends AFieldElement {
 		input.setId(id);
 		input.setValue(value);
 		if (autocomplete != null) input.set("autocomplete", autocomplete.booleanValue() ? "on" : "off");
-		if (autofocus != null) input.set("autocomplete", autofocus.booleanValue() ? "on" : "off");
+		if (autofocus != null) input.set("autofocus", autofocus.booleanValue() ? "on" : "off");
 		if (step != null) input.set("step", step);
 	}
 
