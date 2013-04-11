@@ -13,5 +13,5 @@ fi
 DST=$1
 CLEANOLDERTHENMINUTES=$2
 
-find "${DST}" -name "*_20*.tbz" -mmin +$CLEANOLDERTHENMINUTES -exec rm {} \;
-find "${DST}" -name "*-data_20*.zip" -mmin +$CLEANOLDERTHENMINUTES -exec rm {} \;
+find "${DST}" -name "*_20*.tbz" -mmin +$CLEANOLDERTHENMINUTES -exec rm -vf {} \;
+find "${DST}" -name "*-data_20*.zip" -mmin +$CLEANOLDERTHENMINUTES -exec rm -vf {} \;
