@@ -15,6 +15,7 @@
 package ilarkesto.testng;
 
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
 
 import java.io.File;
 import java.util.Collection;
@@ -22,6 +23,10 @@ import java.util.Collection;
 import org.testng.Assert;
 
 public class ATest extends Assert {
+
+	public static void main(String[] args) {
+		System.out.println(new Date(2100, 12, 31).toMillis());
+	}
 
 	public static final String OUTPUT_DIR = "test-output";
 	public static final String INPUT_DIR = "test-input";
