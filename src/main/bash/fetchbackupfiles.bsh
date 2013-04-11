@@ -15,7 +15,7 @@ CLEANOLDERTHENMINUTES=$3
 SRC=$1
 DST=$2
 
-rsync -rltDzvP -e ssh $SRC $DST
+rsync -rltDzvP -e ssh $SRC/ $DST/
 if [ $? != 0 ]; then exit 1; fi
 
 find "${DST}" -name "bak_${BACKUP_NAME}_*.tbz" -mmin +$CLEANOLDERTHENMINUTES -exec rm {} \;
