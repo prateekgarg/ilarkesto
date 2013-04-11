@@ -29,4 +29,4 @@ if [ $? != 0 ]; then exit 1; fi
 #ln -s ${BACKUP_FILENAME} bak_${BACKUP_NAME}_latest.zip
 
 echo "Deleting backups older then $CLEANOLDERTHENMINUTES minutes"
-find "${DESTINATION_DIR}" -name "bak_${BACKUP_NAME}_*.zip" -mmin +$CLEANOLDERTHENMINUTES -exec rm {} \;
+find "${DESTINATION_DIR}" -name "bak_${BACKUP_NAME}_*.zip" -mmin +$CLEANOLDERTHENMINUTES -exec rm -vf {} \;
