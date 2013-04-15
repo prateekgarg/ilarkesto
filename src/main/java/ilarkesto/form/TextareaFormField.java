@@ -87,4 +87,9 @@ public class TextareaFormField extends TextFormField {
 		return false;
 	}
 
+	@Override
+	public boolean isWide() {
+		return true;
+	}
+
 }

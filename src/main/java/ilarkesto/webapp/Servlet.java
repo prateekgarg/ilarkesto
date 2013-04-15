@@ -202,6 +202,7 @@ public abstract class Servlet {
 		String uri = httpRequest.getRequestURI();
 		if (uri == null) return null;
 		String context = httpRequest.getContextPath();
+		if (context == null) return null;
 		if (uri.length() <= context.length() + 1) return "";
 		return uri.substring(context.length() + 1);
 	}
