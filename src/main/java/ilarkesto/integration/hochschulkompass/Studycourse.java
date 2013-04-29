@@ -12,31 +12,30 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.hochschulkompass.pagebuilder;
+package ilarkesto.integration.hochschulkompass;
 
-import ilarkesto.integration.hochschulkompass.Subjectgroup;
-import ilarkesto.ui.web.jqm.Content;
-import ilarkesto.ui.web.jqm.Listview;
+import ilarkesto.json.AJsonWrapper;
 
-public class SubjectgroupPageBuilder extends AJqmPageBuilder {
+public class Studycourse extends AJsonWrapper {
 
-	private Subjectgroup subjectgroup;
-
-	public SubjectgroupPageBuilder(Context context, String subjectgroupKey) {
-		super(context);
-		this.subjectgroup = context.getValues().getSubjectGroupByKey(subjectgroupKey);
+	public String getHochschulkompassId() {
+		return json.getString("hochschulkompassId");
 	}
 
-	@Override
-	protected void fillContent(Content content) {
-		content.addHtmlRenderer().H1(subjectgroup.getValue());
-		Listview list = content.addListview();
-
+	public String getName() {
+		return json.getString("name");
 	}
 
-	@Override
-	protected String getTitle() {
-		return subjectgroup.getValue();
+	public String getDegree() {
+		return json.getString("degree");
+	}
+
+	public String getCollegeName() {
+		return json.getString("collegeName");
+	}
+
+	public String getLocation() {
+		return json.getString("location");
 	}
 
 }

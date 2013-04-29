@@ -287,7 +287,7 @@ public abstract class Env {
 			BufferedReader in = null;
 			Process proc = null;
 			try {
-				proc = Runtime.getRuntime().exec(new String[] { "du", "-sd0", file.getAbsolutePath() });
+				proc = Runtime.getRuntime().exec(new String[] { "du", "-sbd0", file.getAbsolutePath() });
 				in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 				String s = in.readLine().trim();
 				int idx = s.indexOf('\t');

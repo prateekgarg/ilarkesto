@@ -33,9 +33,7 @@ public class ValuesCache extends ARemoteJsonCache<Values> {
 
 	@Override
 	protected Values onUpdate(Values payload, boolean forced) {
-		// String url =
-		// "http://www.hochschulkompass.de/en/degree-programmes/suche/study-in-germany-advanced-search.html";
-		String url = "http://www.hochschulkompass.de/studium/suche/profisuche.html";
+		String url = HochschulkompassSearchUrl.getBaseUrl();
 		String data = IO.downloadUrlToString(url);
 		if (payload == null) payload = new Values(new JsonObject());
 		try {

@@ -26,6 +26,12 @@ public class Values extends AJsonWrapper {
 		super(json);
 	}
 
+	public List<Subject> getSubjectsBySubjectgroup(Subjectgroup subjectgroup) {
+		JsonObject subjects = json.getObject("subjects");
+		if (subjects == null) return java.util.Collections.emptyList();
+		return null; // TODO
+	}
+
 	public List<Subjectgroup> getSubjectgroups() {
 		return getWrapperArray("subjectgroups", Subjectgroup.class);
 	}
