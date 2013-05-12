@@ -45,8 +45,12 @@ public class Onlinestreet {
 		String html = IO.downloadUrlToString(url, "windows-1252");
 
 		// Einzeltreffer
-		String city = Str.cutFromTo(html, "ist als PLZ dem Ort ", " (");
+
+		String city = null;
+		if (city == null) city = Str.cutFromTo(html, " ist dem Ort ", " (");
+		if (city == null) city = Str.cutFromTo(html, "ist als PLZ dem Ort ", " (");
 		if (city == null) city = Str.cutFromTo(html, "ist als Postleitzahl dem Ort ", " (");
+
 		if (city != null) return Utl.toList(city);
 
 		// Mehrfachtreffer
