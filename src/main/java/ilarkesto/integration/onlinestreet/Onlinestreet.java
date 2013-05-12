@@ -40,9 +40,7 @@ public class Onlinestreet {
 	}
 
 	public static List<String> getCitiesByPlz(Integer plz) {
-		if (plz == null) return null;
-		String url = PLZ_URL_TEMPLATE.replace("{*}", plz.toString());
-		String html = IO.downloadUrlToString(url, "windows-1252");
+		String html = getHtmlByPlz(plz);
 
 		// Einzeltreffer
 
@@ -67,6 +65,16 @@ public class Onlinestreet {
 			idx = html.indexOf("<tr><td>", idx);
 		}
 		return cities;
+	}
+
+	public static String getHtmlByPlz(Integer plz) {
+		if (plz == null) return null;
+		String url = getUrlByPlz(plz);
+		return IO.downloadUrlToString(url, "windows-1252");
+	}
+
+	public static String getUrlByPlz(Integer plz) {
+		return PLZ_URL_TEMPLATE.replace("{*}", plz.toString());
 	}
 
 }
