@@ -9,9 +9,9 @@ public class Status extends AIdentity {
 	}
 
 	/**
-	 * The status message content
+	 * The status content
 	 */
-	public final String getMessage() {
-		return json.getString("message");
+	public final String getStory() {
+		return json.getString("story");
 	}
 }
