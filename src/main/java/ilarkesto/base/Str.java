@@ -150,16 +150,19 @@ public class Str extends ilarkesto.core.base.Str {
 		if (length <= 10)
 			return generateRandomWord("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!$%&=-_/()[]{}",
 				length);
+
 		StringBuilder sb = new StringBuilder();
 		length -= 3;
+
 		while (length > 6) {
 			String word = generateRandomWord(2, 5, true) + " ";
 			length -= word.length();
 			sb.append(word);
 		}
 		sb.append(generateRandomWord(length, length, true));
-		sb.append(' ');
-		sb.append(generateRandomWord("1234567890", "!$%&=-_/()[]{}", 2));
+
+		sb.append(' ').append(generateRandomWord("1234567890", "!$%&=-_/()[]{}", 2));
+
 		return sb.toString();
 	}
 
