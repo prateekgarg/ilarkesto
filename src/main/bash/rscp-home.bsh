@@ -14,7 +14,7 @@ fi
 
 BACKUP_INFO_FILE=~/.backup.info
 
-rsync -crltDzvP -e ssh --exclude-from=$HOME/.rscp-home-exclude $HOME/ $1
+rsync -crlthDzvP -e ssh --exclude-from=$HOME/.rscp-home-exclude $HOME/ $1
 if [ $? != 0 ]; then exit 1; fi
 
 /opt/ilarkesto/bin/logdate > $BACKUP_INFO_FILE
