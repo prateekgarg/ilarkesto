@@ -203,7 +203,7 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
-	public void load(Class<? extends AEntity> cls, String alias, boolean skipOnFailure) {
+	public void load(Class<? extends AEntity> cls, String alias, boolean deleteOnFailure) {
 		if (!versionChecked) checkVersion();
 
 		aliases.put(cls, alias);
@@ -237,8 +237,12 @@ public class FileEntityStore implements EntityStore {
 				try {
 					loadObject(file, entities, cls, alias);
 				} catch (Exception ex) {
-					if (!skipOnFailure) throw new RuntimeException("Loading object from " + file + " failed", ex);
+					if (!deleteOnFailure) throw new RuntimeException("Loading object from " + file + " failed", ex);
 					log.warn("Loading object from file failed:", file, ex);
+					if (true) { // delete
+						backup(file, alias);
+						file.delete();
+					}
 				}
 			}
 		}

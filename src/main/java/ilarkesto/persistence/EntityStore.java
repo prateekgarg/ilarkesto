@@ -26,7 +26,7 @@ public interface EntityStore extends IdentifiableResolver<AEntity> {
 
 	void setAlias(String alias, Class cls);
 
-	void load(Class<? extends AEntity> cls, String alias, boolean skipOnFailure);
+	void load(Class<? extends AEntity> cls, String alias, boolean deleteOnFailure);
 
 	AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter);
 
