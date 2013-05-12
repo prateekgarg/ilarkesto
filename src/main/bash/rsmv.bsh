@@ -10,7 +10,7 @@ then
 	exit 1
 fi
 
-rsync -rtlDzvP -e ssh $1 $2
+rscp $1 $2
 if [ $? != 0 ]; then exit 1; fi
 
 rm -rf $1

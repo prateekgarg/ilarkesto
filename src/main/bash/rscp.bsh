@@ -10,4 +10,4 @@ then
 	exit 1
 fi
 
-rsync -rtlDzvP -e ssh $1 $2
+rsync -crtlDzvP -e ssh $1 $2

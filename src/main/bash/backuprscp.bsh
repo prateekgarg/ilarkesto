@@ -16,7 +16,7 @@ BACKUP_INFO_FILE=$SRC/.backup.info
 
 rm -f $BACKUP_INFO_FILE
 
-rsync -rltDzvP -e ssh $SRC $DST
+rscp $SRC $DST
 if [ $? != 0 ]; then exit 1; fi
 
 touch $BACKUP_INFO_FILE
