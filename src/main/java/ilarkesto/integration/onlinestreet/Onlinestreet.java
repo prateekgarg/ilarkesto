@@ -45,6 +45,8 @@ public class Onlinestreet {
 		// Einzeltreffer
 
 		String city = null;
+
+		if (city == null) city = Str.cutFromTo(html, " in ", "</title>");
 		if (city == null) city = Str.cutFromTo(html, " ist dem Ort ", " (");
 		if (city == null) city = Str.cutFromTo(html, "ist als PLZ dem Ort ", " (");
 		if (city == null) city = Str.cutFromTo(html, "ist als Postleitzahl dem Ort ", " (");

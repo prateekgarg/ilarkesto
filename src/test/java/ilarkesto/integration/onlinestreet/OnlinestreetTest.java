@@ -30,8 +30,8 @@ public class OnlinestreetTest extends ATest {
 
 	@Test
 	public void getCityByPLZ() {
-		assertEquals(Onlinestreet.getCityByPlz(30159), "Hannover");
 		assertEquals(Onlinestreet.getCityByPlz(31737), "Rinteln");
+		assertEquals(Onlinestreet.getCityByPlz(30159), "Hannover");
 	}
 
 	@Test
