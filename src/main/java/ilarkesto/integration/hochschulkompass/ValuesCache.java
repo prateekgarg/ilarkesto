@@ -32,10 +32,14 @@ public class ValuesCache extends ARemoteJsonCache<Values> {
 	}
 
 	@Override
-	protected Values onUpdate(Values payload, boolean forced) {
+	protected Values createInitialPayload() {
+		return new Values(new JsonObject());
+	}
+
+	@Override
+	protected Values onUpdate(Values payload, boolean forced, boolean invalidated) {
 		String url = HochschulkompassSearchUrl.getBaseUrl();
 		String data = IO.downloadUrlToString(url);
-		if (payload == null) payload = new Values(new JsonObject());
 		try {
 			updateAll(payload, data);
 		} catch (ParseException ex) {

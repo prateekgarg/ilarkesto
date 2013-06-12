@@ -10,6 +10,8 @@ public class R {
 		public static int panelgroup_bg = -1;
 		public static int panel_content_bg = -1;
 		public static int panel_title = -1;
+
+		public static int list_bg = -1;
 	}
 
 	public static final class drawable {

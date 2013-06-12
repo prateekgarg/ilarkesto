@@ -14,8 +14,8 @@ public class BookIndexCache extends ARemoteJsonCache<BookIndex> {
 	}
 
 	@Override
-	protected BookIndex onUpdate(BookIndex index, boolean forced) {
-		if (!forced) {
+	protected BookIndex onUpdate(BookIndex index, boolean forced, boolean invalidated) {
+		if (!forced && !invalidated) {
 			if (index != null && !index.getBooks().isEmpty()) {
 				if (getDaysSinceLastUpdated() < 90) return null;
 			}

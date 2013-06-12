@@ -2,6 +2,44 @@ package ilarkesto.core.time;
 
 public class TmLocalizer {
 
+	public String shortestPeriod(long millis) {
+		StringBuilder sb = new StringBuilder();
+		long m = millis >= 0 ? millis : -millis;
+		if (m >= (Tm.YEAR * 2)) {
+			int i = Tm.toYears(millis);
+			sb.append(i);
+			sb.append(" ").append(years(i));
+		} else if (m >= (Tm.MONTH * 2)) {
+			int i = Tm.toMonths(millis);
+			sb.append(i);
+			sb.append(" ").append(months(i));
+		} else if (m >= (Tm.WEEK * 2)) {
+			int i = Tm.toWeeks(millis);
+			sb.append(i);
+			sb.append(" ").append(weeks(i));
+		} else if (m >= Tm.DAY) {
+			int i = Tm.toDays(millis);
+			sb.append(i);
+			sb.append(" ").append(days(i));
+		} else if (m >= ((Tm.HOUR * 2) - (Tm.MINUTE - 20))) {
+			long l = Tm.toHours(millis);
+			sb.append(l);
+			sb.append(" ").append(hours(l));
+		} else if (m >= Tm.MINUTE) {
+			long l = Tm.toMinutes(millis);
+			sb.append(l);
+			sb.append(" ").append(minutes(l));
+		} else if (m >= Tm.SECOND) {
+			long l = Tm.toSeconds(millis);
+			sb.append(l);
+			sb.append(" ").append(seconds(l));
+		} else {
+			sb.append(m);
+			sb.append(" ").append(millis(m));
+		}
+		return sb.toString();
+	}
+
 	public String full(Weekday day) {
 		switch (day) {
 			case MONDAY:

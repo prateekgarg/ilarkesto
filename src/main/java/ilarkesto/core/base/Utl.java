@@ -194,6 +194,10 @@ public class Utl {
 		return a.compareTo(b);
 	}
 
+	public static int compareReverse(Comparable a, Comparable b) {
+		return compare(a, b) * -1;
+	}
+
 	public static int parseHex(String hex) {
 		return Integer.parseInt(hex, 16);
 	}

@@ -4,12 +4,17 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -39,6 +44,13 @@ import android.widget.Toast;
 public class Android {
 
 	private static Log log = Log.get(Android.class);
+
+	public static String getText(HttpResponse resp, String charsetName) throws IOException {
+		HttpEntity entity = resp.getEntity();
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		entity.writeTo(buffer);
+		return buffer.toString(charsetName);
+	}
 
 	public static void saveBitmapAsJpg(Bitmap bitmap, File file) {
 		saveBitmap(bitmap, file, Bitmap.CompressFormat.JPEG);
@@ -294,8 +306,8 @@ public class Android {
 			int notificationId) {
 		log.info("Posting notification:", "#" + notificationId, "->", tickerText);
 
-		PendingIntent pendingNotificationIntent = PendingIntent.getActivity(context, notificationId,
-			notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingNotificationIntent = notificationIntent == null ? null : PendingIntent.getActivity(
+			context, notificationId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		Notification notification = new Notification.Builder(context).setContentTitle(contentTitle)
 				.setContentText(contentText).setTicker(tickerText).setSmallIcon(smallIconResId).setLargeIcon(largeIcon)

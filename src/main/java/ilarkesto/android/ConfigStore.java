@@ -2,6 +2,14 @@ package ilarkesto.android;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
+import ilarkesto.json.JsonObject;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -129,7 +137,36 @@ public class ConfigStore {
 
 	}
 
+	public abstract class ALongConf extends AConf {
+
+		public Long getValue(int defaultValue) {
+			return getPrefs().getLong(getKey(), defaultValue);
+		}
+
+		public Long getValue() {
+			Long value = getValue(Integer.MIN_VALUE);
+			if (value == Long.MIN_VALUE) return null;
+			return value;
+		}
+
+		public void setValue(Long value) {
+			if (getValue() == value) return;
+			Editor editor = getPrefs().edit();
+			editor.putLong(getKey(), value);
+			editor.commit();
+			onValueChanged();
+		}
+
+		protected void onValueChanged() {}
+
+	}
+
 	public abstract class AStringConf extends AConf {
+
+		public boolean isValue(String s) {
+			String value = getValue();
+			return value == null ? s == null : value.equals(s);
+		}
 
 		public String getValue() {
 			return getPrefs().getString(getKey(), getDefaultValue());
@@ -156,6 +193,127 @@ public class ConfigStore {
 
 	}
 
+	public abstract class AStringListConf extends AConf {
+
+		public List<String> getValue() {
+			String json = getPrefs().getString(getKey(), null);
+			if (json == null) return getDefaultValue();
+			JsonObject jo = new JsonObject(json);
+			return jo.getArrayOfStrings("list");
+		}
+
+		private List<String> getDefaultValue() {
+			return new LinkedList<String>();
+		}
+
+		public void setValue(List<String> value) {
+			if (Utl.equals(value, getValue())) return;
+			Editor editor = getPrefs().edit();
+			String key = getKey();
+			JsonObject jo = new JsonObject();
+			jo.put("list", value);
+			editor.putString(key, value == null ? null : jo.toString());
+			editor.commit();
+			onValueChanged();
+		}
+
+		public void addValueItem(int index, String item) {
+			addValueItem(index, item, false);
+		}
+
+		public void addValueItem(int index, String item, boolean removeFirst) {
+			List<String> value = getValue();
+			if (removeFirst) value.remove(item);
+			value.add(index, item);
+			setValue(value);
+		}
+
+		public void addValueItem(String item) {
+			addValueItem(item, false);
+		}
+
+		public void removeValueItem(String item) {
+			List<String> value = getValue();
+			value.remove(item);
+			setValue(value);
+		}
+
+		public void addValueItems(Collection<String> items) {
+			List<String> value = getValue();
+			value.addAll(items);
+			setValue(value);
+		}
+
+		public void addValueItem(String item, boolean removeFirst) {
+			List<String> value = getValue();
+			if (removeFirst) value.remove(item);
+			value.add(item);
+			setValue(value);
+		}
+
+		protected void onValueChanged() {}
+
+	}
+
+	public abstract class AJsonConf extends AConf {
+
+		public JsonObject getValue() {
+			String json = getPrefs().getString(getKey(), null);
+			if (json == null) return getDefaultValue();
+			return new JsonObject(json);
+		}
+
+		private JsonObject getDefaultValue() {
+			return null;
+		}
+
+		public void setValue(JsonObject value) {
+			if (Utl.equals(value, getValue())) return;
+			Editor editor = getPrefs().edit();
+			String key = getKey();
+			editor.putString(key, value == null ? null : value.toString());
+			editor.commit();
+			onValueChanged();
+		}
+
+		protected void onValueChanged() {}
+	}
+
+	public abstract class AStringSetConf extends AConf {
+
+		public Set<String> getValue() {
+			return getPrefs().getStringSet(getKey(), getDefaultValue());
+		}
+
+		private Set<String> getDefaultValue() {
+			return new HashSet<String>();
+		}
+
+		public void setValue(Set<String> value) {
+			if (Utl.equals(value, getValue())) return;
+			Editor editor = getPrefs().edit();
+			String key = getKey();
+			editor.putStringSet(key, value);
+			editor.commit();
+			onValueChanged();
+		}
+
+		public void addValueItem(String item) {
+			Set<String> value = getValue();
+			value.add(item);
+			setValue(value);
+		}
+
+		public void removeValueItem(String item) {
+			Set<String> value = getValue();
+			value.remove(item);
+			setValue(value);
+		}
+
+		protected void onValueChanged() {}
+
+	}
+
 	public abstract class AConf {
 
 		public String getTitle() {
@@ -171,6 +329,13 @@ public class ConfigStore {
 			int idx = key.indexOf('$');
 			if (idx > 0) key = key.substring(idx + 1);
 			return key;
+		}
+
+		public void remove() {
+			Editor editor = getPrefs().edit();
+			String key = getKey();
+			editor.remove(key);
+			editor.commit();
 		}
 	}
 

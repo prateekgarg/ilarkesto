@@ -2,7 +2,7 @@ package ilarkesto.android;
 
 import ilarkesto.android.view.Views;
 
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import android.app.Activity;
@@ -17,7 +17,19 @@ public class AListAdapter<T> extends BaseAdapter {
 
 	@SuppressWarnings("unchecked")
 	public void setItems(List<T> items) {
-		this.items = items == null ? (List<T>) Collections.emptyList() : items;
+		this.items = new LinkedList<T>();
+		addItems(items);
+	}
+
+	public void addItems(List<T> items) {
+		if (this.items == null) this.items = new LinkedList<T>();
+		if (items != null) this.items.addAll(items);
+		notifyDataSetChanged();
+	}
+
+	public void addItem(T item) {
+		if (this.items == null) this.items = new LinkedList<T>();
+		if (items != null) this.items.add(item);
 		notifyDataSetChanged();
 	}
 

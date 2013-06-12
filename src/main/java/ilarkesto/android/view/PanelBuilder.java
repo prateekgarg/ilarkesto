@@ -106,7 +106,7 @@ public class PanelBuilder extends AViewComponent {
 		// innerContent = horizontal;
 		// }
 		if (contentPadding) {
-			innerContent = Views.frame(innerContent, Views.DEFAULT_PADDING);
+			innerContent = Views.frameMatch(innerContent, Views.DEFAULT_PADDING);
 		}
 		return innerContent;
 	}

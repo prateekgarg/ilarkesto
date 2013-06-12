@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
@@ -126,6 +127,14 @@ public class Views {
 		return image;
 	}
 
+	public static ImageButton remoteImageButton(Context context, String imageUrl) {
+		if (imageUrl == null) return null;
+		ImageButton image = new ImageButton(context);
+		image.setScaleType(ScaleType.FIT_CENTER);
+		new ImageDownloader(imageUrl, image);
+		return image;
+	}
+
 	public static Button button(Context context, CharSequence text, OnClickListener onClickListener) {
 		Button button = new Button(context);
 		button.setText(text);
@@ -170,18 +179,40 @@ public class Views {
 		return spacer;
 	}
 
-	public static FrameLayout frame(View content, int padding) {
-		return frame(content, padding, padding);
+	public static LinearLayout horizontalSpacer(Context context, int width) {
+		LinearLayout spacer = horizontal(context);
+		addSpacer(spacer, width);
+		return spacer;
 	}
 
-	public static FrameLayout frame(View content, int leftRight, int topBottom) {
-		return frame(content, leftRight, topBottom, leftRight, topBottom);
+	public static FrameLayout frameMatch(View content, int padding) {
+		return frameMatch(content, padding, padding);
 	}
 
-	public static FrameLayout frame(View content, int left, int top, int right, int bottom) {
+	public static FrameLayout frameMatch(View content, int leftRight, int topBottom) {
+		return frameMatch(content, leftRight, topBottom, leftRight, topBottom);
+	}
+
+	public static FrameLayout frameMatch(View content, int left, int top, int right, int bottom) {
+		return frame(content, left, top, right, bottom, lpMatch());
+	}
+
+	public static FrameLayout frameWrap(View content, int padding) {
+		return frameWrap(content, padding, padding);
+	}
+
+	public static FrameLayout frameWrap(View content, int leftRight, int topBottom) {
+		return frameWrap(content, leftRight, topBottom, leftRight, topBottom);
+	}
+
+	public static FrameLayout frameWrap(View content, int left, int top, int right, int bottom) {
+		return frame(content, left, top, right, bottom, lpWrap());
+	}
+
+	public static FrameLayout frame(View content, int left, int top, int right, int bottom, LayoutParams layoutParams) {
 		FrameLayout frame = new FrameLayout(content.getContext());
 		frame.setPadding(left, top, right, bottom);
-		frame.addView(content, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		frame.addView(content, layoutParams);
 		return frame;
 	}
 
@@ -191,6 +222,10 @@ public class Views {
 
 	public static LayoutParams lpWrap() {
 		return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	}
+
+	public static LayoutParams lpMatch() {
+		return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 	}
 
 	public static LinearLayout vertical(Context context, View... views) {

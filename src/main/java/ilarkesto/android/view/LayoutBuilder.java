@@ -151,6 +151,16 @@ public class LayoutBuilder extends AViewComponent {
 		return this;
 	}
 
+	public int getElementsCount() {
+		if (elements == null) return 0;
+		return elements.size();
+	}
+
+	public boolean isEmpty() {
+		if (elements == null) return true;
+		return elements.isEmpty();
+	}
+
 	public static class Split {
 
 		public LayoutBuilder a;

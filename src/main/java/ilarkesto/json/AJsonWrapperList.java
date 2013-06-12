@@ -31,6 +31,10 @@ public class AJsonWrapperList<I extends AJsonWrapper> extends AJsonWrapper imple
 		return getAll().add(item);
 	}
 
+	public final boolean addAll(Collection<I> items) {
+		return getAll().addAll(items);
+	}
+
 	public final boolean contains(I item) {
 		return getAll().contains(item);
 	}
@@ -41,6 +45,14 @@ public class AJsonWrapperList<I extends AJsonWrapper> extends AJsonWrapper imple
 
 	public final int size() {
 		return getAll().size();
+	}
+
+	public final boolean isEmpty() {
+		return getAll().isEmpty();
+	}
+
+	public final void clear() {
+		getAll().clear();
 	}
 
 	@Override

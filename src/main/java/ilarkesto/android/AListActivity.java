@@ -8,11 +8,14 @@ import java.util.List;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -30,6 +33,7 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		super.onCreate(savedInstanceState);
 
 		listView = new ListView(this);
+		listView.setBackgroundColor(context.getResources().getColor(R.color.list_bg));
 		listView.setFastScrollEnabled(true);
 		listView.setAdapter(listAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
@@ -43,14 +47,24 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		});
 
 		wrapper = new FrameLayout(context);
-		setContentView(wrapper);
+		setContentView(wrapper, Views.lp());
 
 		emptyView = LayoutInflater.from(this).inflate(R.layout.list_empty, null);
 		emptyView.setVisibility(View.GONE);
 		wrapper.addView(emptyView);
 		listView.setEmptyView(emptyView);
 
-		wrapper.addView(listView);
+		wrapper.addView(createListViewWrapper());
+	}
+
+	protected View createListViewWrapper() {
+		Android.removeFromParent(listView);
+		if (true) return listView;
+		LinearLayout layout = Views.horizontal(context);
+		LayoutParams lp = new LayoutParams(600, LayoutParams.WRAP_CONTENT);
+		lp.gravity = Gravity.CENTER_HORIZONTAL;
+		layout.addView(listView, lp);
+		return layout;
 	}
 
 	protected void disableLoadIndicator() {
@@ -81,10 +95,15 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		new ItemLoader().execute();
 	}
 
+	public void reloadItems() {
+		listAdapter.clear();
+		enableLoadIndicator();
+		new ItemLoader().execute();
+	}
+
 	protected void changeContentViewToList() {
 		track();
-		Android.removeFromParent(listView);
-		changeContentView(listView);
+		changeContentView(createListViewWrapper());
 	}
 
 	protected void changeContentView(View view) {
@@ -98,7 +117,29 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 	protected void onItemsLoaded(List<I> items) {
 		disableLoadIndicator();
-		listAdapter.setItems(items);
+		listAdapter.addItems(items);
+	}
+
+	public void addItems(final List<I> items) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				disableLoadIndicator();
+				listAdapter.addItems(items);
+			}
+		});
+	}
+
+	public void addItem(final I item) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				disableLoadIndicator();
+				listAdapter.addItem(item);
+			}
+		});
 	}
 
 	protected void updateItemView(I item, View view) {

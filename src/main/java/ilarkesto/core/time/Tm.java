@@ -236,4 +236,31 @@ public class Tm {
 		return createDate(getCurrentTimeMillis());
 	}
 
+	public static long toSeconds(long millis) {
+		return millis / SECOND;
+	}
+
+	public static long toMinutes(long millis) {
+		return millis / MINUTE;
+	}
+
+	public static long toHours(long millis) {
+		return millis / HOUR;
+	}
+
+	public static int toDays(long millis) {
+		return (int) (millis / DAY);
+	}
+
+	public static int toWeeks(long millis) {
+		return (int) (millis / WEEK);
+	}
+
+	public static int toMonths(long millis) {
+		return (int) (millis / MONTH);
+	}
+
+	public static int toYears(long millis) {
+		return (int) (millis / YEAR);
+	}
 }

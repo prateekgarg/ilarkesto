@@ -31,6 +31,12 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 	}
 
 	@Override
+	public void reloadItems() {
+		selectItem(null);
+		super.reloadItems();
+	}
+
+	@Override
 	protected final void updateItemView(I item, View view) {
 		if (item == selectedItem) {
 			view.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
@@ -75,7 +81,7 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 		View detailView = null;
 		if (selectedItem != null) {
 			detailView = createItemDetailView(selectedItem);
-			Swipe.attachOnSwipeListener(detailView, this);
+			if (isDetailSwipeEnabled()) Swipe.attachOnSwipeListener(detailView, this);
 		}
 
 		if (detailView == null) {
@@ -84,9 +90,10 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 			if (isDoubleView()) {
 				if (detailViewWrapper == null || detailViewWrapper == detailWrapper) {
 					detailViewWrapper = LayoutInflater.from(this).inflate(R.layout.list_with_detail, null);
-					Android.addToContainer(detailViewWrapper, R.id.listContainer, listView);
+					Android.addToContainer(detailViewWrapper, R.id.listContainer, createListViewWrapper());
 					Android.addToContainer(detailViewWrapper, R.id.detailContainer, detailWrapper);
-					Swipe.attachOnSwipeListener(detailViewWrapper.findViewById(R.id.detailContainer), this);
+					if (isDetailSwipeEnabled())
+						Swipe.attachOnSwipeListener(detailViewWrapper.findViewById(R.id.detailContainer), this);
 				}
 			} else {
 				detailViewWrapper = detailWrapper;
@@ -98,9 +105,13 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 			} else {
 				detailWrapper.addView(detailView);
 			}
-			listView.setSelection(listAdapter.getIndexOf(item));
+			// listView.setSelection(listAdapter.getIndexOf(item));
 		}
 		onSelectedItemChanged(selectedItem);
+	}
+
+	protected boolean isDetailSwipeEnabled() {
+		return false;
 	}
 
 	protected View createItemDetailView(I item) {

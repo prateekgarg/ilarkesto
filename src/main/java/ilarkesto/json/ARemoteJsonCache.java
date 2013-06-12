@@ -9,7 +9,13 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 
 	protected Log log = Log.get(getClass());
 
-	protected abstract P onUpdate(P payload, boolean forced);
+	/**
+	 * @param payload the current payload or null
+	 * @param forced
+	 * @param invalidated
+	 * @return new payload or null if not updated
+	 */
+	protected abstract P onUpdate(P payload, boolean forced, boolean invalidated);
 
 	private Class<P> payloadType;
 	private File file;
@@ -60,7 +66,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 		log.info("Updating payload", force ? "(forced)" : "");
 		RuntimeTracker rt = new RuntimeTracker();
 		try {
-			payload = onUpdate(payload, force);
+			payload = onUpdate(payload, force, isInvalidated());
 		} catch (Throwable ex) {
 			if (payload != null) {
 				log.info("Updating payload failed.", ex);
@@ -85,7 +91,10 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	public synchronized void save() {
 		log.info("Saving");
 		if (wrapper != null) wrapper.write(file, false);
+		onSaved();
 	}
+
+	protected void onSaved() {}
 
 	public synchronized void delete() {
 		log.info("Deleting");

@@ -117,31 +117,31 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable {
 	}
 
 	public final long toSeconds() {
-		return millis / Tm.SECOND;
+		return Tm.toSeconds(millis);
 	}
 
 	public final long toMinutes() {
-		return millis / Tm.MINUTE;
+		return Tm.toMinutes(millis);
 	}
 
 	public final long toHours() {
-		return millis / Tm.HOUR;
+		return Tm.toHours(millis);
 	}
 
 	public final int toDays() {
-		return (int) (millis / Tm.DAY);
+		return Tm.toDays(millis);
 	}
 
 	public final int toWeeks() {
-		return (int) (millis / Tm.WEEK);
+		return Tm.toWeeks(millis);
 	}
 
 	public final int toMonths() {
-		return (int) (millis / Tm.MONTH);
+		return Tm.toMonths(millis);
 	}
 
 	public final int toYears() {
-		return (int) (millis / Tm.YEAR);
+		return Tm.toYears(millis);
 	}
 
 	public final float toDecimalDays() {
@@ -172,42 +172,7 @@ public class TimePeriod implements Comparable<TimePeriod>, Serializable {
 	}
 
 	public final String toShortestString(String language) {
-		TmLocalizer loc = Tm.getLocalizer(language);
-		StringBuilder sb = new StringBuilder();
-		long m = millis >= 0 ? millis : -millis;
-		if (m >= (Tm.YEAR * 2)) {
-			int i = toYears();
-			sb.append(i);
-			sb.append(" ").append(loc.years(i));
-		} else if (m >= (Tm.MONTH * 2)) {
-			int i = toMonths();
-			sb.append(i);
-			sb.append(" ").append(loc.months(i));
-		} else if (m >= (Tm.WEEK * 2)) {
-			int i = toWeeks();
-			sb.append(i);
-			sb.append(" ").append(loc.weeks(i));
-		} else if (m >= Tm.DAY) {
-			int i = toDays();
-			sb.append(i);
-			sb.append(" ").append(loc.days(i));
-		} else if (m >= ((Tm.HOUR * 2) - (Tm.MINUTE - 20))) {
-			long l = toHours();
-			sb.append(l);
-			sb.append(" ").append(loc.hours(l));
-		} else if (m >= Tm.MINUTE) {
-			long l = toMinutes();
-			sb.append(l);
-			sb.append(" ").append(loc.minutes(l));
-		} else if (m >= Tm.SECOND) {
-			long l = toSeconds();
-			sb.append(l);
-			sb.append(" ").append(loc.seconds(l));
-		} else {
-			sb.append(m);
-			sb.append(" ").append(loc.millis(m));
-		}
-		return sb.toString();
+		return Tm.getLocalizer(language).shortestPeriod(millis);
 	}
 
 	public final String toHoursAndMinutes() {

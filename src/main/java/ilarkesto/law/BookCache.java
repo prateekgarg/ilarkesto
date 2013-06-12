@@ -16,8 +16,8 @@ public class BookCache extends ARemoteJsonCache<Book> {
 	}
 
 	@Override
-	protected Book onUpdate(Book book, boolean forced) {
-		if (!forced) {
+	protected Book onUpdate(Book book, boolean forced, boolean invalidated) {
+		if (!forced && !invalidated) {
 			if (getDaysSinceLastUpdated() < 30) return null;
 		}
 		return lawProvider.loadBook(bookRef);

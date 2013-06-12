@@ -41,6 +41,7 @@ public class ImageDownloader {
 		this.reqHeight = reqHeight;
 		if (imageView != null) {
 			synchronized (imageView) {
+				if (imageUrl != null && imageUrl.equals(imageView.getTag())) return;
 				imageView.setVisibility(View.GONE);
 				imageView.setTag(imageUrl);
 			}
@@ -112,11 +113,14 @@ public class ImageDownloader {
 
 	public static void updateImage(String imageUrl, ViewGroup container, int width, int height) {
 		if (container == null) return;
-		container.removeAllViews();
 		if (imageUrl != null) {
-			ImageView view = new ImageView(container.getContext());
-			view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-			container.addView(view);
+			ImageView view = getImageViewFromContainer(container);
+			if (view == null) {
+				container.removeAllViews();
+				view = new ImageView(container.getContext());
+				view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+				container.addView(view);
+			}
 			new ImageDownloader(imageUrl, view, AApp.get().getFilesCache(), width, height);
 			container.setVisibility(View.VISIBLE);
 		} else {
@@ -124,4 +128,9 @@ public class ImageDownloader {
 		}
 	}
 
+	private static ImageView getImageViewFromContainer(ViewGroup container) {
+		if (container.getChildCount() != 1) return null;
+		View child = container.getChildAt(0);
+		return child instanceof ImageView ? (ImageView) child : null;
+	}
 }

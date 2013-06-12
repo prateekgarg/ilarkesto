@@ -151,7 +151,7 @@ public class Facebook {
 		sb.append("https://www.facebook.com/dialog/oauth");
 		sb.append("?client_id=").append(oauthApiKey.getLoginData().getLogin());
 		if (!permissions.isEmpty()) sb.append("&scope=").append(Str.concat(permissions, ","));
-		sb.append("&redirect_uri=").append(Str.encodeUrlParameter(callbackUri));
+		sb.append("&redirect_uri=").append(callbackUri);
 		return sb.toString();
 	}
 
