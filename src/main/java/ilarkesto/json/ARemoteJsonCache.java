@@ -4,6 +4,8 @@ import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.logging.Log;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 
@@ -17,6 +19,8 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	 */
 	protected abstract P onUpdate(P payload, boolean forced, boolean invalidated);
 
+	private static Map<String, Object> lockByFilepath = new HashMap<String, Object>();
+
 	private Class<P> payloadType;
 	private File file;
 
@@ -28,8 +32,10 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	}
 
 	private synchronized JsonObject getJson() {
-		if (wrapper == null) wrapper = JsonObject.loadFile(file, true);
-		return wrapper;
+		synchronized (getLock()) {
+			if (wrapper == null) wrapper = JsonObject.loadFile(file, true);
+			return wrapper;
+		}
 	}
 
 	public P getPayload() {
@@ -61,54 +67,73 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 		return payload;
 	}
 
-	public synchronized void update(boolean force) throws RemoteUpdateFailedException {
-		P payload = getPayload();
-		log.info("Updating payload", force ? "(forced)" : "");
-		RuntimeTracker rt = new RuntimeTracker();
-		try {
-			payload = onUpdate(payload, force, isInvalidated());
-		} catch (Throwable ex) {
-			if (payload != null) {
-				log.info("Updating payload failed.", ex);
-				return;
+	public void update(boolean force) throws RemoteUpdateFailedException {
+		synchronized (getLock()) {
+			P payload = getPayload();
+			log.info("Updating payload", force ? "(forced)" : "");
+			RuntimeTracker rt = new RuntimeTracker();
+			try {
+				payload = onUpdate(payload, force, isInvalidated());
+			} catch (Exception ex) {
+				if (payload != null) {
+					log.warn("Updating payload failed.", ex);
+					return;
+				}
+				throw new RemoteUpdateFailedException("Updating payload failed.", ex);
 			}
-			throw new RemoteUpdateFailedException("Updating payload failed.", ex);
+			if (payload == null) {
+				// payload not updated (perhaps not due)
+				log.info("Payload not updated after", rt.getRuntimeFormated());
+				if (!force) return;
+				throw new RemoteUpdateFailedException("Loading payload failed.");
+			}
+			log.info("Payload updated in", rt.getRuntimeFormated());
+			JsonObject json = getJson();
+			json.put("payload", payload);
+			json.put("lastUpdated", System.currentTimeMillis());
+			json.remove("invalidated");
+			save();
 		}
-		if (payload == null) {
-			// payload not updated (perhaps not due)
-			log.info("Payload not updated after", rt.getRuntimeFormated());
-			if (!force) return;
-			throw new RemoteUpdateFailedException("Loading payload failed.");
-		}
-		log.info("Payload updated in", rt.getRuntimeFormated());
-		JsonObject json = getJson();
-		json.put("payload", payload);
-		json.put("lastUpdated", System.currentTimeMillis());
-		json.remove("invalidated");
-		save();
 	}
 
-	public synchronized void save() {
-		log.info("Saving");
-		if (wrapper != null) wrapper.write(file, false);
+	public void save() {
+		synchronized (getLock()) {
+			log.info("Saving");
+			if (wrapper != null) wrapper.write(file, false);
+		}
 		onSaved();
+	}
+
+	private Object getLock() {
+		Object lock = lockByFilepath.get(file.getAbsolutePath());
+		if (lock == null) {
+			lock = new Object();
+			lockByFilepath.put(file.getAbsolutePath(), lock);
+		}
+		return lock;
 	}
 
 	protected void onSaved() {}
 
-	public synchronized void delete() {
-		log.info("Deleting");
-		wrapper = null;
-		file.delete();
+	public void delete() {
+		synchronized (getLock()) {
+			log.info("Deleting");
+			wrapper = null;
+			file.delete();
+		}
 	}
 
-	public synchronized void unload() {
-		wrapper = null;
+	public void unload() {
+		synchronized (getLock()) {
+			wrapper = null;
+		}
 	}
 
-	public synchronized void invalidatePayload() {
-		getJson().put("invalidated", true);
-		save();
+	public void invalidatePayload() {
+		synchronized (getLock()) {
+			getJson().put("invalidated", true);
+			save();
+		}
 	}
 
 	public File getFile() {

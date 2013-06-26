@@ -2,6 +2,9 @@ package ilarkesto.android;
 
 import ilarkesto.android.Swipe.OnSwipeListener;
 import ilarkesto.android.view.LayoutBuilder;
+
+import java.util.List;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +18,7 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 	private Boolean doubleView;
 	private ViewGroup detailWrapper;
 	private View detailViewWrapper;
+	private boolean itemPreselected;
 
 	protected void onSelectedItemChanged(I selectedItem) {}
 
@@ -23,6 +27,21 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 		super.onCreate(savedInstanceState);
 
 		detailWrapper = new FrameLayout(context);
+	}
+
+	@Override
+	protected void onItemsLoaded(List<I> items) {
+		super.onItemsLoaded(items);
+
+		I preselectedItem = getPreselectedItem(items);
+		if (preselectedItem != null) {
+			itemPreselected = true;
+			selectItem(preselectedItem);
+		}
+	}
+
+	protected I getPreselectedItem(List<I> items) {
+		return null;
 	}
 
 	@Override
@@ -130,7 +149,7 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 
 	@Override
 	public void onBackPressed() {
-		if (isDoubleView()) {
+		if (isDoubleView() || itemPreselected) {
 			super.onBackPressed();
 			return;
 		}

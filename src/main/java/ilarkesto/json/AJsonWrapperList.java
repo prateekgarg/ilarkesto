@@ -6,7 +6,7 @@ import java.util.List;
 
 public class AJsonWrapperList<I extends AJsonWrapper> extends AJsonWrapper implements Iterable<I> {
 
-	public static final String ITEMS_PROPERTY = "itmes";
+	public static final String ITEMS_PROPERTY = "items";
 
 	private Class<I> itemType;
 
@@ -17,6 +17,12 @@ public class AJsonWrapperList<I extends AJsonWrapper> extends AJsonWrapper imple
 
 	public AJsonWrapperList(Class<I> itemType) {
 		this.itemType = itemType;
+	}
+
+	public final void set(JsonObject json) {
+		List<JsonObject> jsonItems = json.getArrayOfObjects(ITEMS_PROPERTY);
+		List<I> items = AJsonWrapper.getAsWrapperList(jsonItems, itemType);
+		set(items);
 	}
 
 	public final void set(Collection<I> items) {

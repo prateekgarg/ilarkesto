@@ -27,6 +27,10 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -44,6 +48,44 @@ import android.widget.Toast;
 public class Android {
 
 	private static Log log = Log.get(Android.class);
+
+	public static Location getLastKnownLocation(Context context) {
+		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		if (location == null) {
+			location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		}
+		return location;
+	}
+
+	public static void geocodeLocationToAddress(Context context, Location location, AddressCallback callback) {
+		if (location == null) {
+			callback.onNoAddress();
+			return;
+		}
+		Geocoder geocoder = new Geocoder(context);
+		List<Address> addresses;
+		try {
+			addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+		} catch (IOException ex) {
+			log.warn("Geocoding failed for ", location, ex);
+			callback.onNoAddress();
+			return;
+		}
+		if (addresses.isEmpty()) {
+			callback.onNoAddress();
+			return;
+		}
+		callback.onAddress(addresses.get(0));
+	}
+
+	public static interface AddressCallback {
+
+		void onAddress(Address address);
+
+		void onNoAddress();
+
+	}
 
 	public static String getText(HttpResponse resp, String charsetName) throws IOException {
 		HttpEntity entity = resp.getEntity();
@@ -190,11 +232,20 @@ public class Android {
 	}
 
 	public static void startSendEmail(Context context, String email, String subject, String text) {
+		startSendEmail(context, email, subject, text, null);
+	}
+
+	public static void startSendEmail(Context context, String email, String subject, String text, Uri attachment) {
 		final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
 		intent.setType("plain/text");
 		intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { email });
 		intent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
 		intent.putExtra(android.content.Intent.EXTRA_TEXT, text);
+
+		if (attachment != null) {
+			intent.putExtra(Intent.EXTRA_STREAM, attachment);
+		}
+
 		context.startActivity(intent);
 	}
 

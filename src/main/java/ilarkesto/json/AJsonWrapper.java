@@ -173,6 +173,15 @@ public abstract class AJsonWrapper implements JsonWrapper {
 		return createWrapper(object, type);
 	}
 
+	static <T extends AJsonWrapper> List<T> getAsWrapperList(Collection<JsonObject> jsonObjects, Class<T> type) {
+		if (jsonObjects == null || jsonObjects.isEmpty()) return new LinkedList<T>();
+		List<T> ret = new ArrayList<T>(jsonObjects.size());
+		for (JsonObject json : jsonObjects) {
+			ret.add(createWrapper(json, type));
+		}
+		return ret;
+	}
+
 	public static <T extends AJsonWrapper> T createWrapper(JsonObject json, Class<T> type) {
 		if (json == null) return null;
 		Constructor<T> constructor;
