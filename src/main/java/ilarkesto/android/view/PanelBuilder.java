@@ -5,12 +5,7 @@ import ilarkesto.core.base.Str;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
-import android.view.View.OnHoverListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -23,7 +18,6 @@ public class PanelBuilder extends AViewComponent {
 	private Object content;
 	private int contentHeight = LayoutParams.WRAP_CONTENT;
 	private int contentWidth = LayoutParams.MATCH_PARENT;
-	private OnClickListener onClickListener;
 
 	public PanelBuilder(Context context) {
 		super(context);
@@ -35,54 +29,7 @@ public class PanelBuilder extends AViewComponent {
 
 		LinearLayout ll = new LinearLayout(context);
 		ll.setOrientation(LinearLayout.VERTICAL);
-		if (onClickListener == null) {
-			ll.setBackgroundColor(context.getResources().getColor(R.color.panel_content_bg));
-		} else {
-			ll.setFocusable(true);
-			ll.setClickable(true);
-			final int hoverColor = context.getResources().getColor(android.R.color.holo_blue_light);
-			ll.setOnTouchListener(new OnTouchListener() {
-
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					boolean entered = false;
-					boolean left = false;
-					switch (event.getAction()) {
-						case MotionEvent.ACTION_MOVE:
-							entered = true;
-							break;
-						case MotionEvent.ACTION_UP:
-						case MotionEvent.ACTION_CANCEL:
-							left = true;
-							break;
-					}
-					if (entered) v.setBackgroundColor(hoverColor);
-					if (left) v.setBackgroundResource(R.drawable.panel_with_link_bg);
-					return false;
-				}
-			});
-			ll.setOnHoverListener(new OnHoverListener() {
-
-				@Override
-				public boolean onHover(View v, MotionEvent event) {
-					return false;
-				}
-			});
-			ll.setOnFocusChangeListener(new OnFocusChangeListener() {
-
-				@Override
-				public void onFocusChange(View v, boolean hasFocus) {
-					if (hasFocus) {
-						v.setBackgroundColor(hoverColor);
-					} else {
-						v.setBackgroundResource(R.drawable.panel_with_link_bg);
-					}
-				}
-			});
-			ll.setOnClickListener(onClickListener);
-			ll.setBackgroundResource(R.drawable.panel_with_link_bg);
-		}
-
+		ll.setBackgroundColor(context.getResources().getColor(R.color.panel_content_bg));
 		if (title != null) {
 			FrameLayout titleFrame = new FrameLayout(context);
 			// titleFrame.setBackgroundColor(context.getResources().getColor(R.color.panel_title_bg));
@@ -160,11 +107,6 @@ public class PanelBuilder extends AViewComponent {
 
 	public PanelBuilder setContentHeight(int contentHeight) {
 		this.contentHeight = contentHeight;
-		return this;
-	}
-
-	public PanelBuilder setOnClickListener(OnClickListener onClickListener) {
-		this.onClickListener = onClickListener;
 		return this;
 	}
 

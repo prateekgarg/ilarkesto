@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -27,6 +28,15 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 		super.onCreate(savedInstanceState);
 
 		detailWrapper = new FrameLayout(context);
+	}
+
+	@Override
+	protected boolean onToolbarHomeClicked() {
+		if (getSelectedItem() != null && !isDoubleView()) {
+			selectItem(null);
+			return true;
+		}
+		return super.onToolbarHomeClicked();
 	}
 
 	@Override
@@ -68,10 +78,14 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 	@Override
 	public void onSwipeLeft() {
 		if (selectedItem == null) return;
-		int index = listAdapter.getIndexOf(selectedItem);
+		int index = getIndexOfSelectedItem();
 		if (index < 1) return;
 		I item = listAdapter.getItem(index - 1);
 		selectItem(item, Swipe.SWIPE_LEFT);
+	}
+
+	public int getIndexOfSelectedItem() {
+		return listAdapter.getIndexOf(selectedItem);
 	}
 
 	@Override
@@ -79,7 +93,7 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 		if (selectedItem == null) return;
 		int count = listAdapter.getCount();
 		if (count < 2) return;
-		int index = listAdapter.getIndexOf(selectedItem);
+		int index = getIndexOfSelectedItem();
 		if (index + 1 >= count) return;
 		I item = listAdapter.getItem(index + 1);
 		selectItem(item, Swipe.SWIPE_RIGHT);
@@ -163,8 +177,36 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 		super.onBackPressed();
 	}
 
-	public I getSelectedItem() {
+	public final I getSelectedItem() {
 		return selectedItem;
+	}
+
+	public final boolean isFirstItemSelected() {
+		return getIndexOfSelectedItem() == 0;
+	}
+
+	public final boolean isLastItemSelected() {
+		return getIndexOfSelectedItem() == getItemCount() - 1;
+	}
+
+	public OnClickListener createSwipeLeftOnClickListener() {
+		return new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				onSwipeLeft();
+			}
+		};
+	}
+
+	public OnClickListener createSwipeRightOnClickListener() {
+		return new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				onSwipeRight();
+			}
+		};
 	}
 
 }

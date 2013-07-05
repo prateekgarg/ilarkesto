@@ -54,11 +54,21 @@ public class Book extends AJsonWrapper {
 	 */
 	public List<Norm> getAllNorms() {
 		List<Norm> ret = new ArrayList<Norm>();
-		ret.addAll(getWrapperArray("norms", Norm.class));
+		ret.addAll(getNorms());
 		for (Section section : getSections()) {
 			ret.addAll(section.getAllNorms());
 		}
 		return ret;
+	}
+
+	public List<Norm> getNorms() {
+		return getWrapperArray("norms", Norm.class);
+	}
+
+	public boolean isFirst(Norm norm) {
+		List<Norm> norms = getNorms();
+		if (norms == null || norms.isEmpty()) return false;
+		return norm.getRef().equals(norms.get(0).getRef());
 	}
 
 	public void addNorm(Norm norm) {

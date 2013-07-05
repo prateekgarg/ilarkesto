@@ -10,11 +10,10 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.text.Html;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -51,21 +51,28 @@ public class Views {
 			titleWrapper.addView(image, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		}
 
-		TextView tv = text(context, text);
-		tv.setTextSize(20);
-		// tv.setTypeface(null, Typeface.BOLD);
-		Resources resources = context.getResources();
-		tv.setTextColor(resources.getColor(R.color.title));
+		TextView tv = titleText(context, text);
 		titleWrapper.addView(tv, lp());
 
 		return titleWrapper;
 	}
 
+	public static TextView titleText(Context context, CharSequence text) {
+		TextView tv = text(context, text);
+		tv.setTextSize(20);
+		// tv.setTypeface(null, Typeface.BOLD);
+		tv.setTextColor(context.getResources().getColor(R.color.title));
+		return tv;
+	}
+
 	public static LinearLayout titleWrapper(Context context) {
+		return titleWrapper(context, DEFAULT_PADDING, DEFAULT_PADDING);
+	}
+
+	public static LinearLayout titleWrapper(Context context, int paddingLeftRight, int paddingTopBottom) {
 		LinearLayout ll = horizontal(context);
 		ll.setBackgroundColor(context.getResources().getColor(R.color.title_bg));
-		int padding = DEFAULT_PADDING;
-		ll.setPadding(padding, padding, padding, padding);
+		ll.setPadding(paddingLeftRight, paddingTopBottom, paddingLeftRight, paddingTopBottom);
 		return ll;
 	}
 
@@ -222,6 +229,28 @@ public class Views {
 
 	public static LayoutParams lpWrap() {
 		return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	}
+
+	public static LayoutParams lp(int width, int height, int gravity, int weight) {
+		LayoutParams lp = new LayoutParams(width, height);
+		lp.gravity = gravity;
+		lp.weight = weight;
+		return lp;
+	}
+
+	public static LayoutParams lpWrap(int gravity, int weight) {
+		LayoutParams lp = lpWrap();
+		lp.gravity = gravity;
+		lp.weight = weight;
+		return lp;
+	}
+
+	public static LayoutParams lpWrapRight() {
+		return lpWrap(Gravity.RIGHT | Gravity.CENTER_VERTICAL, 0);
+	}
+
+	public static LayoutParams lpWrapLeft() {
+		return lpWrap(Gravity.LEFT | Gravity.CENTER_VERTICAL, 0);
 	}
 
 	public static LayoutParams lpMatch() {

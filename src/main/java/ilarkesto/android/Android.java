@@ -262,6 +262,12 @@ public class Android {
 		context.startActivity(intent);
 	}
 
+	public static int getDiesplayWidth(Context context) {
+		DisplayMetrics metrics = getDisplayMetrics(context);
+		float widthInDp = metrics.widthPixels / metrics.density;
+		return (int) widthInDp;
+	}
+
 	public static DisplayMetrics getDisplayMetrics(Context context) {
 		WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		DisplayMetrics metrics = new DisplayMetrics();
@@ -331,9 +337,18 @@ public class Android {
 		return view;
 	}
 
+	public static MenuItem addMenuItem(Menu menu, int order, String title, boolean showAsAction, final Runnable callback) {
+		MenuItem item = menu.add(Menu.NONE, Menu.NONE, order, title);
+		return initMenuItem(showAsAction, callback, item);
+	}
+
 	public static MenuItem addMenuItem(Menu menu, int order, int titleResId, boolean showAsAction,
 			final Runnable callback) {
 		MenuItem item = menu.add(Menu.NONE, Menu.NONE, order, titleResId);
+		return initMenuItem(showAsAction, callback, item);
+	}
+
+	private static MenuItem initMenuItem(boolean showAsAction, final Runnable callback, MenuItem item) {
 		item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
 			@Override

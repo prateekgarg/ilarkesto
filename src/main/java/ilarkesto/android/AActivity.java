@@ -25,13 +25,17 @@ public abstract class AActivity<A extends AApp> extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				Intent intent = new Intent(this, getApp().getHomeActivity());
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-				return true;
+				return onToolbarHomeClicked();
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+
+	protected boolean onToolbarHomeClicked() {
+		Intent intent = new Intent(this, getApp().getHomeActivity());
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
+		return true;
 	}
 
 	protected boolean isHomeActivity() {

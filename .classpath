@@ -45,5 +45,6 @@
 			<attribute name="javadoc_location" value="file:/opt/android-sdk/docs/reference"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/android-support-v13.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

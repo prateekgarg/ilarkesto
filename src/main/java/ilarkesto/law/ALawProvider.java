@@ -31,6 +31,8 @@ public abstract class ALawProvider {
 
 	public abstract File getDataDir();
 
+	public abstract String getSourceUrl(BookRef bookRef);
+
 	public final BookIndex getBookIndex() {
 		if (bookIndex == null) {
 			log.info("Loading book index");

@@ -55,7 +55,7 @@ public class JdbcConnector {
 	}
 
 	public void execute(String sql, Object... params) throws SQLException {
-		Jdbc.execute(connection, sql, params);
+		Jdbc.execute(getConnection(), sql, params);
 	}
 
 	public synchronized Connection getConnection() {

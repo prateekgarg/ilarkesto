@@ -3,9 +3,7 @@ package ilarkesto.law;
 import ilarkesto.core.logging.Log;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -32,19 +30,19 @@ public class Searcher implements Runnable {
 	public void run() {
 		searchRestrictedBook();
 		if (stopRequested) return;
+
 		if (searchStrings.isEmpty()) return;
+
 		if (restrictToBook != null) {
 			log.info("Searching for norms in identified book:", restrictToBook, "->", searchStrings);
-			searchForNorms(restrictToBook);
+			consumer.onSearchRestricted(restrictToBook.getCode());
+			searchForNorms(restrictToBook, true);
 		} else {
 			log.info("Searching for books:", searchStrings);
-			searchForBooks();
+			searchForBooksWithoutNorms();
+			consumer.onSearchBroadenedToCachedBooks();
+			searchForNorms(bookCaches.getBookIndexCache().getPayload().getBooks(), false);
 		}
-
-		// if (!searchStrings.isEmpty()) {
-		// log.info("Searching for norms in identified books", booksIdentifiedByCode, "->", searchStrings);
-		// searchForNorms(booksIdentifiedByCode);
-		// }
 
 		consumer.onSearchFinished();
 		log.info("Search finished:", searchStrings);
@@ -62,30 +60,19 @@ public class Searcher implements Runnable {
 		}
 	}
 
-	private void searchForNorms(Collection<BookRef> bookRefs) {
-		List<BookCache> unloadedCaches = new LinkedList<BookCache>();
+	private void searchForNorms(List<BookRef> bookRefs, boolean updateIfNull) {
 		for (BookRef bookRef : bookRefs) {
 			if (stopRequested) return;
-			BookCache cache = bookCaches.getBookCache(bookRef);
-			Book book = cache.getPayload();
-			if (book == null) {
-				unloadedCaches.add(cache);
-			} else {
-				searchForNorms(book);
-			}
-			cache.unload();
+			searchForNorms(bookRef, updateIfNull);
 		}
-		// for (BookCache cache : unloadedCaches) {
-		// if (stopRequested) return;
-		// Book book = cache.getPayload_ButUpdateIfNull();
-		// if (book != null) searchForNorms(book);
-		// cache.unload();
-		// }
 	}
 
-	private void searchForNorms(BookRef bookRef) {
-		Book book = bookCaches.getBookCache(bookRef).getPayload_ButUpdateIfNull();
+	private void searchForNorms(BookRef bookRef, boolean updateIfNull) {
+		BookCache cache = bookCaches.getBookCache(bookRef);
+		Book book = updateIfNull ? cache.getPayload_ButUpdateIfNull() : cache.getPayload();
+		if (book == null) return;
 		searchForNorms(book);
+		cache.unload();
 	}
 
 	private void searchForNorms(Book book) {
@@ -112,7 +99,7 @@ public class Searcher implements Runnable {
 		}
 	}
 
-	private void searchForBooks() {
+	private void searchForBooksWithoutNorms() {
 		BookIndex index = bookCaches.getBookIndexCache().getPayload();
 		if (index == null) return;
 		for (BookRef book : index.getBooks()) {
@@ -154,6 +141,10 @@ public class Searcher implements Runnable {
 	public static interface SearchResultConsumer {
 
 		void onBookFound(BookRef book);
+
+		void onSearchBroadenedToCachedBooks();
+
+		void onSearchRestricted(String code);
 
 		void onNormFound(Norm norm);
 

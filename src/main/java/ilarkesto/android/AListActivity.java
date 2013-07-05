@@ -33,6 +33,10 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		super.onCreate(savedInstanceState);
 
 		listView = new ListView(this);
+		// View listHeaderView = createListHeaderView();
+		// if (listHeaderView != null) listView.addHeaderView(listHeaderView);
+		View listFooterView = createListFooterView();
+		if (listFooterView != null) listView.addFooterView(listFooterView);
 		listView.setBackgroundColor(context.getResources().getColor(R.color.list_bg));
 		listView.setFastScrollEnabled(true);
 		listView.setAdapter(listAdapter);
@@ -40,6 +44,7 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long arg3) {
+				if (position < 0 || position >= getItemCount()) return;
 				I item = listAdapter.getItem(position);
 				track(item);
 				AListActivity.this.onListItemClick(item);
@@ -55,6 +60,14 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		listView.setEmptyView(emptyView);
 
 		wrapper.addView(createListViewWrapper());
+	}
+
+	// protected View createListHeaderView() {
+	// return null;
+	// }
+
+	protected View createListFooterView() {
+		return null;
 	}
 
 	protected View createListViewWrapper() {
@@ -160,6 +173,10 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 	protected int getAdditionalItemLoadTrials() {
 		return 0;
+	}
+
+	public final int getItemCount() {
+		return listAdapter.getCount();
 	}
 
 	class MyListAdapter extends AListAdapter<I> {

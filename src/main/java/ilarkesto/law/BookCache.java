@@ -23,4 +23,8 @@ public class BookCache extends ARemoteJsonCache<Book> {
 		return lawProvider.loadBook(bookRef);
 	}
 
+	public String getSourceUrl() {
+		return lawProvider.getSourceUrl(bookRef);
+	}
+
 }

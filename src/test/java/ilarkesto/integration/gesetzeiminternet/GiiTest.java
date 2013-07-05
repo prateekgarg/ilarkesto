@@ -131,6 +131,12 @@ public class GiiTest extends ATest {
 		@Override
 		public void onSearchFinished() {}
 
+		@Override
+		public void onSearchBroadenedToCachedBooks() {}
+
+		@Override
+		public void onSearchRestricted(String code) {}
+
 	}
 
 }

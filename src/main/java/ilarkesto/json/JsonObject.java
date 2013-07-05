@@ -66,7 +66,11 @@ public class JsonObject {
 
 	public static JsonObject loadFile(File file, boolean createEmptyIfNoFile) {
 		if (!file.exists()) {
-			if (createEmptyIfNoFile) return new JsonObject();
+			if (createEmptyIfNoFile) {
+				JsonObject json = new JsonObject();
+				json.file = file;
+				return json;
+			}
 			return null;
 		}
 		JsonObject object = parse(load(file));

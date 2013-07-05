@@ -60,6 +60,7 @@ public class Jdbc {
 	}
 
 	public static PreparedStatement prepareStatement(Connection connection, String sql, Object... params) {
+		if (connection == null) throw new IllegalArgumentException("connection == null");
 		PreparedStatement stmt;
 		try {
 			stmt = connection.prepareStatement(sql);

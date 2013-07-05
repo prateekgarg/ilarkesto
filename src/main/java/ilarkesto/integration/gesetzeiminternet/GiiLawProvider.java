@@ -16,6 +16,8 @@ import java.util.List;
 
 public class GiiLawProvider extends ALawProvider {
 
+	public String BASE_URL = "http://www.gesetze-im-internet.de/";
+
 	public static void main(String[] args) {
 		BookRef ref = new BookRef("StVo", "Straßenverkehrs-Ordnung");
 		ref.getJson().put("giiReference", "stvo");
@@ -32,8 +34,7 @@ public class GiiLawProvider extends ALawProvider {
 
 	public GiiLawProvider(File dataDir) {
 		this.dataDir = dataDir;
-		this.downloader = new HttpDownloader().setCharset(IO.ISO_LATIN_1).setBaseUrl(
-			"http://www.gesetze-im-internet.de/");
+		this.downloader = new HttpDownloader().setCharset(IO.ISO_LATIN_1).setBaseUrl(BASE_URL);
 	}
 
 	@Override
@@ -113,6 +114,11 @@ public class GiiLawProvider extends ALawProvider {
 		} catch (ParseException ex) {
 			throw new DataLoadFailedException("Parsing 'Teilliste' failed: " + path, ex);
 		}
+	}
+
+	@Override
+	public String getSourceUrl(BookRef bookRef) {
+		return BASE_URL;
 	}
 
 }

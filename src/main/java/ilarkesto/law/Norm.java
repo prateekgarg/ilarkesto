@@ -14,6 +14,7 @@
  */
 package ilarkesto.law;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.html.Html;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
@@ -27,6 +28,13 @@ public class Norm extends AJsonWrapper {
 	public Norm(NormRef ref, String title) {
 		putMandatory("ref", ref);
 		json.put("title", title);
+	}
+
+	public String getCodeAndTitle() {
+		String title = getTitle();
+		if (Str.isBlank(title)) return getRef().getCode();
+		return getRef().getCode() + " " + title;
+
 	}
 
 	public String getTextAsHtml() {
@@ -50,11 +58,27 @@ public class Norm extends AJsonWrapper {
 	}
 
 	public Section getSection() {
+		if (isDirectlyInBookWithoutSection()) return null;
 		return getParent(Section.class);
 	}
 
+	public boolean isFirstInSection() {
+		if (isDirectlyInBookWithoutSection()) return false;
+		return getSection().isFirst(this);
+	}
+
+	public boolean isFirstInParent() {
+		if (isDirectlyInBookWithoutSection()) return getBook().isFirst(this);
+		return getSection().isFirst(this);
+	}
+
 	public Book getBook() {
+		if (isDirectlyInBookWithoutSection()) return getParent(Book.class);
 		return getSection().getBook();
+	}
+
+	private boolean isDirectlyInBookWithoutSection() {
+		return json.getParent().contains("ref");
 	}
 
 	public NormRef getRef() {

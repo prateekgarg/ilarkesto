@@ -64,11 +64,21 @@ public class Section extends AJsonWrapper {
 
 	public List<Norm> getAllNorms() {
 		List<Norm> ret = new ArrayList<Norm>();
-		ret.addAll(getWrapperArray("norms", Norm.class));
+		ret.addAll(getNorms());
 		for (Section section : getSections()) {
 			ret.addAll(section.getAllNorms());
 		}
 		return ret;
+	}
+
+	private List<Norm> getNorms() {
+		return getWrapperArray("norms", Norm.class);
+	}
+
+	public boolean isFirst(Norm norm) {
+		List<Norm> norms = getNorms();
+		if (norms == null || norms.isEmpty()) return false;
+		return norm.getRef().equals(norms.get(0).getRef());
 	}
 
 	public void addNorm(Norm norm) {
@@ -83,14 +93,30 @@ public class Section extends AJsonWrapper {
 		json.addToArray("sections", section);
 	}
 
+	public String getSectionPathAsString() {
+		return getSectionPathAsString(" > ", " > ");
+	}
+
+	public String getSectionPathAsString(String prefix, String separator) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (Section section : getSectionPath()) {
+			if (first) {
+				if (prefix != null) sb.append(prefix);
+				first = false;
+			} else {
+				sb.append(separator);
+			}
+			sb.append(section.getTitle());
+		}
+		return sb.toString();
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getBook().getRef().getCode());
-		for (Section section : getSectionPath()) {
-			sb.append(" > ");
-			sb.append(section.getTitle());
-		}
+		sb.append(getSectionPathAsString());
 		return sb.toString();
 	}
 

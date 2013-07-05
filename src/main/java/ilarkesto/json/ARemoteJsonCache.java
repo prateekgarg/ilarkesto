@@ -48,6 +48,13 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 		return payload;
 	}
 
+	public boolean isPayloadAvailable() {
+		synchronized (getLock()) {
+			if (!file.exists()) return false;
+		}
+		return true;
+	}
+
 	protected P createInitialPayload() {
 		return null;
 	}
