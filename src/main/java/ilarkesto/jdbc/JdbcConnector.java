@@ -64,6 +64,7 @@ public class JdbcConnector {
 		} else {
 			try {
 				if (connection.isClosed()) createConnection();
+				if (!connection.isValid(0)) createConnection();
 			} catch (SQLException ex) {
 				createConnection();
 			}

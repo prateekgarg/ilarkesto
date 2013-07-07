@@ -61,22 +61,24 @@ public class Jdbc {
 
 	public static PreparedStatement prepareStatement(Connection connection, String sql, Object... params) {
 		if (connection == null) throw new IllegalArgumentException("connection == null");
-		PreparedStatement stmt;
-		try {
-			stmt = connection.prepareStatement(sql);
-		} catch (SQLException ex) {
-			throw new RuntimeException("Preparing SQL statement failed", ex);
-		}
-		int len = params.length;
-		for (int i = 0; i < len; i++) {
-			Object value = params[i];
+		synchronized (connection) {
+			PreparedStatement stmt;
 			try {
-				stmt.setObject(i + 1, value);
+				stmt = connection.prepareStatement(sql);
 			} catch (SQLException ex) {
-				throw new RuntimeException("Setting param " + i + " in prepared SQL statement failed:" + value, ex);
+				throw new RuntimeException("Preparing SQL statement failed", ex);
 			}
+			int len = params.length;
+			for (int i = 0; i < len; i++) {
+				Object value = params[i];
+				try {
+					stmt.setObject(i + 1, value);
+				} catch (SQLException ex) {
+					throw new RuntimeException("Setting param " + i + " in prepared SQL statement failed:" + value, ex);
+				}
+			}
+			return stmt;
 		}
-		return stmt;
 	}
 
 	public static void executeQuery(Connection connection, RecordHandler handler, String sql, Object... params)
@@ -99,19 +101,21 @@ public class Jdbc {
 	private static void execute(RecordHandler handler, PreparedStatement stmt) throws SQLException {
 		log.debug("SQL:", stmt);
 
-		ResultSet rs = null;
-		try {
-			stmt.execute();
-			if (handler != null) {
-				rs = stmt.getResultSet();
-				handler.onExecuted(rs);
-				while (rs.next()) {
-					handler.onRecord(rs);
+		synchronized (stmt.getConnection()) {
+			ResultSet rs = null;
+			try {
+				stmt.execute();
+				if (handler != null) {
+					rs = stmt.getResultSet();
+					handler.onExecuted(rs);
+					while (rs.next()) {
+						handler.onRecord(rs);
+					}
 				}
+			} finally {
+				closeQuiet(rs);
+				closeQuiet(stmt);
 			}
-		} finally {
-			closeQuiet(rs);
-			closeQuiet(stmt);
 		}
 	}
 
