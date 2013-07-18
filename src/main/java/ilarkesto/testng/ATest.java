@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.Collection;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeSuite;
 
 public class ATest extends Assert {
 
@@ -32,6 +33,11 @@ public class ATest extends Assert {
 	public static final String INPUT_DIR = "test-input";
 
 	protected Log log = Log.get(getClass());
+
+	@BeforeSuite
+	public void enableDebugLogging() {
+		Log.setDebugEnabled(true);
+	}
 
 	// --- files ---
 
