@@ -14,6 +14,7 @@ public class Json {
 			StringBuilder sb = new StringBuilder();
 			sb.append('[');
 			if (indentation >= 0) indentation++;
+			boolean indentArray = indentation > 0 && !isShort((Iterable) value);
 			Iterable list = (Iterable) value;
 			boolean first = true;
 			for (Object element : list) {
@@ -22,15 +23,42 @@ public class Json {
 				} else {
 					sb.append(',');
 				}
+				if (indentArray) {
+					sb.append('\n');
+					indent(sb, indentation);
+				}
 				sb.append(valueToString(element, indentation));
 			}
-			sb.append(']');
+			if (indentArray) {
+				sb.append('\n');
+			}
 			if (indentation >= 0) indentation--;
+			indent(sb, indentation);
+			sb.append(']');
 			return sb.toString();
 		}
 		if (value instanceof JsonObject) return ((JsonObject) value).toString(indentation);
 		if (value instanceof JsonWrapper) return ((JsonWrapper) value).getJson().toString(indentation);
 		return value.toString();
+	}
+
+	static boolean isShort(Iterable iterable) {
+		int size = 0;
+		for (Object element : iterable) {
+			if (element == null) continue;
+			if (!isPrimitive(element)) return false;
+			size += element.toString().length();
+			if (size > 80) return false;
+		}
+		return true;
+	}
+
+	static boolean isPrimitive(Object value) {
+		if (value == null) return true;
+		if (value instanceof String) return true;
+		if (value instanceof Number) return true;
+		if (value instanceof Boolean) return true;
+		return false;
 	}
 
 	static void indent(StringBuilder sb, int indentation) {

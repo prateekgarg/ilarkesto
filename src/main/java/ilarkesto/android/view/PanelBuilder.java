@@ -33,8 +33,7 @@ public class PanelBuilder extends AViewComponent {
 		if (title != null) {
 			FrameLayout titleFrame = new FrameLayout(context);
 			// titleFrame.setBackgroundColor(context.getResources().getColor(R.color.panel_title_bg));
-			titleFrame.setPadding(Views.DEFAULT_PADDING, Views.DEFAULT_PADDING, Views.DEFAULT_PADDING,
-				Views.DEFAULT_PADDING);
+			titleFrame.setPadding(Views.DEFAULT_PADDING, Views.DEFAULT_PADDING, Views.DEFAULT_PADDING, 0);
 			titleFrame.addView(title, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 			ll.addView(titleFrame, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		}

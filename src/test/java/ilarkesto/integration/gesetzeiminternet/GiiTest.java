@@ -1,5 +1,6 @@
 package ilarkesto.integration.gesetzeiminternet;
 
+import ilarkesto.io.IO;
 import ilarkesto.law.Book;
 import ilarkesto.law.BookCacheCollection;
 import ilarkesto.law.BookIndex;
@@ -24,6 +25,8 @@ public class GiiTest extends ATest {
 
 		BookIndex index = indexCache.getPayload();
 		assertNotEmpty(index.getBooks());
+
+		IO.writeFile(getTestOutputFile("GiiBookIndex.json"), index.getJson().toFormatedString(), IO.UTF_8);
 
 		BookRef binSchStrOAbweichV = index.getBookByCode("64. BinSchStrOAbweichV");
 		assertNotNull(binSchStrOAbweichV);
@@ -90,6 +93,22 @@ public class GiiTest extends ATest {
 			"Gesetz zur Begrenzung der Arzneimittelausgaben der gesetzlichen Krankenversicherung");
 
 		assertSize(book.getAllNorms(), 4);
+	}
+
+	@Test
+	public void giiReferences() {
+		GiiLawProvider gii = getGii();
+		for (BookRef bookRef : getBookIndex().getBooks()) {
+			String code = bookRef.getCode();
+			String reference = bookRef.getJson().getString("giiReference");
+
+			System.out.println(code);
+			assertEquals(gii.getGiiReference(code), reference);
+
+			// if (!gii.getGiiReference(code).equals(reference)) {
+			// System.out.println("		GII_REFERENCES.put(\"" + code + "\", \"" + reference + "\");");
+			// }
+		}
 	}
 
 	// --- ---

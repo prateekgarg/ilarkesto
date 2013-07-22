@@ -14,6 +14,13 @@ public class BookIndexCache extends ARemoteJsonCache<BookIndex> {
 	}
 
 	@Override
+	protected BookIndex createInitialPayload() {
+		BookIndex payload = lawProvider.loadPrepackagedBookIndex();
+		log.info("Prepackaged book index:", payload);
+		return payload;
+	}
+
+	@Override
 	protected BookIndex onUpdate(BookIndex index, boolean forced, boolean invalidated) {
 		if (!forced && !invalidated) {
 			if (index != null && !index.getBooks().isEmpty()) {

@@ -3,6 +3,8 @@ package ilarkesto.json;
 import ilarkesto.core.base.Utl;
 import ilarkesto.testng.ATest;
 
+import java.util.List;
+
 import org.testng.annotations.Test;
 
 public class JsonTest extends ATest {
@@ -48,6 +50,13 @@ public class JsonTest extends ATest {
 		jo.put("b", "new\nline");
 		String s = jo.toString();
 		assertEquals(s, "{\"a\":\"this is \\\"a\\\"\",\"b\":\"new\\nline\"}");
+	}
+
+	@Test
+	void valueToString() {
+		List<Integer> numbers = Utl.toList(1, 2, 3);
+		assertEquals(Json.valueToString(numbers, -1), "[1,2,3]");
+		// assertEquals(Json.valueToString(numbers, 0), "[\n\t1,\n\t2,\n\t3\n]");
 	}
 
 	@Test

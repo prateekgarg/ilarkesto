@@ -27,6 +27,8 @@ public abstract class ALawProvider {
 
 	protected abstract BookIndex loadBookIndex();
 
+	public abstract BookIndex loadPrepackagedBookIndex();
+
 	protected abstract Book loadBook(BookRef bookRef);
 
 	public abstract File getDataDir();

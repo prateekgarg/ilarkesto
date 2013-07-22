@@ -31,7 +31,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 		this.file = file;
 	}
 
-	private synchronized JsonObject getJson() {
+	private JsonObject getJson() {
 		synchronized (getLock()) {
 			if (wrapper == null) wrapper = JsonObject.loadFile(file, true);
 			return wrapper;
@@ -39,13 +39,20 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	}
 
 	public P getPayload() {
-		JsonObject json = getJson();
-		P payload = AJsonWrapper.createWrapper(json.getObject("payload"), payloadType);
-		if (payload == null) {
-			payload = createInitialPayload();
-			if (payload != null) json.put("payload", payload.json);
+		synchronized (getLock()) {
+			JsonObject json = getJson();
+			P payload = AJsonWrapper.createWrapper(json.getObject("payload"), payloadType);
+			if (payload == null) {
+				payload = createInitialPayload();
+				if (payload != null) json.put("payload", payload.json);
+			}
+			return payload;
 		}
-		return payload;
+	}
+
+	public void setPayload(P payload) {
+		getJson().put("payload", payload);
+		save();
 	}
 
 	public boolean isPayloadAvailable() {

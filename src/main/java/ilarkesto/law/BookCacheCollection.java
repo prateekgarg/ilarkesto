@@ -5,6 +5,7 @@ import java.io.File;
 public class BookCacheCollection {
 
 	private ALawProvider lawProvider;
+	private BookIndexCache bookIndexCache;
 
 	public BookCacheCollection(ALawProvider lawProvider) {
 		super();
@@ -17,9 +18,16 @@ public class BookCacheCollection {
 		return new BookCache(bookRef, file, lawProvider);
 	}
 
-	public BookIndexCache getBookIndexCache() {
-		File file = new File(lawProvider.getDataDir().getPath() + "/index.json");
-		return new BookIndexCache(file, lawProvider);
+	public synchronized BookIndexCache getBookIndexCache() {
+		if (bookIndexCache == null) {
+			File file = new File(lawProvider.getDataDir().getPath() + "/index.json");
+			bookIndexCache = new BookIndexCache(file, lawProvider);
+		}
+		return bookIndexCache;
+	}
+
+	public synchronized void releaseCachedData() {
+		bookIndexCache = null;
 	}
 
 }

@@ -108,12 +108,28 @@ public class LayoutBuilder extends AViewComponent {
 		return pg;
 	}
 
-	public Split split(int parts, boolean realSplit) {
+	/**
+	 * @param realSplit true to really split, false to not split
+	 */
+	public Split splitInTwo(boolean realSplit) {
 		Split split = new Split();
 		LayoutBuilder horizontal = realSplit ? createHorizontal() : null;
-		if (parts >= 1) split.a = realSplit ? horizontal.createVertical() : this;
-		if (parts >= 2) split.b = realSplit ? horizontal.createVertical() : this;
-		if (parts >= 3) split.c = realSplit ? horizontal.createVertical() : this;
+		split.a = realSplit ? horizontal.createVertical() : this;
+		split.b = realSplit ? horizontal.createVertical() : this;
+		return split;
+	}
+
+	/**
+	 * @param realSplit true to really split, false to not split
+	 * @param allFour true to really split in 4, false to split only in two
+	 */
+	public Split splitInFour(boolean realSplit, boolean allFour) {
+		Split split = new Split();
+		LayoutBuilder horizontal = realSplit ? createHorizontal() : null;
+		split.a = realSplit ? horizontal.createVertical() : this;
+		split.b = realSplit ? horizontal.createVertical() : this;
+		split.c = realSplit ? (allFour ? horizontal.createVertical() : split.a) : this;
+		split.d = realSplit ? (allFour ? horizontal.createVertical() : split.b) : this;
 		return split;
 	}
 
@@ -166,6 +182,7 @@ public class LayoutBuilder extends AViewComponent {
 		public LayoutBuilder a;
 		public LayoutBuilder b;
 		public LayoutBuilder c;
+		public LayoutBuilder d;
 
 	}
 

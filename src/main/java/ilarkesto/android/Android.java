@@ -263,8 +263,7 @@ public class Android {
 	}
 
 	public static int getDiesplayWidth(Context context) {
-		DisplayMetrics metrics = getDisplayMetrics(context);
-		float widthInDp = metrics.widthPixels / metrics.density;
+		float widthInDp = getScreenWidthInDp(context);
 		return (int) widthInDp;
 	}
 
@@ -275,16 +274,30 @@ public class Android {
 		return metrics;
 	}
 
-	public static boolean isWideEnoughForDouble(Context context) {
-		DisplayMetrics metrics = getDisplayMetrics(context);
-		float widthInDp = metrics.widthPixels / metrics.density;
-		return widthInDp > 600;
+	public static boolean isScreenWidthForListWithDetail(Context context) {
+		return getScreenWidthInDp(context) > 600;
 	}
 
-	public static boolean isScreenWidthTiny(Context context) {
+	public static boolean isScreenWidthForTwoPanels(Context context) {
+		return getScreenWidthInDp(context) > 480;
+	}
+
+	public static boolean isScreenWidthForFourPanels(Context context) {
+		return getScreenWidthInDp(context) > 960;
+	}
+
+	public static boolean isScreenWidthForTwoButtons(Context context) {
+		return getScreenWidthInDp(context) > 320;
+	}
+
+	public static boolean isScreenWidthForFourButtons(Context context) {
+		return getScreenWidthInDp(context) > 640;
+	}
+
+	private static float getScreenWidthInDp(Context context) {
 		DisplayMetrics metrics = getDisplayMetrics(context);
 		float widthInDp = metrics.widthPixels / metrics.density;
-		return widthInDp <= 320;
+		return widthInDp;
 	}
 
 	public static boolean isTabletDevice(Context context) {
