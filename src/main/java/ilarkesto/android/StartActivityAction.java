@@ -14,24 +14,33 @@
  */
 package ilarkesto.android;
 
-public abstract class AItemAction<I, A extends AListWithDetailActivity<I, ?>> extends AAction<A> {
+import android.app.Activity;
+import android.content.Context;
 
-	public AItemAction(A context) {
+public class StartActivityAction extends AAction {
+
+	private Class<? extends Activity> activity;
+	private String label;
+
+	public StartActivityAction(Context context, Class<? extends Activity> activity, String label) {
 		super(context);
-	}
-
-	public final I getItem() {
-		return context.getSelectedItem();
-	}
-
-	@Override
-	public boolean isVisible() {
-		return getItem() != null;
+		this.activity = activity;
+		this.label = label;
 	}
 
 	@Override
-	public boolean isEnabled() {
-		return getItem() != null;
+	protected void onRun() {
+		Android.startActivity(context, activity);
+	}
+
+	@Override
+	public String getLabel() {
+		return label;
+	}
+
+	@Override
+	protected String getTrackingIdentifier() {
+		return "Start:" + activity.getSimpleName();
 	}
 
 }

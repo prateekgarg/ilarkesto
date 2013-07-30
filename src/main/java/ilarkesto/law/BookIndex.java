@@ -14,10 +14,14 @@
  */
 package ilarkesto.law;
 
+import ilarkesto.core.base.Lazy;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class BookIndex extends AJsonWrapper {
 
@@ -31,10 +35,12 @@ public class BookIndex extends AJsonWrapper {
 	}
 
 	public BookRef getBookByCode(String code) {
-		for (BookRef book : getBooks()) {
-			if (book.isCode(code)) return book;
-		}
-		return null;
+		if (code == null) return null;
+		return booksByCode.get().get(code.toLowerCase());
+	}
+
+	public Set<String> getBookCodes() {
+		return booksByCode.get().keySet();
 	}
 
 	public String getCode() {
@@ -67,5 +73,17 @@ public class BookIndex extends AJsonWrapper {
 	public int hashCode() {
 		return getCode().hashCode();
 	}
+
+	private Lazy<Map<String, BookRef>> booksByCode = new Lazy<Map<String, BookRef>>() {
+
+		@Override
+		protected Map<String, BookRef> create() {
+			Map<String, BookRef> ret = new HashMap<String, BookRef>();
+			for (BookRef book : getBooks()) {
+				ret.put(book.getCode().toLowerCase(), book);
+			}
+			return ret;
+		}
+	};
 
 }

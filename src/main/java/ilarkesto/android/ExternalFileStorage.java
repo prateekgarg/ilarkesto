@@ -12,34 +12,26 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.law;
+package ilarkesto.android;
 
 import ilarkesto.core.base.AFileStorage;
-import ilarkesto.core.base.RuntimeTracker;
-import ilarkesto.core.logging.Log;
 
-public abstract class ALawProvider {
+import java.io.File;
 
-	protected Log log = Log.get(getClass());
+import android.content.Context;
 
-	protected abstract BookIndex loadBookIndex();
+public class ExternalFileStorage extends AFileStorage {
 
-	public abstract BookIndex loadPrepackagedBookIndex();
+	private Context context;
 
-	protected abstract Book loadBook(BookRef bookRef);
+	public ExternalFileStorage(Context context, String path) {
+		super(path);
+		this.context = context;
+	}
 
-	public abstract AFileStorage getDataStorage();
-
-	public abstract String getSourceUrl();
-
-	public abstract String getSourceUrl(String bookCode);
-
-	public final Book getBook(BookRef bookRef) {
-		log.info("Loading book:", bookRef.getCode());
-		RuntimeTracker rt = new RuntimeTracker();
-		Book book = loadBook(bookRef);
-		log.info("Book with", book.getAllNorms().size(), "norms loaded loaded in", rt);
-		return book;
+	@Override
+	protected File getBaseDir() {
+		return context.getExternalFilesDir(null);
 	}
 
 }

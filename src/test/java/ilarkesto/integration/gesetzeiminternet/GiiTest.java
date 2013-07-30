@@ -1,5 +1,6 @@
 package ilarkesto.integration.gesetzeiminternet;
 
+import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.io.IO;
 import ilarkesto.law.Book;
 import ilarkesto.law.BookCacheCollection;
@@ -20,7 +21,7 @@ public class GiiTest extends ATest {
 
 	@Test
 	public void testIndex() {
-		BookIndexCache indexCache = getBookCaches().getBookIndexCache();
+		BookIndexCache indexCache = getBookCaches().bookIndexCache.get();
 		indexCache.update(true);
 
 		BookIndex index = indexCache.getPayload();
@@ -61,9 +62,20 @@ public class GiiTest extends ATest {
 	}
 
 	@Test
+	public void testSgb10Kap12() {
+		BookRef ref = getBookIndex().getBookByCode("SGB 10/Kap1/2");
+		Book book = getGii().loadBook(ref);
+		assertEquals(book.getRef().getCode(), "SGB 10/Kap1/2");
+
+		List<Norm> norms = book.getAllNorms();
+		assertSize(norms, 4);
+	}
+
+	@Test
 	public void testStvg() {
 		BookRef ref = getBookIndex().getBookByCode("StVG");
 		Book book = getGii().loadBook(ref);
+		assertNotNull(book);
 		assertEquals(book.getRef().getCode(), "StVG");
 		assertEquals(book.getRef().getTitle(), "Straßenverkehrsgesetz");
 
@@ -95,7 +107,7 @@ public class GiiTest extends ATest {
 		assertSize(book.getAllNorms(), 4);
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void giiReferences() {
 		GiiLawProvider gii = getGii();
 		for (BookRef bookRef : getBookIndex().getBooks()) {
@@ -114,7 +126,7 @@ public class GiiTest extends ATest {
 	// --- ---
 
 	private BookIndex getBookIndex() {
-		BookIndexCache indexCache = getBookCaches().getBookIndexCache();
+		BookIndexCache indexCache = getBookCaches().bookIndexCache.get();
 		indexCache.update(false);
 
 		BookIndex index = indexCache.getPayload();
@@ -127,7 +139,7 @@ public class GiiTest extends ATest {
 	}
 
 	private GiiLawProvider getGii() {
-		return new GiiLawProvider(getTestOutputFile("books"));
+		return new GiiLawProvider(new SimpleFileStorage(getTestOutputFile("books")));
 	}
 
 	class SearchResultConsumerImpl implements SearchResultConsumer {

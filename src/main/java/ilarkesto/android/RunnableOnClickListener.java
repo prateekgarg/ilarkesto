@@ -14,24 +14,21 @@
  */
 package ilarkesto.android;
 
-public abstract class AItemAction<I, A extends AListWithDetailActivity<I, ?>> extends AAction<A> {
+import android.view.View;
+import android.view.View.OnClickListener;
 
-	public AItemAction(A context) {
-		super(context);
-	}
+public class RunnableOnClickListener implements OnClickListener {
 
-	public final I getItem() {
-		return context.getSelectedItem();
-	}
+	private Runnable runnable;
 
-	@Override
-	public boolean isVisible() {
-		return getItem() != null;
+	public RunnableOnClickListener(Runnable runnable) {
+		super();
+		this.runnable = runnable;
 	}
 
 	@Override
-	public boolean isEnabled() {
-		return getItem() != null;
+	public void onClick(View v) {
+		runnable.run();
 	}
 
 }

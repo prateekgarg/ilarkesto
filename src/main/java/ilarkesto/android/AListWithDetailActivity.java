@@ -48,6 +48,8 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 			itemPreselected = true;
 			selectItem(preselectedItem);
 		}
+
+		updateMenuItems();
 	}
 
 	protected I getPreselectedItem(List<I> items) {
@@ -141,6 +143,8 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 			// listView.setSelection(listAdapter.getIndexOf(item));
 		}
 		onSelectedItemChanged(selectedItem);
+		updateMenuItems();
+		if (selectedItem != null) AAndroidTracker.get().trackObjectView(selectedItem);
 	}
 
 	protected boolean isDetailSwipeEnabled() {

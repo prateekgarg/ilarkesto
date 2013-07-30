@@ -1,5 +1,6 @@
 package ilarkesto.android.view;
 
+import ilarkesto.android.Android;
 import ilarkesto.android.R;
 
 import java.util.ArrayList;
@@ -106,6 +107,14 @@ public class LayoutBuilder extends AViewComponent {
 		pg.setPadding(Views.DEFAULT_PADDING);
 		pg.setColor(context.getResources().getColor(R.color.panelgroup_bg));
 		return pg;
+	}
+
+	public Split splitInTwoForPanels(Context context) {
+		return splitInTwo(Android.isScreenWidthForTwoPanels(context));
+	}
+
+	public Split splitInTwoForButtons(Context context) {
+		return splitInTwo(Android.isScreenWidthForTwoButtons(context));
 	}
 
 	/**

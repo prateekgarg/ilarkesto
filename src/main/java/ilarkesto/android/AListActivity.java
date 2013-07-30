@@ -1,6 +1,8 @@
 package ilarkesto.android;
 
 import ilarkesto.android.view.Views;
+import ilarkesto.core.base.OperationObserver;
+import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Utl;
 
 import java.util.Collections;
@@ -19,7 +21,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
+public abstract class AListActivity<I, A extends AApp> extends AActivity<A> implements OperationObserver {
 
 	protected ListView listView;
 	protected View emptyView;
@@ -46,20 +48,19 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long arg3) {
 				if (position < 0 || position >= getItemCount()) return;
 				I item = listAdapter.getItem(position);
-				track(item);
 				AListActivity.this.onListItemClick(item);
 			}
 		});
 
 		wrapper = new FrameLayout(context);
-		setContentView(wrapper, Views.lp());
+		setContentView(wrapper, Views.lpMatch());
 
 		emptyView = LayoutInflater.from(this).inflate(R.layout.list_empty, null);
 		emptyView.setVisibility(View.GONE);
-		wrapper.addView(emptyView);
+		wrapper.addView(emptyView, Views.lpMatch());
 		listView.setEmptyView(emptyView);
 
-		wrapper.addView(createListViewWrapper());
+		wrapper.addView(createListViewWrapper(), Views.lpMatch());
 	}
 
 	// protected View createListHeaderView() {
@@ -74,7 +75,7 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		Android.removeFromParent(listView);
 		if (true) return listView;
 		LinearLayout layout = Views.horizontal(context);
-		LayoutParams lp = new LayoutParams(600, LayoutParams.WRAP_CONTENT);
+		LayoutParams lp = new LayoutParams(600, LayoutParams.FILL_PARENT);
 		lp.gravity = Gravity.CENTER_HORIZONTAL;
 		layout.addView(listView, lp);
 		return layout;
@@ -90,14 +91,30 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		emptyView.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
 	}
 
-	protected void setEmptyListText(String emptyListText) {
+	public final void setEmptyListText(String emptyListText) {
 		TextView tv = (TextView) emptyView.findViewById(R.id.listEmptyText);
 		if (emptyListText != null) tv.setText(emptyListText);
 	}
 
-	protected void setEmptyListText(int emptyListTextResId) {
+	public final void setEmptyListText(int emptyListTextResId) {
 		TextView tv = (TextView) emptyView.findViewById(R.id.listEmptyText);
 		tv.setText(emptyListTextResId);
+	}
+
+	public final void setLoadIndicatorText(final String text) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				log.info("Updating load indicator text:", text);
+				TextView tv = (TextView) emptyView.findViewById(R.id.listEmptyText);
+				tv.setText(text);
+				if (text != null)
+					emptyView.findViewById(R.id.listEmptyText).setVisibility(
+						emptyView.findViewById(R.id.listEmptyProgressBar).getVisibility());
+			}
+		});
+
 	}
 
 	@Override
@@ -105,7 +122,7 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		super.onStart();
 		listAdapter.clear();
 		enableLoadIndicator();
-		new ItemLoader().execute();
+		Android.start(new ItemLoader());
 	}
 
 	public void reloadItems() {
@@ -115,7 +132,6 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 	}
 
 	protected void changeContentViewToList() {
-		track();
 		changeContentView(createListViewWrapper());
 	}
 
@@ -131,6 +147,11 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 	protected void onItemsLoaded(List<I> items) {
 		disableLoadIndicator();
 		listAdapter.addItems(items);
+		updateMenuItems();
+	}
+
+	public List<I> getItems() {
+		return listAdapter.getItems();
 	}
 
 	public void addItems(final List<I> items) {
@@ -168,7 +189,7 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 	}
 
 	public void onListItemClick(I item) {
-		showToast(getItemTitle(item));
+		showToastShort(getItemTitle(item));
 	}
 
 	protected int getAdditionalItemLoadTrials() {
@@ -177,6 +198,17 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 	public final int getItemCount() {
 		return listAdapter.getCount();
+	}
+
+	@Override
+	public void onOperationInfoChanged(String key, Object... arguments) {
+		String text = Android.text(context, "ListOperation" + key, arguments);
+		setLoadIndicatorText(text);
+	}
+
+	@Override
+	public boolean isAbortRequested() {
+		return false;
 	}
 
 	class MyListAdapter extends AListAdapter<I> {
@@ -198,12 +230,17 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 
 		@Override
 		protected List<I> doInBackground(Object... params) {
-			long start = System.currentTimeMillis();
+			RuntimeTracker rt = new RuntimeTracker();
+			List<I> ret = doLoadItemsMultitry();
+			log.info("Items loaded:", rt.getRuntimeFormated(), "->", ret);
+			AAndroidTracker.get().listLoadTime(rt.getRuntime(), AListActivity.this.getClass().getSimpleName(),
+				ret.size() + " items");
+			return ret;
+		}
+
+		private List<I> doLoadItemsMultitry() {
 			List<I> items = doLoadItems();
-			if (items != null && !items.isEmpty()) {
-				log.info("Loading items took " + (System.currentTimeMillis() - start) + " ms. ->", items);
-				return items;
-			}
+			if (items != null && !items.isEmpty()) { return items; }
 
 			int additionalLoadTrials = getAdditionalItemLoadTrials();
 			for (int i = 0; i < additionalLoadTrials; i++) {
@@ -218,9 +255,16 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> {
 		private List<I> doLoadItems() {
 			try {
 				return loadItems();
-			} catch (Throwable ex) {
+			} catch (final Throwable ex) {
 				log.error("Loading items failed:", ex);
-				setEmptyListText(Android.text(context, R.string.loading_data_failed, Utl.getRootCauseMessage(ex)));
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						setEmptyListText(Android.text(context, R.string.loading_data_failed,
+							Utl.getRootCauseMessage(ex)));
+					}
+				});
 				return Collections.emptyList();
 			}
 		}

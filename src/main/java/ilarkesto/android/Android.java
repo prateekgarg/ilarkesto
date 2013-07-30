@@ -24,6 +24,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +37,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.view.Menu;
@@ -43,11 +47,32 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class Android {
 
 	private static Log log = Log.get(Android.class);
+
+	public static String getAppVersionName(Context context) {
+		PackageInfo pInfo;
+		try {
+			pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+		} catch (NameNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
+		return pInfo.versionName;
+	}
+
+	public static boolean isDebuggable(Context context) {
+		return (context.getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+	}
+
+	public static void start(AsyncTask task) {
+		task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+
+	public static void start(Runnable runnable) {
+		AsyncTask.THREAD_POOL_EXECUTOR.execute(runnable);
+	}
 
 	public static Location getLastKnownLocation(Context context) {
 		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -182,12 +207,12 @@ public class Android {
 		return Str.replaceIndexedParams(text(context, resId), params);
 	}
 
-	public static void showToast(CharSequence text, Context context) {
-		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+	public static String text(Context context, String key) {
+		return key; // TODO load text by key
 	}
 
-	public static void showToast(int textResId, Context context) {
-		Toast.makeText(context, textResId, Toast.LENGTH_SHORT).show();
+	public static String text(Context context, String key, Object... params) {
+		return Str.replaceIndexedParams(text(context, key), params);
 	}
 
 	public static boolean isInternetConnected(Context context) {

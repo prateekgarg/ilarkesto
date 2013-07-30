@@ -1,11 +1,12 @@
 package ilarkesto.law;
 
+import ilarkesto.core.base.Lazy;
+
 import java.io.File;
 
 public class BookCacheCollection {
 
 	private ALawProvider lawProvider;
-	private BookIndexCache bookIndexCache;
 
 	public BookCacheCollection(ALawProvider lawProvider) {
 		super();
@@ -14,20 +15,26 @@ public class BookCacheCollection {
 
 	public BookCache getBookCache(BookRef bookRef) {
 		if (bookRef == null) return null;
-		File file = new File(lawProvider.getDataDir().getPath() + "/" + bookRef.getCode() + ".json");
-		return new BookCache(bookRef, file, lawProvider);
+		return getBookCache(bookRef.getCode());
 	}
 
-	public synchronized BookIndexCache getBookIndexCache() {
-		if (bookIndexCache == null) {
-			File file = new File(lawProvider.getDataDir().getPath() + "/index.json");
-			bookIndexCache = new BookIndexCache(file, lawProvider);
-		}
-		return bookIndexCache;
+	public BookCache getBookCache(String bookCode) {
+		if (bookCode == null) return null;
+		File file = lawProvider.getDataStorage().getFile(bookCode + ".json");
+		return new BookCache(bookCode, file, bookIndexCache.get(), lawProvider);
 	}
+
+	public final Lazy<BookIndexCache> bookIndexCache = new Lazy<BookIndexCache>() {
+
+		@Override
+		protected BookIndexCache create() {
+			File file = lawProvider.getDataStorage().getFile("index.json");
+			return new BookIndexCache(file, lawProvider);
+		}
+	};
 
 	public synchronized void releaseCachedData() {
-		bookIndexCache = null;
+		bookIndexCache.release();
 	}
 
 }

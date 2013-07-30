@@ -12,26 +12,26 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.android;
+package ilarkesto.core.base;
 
-public abstract class AItemAction<I, A extends AListWithDetailActivity<I, ?>> extends AAction<A> {
+public abstract class Lazy<O> {
 
-	public AItemAction(A context) {
-		super(context);
-	}
+	private O object;
 
-	public final I getItem() {
-		return context.getSelectedItem();
-	}
+	protected abstract O create();
 
-	@Override
-	public boolean isVisible() {
-		return getItem() != null;
+	public synchronized final O get() {
+		if (object == null) object = create();
+		return object;
 	}
 
 	@Override
-	public boolean isEnabled() {
-		return getItem() != null;
+	public String toString() {
+		return String.valueOf(object);
+	}
+
+	public final void release() {
+		object = null;
 	}
 
 }

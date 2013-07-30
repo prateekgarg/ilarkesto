@@ -14,6 +14,7 @@
  */
 package ilarkesto.integration.hochschulkompass;
 
+import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.base.Str;
@@ -37,8 +38,9 @@ public class ValuesCache extends ARemoteJsonCache<Values> {
 	}
 
 	@Override
-	protected Values onUpdate(Values payload, boolean forced, boolean invalidated) {
+	protected Values onUpdate(Values payload, boolean forced, boolean invalidated, OperationObserver observer) {
 		String url = HochschulkompassSearchUrl.getBaseUrl();
+		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
 		String data = IO.downloadUrlToString(url);
 		try {
 			updateAll(payload, data);

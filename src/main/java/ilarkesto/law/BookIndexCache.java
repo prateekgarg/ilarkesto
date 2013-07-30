@@ -1,5 +1,6 @@
 package ilarkesto.law;
 
+import ilarkesto.core.base.OperationObserver;
 import ilarkesto.json.ARemoteJsonCache;
 
 import java.io.File;
@@ -21,12 +22,13 @@ public class BookIndexCache extends ARemoteJsonCache<BookIndex> {
 	}
 
 	@Override
-	protected BookIndex onUpdate(BookIndex index, boolean forced, boolean invalidated) {
+	protected BookIndex onUpdate(BookIndex index, boolean forced, boolean invalidated, OperationObserver observer) {
 		if (!forced && !invalidated) {
 			if (index != null && !index.getBooks().isEmpty()) {
 				if (getDaysSinceLastUpdated() < 90) return null;
 			}
 		}
+		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, lawProvider.getSourceUrl());
 		return lawProvider.loadBookIndex();
 	}
 

@@ -14,26 +14,73 @@
  */
 package ilarkesto.android;
 
+import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
 import android.content.Context;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Toast;
 
-public abstract class AAction<C extends Context> {
+public abstract class AAction<C extends Context> implements Runnable, OnClickListener {
 
-	private C context;
+	protected Log log = Log.get(getClass());
+
+	protected C context;
 
 	public AAction(C context) {
 		this.context = context;
 	}
 
-	protected void onTriggered() {
-		Android.showToast(getLabel() + " action triggered!", context);
+	protected void onRun() {
+		Toast.makeText(context, getLabel() + " action triggered! But where is the implementation?", Toast.LENGTH_LONG)
+				.show();
 	}
 
 	public String getLabel() {
+		int resId = getLabelResId();
+		if (resId >= 0) return Android.text(context, resId);
 		return getClass().getName();
 	}
 
-	public final void trigger() {
-		onTriggered();
+	public int getLabelResId() {
+		return -1;
+	}
+
+	@Override
+	public final void run() {
+		AAndroidTracker.get().action(getTrackingIdentifier(), getLabel());
+		if (isInternetRequired()) {
+			if (!Android.isOnline(context)) {
+				AAndroidTracker.get().userProblem("NoInternetForAction", getTrackingIdentifier());
+				log.debug("Internet required, but not available");
+				showError("Internet benötigt und zur Zeit nicht verfügbar.");
+				return;
+			}
+		}
+		try {
+			onRun();
+		} catch (Exception ex) {
+			AAndroidTracker.get().exception("ActionFailed:" + getTrackingIdentifier(), ex);
+			log.error(ex);
+			throw new RuntimeException("Executing action failed: " + getClass().getSimpleName(), ex);
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		run();
+	}
+
+	protected String getTrackingIdentifier() {
+		return Str.removeSuffix(getClass().getSimpleName(), "Action");
+	}
+
+	protected void showError(String message) {
+		Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+	}
+
+	protected boolean isInternetRequired() {
+		return false;
 	}
 
 	public boolean isEnabled() {
@@ -44,8 +91,8 @@ public abstract class AAction<C extends Context> {
 		return true;
 	}
 
-	public final C getContext() {
-		return context;
+	public int getIconResId() {
+		return -1;
 	}
 
 }

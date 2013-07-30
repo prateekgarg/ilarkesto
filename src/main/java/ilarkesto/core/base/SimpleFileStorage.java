@@ -12,26 +12,22 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.android;
+package ilarkesto.core.base;
 
-public abstract class AItemAction<I, A extends AListWithDetailActivity<I, ?>> extends AAction<A> {
+import java.io.File;
 
-	public AItemAction(A context) {
-		super(context);
-	}
+public class SimpleFileStorage extends AFileStorage {
 
-	public final I getItem() {
-		return context.getSelectedItem();
-	}
+	private File baseDir;
 
-	@Override
-	public boolean isVisible() {
-		return getItem() != null;
+	public SimpleFileStorage(File baseDir) {
+		super(null);
+		this.baseDir = baseDir;
 	}
 
 	@Override
-	public boolean isEnabled() {
-		return getItem() != null;
+	protected File getBaseDir() {
+		return baseDir;
 	}
 
 }

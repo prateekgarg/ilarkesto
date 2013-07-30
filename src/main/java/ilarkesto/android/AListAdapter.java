@@ -33,6 +33,10 @@ public class AListAdapter<T> extends BaseAdapter {
 		notifyDataSetChanged();
 	}
 
+	public List<T> getItems() {
+		return items;
+	}
+
 	public void clear() {
 		setItems(null);
 	}

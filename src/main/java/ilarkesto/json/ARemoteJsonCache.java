@@ -1,5 +1,6 @@
 package ilarkesto.json;
 
+import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.logging.Log;
 
@@ -17,7 +18,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	 * @param invalidated
 	 * @return new payload or null if not updated
 	 */
-	protected abstract P onUpdate(P payload, boolean forced, boolean invalidated);
+	protected abstract P onUpdate(P payload, boolean forced, boolean invalidated, OperationObserver observer);
 
 	private static Map<String, Object> lockByFilepath = new HashMap<String, Object>();
 
@@ -33,9 +34,17 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 
 	private JsonObject getJson() {
 		synchronized (getLock()) {
-			if (wrapper == null) wrapper = JsonObject.loadFile(file, true);
+			if (wrapper == null) {
+				log.info("Loading cache:", file);
+				wrapper = JsonObject.loadFile(file, true);
+			}
 			return wrapper;
 		}
+	}
+
+	public boolean isPayloadAvailableNow() {
+		if (wrapper == null) return false;
+		return wrapper.contains("payload");
 	}
 
 	public P getPayload() {
@@ -43,8 +52,12 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 			JsonObject json = getJson();
 			P payload = AJsonWrapper.createWrapper(json.getObject("payload"), payloadType);
 			if (payload == null) {
+				log.info("Creating initial payload");
 				payload = createInitialPayload();
-				if (payload != null) json.put("payload", payload.json);
+				if (payload != null) {
+					log.info("Initial payload created");
+					json.put("payload", payload.json);
+				}
 			}
 			return payload;
 		}
@@ -55,39 +68,44 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 		save();
 	}
 
-	public boolean isPayloadAvailable() {
-		synchronized (getLock()) {
-			if (!file.exists()) return false;
-		}
-		return true;
-	}
-
 	protected P createInitialPayload() {
 		return null;
 	}
 
 	public P getPayload_ButUpdateIfNull() throws RemoteUpdateFailedException {
+		return getPayload_ButUpdateIfNull(null);
+	}
+
+	public P getPayload_ButUpdateIfNull(OperationObserver observer) throws RemoteUpdateFailedException {
+		if (observer == null) observer = OperationObserver.DUMMY;
+		observer.onOperationInfoChanged(OperationObserver.LOADING_CACHE);
 		P payload = getPayload();
 		if (payload == null) {
 			log.info("Payload does not exist, needs update");
-			update(true);
+			update(true, observer);
 			return getPayload();
 		}
 		if (isInvalidated()) {
 			log.info("Payload is invalidated, needs update");
-			update(true);
+			update(true, observer);
 			return getPayload();
 		}
 		return payload;
 	}
 
 	public void update(boolean force) throws RemoteUpdateFailedException {
+		update(force, null);
+	}
+
+	public void update(boolean force, OperationObserver observer) throws RemoteUpdateFailedException {
+		if (observer == null) observer = OperationObserver.DUMMY;
 		synchronized (getLock()) {
 			P payload = getPayload();
 			log.info("Updating payload", force ? "(forced)" : "");
+			observer.onOperationInfoChanged(OperationObserver.UPDATING);
 			RuntimeTracker rt = new RuntimeTracker();
 			try {
-				payload = onUpdate(payload, force, isInvalidated());
+				payload = onUpdate(payload, force, isInvalidated(), observer);
 			} catch (Exception ex) {
 				if (payload != null) {
 					log.warn("Updating payload failed.", ex);
@@ -112,8 +130,13 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 
 	public void save() {
 		synchronized (getLock()) {
-			log.info("Saving");
-			if (wrapper != null) wrapper.write(file, false);
+			if (wrapper != null) {
+				log.info("Saving");
+				long start = System.currentTimeMillis();
+				wrapper.write(file, false);
+				long time = System.currentTimeMillis() - start;
+				log.info("Saved in", time, "ms.:", file);
+			}
 		}
 		onSaved();
 	}
@@ -121,7 +144,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	private Object getLock() {
 		Object lock = lockByFilepath.get(file.getAbsolutePath());
 		if (lock == null) {
-			lock = new Object();
+			lock = file.getAbsolutePath();
 			lockByFilepath.put(file.getAbsolutePath(), lock);
 		}
 		return lock;

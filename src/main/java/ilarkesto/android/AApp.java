@@ -5,24 +5,28 @@ import ilarkesto.core.logging.Log;
 
 import java.lang.reflect.Field;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.widget.Toast;
 
 public abstract class AApp extends Application {
 
 	private Log log = Log.get(getClass());
 	protected static Context context;
 
-	private AUserTracker userTracker;
 	private FilesCache filesCache;
 	private ASkin skin;
 	private Localizer localizer;
+	private boolean debugInfoDisplayed;
 
 	static {
 		Log.setLogRecordHandler(new AndroidLogDatahandler());
 	}
 
 	public abstract Class<? extends AActivity<? extends AApp>> getHomeActivity();
+
+	protected abstract AAndroidTracker createTracker();
 
 	public AApp() {
 		copyResourceIds();
@@ -32,11 +36,17 @@ public abstract class AApp extends Application {
 	public void onCreate() {
 		context = this;
 		super.onCreate();
+		if (Android.isDebuggable(context)) {
+			log.warn("       DEBUG MODE");
+			AAndroidTracker.instance = AAndroidTracker.DUMMY;
+		} else {
+			log.info("       PRODUCTION MODE");
+			AAndroidTracker.instance = createTracker();
+		}
 	}
 
 	@Override
 	public void onTerminate() {
-		if (userTracker != null) userTracker.shutdown();
 		super.onTerminate();
 	}
 
@@ -89,17 +99,27 @@ public abstract class AApp extends Application {
 		}
 	}
 
-	public AUserTracker getUserTracker() {
-		if (userTracker == null) {
-			userTracker = createUserTracker();
-			log.info("User tracker created:", userTracker);
+	// --- activity events----
+
+	final void activityStart(Activity activity) {
+		if (!debugInfoDisplayed) {
+			debugInfoDisplayed = true;
+			if (Android.isDebuggable(context)) Toast.makeText(activity, "DEBUG MODE", Toast.LENGTH_LONG).show();
 		}
-		return userTracker;
+		AAndroidTracker.get().activityStart(activity);
+		onActivityStart(activity);
 	}
 
-	protected AUserTracker createUserTracker() {
-		return new DummyUserTracker();
+	protected void onActivityStart(Activity activity) {}
+
+	final void activityStop(Activity activity) {
+		AAndroidTracker.get().activityStop(activity);
+		onActivityStop(activity);
 	}
+
+	protected void onActivityStop(Activity activity) {}
+
+	// --- ---
 
 	protected ASkin createSkin() {
 		return new ASkin(context);
@@ -123,24 +143,6 @@ public abstract class AApp extends Application {
 	public static AApp get() {
 		if (context == null) throw new IllegalStateException("context == null -> AApp.onCreate() not caled yet.");
 		return (AApp) context.getApplicationContext();
-	}
-
-	class DummyUserTracker extends AUserTracker {
-
-		@Override
-		protected void onTrack(String path) {}
-
-		@Override
-		protected void onFlush() {}
-
-		@Override
-		protected void onShutdown() {}
-
-		@Override
-		public String toString() {
-			return "dummy";
-		}
-
 	}
 
 }

@@ -1,5 +1,6 @@
 package ilarkesto.integration.gesetzeiminternet;
 
+import ilarkesto.core.base.AFileStorage;
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.io.IO;
@@ -9,34 +10,21 @@ import ilarkesto.law.Book;
 import ilarkesto.law.BookIndex;
 import ilarkesto.law.BookRef;
 import ilarkesto.law.DataLoadFailedException;
-import ilarkesto.law.Norm;
 import ilarkesto.net.HttpDownloader;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GiiLawProvider extends ALawProvider {
 
 	public String BASE_URL = "http://www.gesetze-im-internet.de/";
 
-	public static void main(String[] args) {
-		BookRef ref = new BookRef("StVo", "Straßenverkehrs-Ordnung");
-		ref.getJson().put("giiReference", "stvo");
-		List<Norm> norms = new GiiLawProvider(new File("runtimedata/gii")).getBook(ref).getAllNorms();
-		for (Norm norm : norms) {
-			System.out.println("\n-------------------------------------");
-			System.out.println(norm);
-			System.out.println(norm.getTextAsHtml());
-		}
-	}
-
 	private HttpDownloader downloader;
-	private File dataDir;
+	private AFileStorage dataStorage;
 
-	public GiiLawProvider(File dataDir) {
-		this.dataDir = dataDir;
+	public GiiLawProvider(AFileStorage dataStorage) {
+		this.dataStorage = dataStorage;
 		this.downloader = new HttpDownloader().setCharset(IO.ISO_LATIN_1).setBaseUrl(BASE_URL);
 	}
 
@@ -49,6 +37,8 @@ public class GiiLawProvider extends ALawProvider {
 
 	@Override
 	protected Book loadBook(BookRef bookRef) {
+		if (bookRef == null) return null;
+
 		String reference = bookRef.getJson().getString("giiReference");
 		if (reference == null)
 			throw new DataLoadFailedException("Book reference has no giiReference property: " + bookRef.getJson(), null);
@@ -87,8 +77,8 @@ public class GiiLawProvider extends ALawProvider {
 	}
 
 	@Override
-	public File getDataDir() {
-		return dataDir;
+	public AFileStorage getDataStorage() {
+		return dataStorage;
 	}
 
 	private String loadXmlFileFromDir(File dir) {
@@ -99,11 +89,11 @@ public class GiiLawProvider extends ALawProvider {
 	}
 
 	public File getBookDataDir(String bookCode) {
-		return new File(dataDir.getPath() + "/" + bookCode);
+		return dataStorage.getFile(bookCode);
 	}
 
 	private File getTempBookDataDir(String bookCode) {
-		return new File(dataDir.getPath() + "/~" + bookCode);
+		return dataStorage.getFile("/~" + bookCode);
 	}
 
 	@Override
@@ -142,7 +132,12 @@ public class GiiLawProvider extends ALawProvider {
 	}
 
 	@Override
-	public String getSourceUrl(BookRef bookRef) {
+	public String getSourceUrl(String bookCode) {
+		return BASE_URL; // TODO
+	}
+
+	@Override
+	public String getSourceUrl() {
 		return BASE_URL;
 	}
 

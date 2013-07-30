@@ -39,6 +39,7 @@ public class ConfigStore {
 		Editor editor = getPrefs().edit();
 		editor.putLong(key, value);
 		editor.commit();
+		AAndroidTracker.get().preferenceChange(getConfigId() + "." + key, Str.format(value));
 	}
 
 	public boolean getBool(String key, boolean defValue) {
@@ -50,6 +51,7 @@ public class ConfigStore {
 		Editor editor = getPrefs().edit();
 		editor.putBoolean(key, value);
 		editor.commit();
+		AAndroidTracker.get().preferenceChange(getConfigId() + "." + key, Str.format(value));
 	}
 
 	public String get(String key) {
@@ -70,6 +72,7 @@ public class ConfigStore {
 		Editor editor = getPrefs().edit();
 		editor.putString(key, value);
 		editor.commit();
+		AAndroidTracker.get().preferenceChange(getConfigId() + "." + key, Str.format(value));
 	}
 
 	public SharedPreferences getPrefs() {
@@ -106,6 +109,7 @@ public class ConfigStore {
 			Editor editor = getPrefs().edit();
 			editor.putBoolean(getKey(), value);
 			editor.commit();
+			AAndroidTracker.get().preferenceChange(getTrackingId(), Str.format(value));
 			onValueChanged();
 		}
 
@@ -130,6 +134,7 @@ public class ConfigStore {
 			Editor editor = getPrefs().edit();
 			editor.putInt(getKey(), value);
 			editor.commit();
+			AAndroidTracker.get().preferenceChange(getTrackingId(), Str.format(value));
 			onValueChanged();
 		}
 
@@ -154,6 +159,7 @@ public class ConfigStore {
 			Editor editor = getPrefs().edit();
 			editor.putLong(getKey(), value);
 			editor.commit();
+			AAndroidTracker.get().preferenceChange(getTrackingId(), Str.format(value));
 			onValueChanged();
 		}
 
@@ -186,6 +192,7 @@ public class ConfigStore {
 			String key = getKey();
 			editor.putString(key, value);
 			editor.commit();
+			AAndroidTracker.get().preferenceChange(getTrackingId(), Str.format(value));
 			onValueChanged();
 		}
 
@@ -214,6 +221,7 @@ public class ConfigStore {
 			jo.put("list", value);
 			editor.putString(key, value == null ? null : jo.toString());
 			editor.commit();
+			AAndroidTracker.get().preferenceChange(getTrackingId(), Str.format(value));
 			onValueChanged();
 		}
 
@@ -273,6 +281,7 @@ public class ConfigStore {
 			String key = getKey();
 			editor.putString(key, value == null ? null : value.toString());
 			editor.commit();
+			AAndroidTracker.get().preferenceChange(getTrackingId(), Str.format(value));
 			onValueChanged();
 		}
 
@@ -295,6 +304,7 @@ public class ConfigStore {
 			String key = getKey();
 			editor.putStringSet(key, value);
 			editor.commit();
+			AAndroidTracker.get().preferenceChange(getTrackingId(), Str.format(value));
 			onValueChanged();
 		}
 
@@ -336,6 +346,10 @@ public class ConfigStore {
 			String key = getKey();
 			editor.remove(key);
 			editor.commit();
+		}
+
+		String getTrackingId() {
+			return getConfigId() + "." + getKey();
 		}
 	}
 

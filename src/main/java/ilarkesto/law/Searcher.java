@@ -16,6 +16,7 @@ public class Searcher implements Runnable {
 	private BookCacheCollection bookCaches;
 	private List<String> searchStrings;
 
+	private boolean broadenToCachedBooksEnabled;
 	private boolean stopRequested;
 	private BookRef restrictToBook;
 
@@ -40,8 +41,11 @@ public class Searcher implements Runnable {
 		} else {
 			log.info("Searching for books:", searchStrings);
 			searchForBooksWithoutNorms();
-			consumer.onSearchBroadenedToCachedBooks();
-			searchForNorms(bookCaches.getBookIndexCache().getPayload().getBooks(), false);
+			if (stopRequested) return;
+			if (broadenToCachedBooksEnabled) {
+				consumer.onSearchBroadenedToCachedBooks();
+				searchForNorms(bookCaches.bookIndexCache.get().getPayload().getBooks(), false);
+			}
 		}
 
 		consumer.onSearchFinished();
@@ -49,9 +53,12 @@ public class Searcher implements Runnable {
 	}
 
 	private void searchRestrictedBook() {
-		BookIndex index = bookCaches.getBookIndexCache().getPayload();
+		Log.TEST("searchRestrictedBook()");
+		BookIndex index = bookCaches.bookIndexCache.get().getPayload();
+		Log.TEST("searchRestrictedBook() - index loaded");
 		for (String code : searchStrings) {
 			restrictToBook = index.getBookByCode(code);
+			Log.TEST("searchRestrictedBook() - book get() finished");
 			if (restrictToBook != null) {
 				searchStrings.remove(code);
 				consumer.onBookFound(restrictToBook);
@@ -100,7 +107,7 @@ public class Searcher implements Runnable {
 	}
 
 	private void searchForBooksWithoutNorms() {
-		BookIndex index = bookCaches.getBookIndexCache().getPayload();
+		BookIndex index = bookCaches.bookIndexCache.get().getPayload();
 		if (index == null) return;
 		for (BookRef book : index.getBooks()) {
 			if (stopRequested) return;
@@ -136,6 +143,10 @@ public class Searcher implements Runnable {
 			ret.add(tokenizer.nextToken().toLowerCase());
 		}
 		return ret;
+	}
+
+	public void setBroadenToCachedBooksEnabled(boolean broadenToCachedBooksEnabled) {
+		this.broadenToCachedBooksEnabled = broadenToCachedBooksEnabled;
 	}
 
 	public static interface SearchResultConsumer {

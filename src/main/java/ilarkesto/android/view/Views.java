@@ -10,6 +10,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.View;
@@ -60,9 +61,14 @@ public class Views {
 	public static TextView titleText(Context context, CharSequence text) {
 		TextView tv = text(context, text);
 		tv.setTextSize(20);
+		tv.setTypeface(typefaceSansSerifCondensed());
 		// tv.setTypeface(null, Typeface.BOLD);
 		tv.setTextColor(context.getResources().getColor(R.color.title));
 		return tv;
+	}
+
+	public static Typeface typefaceSansSerifCondensed() {
+		return Typeface.create("sans-serif-condensed", Typeface.NORMAL);
 	}
 
 	public static LinearLayout titleWrapper(Context context) {

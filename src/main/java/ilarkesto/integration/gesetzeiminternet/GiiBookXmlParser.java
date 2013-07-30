@@ -50,6 +50,7 @@ public class GiiBookXmlParser extends Parser {
 			int depth = gliederungskennzahl.length() / 3;
 			gotoAfter("<gliederungsbez>");
 			String gliederungsbez = getUntilAndGotoAfter("</gliederungsbez>");
+			gotoAfter("</gliederungseinheit>");
 			Section s = new Section(gliederungsbez);
 			// Log.TEST("Gliederung:", depth, gliederungskennzahl, gliederungsbez);
 			if (depth > currentDepth) {
@@ -79,8 +80,7 @@ public class GiiBookXmlParser extends Parser {
 				}
 			}
 			section = s;
-			// TODO sections
-			return;
+			if (!isNext("<enbez>")) return;
 		}
 		gotoAfter("<enbez>");
 		String enbez = getUntilAndGotoAfter("</enbez>");

@@ -156,6 +156,14 @@ public class Utl {
 		return a;
 	}
 
+	public static <T> Set<T> toSet(T... elements) {
+		Set<T> ret = new HashSet<T>();
+		for (T element : elements) {
+			ret.add(element);
+		}
+		return ret;
+	}
+
 	/**
 	 * Check if the first given parameter equals at least one of the other parameters
 	 */

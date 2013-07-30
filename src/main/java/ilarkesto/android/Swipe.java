@@ -1,6 +1,7 @@
 package ilarkesto.android;
 
 import ilarkesto.core.logging.Log;
+import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -81,8 +82,15 @@ public class Swipe {
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				oldView.setVisibility(View.GONE);
-				container.removeView(oldView);
+				new Handler().post(new Runnable() {
+
+					@Override
+					public void run() {
+						oldView.setVisibility(View.GONE);
+						container.removeView(oldView);
+					}
+				});
+
 			}
 		});
 		hide.setDuration(duration);

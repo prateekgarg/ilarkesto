@@ -12,6 +12,8 @@ import android.preference.PreferenceScreen;
 
 public abstract class APreferencesActivity extends PreferenceActivity {
 
+	protected APreferencesActivity context = this;
+
 	protected abstract ConfigStore getConfig();
 
 	protected abstract void initPreferences();
@@ -21,14 +23,20 @@ public abstract class APreferencesActivity extends PreferenceActivity {
 	@Override
 	protected final void onStart() {
 		super.onStart();
+		AApp.get().activityStart(this);
 		ConfigStore configStore = getConfig();
-		AApp.get().getUserTracker().track(this, configStore.getConfigId());
 
 		PreferenceManager preferenceManager = getPreferenceManager();
 		preferenceManager.setSharedPreferencesName(configStore.getConfigFilename());
 		preferenceScreen = preferenceManager.createPreferenceScreen(this);
 		initPreferences();
 		setPreferenceScreen(preferenceScreen);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		AApp.get().activityStop(this);
 	}
 
 	protected void addPreference(ConfigStore.ABooleanConf conf) {

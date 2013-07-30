@@ -37,7 +37,7 @@ public class ImageDownloader {
 			}
 		}
 		Task task = new Task();
-		task.execute();
+		Android.start(task);
 	}
 
 	private Object getSyncObject() {
@@ -45,10 +45,10 @@ public class ImageDownloader {
 		return this;
 	}
 
-	class Task extends AsyncTask<String, String, Uri> {
+	class Task extends AsyncTask<Object, Object, Uri> {
 
 		@Override
-		protected Uri doInBackground(String... params) {
+		protected Uri doInBackground(Object... params) {
 			return download();
 		}
 
