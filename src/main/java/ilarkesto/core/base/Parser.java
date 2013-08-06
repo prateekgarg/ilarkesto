@@ -37,6 +37,10 @@ public class Parser {
 		return data.substring(pos, idx);
 	}
 
+	public String getRemaining() {
+		return data.substring(pos);
+	}
+
 	public String getUntilAndGotoAfter(String... ss) throws ParseException {
 		String ret = getUntil(ss);
 		gotoAfter(ss);
@@ -58,6 +62,13 @@ public class Parser {
 
 	public void skip(int count) {
 		pos += count;
+	}
+
+	public void skipWhitespace() {
+		int last = data.length() - 1;
+		while (pos < last && Character.isWhitespace(data.charAt(pos))) {
+			pos++;
+		}
 	}
 
 	public String getUntilAfterIf(String until, String after) {

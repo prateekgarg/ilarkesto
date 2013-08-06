@@ -79,18 +79,20 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	public P getPayload_ButUpdateIfNull(OperationObserver observer) throws RemoteUpdateFailedException {
 		if (observer == null) observer = OperationObserver.DUMMY;
 		observer.onOperationInfoChanged(OperationObserver.LOADING_CACHE);
-		P payload = getPayload();
-		if (payload == null) {
-			log.info("Payload does not exist, needs update");
-			update(true, observer);
-			return getPayload();
+		synchronized (getLock()) {
+			P payload = getPayload();
+			if (payload == null) {
+				log.info("Payload does not exist, needs update");
+				update(true, observer);
+				return getPayload();
+			}
+			if (isInvalidated()) {
+				log.info("Payload is invalidated, needs update");
+				update(true, observer);
+				return getPayload();
+			}
+			return payload;
 		}
-		if (isInvalidated()) {
-			log.info("Payload is invalidated, needs update");
-			update(true, observer);
-			return getPayload();
-		}
-		return payload;
 	}
 
 	public void update(boolean force) throws RemoteUpdateFailedException {
@@ -189,6 +191,16 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 		Long lastUpdated = getLastUpdated();
 		if (lastUpdated == null) return Long.MAX_VALUE;
 		return System.currentTimeMillis() - lastUpdated;
+	}
+
+	protected boolean isSkipUpdateByHours(int maxAgeInHours, boolean forced, boolean invalidated) {
+		if (forced || invalidated) return false;
+		return getHoursSinceLastUpdated() < maxAgeInHours;
+	}
+
+	protected boolean isSkipUpdateByDays(int maxAgeInDays, boolean forced, boolean invalidated) {
+		int maxAgeInHours = maxAgeInDays * 24;
+		return getHoursSinceLastUpdated() < maxAgeInHours;
 	}
 
 	public long getHoursSinceLastUpdated() {

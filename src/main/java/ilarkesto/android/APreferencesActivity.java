@@ -10,27 +10,32 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
-public abstract class APreferencesActivity extends PreferenceActivity {
+public abstract class APreferencesActivity<C extends ConfigStore> extends PreferenceActivity {
 
 	protected APreferencesActivity context = this;
 
-	protected abstract ConfigStore getConfig();
+	protected abstract C createConfig();
 
 	protected abstract void initPreferences();
 
+	private C configStore;
 	private PreferenceScreen preferenceScreen;
 
 	@Override
 	protected final void onStart() {
 		super.onStart();
 		AApp.get().activityStart(this);
-		ConfigStore configStore = getConfig();
 
 		PreferenceManager preferenceManager = getPreferenceManager();
-		preferenceManager.setSharedPreferencesName(configStore.getConfigFilename());
+		preferenceManager.setSharedPreferencesName(getConfig().getConfigFilename());
 		preferenceScreen = preferenceManager.createPreferenceScreen(this);
 		initPreferences();
 		setPreferenceScreen(preferenceScreen);
+	}
+
+	public final synchronized C getConfig() {
+		if (configStore == null) configStore = createConfig();
+		return configStore;
 	}
 
 	@Override

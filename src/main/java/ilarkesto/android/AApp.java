@@ -29,12 +29,12 @@ public abstract class AApp extends Application {
 	protected abstract AAndroidTracker createTracker();
 
 	public AApp() {
+		context = this;
 		copyResourceIds();
 	}
 
 	@Override
 	public void onCreate() {
-		context = this;
 		super.onCreate();
 		if (Android.isDebuggable(context)) {
 			log.warn("       DEBUG MODE");
@@ -43,6 +43,7 @@ public abstract class AApp extends Application {
 			log.info("       PRODUCTION MODE");
 			AAndroidTracker.instance = createTracker();
 		}
+		if (AAndroidTracker.get() == null) throw new RuntimeException("AAndroidTracker.get() == null");
 	}
 
 	@Override
@@ -118,6 +119,23 @@ public abstract class AApp extends Application {
 	}
 
 	protected void onActivityStop(Activity activity) {}
+
+	@Override
+	public void onTrimMemory(int level) {
+		super.onTrimMemory(level);
+		log.info("onTrimMemory(" + level + ")");
+		if (level >= TRIM_MEMORY_MODERATE) onReleaseMemoryRequested();
+	}
+
+	@Override
+	public void onLowMemory() {
+		super.onLowMemory();
+		onReleaseMemoryRequested();
+	}
+
+	protected void onReleaseMemoryRequested() {
+		log.info("onReleaseMemoryRequested()");
+	}
 
 	// --- ---
 

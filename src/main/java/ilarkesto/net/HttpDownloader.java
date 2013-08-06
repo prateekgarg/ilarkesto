@@ -22,26 +22,8 @@ public class HttpDownloader {
 	private String password;
 	private String baseUrl;
 
-	public String downloadZippedText(String url, String zipContentCharset) {
-		url = getFullUrl(url);
-		log.info(url);
-		InputStream is = null;
-		ZipInputStream zis = null;
-		try {
-			is = IO.openUrlInputStream(url, username, password);
-			zis = new ZipInputStream(new BufferedInputStream(is));
-			ZipEntry ze;
-			try {
-				ze = zis.getNextEntry();
-			} catch (IOException ex) {
-				throw new RuntimeException("Extracting zip file failed: " + url, ex);
-			}
-			if (ze == null) throw new RuntimeException("Zip file is empty: " + url);
-			return IO.readToString(zis, zipContentCharset);
-		} finally {
-			IO.closeQuiet(zis);
-			IO.closeQuiet(is);
-		}
+	public void downloadUrlToFile(String url, File file) {
+		IO.downloadUrlToFile(url, file.getPath());
 	}
 
 	public void downloadZipAndExtract(String url, File dir) {
@@ -91,6 +73,10 @@ public class HttpDownloader {
 	public HttpDownloader setCharset(String charset) {
 		this.charset = charset;
 		return this;
+	}
+
+	public String getCharset() {
+		return charset;
 	}
 
 	public HttpDownloader setBaseUrl(String baseUrl) {

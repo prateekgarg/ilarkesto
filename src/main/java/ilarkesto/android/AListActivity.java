@@ -202,8 +202,12 @@ public abstract class AListActivity<I, A extends AApp> extends AActivity<A> impl
 
 	@Override
 	public void onOperationInfoChanged(String key, Object... arguments) {
-		String text = Android.text(context, "ListOperation" + key, arguments);
+		String text = getOperationInfoText(key, arguments);
 		setLoadIndicatorText(text);
+	}
+
+	protected String getOperationInfoText(String key, Object... arguments) {
+		return Android.text(context, "ListOperation" + key, arguments);
 	}
 
 	@Override

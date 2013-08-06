@@ -1,5 +1,7 @@
 package ilarkesto.core.base;
 
+import ilarkesto.core.logging.Log;
+
 public interface OperationObserver {
 
 	public static final String DOWNLOADING = "downloading";
@@ -12,13 +14,17 @@ public interface OperationObserver {
 
 	public static final OperationObserver DUMMY = new OperationObserver() {
 
+		private final Log log = Log.get(OperationObserver.class);
+
 		@Override
 		public boolean isAbortRequested() {
 			return false;
 		}
 
 		@Override
-		public void onOperationInfoChanged(String key, Object... arguments) {}
+		public void onOperationInfoChanged(String key, Object... arguments) {
+			log.info(key, "->", Str.formatObjectArray(arguments));
+		}
 	};
 
 }

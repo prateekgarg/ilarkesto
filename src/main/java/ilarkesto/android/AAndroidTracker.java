@@ -50,12 +50,12 @@ public abstract class AAndroidTracker extends ATracker {
 		}
 
 		@Override
-		public void activityStop(Activity activity) {
+		public void activityStart(Activity activity) {
 			log.info("activity_start", activity.getClass().getSimpleName());
 		}
 
 		@Override
-		public void activityStart(Activity activity) {
+		public void activityStop(Activity activity) {
 			log.info("activity_stop", activity.getClass().getSimpleName());
 		}
 

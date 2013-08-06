@@ -113,6 +113,14 @@ public abstract class AListWithDetailActivity<I, A extends AApp> extends AListAc
 		if (item == selectedItem) return;
 		selectedItem = item;
 
+		updateView(swipeAnimationMode);
+	}
+
+	public void updateView() {
+		updateView(Swipe.SWIPE_NONE);
+	}
+
+	private void updateView(int swipeAnimationMode) {
 		View detailView = null;
 		if (selectedItem != null) {
 			detailView = createItemDetailView(selectedItem);

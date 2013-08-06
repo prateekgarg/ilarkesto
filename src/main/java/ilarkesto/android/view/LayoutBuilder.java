@@ -109,11 +109,11 @@ public class LayoutBuilder extends AViewComponent {
 		return pg;
 	}
 
-	public Split splitInTwoForPanels(Context context) {
+	public Split splitInTwoForPanels() {
 		return splitInTwo(Android.isScreenWidthForTwoPanels(context));
 	}
 
-	public Split splitInTwoForButtons(Context context) {
+	public Split splitInTwoForButtons() {
 		return splitInTwo(Android.isScreenWidthForTwoButtons(context));
 	}
 
@@ -126,6 +126,14 @@ public class LayoutBuilder extends AViewComponent {
 		split.a = realSplit ? horizontal.createVertical() : this;
 		split.b = realSplit ? horizontal.createVertical() : this;
 		return split;
+	}
+
+	public Split splitInFourForButtons() {
+		return splitInFour(Android.isScreenWidthForTwoButtons(context), Android.isScreenWidthForFourButtons(context));
+	}
+
+	public Split splitInFourForPanels() {
+		return splitInFour(Android.isScreenWidthForTwoPanels(context), Android.isScreenWidthForFourPanels(context));
 	}
 
 	/**
@@ -192,6 +200,14 @@ public class LayoutBuilder extends AViewComponent {
 		public LayoutBuilder b;
 		public LayoutBuilder c;
 		public LayoutBuilder d;
+
+		public Split setSpacing(int spacing) {
+			a.setSpacing(spacing);
+			if (b != null) b.setSpacing(spacing);
+			if (c != null) c.setSpacing(spacing);
+			if (d != null) d.setSpacing(spacing);
+			return this;
+		}
 
 	}
 

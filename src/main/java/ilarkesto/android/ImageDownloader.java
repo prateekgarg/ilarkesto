@@ -1,6 +1,7 @@
 package ilarkesto.android;
 
 import ilarkesto.core.logging.Log;
+import ilarkesto.net.HttpDownloader;
 
 import java.io.File;
 import java.net.URL;
@@ -8,8 +9,6 @@ import java.net.URL;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
 public class ImageDownloader {
@@ -19,6 +18,7 @@ public class ImageDownloader {
 	private final String imageUrl;
 	private final ImageView imageView;
 	private final FilesCache cache;
+	private static HttpDownloader httpDownloader;
 
 	public ImageDownloader(String imageUrl, ImageView imageView) {
 		this(imageUrl, imageView, AApp.get().getFilesCache());
@@ -58,7 +58,7 @@ public class ImageDownloader {
 			if (file == null) {
 				log.info("Image needs download:", imageUrl);
 				try {
-					file = cache.downloadUrl(imageUrl, imageUrl);
+					file = cache.downloadUrl(imageUrl, imageUrl, httpDownloader);
 				} catch (Exception ex) {
 					log.error("Downloading image failed:", imageUrl, ex);
 					return null;
@@ -100,25 +100,34 @@ public class ImageDownloader {
 
 	}
 
-	public static void updateImage(String imageUrl, ViewGroup container) {
-		if (container == null) return;
-		if (imageUrl != null) {
-			ImageView view = getImageViewFromContainer(container);
-			if (view == null) {
-				container.removeAllViews();
-				view = new ImageView(container.getContext());
-				view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-				container.addView(view);
-			}
-			container.setVisibility(View.VISIBLE);
-		} else {
-			container.setVisibility(View.GONE);
+	public static void updateImage(String imageUrl, ImageView image) {
+		if (imageUrl == null) {
+			image.setVisibility(View.GONE);
+			return;
 		}
+		new ImageDownloader(imageUrl, image);
 	}
 
-	private static ImageView getImageViewFromContainer(ViewGroup container) {
-		if (container.getChildCount() != 1) return null;
-		View child = container.getChildAt(0);
-		return child instanceof ImageView ? (ImageView) child : null;
-	}
+	// public static void updateImage(String imageUrl, ViewGroup container) {
+	// if (container == null) return;
+	// if (imageUrl != null) {
+	// ImageView image = getImageViewFromContainer(container);
+	// if (image == null) {
+	// container.removeAllViews();
+	// image = new ImageView(container.getContext());
+	// image.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+	// container.addView(image);
+	// }
+	// container.setVisibility(View.VISIBLE);
+	// } else {
+	// container.setVisibility(View.GONE);
+	// }
+	// }
+	//
+	// private static ImageView getImageViewFromContainer(ViewGroup container) {
+	// if (container.getChildCount() != 1) return null;
+	// View child = container.getChildAt(0);
+	// return child instanceof ImageView ? (ImageView) child : null;
+	// }
+
 }

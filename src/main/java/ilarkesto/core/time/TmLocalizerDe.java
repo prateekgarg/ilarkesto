@@ -2,6 +2,8 @@ package ilarkesto.core.time;
 
 public class TmLocalizerDe extends TmLocalizer {
 
+	public static final TmLocalizerDe INSTANCE = new TmLocalizerDe();
+
 	@Override
 	public String full(Weekday day) {
 		switch (day) {
