@@ -31,7 +31,7 @@ public class Onlinestreet {
 		System.exit(0);
 	}
 
-	public static String PLZ_URL_TEMPLATE = "http://onlinestreet.de/plz/{*}.html";
+	public static String PLZ_URL_TEMPLATE = "http://onlinestreet.de/plz/${*}.html";
 
 	public static String getCityByPlz(Integer plz) {
 		List<String> cities = getCitiesByPlz(plz);
@@ -76,7 +76,7 @@ public class Onlinestreet {
 	}
 
 	public static String getUrlByPlz(Integer plz) {
-		return PLZ_URL_TEMPLATE.replace("{*}", plz.toString());
+		return PLZ_URL_TEMPLATE.replace("${*}", plz.toString());
 	}
 
 }

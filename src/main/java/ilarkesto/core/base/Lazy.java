@@ -21,7 +21,13 @@ public abstract class Lazy<O> {
 	protected abstract O create();
 
 	public synchronized final O get() {
-		if (object == null) object = create();
+		if (object == null) {
+			try {
+				object = create();
+			} catch (Exception ex) {
+				throw new RuntimeException("Creating lazy instance failed.", ex);
+			}
+		}
 		return object;
 	}
 
