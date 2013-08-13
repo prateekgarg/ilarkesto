@@ -31,6 +31,13 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String uppercaseFirstLetter(String s) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(Character.toUpperCase(s.charAt(0)));
+		sb.append(s.substring(1));
+		return sb.toString();
+	}
+
 	public static String getFirstLine(String s) {
 		return getFirstLine(s, Integer.MAX_VALUE, null);
 	}
