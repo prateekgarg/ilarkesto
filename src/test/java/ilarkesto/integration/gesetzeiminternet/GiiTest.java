@@ -3,6 +3,7 @@ package ilarkesto.integration.gesetzeiminternet;
 import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.io.IO;
 import ilarkesto.law.Book;
+import ilarkesto.law.BookCache;
 import ilarkesto.law.BookCacheCollection;
 import ilarkesto.law.BookIndex;
 import ilarkesto.law.BookIndexCache;
@@ -54,7 +55,12 @@ public class GiiTest extends ATest {
 		searcher.run();
 
 		BookRef urhgRef = getBookIndex().getBookByCode("UrhG");
-		Book urhg = bookCaches.getBookCache(urhgRef).getPayload_ButUpdateIfNull();
+		BookCache cache = bookCaches.getBookCache(urhgRef);
+		Book urhg = cache.getPayload();
+		if (urhg == null) {
+			cache.update(false);
+			urhg = cache.getPayload();
+		}
 		Norm urhg10 = urhg.getNormByCodeNumber("10");
 
 		assertContains(consumer.books, urhgRef);

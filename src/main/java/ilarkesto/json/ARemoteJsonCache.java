@@ -72,28 +72,28 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 		return null;
 	}
 
-	public P getPayload_ButUpdateIfNull() throws RemoteUpdateFailedException {
-		return getPayload_ButUpdateIfNull(null);
-	}
-
-	public P getPayload_ButUpdateIfNull(OperationObserver observer) throws RemoteUpdateFailedException {
-		if (observer == null) observer = OperationObserver.DUMMY;
-		observer.onOperationInfoChanged(OperationObserver.LOADING_CACHE);
-		synchronized (getLock()) {
-			P payload = getPayload();
-			if (payload == null) {
-				log.info("Payload does not exist, needs update");
-				update(true, observer);
-				return getPayload();
-			}
-			if (isInvalidated()) {
-				log.info("Payload is invalidated, needs update");
-				update(true, observer);
-				return getPayload();
-			}
-			return payload;
-		}
-	}
+	// public P getPayload_ButUpdateIfNull() throws RemoteUpdateFailedException {
+	// return getPayload_ButUpdateIfNull(null);
+	// }
+	//
+	// public P getPayload_ButUpdateIfNull(OperationObserver observer) throws RemoteUpdateFailedException {
+	// if (observer == null) observer = OperationObserver.DUMMY;
+	// observer.onOperationInfoChanged(OperationObserver.LOADING_CACHE);
+	// synchronized (getLock()) {
+	// P payload = getPayload();
+	// if (payload == null) {
+	// log.info("Payload does not exist, needs update");
+	// update(true, observer);
+	// return getPayload();
+	// }
+	// if (isInvalidated()) {
+	// log.info("Payload is invalidated, needs update");
+	// update(true, observer);
+	// return getPayload();
+	// }
+	// return payload;
+	// }
+	// }
 
 	public void update(boolean force) throws RemoteUpdateFailedException {
 		update(force, null);

@@ -24,7 +24,8 @@ public class HochschulkompassTest extends ATest {
 	public void values() {
 		ValuesCache valuesCache = new ValuesCache(getTestOutputFile("values.json"));
 		valuesCache.delete();
-		Values values = valuesCache.getPayload_ButUpdateIfNull();
+		valuesCache.update(true);
+		Values values = valuesCache.getPayload();
 
 		assertValueList("subjects", values.getSubjects());
 		assertValueList("subjectgroups", values.getSubjectgroups());

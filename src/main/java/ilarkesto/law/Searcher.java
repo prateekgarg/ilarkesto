@@ -76,7 +76,11 @@ public class Searcher implements Runnable {
 
 	private void searchForNorms(BookRef bookRef, boolean updateIfNull) {
 		BookCache cache = bookCaches.getBookCache(bookRef);
-		Book book = updateIfNull ? cache.getPayload_ButUpdateIfNull() : cache.getPayload();
+		Book book = cache.getPayload();
+		if (book == null && updateIfNull) {
+			cache.update(false);
+			book = cache.getPayload();
+		}
 		if (book == null) return;
 		searchForNorms(book);
 		cache.unload();

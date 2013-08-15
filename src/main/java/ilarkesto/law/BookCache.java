@@ -24,7 +24,12 @@ public class BookCache extends ARemoteJsonCache<Book> {
 			if (getDaysSinceLastUpdated() < 30) return null;
 		}
 
-		BookIndex bookIndex = bookIndexCache.getPayload_ButUpdateIfNull(observer);
+		BookIndex bookIndex = bookIndexCache.getPayload();
+		if (bookIndex == null) {
+			bookIndexCache.update(false, observer);
+			bookIndex = bookIndexCache.getPayload();
+		}
+
 		BookRef bookRef = bookIndex.getBookByCode(bookCode);
 
 		if (bookRef == null) { throw new RuntimeException(bookCode + " not available at "

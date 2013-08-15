@@ -68,12 +68,18 @@ public class JsonObject {
 		if (!file.exists()) {
 			if (createEmptyIfNoFile) {
 				JsonObject json = new JsonObject();
-				json.file = file;
+				json.assignFile(file);
 				return json;
 			}
 			return null;
 		}
-		JsonObject object = parse(load(file));
+		JsonObject object;
+		try {
+			object = parse(load(file));
+		} catch (ParseException ex) {
+			if (!createEmptyIfNoFile) throw ex;
+			object = new JsonObject();
+		}
 		object.assignFile(file);
 		return object;
 	}

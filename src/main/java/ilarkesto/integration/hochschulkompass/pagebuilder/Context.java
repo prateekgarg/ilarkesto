@@ -31,7 +31,8 @@ public class Context {
 	}
 
 	public void initialize() {
-		getValuesCache().getPayload_ButUpdateIfNull();
+		Values payload = getValuesCache().getPayload();
+		if (payload == null) getValuesCache().update(true);
 	}
 
 	public String href(Subjectgroup subjectgroup) {
@@ -39,7 +40,8 @@ public class Context {
 	}
 
 	public Values getValues() {
-		return getValuesCache().getPayload_ButUpdateIfNull();
+		initialize();
+		return getValuesCache().getPayload();
 	}
 
 	public ValuesCache getValuesCache() {
