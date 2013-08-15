@@ -83,10 +83,9 @@ public class Eml {
 
 		// Session session = createSmtpSession("mail.servisto.de", null, false,
 		// LoginPanel.showDialog(null, "Servisto SMTP", new File("runtimedata/servisto-smtp.properties")));
-		Session session = createSmtpSession("smtp.gmail.com", 465, true,
+		Session session = createSmtpSession("smtp.gmail.com", 587, true,
 			LoginPanel.showDialog(null, "GMail SMTP", new File("runtimedata/gmail-smtp.properties")));
-		sendSmtpMessage(session,
-			createTextMessage(session, "test 1", "test 1", "wi@koczewski.de", "support@servisto.de"));
+		sendSmtpMessage(session, createTextMessage(session, "test 1", "test 1", "wi@koczewski.de", "wi@koczewski.de"));
 
 		// Message msg = createTextMessage(createDummySession(), "aaa" + Str.UE + "aaa", "aaa" + Str.UE +
 		// "aaa",
