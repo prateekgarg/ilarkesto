@@ -41,6 +41,13 @@ public class Parser {
 		return data.substring(pos);
 	}
 
+	public boolean contains(String... ss) {
+		for (String s : ss) {
+			if (data.indexOf(s, pos) >= 0) return true;
+		}
+		return false;
+	}
+
 	public String getUntilAndGotoAfter(String... ss) throws ParseException {
 		String ret = getUntil(ss);
 		gotoAfter(ss);
@@ -85,7 +92,7 @@ public class Parser {
 				data); }
 		idx = data.indexOf(until, idx + after.length());
 		if (idx < 0) { throw new ParseException("getUntilAfter until <" + until + "> <" + after + "> failed: <"
-				+ getTail() + ">", pos, data); }
+				+ getRemaining() + ">", pos, data); }
 		return data.substring(pos, idx);
 	}
 
@@ -184,10 +191,6 @@ public class Parser {
 
 	public String getData() {
 		return data;
-	}
-
-	public String getTail() {
-		return data.substring(getPos());
 	}
 
 	public static class ParseException extends Exception {

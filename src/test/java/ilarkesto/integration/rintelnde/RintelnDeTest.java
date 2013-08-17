@@ -19,6 +19,8 @@ import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.time.Date;
 import ilarkesto.integration.rintelnde.BissIndex.Lebenslage;
 import ilarkesto.integration.rintelnde.BissIndex.Lebenslage.Anliegen;
+import ilarkesto.integration.rintelnde.Branchenbuch.Category;
+import ilarkesto.integration.rintelnde.Branchenbuch.Entry;
 import ilarkesto.testng.ATest;
 
 import java.util.Collection;
@@ -30,6 +32,36 @@ import org.testng.annotations.Test;
 public class RintelnDeTest extends ATest {
 
 	private static final OperationObserver observer = OperationObserver.DUMMY;
+
+	@Test
+	public void downloadBranchenbuch() throws ParseException {
+		Branchenbuch branchenbuch = RintelnDe.downloadBranchenbuch(observer);
+		assertNotNull(branchenbuch);
+
+		List<Category> masterCategories = branchenbuch.getCategories();
+		assertSize(masterCategories, 14);
+		Category mcBehoerden = masterCategories.get(2);
+		assertEquals(mcBehoerden.getLabel(), "Behörden & Verbände");
+
+		List<Category> behoerdenCategories = mcBehoerden.getCategories();
+		assertSize(behoerdenCategories, 3);
+		Category cVerbaende = behoerdenCategories.get(2);
+		assertEquals(cVerbaende.getLabel(), "Verbände, Vereine");
+
+		int leafCategoriesCount = branchenbuch.getLeafCategoriesCount();
+		log.info("leafCategoriesCount", leafCategoriesCount);
+		assertTrue(leafCategoriesCount >= 141);
+
+		branchenbuch.getJson().write(getTestOutputFile("branchenbuch.json"), true);
+	}
+
+	@Test
+	public void downloadBranchenbuchEntriesVerbaende() throws ParseException {
+		List<Entry> verbaende = RintelnDe.downloadBranchenbuchEntries(28, observer);
+		assertSize(verbaende, 13);
+		Entry volkshochschule = verbaende.get(12);
+		assertEquals(volkshochschule.getLabel(), "Volkshochschule Schaumburg");
+	}
 
 	@Test
 	public void downloadCalendar() throws ParseException {

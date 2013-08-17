@@ -24,6 +24,8 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.integration.rintelnde.BissIndex.Lebenslage;
 import ilarkesto.integration.rintelnde.BissIndex.Lebenslage.Anliegen;
+import ilarkesto.integration.rintelnde.Branchenbuch.Category;
+import ilarkesto.integration.rintelnde.Branchenbuch.Entry;
 import ilarkesto.io.IO;
 import ilarkesto.net.HttpDownloader;
 
@@ -83,25 +85,120 @@ public class RintelnDe {
 
 	private static String parseJqmPageContent(Parser parser) throws ParseException {
 		parser.skipWhitespace();
+
 		if (parser.isNext("<h3")) parser.gotoAfter("</h3>");
 		parser.skipWhitespace();
+
+		if (parser.isNext("<p>Der folgende Eintrag wird bereitgestellt durch")) parser.gotoAfter("</p>");
+		parser.skipWhitespace();
+
+		if (parser.isNext("<img class=\"lazy\"")) parser.gotoAfter("/>");
+		parser.skipWhitespace();
+
+		if (parser.isNext("<div class=\"icons\"")) parser.gotoAfter("</div>");
+		parser.skipWhitespace();
+
+		String applemapsPrefix = "<a href=\"http://maps.apple.com/maps";
+		if (parser.contains(applemapsPrefix)) return parser.getUntil(applemapsPrefix);
+
 		return parser.getRemaining();
 	}
 
 	public static String downloadPageContent(String path, OperationObserver observer) {
-		String url = getDataPageUrl(path);
+		return downloadPageContent(path, 0, observer);
+	}
+
+	private static String downloadPageContent(String path, int offset, OperationObserver observer) {
+		String url = getDataPageUrl(path, offset);
 		log.info("Downloading", url);
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
 		http.setCharset(IO.UTF_8);
 		return http.downloadText(url);
 	}
 
-	public static String getDataPageUrl(String path) {
-		return getPageUrl(path) + "?appdata=1";
+	private static String getDataPageUrl(String path, int offset) {
+		String url = "?appdata=1";
+		if (offset > 0) url += "&start=" + offset;
+		return getPageUrl(path) + url;
 	}
 
 	public static String getPageUrl(String path) {
 		return URL_BASE + path;
+	}
+
+	// --- Branchenbuch ---
+
+	public static Branchenbuch downloadBranchenbuch(OperationObserver observer) throws ParseException {
+		Branchenbuch branchenbuch = new Branchenbuch();
+
+		// Oberkategorien
+		List<Category> masterCategories = downloadBranchenbuchCategories(PAGE_BRANCHENBUCH, observer);
+		branchenbuch.setCategories(masterCategories);
+
+		// Kategorien
+		for (Category masterCategory : masterCategories) {
+			List<Category> categories = downloadBranchenbuchCategories(
+				getBranchenbuchCategoryPagePath(masterCategory.getId()), observer);
+			masterCategory.setCategories(categories);
+		}
+
+		// Einträge
+		// for (Category category : leafCategories) {
+		// List<Entry> entries = downloadBranchenbuchEntries(category.getId(), observer);
+		// category.setEntries(entries);
+		// }
+
+		return branchenbuch;
+	}
+
+	public static String getBranchenbuchCategoryPagePath(int categoryId) {
+		return PAGE_BRANCHENBUCH + "/category/" + categoryId + "/";
+	}
+
+	public static List<Entry> downloadBranchenbuchEntries(int categoryId, OperationObserver observer)
+			throws ParseException {
+		return downloadBranchenbuchEntries(categoryId, 0, observer);
+	}
+
+	private static List<Entry> downloadBranchenbuchEntries(int categoryId, int offset, OperationObserver observer)
+			throws ParseException {
+		String html = downloadPageContent(getBranchenbuchCategoryPagePath(categoryId), offset, observer);
+
+		Parser parser = new Parser(html);
+		List<Entry> ret = new LinkedList<Branchenbuch.Entry>();
+		while (parser.gotoAfterIf("href=\"/branchenbuch/detail/")) {
+			String idAsString = parser.getUntil("/");
+			int id = Integer.parseInt(idAsString);
+			parser.gotoAfter("<strong>");
+			String label = parser.getUntil("</strong>");
+			label = Html.convertHtmlToText(label);
+			Entry entry = new Entry(label, id);
+			ret.add(entry);
+		}
+
+		if (parser.gotoAfterIf("<a class=\"next\"")) {
+			parser.gotoAfter("start=");
+			String sNextOffset = parser.getUntil("\"");
+			int nextOffset = Integer.parseInt(sNextOffset);
+			if (nextOffset > offset) {
+				List<Entry> more = downloadBranchenbuchEntries(categoryId, nextOffset, observer);
+				ret.addAll(more);
+			} else {
+				log.warn("offset=" + offset + ", nextOffset=" + nextOffset);
+			}
+		}
+
+		return ret;
+	}
+
+	private static List<Category> downloadBranchenbuchCategories(String path, OperationObserver observer)
+			throws ParseException {
+		String s = downloadPageContent(path, observer);
+		List<Category> ret = new LinkedList<Category>();
+		for (Pair<Integer, String> pair : parseApplist(s, "/branchenbuch/category/")) {
+			ret.add(new Category(pair.b, pair.a));
+		}
+		return ret;
 	}
 
 	// --- Calendar ---
@@ -198,7 +295,7 @@ public class RintelnDe {
 	static List<Lebenslage> downloadBissLebenslages(OperationObserver observer) throws ParseException {
 		String s = downloadPageContent(PAGE_BISS, observer);
 		List<Lebenslage> ret = new LinkedList<Lebenslage>();
-		for (Pair<Integer, String> pair : parseBissUl(s, "/app-biss/lebenslage/")) {
+		for (Pair<Integer, String> pair : parseApplist(s, "/app-biss/lebenslage/")) {
 			ret.add(new Lebenslage(pair.b, pair.a));
 		}
 		return ret;
@@ -207,13 +304,13 @@ public class RintelnDe {
 	static List<Anliegen> downloadBissAnliegens(int i, OperationObserver observer) throws ParseException {
 		String s = downloadPageContent(PAGE_BISS + "/lebenslage/" + i, observer);
 		List<Anliegen> ret = new LinkedList<Anliegen>();
-		for (Pair<Integer, String> pair : parseBissUl(s, "/app-biss/anliegen/")) {
+		for (Pair<Integer, String> pair : parseApplist(s, "/app-biss/anliegen/")) {
 			ret.add(new Anliegen(pair.b, pair.a));
 		}
 		return ret;
 	}
 
-	private static List<Pair<Integer, String>> parseBissUl(String data, String path) throws ParseException {
+	private static List<Pair<Integer, String>> parseApplist(String data, String path) throws ParseException {
 		Parser p = new Parser(data);
 		p.gotoAfter("<ul class=\"applist\">");
 		List<Pair<Integer, String>> ret = new LinkedList<Pair<Integer, String>>();
@@ -221,7 +318,7 @@ public class RintelnDe {
 			p.skipWhitespace();
 			if (!p.isNext("<li")) break;
 			p.gotoAfter(path);
-			String sId = p.getUntil("_");
+			String sId = p.getUntil("_", "/");
 			Integer id = Integer.parseInt(sId);
 			p.gotoAfter("<span");
 			p.gotoAfter(">");

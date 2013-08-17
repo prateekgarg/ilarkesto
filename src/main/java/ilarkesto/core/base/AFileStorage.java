@@ -40,4 +40,24 @@ public abstract class AFileStorage {
 		return getFile(null) != null;
 	}
 
+	public final AFileStorage getSubStorage(String path) {
+		return new SubStorage(path);
+	}
+
+	private class SubStorage extends AFileStorage {
+
+		private String sub;
+
+		public SubStorage(String sub) {
+			super(null);
+			this.sub = sub;
+		}
+
+		@Override
+		protected File getBaseDir() {
+			return AFileStorage.this.getFile(sub);
+		}
+
+	}
+
 }

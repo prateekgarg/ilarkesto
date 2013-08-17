@@ -32,8 +32,8 @@ public class BookCache extends ARemoteJsonCache<Book> {
 
 		BookRef bookRef = bookIndex.getBookByCode(bookCode);
 
-		if (bookRef == null) { throw new RuntimeException(bookCode + " not available at "
-				+ lawProvider.getSourceUrl(bookCode)); }
+		if (bookRef == null)
+			throw new RuntimeException(bookCode + " not available at " + lawProvider.getSourceUrl(bookCode));
 
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, lawProvider.getSourceUrl(bookCode));
 		return lawProvider.getBook(bookRef);
