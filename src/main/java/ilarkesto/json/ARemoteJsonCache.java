@@ -124,8 +124,6 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 			log.info("Payload updated in", rt.getRuntimeFormated());
 			JsonObject json = getJson();
 			json.put("payload", payload);
-			json.put("lastUpdated", System.currentTimeMillis());
-			json.remove("invalidated");
 			save();
 		}
 	}
@@ -169,10 +167,8 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	}
 
 	public void invalidatePayload() {
-		synchronized (getLock()) {
-			getJson().put("invalidated", true);
-			save();
-		}
+		if (file == null) return;
+		file.setLastModified(0);
 	}
 
 	public File getFile() {
@@ -180,17 +176,16 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	}
 
 	public boolean isInvalidated() {
-		return getJson().isTrue("invalidated");
+		return getLastUpdated() == 0;
 	}
 
-	public Long getLastUpdated() {
-		return getJson().getLong("lastUpdated");
+	public long getLastUpdated() {
+		if (file == null) return 0;
+		return file.lastModified();
 	}
 
 	public long getTimeSinceLastUpdated() {
-		Long lastUpdated = getLastUpdated();
-		if (lastUpdated == null) return Long.MAX_VALUE;
-		return System.currentTimeMillis() - lastUpdated;
+		return System.currentTimeMillis() - getLastUpdated();
 	}
 
 	protected boolean isSkipUpdateByHours(int maxAgeInHours, boolean forced, boolean invalidated) {
@@ -199,8 +194,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	}
 
 	protected boolean isSkipUpdateByDays(int maxAgeInDays, boolean forced, boolean invalidated) {
-		int maxAgeInHours = maxAgeInDays * 24;
-		return getHoursSinceLastUpdated() < maxAgeInHours;
+		return isSkipUpdateByHours(maxAgeInDays * 24, forced, invalidated);
 	}
 
 	public long getHoursSinceLastUpdated() {

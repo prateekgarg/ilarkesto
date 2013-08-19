@@ -28,6 +28,10 @@ import java.util.TimeZone;
  */
 public final class Tm extends ilarkesto.core.time.Tm {
 
+	public static void main(String[] args) {
+		System.out.println(System.currentTimeMillis());
+	}
+
 	public static final Format FORMAT_HOUR_MINUTE_SECOND = new Format("HH:mm:ss");
 	public static final Format FORMAT_HOUR_MINUTE_SECOND_NOSEP = new Format("HHmmss");
 	public static final Format FORMAT_DAY_MONTH_SHORTYEAR = new Format("dd.MM.yy");
