@@ -80,25 +80,25 @@ public class RintelnDeTest extends ATest {
 
 	@Test
 	public void downloadCalendarEntryFields() throws ParseException {
-		Map<String, String> event = RintelnDe.downloadCalendarEntryFields(9660, observer);
+		Map<String, String> event = RintelnDe.downloadCalendarEntryFields(5644, observer);
 		assertEquals(event.get(RintelnDe.CALENDAR_ENTRY_FIELD_LABEL),
-			"Esther Hansen - Farbenzauber Ausstellung in der Rathaus-Galerie");
+			"Gottesdienst in der Ev.-luth. St. Nikolai-Kirche Rinteln");
 		assertEquals(
 			event.get(RintelnDe.CALENDAR_ENTRY_FIELD_IMAGE_URL),
-			"http://v2.cos.commercio.de/assets/66bd14e9-c62a-45ab-8602-41834d2a368a/_resampled/SetRatioSize320240-149e61eb-5ad6-443a-9b11-43e259b1bac9.jpeg");
-		assertEquals(event.get("Termine"), "Von Montag, den 29. April 2013 bis zum Freitag, den 30. August 2013.");
-		assertEquals(event.get("Treffpunkt"), "Klosterstr. 19, 2. OG");
+			"http://v2.cos.commercio.de/assets/1b33a22b-a3f8-424b-a994-84e7245f0f0a/_resampled/SetRatioSize320240-16a11a30-aaf5-4f4d-badf-c881817a118f.jpg");
+		assertEquals(event.get("Termine"), "Wöchentlich am Sonntag ab 10:00 Uhr.");
+		assertEquals(event.get("Treffpunkt"), "St. Nikolai-Kirche, Kirchplatz, 31737 Rinteln");
 		assertEquals(event.get("Ort"), "Rinteln");
-		assertEquals(event.get("Organisator"), "Esther Hansen");
+		assertEquals(event.get("Organisator"), "Ev.-luth. St. Nikolai-Kirche Rinteln");
 		assertContains(event.get(RintelnDe.CALENDAR_ENTRY_FIELD_DESCRIPTION),
-			"Esther Hansen – eine kreative Künstlerin");
+			"Weitere Gottesdiensttermine auch auf der Homepage");
 	}
 
 	@Test
 	public void downloadCalendarEventIds() throws ParseException {
 		Collection<Integer> ids = RintelnDe.downloadCalendarEventIds(new Date(2013, 8, 4), observer);
 		assertContains(ids, 8890);
-		assertSize(ids, 22);
+		assertSize(ids, 23);
 	}
 
 	@Test
