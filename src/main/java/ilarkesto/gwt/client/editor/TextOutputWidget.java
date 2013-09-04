@@ -26,6 +26,7 @@ public class TextOutputWidget extends AWidget {
 	private HTML viewer;
 	private AFieldModel model;
 	private boolean forceEmptyChar;
+	private boolean tooltipEnabled = true;
 
 	public TextOutputWidget(AFieldModel model) {
 		super();
@@ -48,8 +49,10 @@ public class TextOutputWidget extends AWidget {
 		} else {
 			viewer.setText(text);
 		}
-		String tooltip = getTooltip();
-		if (!Str.isBlank(tooltip)) Gwt.addTooltipHtml(viewer, tooltip);
+		if (tooltipEnabled) {
+			String tooltip = getTooltip();
+			if (!Str.isBlank(tooltip)) Gwt.addTooltipHtml(viewer, tooltip);
+		}
 	}
 
 	public String getTooltip() {
@@ -64,6 +67,11 @@ public class TextOutputWidget extends AWidget {
 	@Override
 	public String getId() {
 		return model.getId();
+	}
+
+	public TextOutputWidget setTooltipEnabled(boolean tooltipEnabled) {
+		this.tooltipEnabled = tooltipEnabled;
+		return this;
 	}
 
 }
