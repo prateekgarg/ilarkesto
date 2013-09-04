@@ -31,6 +31,22 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String formatUrlAsLink(String url) {
+		return formatUrlAsLink(url, 50);
+	}
+
+	public static String formatUrlAsLink(String url, int maxLength) {
+		url = removePrefix(url, "http://");
+		url = removePrefix(url, "https://");
+		url = removePrefix(url, "ftp://");
+		url = removePrefix(url, "mailto://");
+		url = removePrefix(url, "apt://");
+		url = removePrefix(url, "file://");
+		url = removePrefix(url, "www.");
+		url = cutRight(url, maxLength, "...");
+		return url;
+	}
+
 	public static String uppercaseFirstLetter(String s) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(Character.toUpperCase(s.charAt(0)));
