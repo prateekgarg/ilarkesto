@@ -64,6 +64,10 @@ public class JsonObject {
 		return new JsonObject(json, 0);
 	}
 
+	public File getFile() {
+		return file;
+	}
+
 	public static JsonObject loadFile(File file, boolean createEmptyIfNoFile) {
 		if (!file.exists()) {
 			if (createEmptyIfNoFile) {
