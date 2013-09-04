@@ -74,7 +74,6 @@ public class Swing {
 
 	public static void main(String[] args) throws Throwable {
 		Log.setDebugEnabled(true);
-		Log.DEBUG(UIManager.getInstalledLookAndFeels());
 		UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 		JOptionPane.showMessageDialog(null, createMessageComponent("Nachricht"));
 		showMessageDialog(

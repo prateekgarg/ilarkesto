@@ -15,7 +15,6 @@
 package ilarkesto.mda.legacy.generator;
 
 import ilarkesto.base.Str;
-import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
@@ -92,7 +91,6 @@ public class GwtDaoGenerator extends AClassGenerator {
 			ln("    protected Map<String, " + type + ">", mapVar + " = new HashMap<String, " + type + ">();");
 			ln();
 			ln("    public final void clear" + entity.getName() + "s() {");
-			ln("        " + Log.class.getName() + ".DEBUG(\"Clearing " + entity.getName() + "s\");");
 			ln("        " + mapVar + ".clear();");
 			ln("    }");
 			ln();
@@ -121,11 +119,8 @@ public class GwtDaoGenerator extends AClassGenerator {
 			ln("        if (entity == null) {");
 			ln("            entity = new", type + "(data);");
 			ln("            " + mapVar + ".put(id, entity);");
-			ln("            " + Log.class.getName() + ".DEBUG(\"" + name
-					+ " received: \" + entity.getId() + \" (\"+entity+\")\");");
 			ln("        } else {");
 			ln("            entity.updateProperties(data);");
-			ln("            " + Log.class.getName() + ".DEBUG(\"" + name + " updated: \" + entity);");
 			ln("        }");
 			ln("        return entity;");
 			ln("    }");

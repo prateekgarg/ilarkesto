@@ -85,12 +85,6 @@ public class Google {
 		List<ContactEntry> contacts = getContacts(service, testgroup, email);
 		ContactEntry contact = contacts.get(0);
 
-		Log.DEBUG(getEmails(contact));
-		Log.DEBUG(contact.getStructuredPostalAddresses().get(0).getCity());
-		for (Im im : contact.getImAddresses()) {
-			Log.DEBUG("--->", im.getAddress(), "|", im.getProtocol(), "|", im.getRel());
-		}
-
 		setEmail(contact, "olga@koczewski.de", "privat", EmailRel.HOME, false);
 		setPhone(contact, "12345", "Neue Nummer", null);
 		removeAddresses(contact);

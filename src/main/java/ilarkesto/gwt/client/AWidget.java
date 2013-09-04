@@ -14,8 +14,10 @@
  */
 package ilarkesto.gwt.client;
 
+import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
+import ilarkesto.core.logging.Log;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
@@ -95,6 +97,13 @@ public abstract class AWidget extends Composite implements Updatable {
 
 	@Override
 	public final AWidget update() {
+		RuntimeTracker rt = new RuntimeTracker();
+		AWidget ret = updateInternal();
+		if (rt.getRuntime() > 500) Log.get(getClass()).warn("Long update time:", rt.getRuntimeFormated());
+		return ret;
+	}
+
+	private AWidget updateInternal() {
 		if (isResetRequired()) reset();
 		initialize();
 		if (!isUpdateRequired()) return this;

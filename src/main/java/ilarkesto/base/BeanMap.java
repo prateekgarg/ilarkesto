@@ -1,20 +1,18 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.base;
-
-import ilarkesto.core.logging.Log;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -60,48 +58,56 @@ public class BeanMap<T> extends AbstractMap<String, Object> implements Cloneable
 	static {
 		defaultTransformers.put(Boolean.TYPE, new Transformer() {
 
+			@Override
 			public Object transform(Object input) {
 				return Boolean.valueOf(input.toString());
 			}
 		});
 		defaultTransformers.put(Character.TYPE, new Transformer() {
 
+			@Override
 			public Object transform(Object input) {
 				return new Character(input.toString().charAt(0));
 			}
 		});
 		defaultTransformers.put(Byte.TYPE, new Transformer() {
 
+			@Override
 			public Object transform(Object input) {
 				return Byte.valueOf(input.toString());
 			}
 		});
 		defaultTransformers.put(Short.TYPE, new Transformer() {
 
+			@Override
 			public Object transform(Object input) {
 				return Short.valueOf(input.toString());
 			}
 		});
 		defaultTransformers.put(Integer.TYPE, new Transformer() {
 
+			@Override
 			public Object transform(Object input) {
 				return Integer.valueOf(input.toString());
 			}
 		});
 		defaultTransformers.put(Long.TYPE, new Transformer() {
 
+			@Override
 			public Object transform(Object input) {
 				return Long.valueOf(input.toString());
 			}
 		});
 		defaultTransformers.put(Float.TYPE, new Transformer() {
 
+			@Override
 			public Object transform(Object input) {
 				return Float.valueOf(input.toString());
 			}
 		});
 		defaultTransformers.put(Double.TYPE, new Transformer() {
 
+			@Override
 			public Object transform(Object input) {
 				return Double.valueOf(input.toString());
 			}
@@ -280,7 +286,6 @@ public class BeanMap<T> extends AbstractMap<String, Object> implements Cloneable
 	 */
 	@Override
 	public Object put(String name, Object value) throws IllegalArgumentException, ClassCastException {
-		Log.DEBUG("------------- setting property ", name, "->", Utl.toStringWithType(value));
 		if (bean != null) {
 			Object oldValue = get(name);
 			Reflect.setProperty(bean, name, value);
@@ -382,15 +387,18 @@ public class BeanMap<T> extends AbstractMap<String, Object> implements Cloneable
 		final Iterator iter = keyIterator();
 		return new Iterator() {
 
+			@Override
 			public boolean hasNext() {
 				return iter.hasNext();
 			}
 
+			@Override
 			public Object next() {
 				Object key = iter.next();
 				return get(key);
 			}
 
+			@Override
 			public void remove() {
 				throw new UnsupportedOperationException("remove() not supported for BeanMap");
 			}
@@ -406,16 +414,19 @@ public class BeanMap<T> extends AbstractMap<String, Object> implements Cloneable
 		final Iterator iter = keyIterator();
 		return new Iterator() {
 
+			@Override
 			public boolean hasNext() {
 				return iter.hasNext();
 			}
 
+			@Override
 			public Object next() {
 				Object key = iter.next();
 				Object value = get(key);
 				return new MyMapEntry(BeanMap.this, key, value);
 			}
 
+			@Override
 			public void remove() {
 				throw new UnsupportedOperationException("remove() not supported for BeanMap");
 			}
@@ -609,6 +620,7 @@ public class BeanMap<T> extends AbstractMap<String, Object> implements Cloneable
 			super(key, value);
 		}
 
+		@Override
 		public Object setValue(Object value) {
 			Object answer = this.value;
 			this.value = value;

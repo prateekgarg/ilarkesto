@@ -15,7 +15,6 @@
 package ilarkesto.integration.itext;
 
 import ilarkesto.base.Sys;
-import ilarkesto.core.logging.Log;
 import ilarkesto.pdf.AImage;
 import ilarkesto.pdf.AParagraph;
 import ilarkesto.pdf.APdfBuilder;
@@ -56,7 +55,6 @@ public class PdfBuilder extends APdfBuilder {
 		table.cell().paragraph().text("4 ABC");
 		String path = "/inbox/test.pdf";
 		pdf.write(new FileOutputStream(Sys.getUsersHomePath() + path));
-		Log.DEBUG("PDF created:", path);
 	}
 
 	private Collection<ItextElement> elements = new ArrayList<ItextElement>();

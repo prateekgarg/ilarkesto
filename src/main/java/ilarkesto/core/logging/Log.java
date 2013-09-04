@@ -115,11 +115,6 @@ public class Log {
 	}
 
 	@Deprecated
-	public static void DEBUG(Object... s) {
-		ANONYMOUS.debug(s);
-	}
-
-	@Deprecated
 	public static void TEST(Object... s) {
 		ANONYMOUS.warn(s);
 	}

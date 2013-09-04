@@ -15,7 +15,6 @@
 package ilarkesto.gwt.client.editor;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.gwt.client.AViewEditWidget;
 
@@ -84,7 +83,6 @@ public class DateAndTimeEditorWidget extends AViewEditWidget {
 		try {
 			return new DateAndTime(s);
 		} catch (Exception ex) {
-			Log.DEBUG("Parsing date and time '" + s + "' failed: ", ex);
 			return null;
 		}
 	}

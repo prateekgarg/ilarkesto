@@ -34,7 +34,6 @@ public abstract class AAction implements Command, ClickHandler {
 
 	@Override
 	public final void execute() {
-		Log.DEBUG("Executing action: " + this);
 		if (!isExecutable()) throw new RuntimeException("Action not executable: " + this);
 		if (!isPermitted()) throw new RuntimeException("Action not permitted: " + this);
 		onExecute();

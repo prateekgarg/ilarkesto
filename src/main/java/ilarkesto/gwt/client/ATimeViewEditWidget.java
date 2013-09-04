@@ -15,7 +15,6 @@
 package ilarkesto.gwt.client;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Time;
 
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -61,7 +60,6 @@ public abstract class ATimeViewEditWidget extends AViewEditWidget {
 		try {
 			return new Time(s);
 		} catch (Exception ex) {
-			Log.DEBUG("Parsing time '" + s + "' failed: ", ex);
 			return null;
 		}
 	}
