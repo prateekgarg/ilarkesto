@@ -122,6 +122,31 @@ public class GiiLawProvider extends ALawProvider {
 				String title = parser.getUntil("\"");
 				parser.gotoAfter("\">");
 				String code = parser.getUntil("<").trim();
+
+				if (reference.equals("aeg")) {
+					code = "AEG 1951";
+				} else if (reference.equals("altfrg")) {
+					code = "AltFRG";
+				} else if (reference.equals("kraftfausbv_2001")) {
+					code = "KraftfAusbV";
+				} else if (reference.equals("entgbv")) {
+					code = "EntgBV";
+				} else if (reference.equals("ewo_bk")) {
+					code = "EWO BK";
+				} else if (reference.equals("tspv_2003")) {
+					code = "TspV 2003";
+				} else if (reference.equals("wtosa")) {
+					code = "WTOSa";
+				} else if (reference.equals("stvo_2013")) {
+					code = "StVO";
+				}
+
+				code = code.replace("/", "");
+				code = code.replace(".", "");
+				code = code.replace("-", "");
+				code = code.replace("§", "");
+				code = code.replace(" ", "");
+
 				BookRef book = new BookRef(code, title);
 				book.getJson().put("giiReference", reference);
 				index.addBook(book);

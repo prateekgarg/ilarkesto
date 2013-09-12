@@ -31,6 +31,30 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static boolean containsDigit(String s) {
+		if (s == null) return false;
+		for (int i = 0; i < s.length(); i++) {
+			if (Character.isDigit(s.charAt(i))) return true;
+		}
+		return false;
+	}
+
+	public static boolean containsLetter(String s) {
+		if (s == null) return false;
+		for (int i = 0; i < s.length(); i++) {
+			if (Character.isLetter(s.charAt(i))) return true;
+		}
+		return false;
+	}
+
+	public static boolean containsNonLetterOrDigit(String s) {
+		if (s == null) return false;
+		for (int i = 0; i < s.length(); i++) {
+			if (!Character.isLetterOrDigit(s.charAt(i))) return true;
+		}
+		return false;
+	}
+
 	public static String formatUrlAsLink(String url) {
 		return formatUrlAsLink(url, 50);
 	}

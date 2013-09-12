@@ -1,5 +1,6 @@
 package ilarkesto.integration.gesetzeiminternet;
 
+import ilarkesto.base.Str;
 import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.io.IO;
 import ilarkesto.law.Book;
@@ -13,8 +14,10 @@ import ilarkesto.law.Searcher;
 import ilarkesto.law.Searcher.SearchResultConsumer;
 import ilarkesto.testng.ATest;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.testng.annotations.Test;
 
@@ -26,15 +29,23 @@ public class GiiTest extends ATest {
 		indexCache.update(true);
 
 		BookIndex index = indexCache.getPayload();
-		assertNotEmpty(index.getBooks());
+		List<BookRef> books = index.getBooks();
+		assertNotEmpty(books);
 
 		IO.writeFile(getTestOutputFile("GiiBookIndex.json"), index.getJson().toFormatedString(), IO.UTF_8);
 
-		BookRef binSchStrOAbweichV = index.getBookByCode("64. BinSchStrOAbweichV");
+		BookRef binSchStrOAbweichV = index.getBookByCode("64BinSchStrOAbweichV");
 		assertNotNull(binSchStrOAbweichV);
 		assertEquals(binSchStrOAbweichV.getTitle(),
 			"Vierundsechzigste Verordnung zur vorübergehenden Abweichung von der Binnenschifffahrtsstraßen-Ordnung");
 
+		Set<String> codes = new HashSet<String>();
+		for (BookRef book : books) {
+			String code = book.getCode();
+			if (Str.containsNonLetterOrDigit(code)) fail("Illegal book code: " + code);
+			if (codes.contains(code)) fail("Duplicate book code: " + code);
+			codes.add(code);
+		}
 	}
 
 	@Test
@@ -69,12 +80,22 @@ public class GiiTest extends ATest {
 
 	@Test
 	public void testSgb10Kap12() {
-		BookRef ref = getBookIndex().getBookByCode("SGB 10/Kap1/2");
+		BookRef ref = getBookIndex().getBookByCode("SGB10Kap12");
 		Book book = getGii().loadBook(ref);
-		assertEquals(book.getRef().getCode(), "SGB 10/Kap1/2");
+		assertEquals(book.getRef().getCode(), "SGB10Kap12");
 
 		List<Norm> norms = book.getAllNorms();
 		assertSize(norms, 4);
+	}
+
+	@Test
+	public void testAEG() {
+		BookRef ref = getBookIndex().getBookByCode("AEG");
+		Book book = getGii().loadBook(ref);
+		assertNotNull(book);
+
+		List<Norm> norms = book.getAllNorms();
+		assertSize(norms, 69);
 	}
 
 	@Test

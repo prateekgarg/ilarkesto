@@ -195,30 +195,6 @@ public class Str extends ilarkesto.core.base.Str {
 		return password.toString();
 	}
 
-	public static boolean containsDigit(String s) {
-		if (s == null) return false;
-		for (int i = 0; i < s.length(); i++) {
-			if (Character.isDigit(s.charAt(i))) return true;
-		}
-		return false;
-	}
-
-	public static boolean containsLetter(String s) {
-		if (s == null) return false;
-		for (int i = 0; i < s.length(); i++) {
-			if (Character.isLetter(s.charAt(i))) return true;
-		}
-		return false;
-	}
-
-	public static boolean containsNonLetterOrDigit(String s) {
-		if (s == null) return false;
-		for (int i = 0; i < s.length(); i++) {
-			if (!Character.isLetterOrDigit(s.charAt(i))) return true;
-		}
-		return false;
-	}
-
 	public static boolean endsWith(String s, String... suffixes) {
 		for (String suffix : suffixes) {
 			if (s.endsWith(suffix)) return true;
