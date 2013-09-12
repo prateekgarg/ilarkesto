@@ -105,6 +105,23 @@ public class Tatbestandskatalog extends AJsonWrapper {
 			json.put("fv", fv);
 		}
 
+		public TatbestandGroup getGroup() {
+			return getParent(TatbestandGroup.class);
+		}
+
+		public boolean matchesWords(List<String> words) {
+			for (String word : words) {
+				if (!matchesWord(word)) return false;
+			}
+			return true;
+		}
+
+		private boolean matchesWord(String word) {
+			if (getTbnr().toString().contains(word)) return true;
+			if (getText().contains(word)) return true;
+			return false;
+		}
+
 		private String header;
 
 		public String getHeaderAsHtml() {
