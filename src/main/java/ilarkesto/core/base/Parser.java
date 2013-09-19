@@ -147,6 +147,11 @@ public class Parser {
 		}
 	}
 
+	public void gotoAfterNext(String s) throws ParseException {
+		if (!isNext(s)) throw new ParseException("gotoAfterNext <" + s + "> failed", pos, data);
+		gotoAfter(s);
+	}
+
 	public void gotoAfterWhileNext(String s) {
 		while (isNext(s)) {
 			try {

@@ -62,6 +62,29 @@ public class Tatbestandskatalog extends AJsonWrapper {
 			super(json);
 		}
 
+		public String getLawBookCode() {
+			switch (getIndex()) {
+				case 0:
+					return "StVO";
+				case 1:
+					return "FeV";
+				case 2:
+					return "StVZO";
+				case 3:
+					return "StVG";
+				case 4:
+					return "BKatV";
+				case 5:
+					return "MobHV";
+				case 6:
+					return null;
+				case 7:
+					return "FZV";
+				default:
+					return null;
+			}
+		}
+
 		public int getIndex() {
 			return getParent(Tatbestandskatalog.class).getTatbestandGroups().indexOf(this);
 		}
