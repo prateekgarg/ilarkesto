@@ -292,6 +292,14 @@ public class Date implements Comparable<Date>, Serializable {
 		return sb.toString();
 	}
 
+	public String formatDayLongMonth() {
+		StringBuilder sb = new StringBuilder();
+		formatDay(sb);
+		sb.append(". ");
+		sb.append(formatLongMonth());
+		return sb.toString();
+	}
+
 	public String formatLongMonthYear() {
 		return formatLongMonth() + " " + year;
 	}

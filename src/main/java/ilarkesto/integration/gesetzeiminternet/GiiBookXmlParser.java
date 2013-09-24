@@ -42,7 +42,7 @@ public class GiiBookXmlParser extends Parser {
 		}
 	}
 
-	public void parseNorm() throws ParseException {
+	private void parseNorm() throws ParseException {
 		gotoAfter("</jurabk>");
 		if (isNext("<gliederungseinheit>")) {
 			gotoAfter("<gliederungskennzahl>");
@@ -98,15 +98,19 @@ public class GiiBookXmlParser extends Parser {
 		Norm norm = new Norm(ref, titel);
 
 		gotoAfter("<textdaten");
-		gotoAfter("<Content>");
-		String content = getUntil("</Content>");
-		content = xmlToHtml(content);
-		norm.setTextAsHtml(content);
+		gotoAfter("<text");
+		gotoAfter(">");
+		if (isNext("<Content>")) {
+			gotoAfter("<Content>");
+			String content = getUntil("</Content>");
+			content = xmlToHtml(content);
+			norm.setTextAsHtml(content);
 
-		if (section == null) {
-			book.addNorm(norm);
-		} else {
-			section.addNorm(norm);
+			if (section == null) {
+				book.addNorm(norm);
+			} else {
+				section.addNorm(norm);
+			}
 		}
 		gotoAfter("</norm>");
 	}

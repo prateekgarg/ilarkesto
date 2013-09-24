@@ -99,6 +99,17 @@ public class GiiTest extends ATest {
 	}
 
 	@Test
+	public void testWoGG() {
+		BookRef ref = getBookIndex().getBookByCode("WoGG");
+		Book book = getGii().loadBook(ref);
+		assertNotNull(book);
+
+		List<Norm> norms = book.getAllNorms();
+		Norm norm1 = norms.get(0);
+		assertEquals(norm1.getRef().getCode(), "§ 1");
+	}
+
+	@Test
 	public void testStvg() {
 		BookRef ref = getBookIndex().getBookByCode("StVG");
 		Book book = getGii().loadBook(ref);

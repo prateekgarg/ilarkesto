@@ -2338,8 +2338,8 @@
 		},
 		{
 			"code": "BeamtVZustAnO",
-			"title": "Anordnung zur Übertragung von Zuständigkeiten auf den Gebieten der Beamtenversorgung des Bundes und des Versorgungsausgleichs",
-			"giiReference": "beamtvzustano_2010"
+			"title": "Anordnung zur Übertragung von Zuständigkeiten auf den Gebieten der Versorgung der Beamten und Richter des Bundes sowie des Versorgungsausgleichs",
+			"giiReference": "beamtvzustano_2013"
 		},
 		{
 			"code": "BeamtZustÜAnO",
@@ -3639,6 +3639,11 @@
 			"giiReference": "bmfnvano"
 		},
 		{
+			"code": "BMFSVZustAnO",
+			"title": "Anordnung zur Übertragung der örtlichen Zuständigkeit auf dem Gebiet der Soldatenversorgung im Geschäftsbereich des Bundesministeriums der Finanzen",
+			"giiReference": "bmfsvzustano"
+		},
+		{
 			"code": "BMFZVersAnO",
 			"title": "Anordnung über die Übertragung von Zuständigkeiten auf dem Gebiet der beamtenrechtlichen Versorgung im Dienstbereich des Bundesministers der Finanzen",
 			"giiReference": "bmfzversano"
@@ -4889,7 +4894,6 @@
 			"title": "Anordnung des Präsidenten des Deutschen Bundestages über die Festsetzung einer Amtsbezeichnung",
 			"giiReference": "btpr_samtsbezano"
 		},
-		{"code":"BTWahl2013AnO","title":"Anordnung über die Bundestagswahl 2013","giiReference":"btwahl2013ano"},
 		{
 			"code": "BuchbAusbV",
 			"title": "Verordnung über die Berufsausbildung zum Buchbinder und zur Buchbinderin",
@@ -5837,6 +5841,11 @@
 			"code": "DBAZAbkBELG",
 			"title": "Gesetz zu dem Zusatzabkommen vom 5. November 2002 zum Abkommen vom 11. April 1967 zwischen der Bundesrepublik Deutschland und dem Königreich Belgien zur Vermeidung der Doppelbesteuerungen und zur Regelung verschiedener anderer Fragen auf dem Gebiete der Steuern vom Einkommen und vom Vermögen einschließlich der Gewerbesteuer und der Grundsteuern",
 			"giiReference": "dbazabkbelg"
+		},
+		{
+			"code": "DBBankAbkGBR",
+			"title": "Abkommen zwischen der Bundesrepublik Deutschland und dem Vereinigten Königreich Großbritannien und Nordirland zur Vermeidung der Doppelbelastung bei der Bankenabgabe",
+			"giiReference": "dbbankabk_gbr"
 		},
 		{
 			"code": "DBBankAbkGGBR",
@@ -7904,6 +7913,7 @@
 			"giiReference": "euwaffkontr_bkg"
 		},
 		{"code":"EuWahlT2009Bek","title":"Bekanntmachung des Wahltages für die Europawahl 2009","giiReference":"euwahlt2009bek"},
+		{"code":"EuWahlT2014Bek","title":"Bekanntmachung des Wahltages für die Europawahl 2014","giiReference":"euwahlt2014bek"},
 		{
 			"code": "EuWAktG",
 			"title": "Gesetz zu dem Beschluß und Akt des Rates der Europäischen Gemeinschaften vom 20. September 1976 zur Einführung allgemeiner unmittelbarer Wahlen der Abgeordneten der Versammlung",
@@ -12870,8 +12880,8 @@
 			"title": "Gesetz zur Förderung der Kreislaufwirtschaft und Sicherung der umweltverträglichen Bewirtschaftung von Abfällen",
 			"giiReference": "krwg"
 		},
-		{"code":"KSAbg2012V","title":"Künstlersozialabgabe-Verordnung 2012","giiReference":"ksabg2012v"},
 		{"code":"KSAbg2013V","title":"Künstlersozialabgabe-Verordnung 2013","giiReference":"ksabg2013v"},
+		{"code":"KSAbg2014V","title":"Künstlersozialabgabe-Verordnung 2014","giiReference":"ksabg2014v"},
 		{"code":"KSchG","title":"Kündigungsschutzgesetz","giiReference":"kschg"},
 		{"code":"KSEVtr","title":"Vertrag über Konventionelle Streitkräfte in Europa","giiReference":"ksevtr"},
 		{

@@ -44,6 +44,10 @@ public class Tm {
 		return System.currentTimeMillis() + timeOffset;
 	}
 
+	public static int getCurrentYear() {
+		return getYear(getNowAsDate());
+	}
+
 	public static void setTimeOffset(long timeOffset) {
 		Tm.timeOffset = timeOffset;
 	}
