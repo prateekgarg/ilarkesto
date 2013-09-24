@@ -49,6 +49,13 @@ public class Book extends AJsonWrapper {
 		return null;
 	}
 
+	public Norm getNormByCode(String code) {
+		for (Norm norm : getAllNorms()) {
+			if (norm.getRef().getCode().equals(code)) return norm;
+		}
+		return null;
+	}
+
 	/**
 	 * @return all norms from all sections and subsections
 	 */
