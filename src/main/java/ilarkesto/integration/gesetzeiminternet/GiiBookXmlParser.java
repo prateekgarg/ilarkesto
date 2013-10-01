@@ -38,81 +38,88 @@ public class GiiBookXmlParser extends Parser {
 		gotoAfter("<norm");
 		gotoAfter("</norm");
 		while (gotoAfterIf("<norm")) {
-			parseNorm();
+			String s = getUntil("</norm>");
+			new NormParser(s).parseNorm();
 		}
 	}
 
-	private void parseNorm() throws ParseException {
-		gotoAfter("</jurabk>");
-		if (isNext("<gliederungseinheit>")) {
-			gotoAfter("<gliederungskennzahl>");
-			String gliederungskennzahl = getUntilAndGotoAfter("</gliederungskennzahl>");
-			int depth = gliederungskennzahl.length() / 3;
-			gotoAfter("<gliederungsbez>");
-			String gliederungsbez = getUntilAndGotoAfter("</gliederungsbez>");
-			gotoAfter("</gliederungseinheit>");
-			Section s = new Section(gliederungsbez);
-			// Log.TEST("Gliederung:", depth, gliederungskennzahl, gliederungsbez);
-			if (depth > currentDepth) {
-				if (section == null) {
-					book.addSection(s);
-				} else {
-					section.addSection(s);
+	private class NormParser extends Parser {
+
+		public NormParser(String data) {
+			super(data);
+		}
+
+		private void parseNorm() throws ParseException {
+			gotoAfter("<metadaten>");
+			if (isBefore("<gliederungseinheit>", "<textdaten>")) {
+				gotoAfter("<gliederungskennzahl>");
+				String gliederungskennzahl = getUntilAndGotoAfter("</gliederungskennzahl>");
+				int depth = gliederungskennzahl.length() / 3;
+				gotoAfter("<gliederungsbez>");
+				String gliederungsbez = getUntilAndGotoAfter("</gliederungsbez>");
+				gotoAfter("</gliederungseinheit>");
+				Section s = new Section(gliederungsbez);
+				// Log.TEST("Gliederung:", depth, gliederungskennzahl, gliederungsbez);
+				if (depth > currentDepth) {
+					if (section == null) {
+						book.addSection(s);
+					} else {
+						section.addSection(s);
+					}
+					currentDepth++;
+				} else if (depth == currentDepth) {
+					Section parentSection = section.getParentSection();
+					if (parentSection == null) {
+						section.getBook().addSection(s);
+					} else {
+						parentSection.addSection(s);
+					}
+				} else if (depth < currentDepth) {
+					while (depth < currentDepth) {
+						section = section.getParentSection();
+						currentDepth--;
+					}
+					Section parentSection = section.getParentSection();
+					if (parentSection == null) {
+						section.getBook().addSection(s);
+					} else {
+						parentSection.addSection(s);
+					}
 				}
-				currentDepth++;
-			} else if (depth == currentDepth) {
-				Section parentSection = section.getParentSection();
-				if (parentSection == null) {
-					section.getBook().addSection(s);
-				} else {
-					parentSection.addSection(s);
-				}
-			} else if (depth < currentDepth) {
-				while (depth < currentDepth) {
-					section = section.getParentSection();
-					currentDepth--;
-				}
-				Section parentSection = section.getParentSection();
-				if (parentSection == null) {
-					section.getBook().addSection(s);
-				} else {
-					parentSection.addSection(s);
+				section = s;
+				if (!isNext("<enbez>")) return;
+			}
+			gotoAfter("<enbez>");
+			String enbez = getUntilAndGotoAfter("</enbez>");
+			enbez = Str.removePrefix(enbez, "(XXXX) ");
+			String titel = null;
+			if (isBefore("<titel", "</metadaten>")) {
+				gotoAfter("<titel");
+				gotoAfter(">");
+				titel = getUntil("</titel");
+				titel = titel.replace("\n<BR/>\n", "\n");
+				titel = titel.replace("<BR/>\n", "\n");
+				titel = titel.replace("<BR/>", "\n");
+			}
+			NormRef ref = new NormRef(book.getRef().getCode(), enbez);
+			Norm norm = new Norm(ref, titel);
+
+			gotoAfter("<textdaten>");
+			if (gotoAfterIf("<text")) {
+				gotoAfter(">");
+				if (gotoAfterIf("<Content>")) {
+					String content = getUntil("</Content>");
+					content = xmlToHtml(content);
+					norm.setTextAsHtml(content);
+
+					if (section == null) {
+						book.addNorm(norm);
+					} else {
+						section.addNorm(norm);
+					}
 				}
 			}
-			section = s;
-			if (!isNext("<enbez>")) return;
 		}
-		gotoAfter("<enbez>");
-		String enbez = getUntilAndGotoAfter("</enbez>");
-		enbez = Str.removePrefix(enbez, "(XXXX) ");
-		String titel = null;
-		if (isBefore("<titel", "</metadaten>")) {
-			gotoAfter("<titel");
-			gotoAfter(">");
-			titel = getUntil("</titel");
-			titel = titel.replace("\n<BR/>\n", "\n");
-			titel = titel.replace("<BR/>\n", "\n");
-			titel = titel.replace("<BR/>", "\n");
-		}
-		NormRef ref = new NormRef(book.getRef().getCode(), enbez);
-		Norm norm = new Norm(ref, titel);
-
-		gotoAfter("<textdaten");
-		gotoAfter("<text");
-		gotoAfter(">");
-		if (isNext("<Content>")) {
-			gotoAfter("<Content>");
-			String content = getUntil("</Content>");
-			content = xmlToHtml(content);
-			norm.setTextAsHtml(content);
-
-			if (section == null) {
-				book.addNorm(norm);
-			} else {
-				section.addNorm(norm);
-			}
-		}
-		gotoAfter("</norm>");
 	}
 
 	private String xmlToHtml(String s) {

@@ -99,6 +99,17 @@ public class GiiTest extends ATest {
 	}
 
 	@Test
+	public void testGG() {
+		BookRef ref = getBookIndex().getBookByCode("GG");
+		Book book = getGii().loadBook(ref);
+		assertNotNull(book);
+		assertSize(book.getAllNorms(), 198);
+
+		Norm n76 = book.getNormByCodeNumber("76");
+		assertNotNull(n76);
+	}
+
+	@Test
 	public void testWoGG() {
 		BookRef ref = getBookIndex().getBookByCode("WoGG");
 		Book book = getGii().loadBook(ref);
@@ -123,6 +134,15 @@ public class GiiTest extends ATest {
 		Norm n1 = norms.get(0);
 		assertStartsWith(n1.getTextAsString(), "(1) Kraftfahrzeuge ");
 		assertContains(n1.getTextAsString(), "(2) Als Kraftfahrzeuge im Sinne ");
+	}
+
+	@Test
+	public void testStvo() {
+		BookRef ref = getBookIndex().getBookByCode("StVO");
+		Book book = getGii().loadBook(ref);
+		assertNotNull(book);
+		List<Norm> norms = book.getAllNorms();
+		assertSize(norms, 61);
 	}
 
 	@Test

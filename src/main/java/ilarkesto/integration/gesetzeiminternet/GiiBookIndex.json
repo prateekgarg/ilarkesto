@@ -8072,6 +8072,11 @@
 			"giiReference": "fachkeinkprv"
 		},
 		{
+			"code": "FachkLogSystPrV",
+			"title": "Verordnung über die Prüfung zum anerkannten Fortbildungsabschluss Geprüfter Fachkaufmann für Logistiksysteme und Geprüfte Fachkauffrau für Logistiksysteme",
+			"giiReference": "fachklogsystprv"
+		},
+		{
 			"code": "FachkMarkPrV",
 			"title": "Verordnung über die Prüfung zum anerkannten Abschluss Geprüfter Fachkaufmann für Marketing\/Geprüfte Fachkauffrau für Marketing",
 			"giiReference": "fachkmarkprv"
@@ -8494,7 +8499,7 @@
 		{
 			"code": "FkSolV",
 			"title": "Verordnung über die Angemessenheit der Eigenmittelausstattung von Finanzkonglomeraten",
-			"giiReference": "fksolv"
+			"giiReference": "fksolv_2013"
 		},
 		{"code":"FlaggAnO1996","title":"Anordnung über die deutschen Flaggen","giiReference":"flaggano_1996"},
 		{
@@ -10564,6 +10569,11 @@
 		},
 		{"code":"GüKKostV1998","title":"Kostenverordnung für den Güterkraftverkehr","giiReference":"g_kkostv_1998"},
 		{"code":"GüKVO","title":"Verordnung über den Güterkraftverkehr","giiReference":"g_kvo"},
+		{
+			"code": "GüLogFachwPrV",
+			"title": "Verordnung über die Prüfung zum anerkannten Fortbildungsabschluss Geprüfter Fachwirt für Güterverkehr und Logistik und Geprüfte Fachwirtin für Güterverkehr und Logistik",
+			"giiReference": "g_logfachwprv"
+		},
 		{
 			"code": "GVFG",
 			"title": "Gesetz über Finanzhilfen des Bundes zur Verbesserung der Verkehrsverhältnisse der Gemeinden",
@@ -14939,11 +14949,6 @@
 		},
 		{"code":"MoselSchPV","title":"Moselschiffahrtspolizeiverordnung","giiReference":"moselschpv_1997"},
 		{
-			"code": "MoselSchPV1997AbwV25",
-			"title": "Fünfundzwanzigste Verordnung zur vorübergehenden Abweichung von der Moselschifffahrtspolizeiverordnung",
-			"giiReference": "moselschpv1997abwv_25"
-		},
-		{
 			"code": "MoselVtrFRALUX",
 			"title": "Vertrag zwischen der Bundesrepublik Deutschland, der Französischen Republik und dem Großherzogtum Luxemburg über die Schiffbarmachung der Mosel",
 			"giiReference": "moselvtr_fra_lux"
@@ -17202,6 +17207,11 @@
 			"giiReference": "persventv"
 		},
 		{
+			"code": "PersVMobFachwPrV",
+			"title": "Verordnung über die Prüfung zum anerkannten Fortbildungsabschluss Geprüfter Fachwirt für Personenverkehr und Mobilität und Geprüfte Fachwirtin für Personenverkehr und Mobilität",
+			"giiReference": "persvmobfachwprv"
+		},
+		{
 			"code": "PFAktuarV",
 			"title": "Verordnung über die versicherungsmathematische Bestätigung, den Erläuterungsbericht und den Angemessenheitsbericht des Verantwortlichen Aktuars bei Pensionsfonds",
 			"giiReference": "pf-aktuarv"
@@ -19279,6 +19289,11 @@
 			"giiReference": "schwarzarbg_2004"
 		},
 		{
+			"code": "SchwarzArbVtrNLD",
+			"title": "Vertrag zwischen der Bundesrepublik Deutschland und dem Königreich der Niederlande über die Zusammenarbeit bei der Bekämpfung des grenzüberschreitenden Missbrauchs bei Sozialversicherungsleistungen und -beiträgen durch Erwerbstätigkeit und bei Leistungen der Grundsicherung für Arbeitsuchende sowie von nicht angemeldeter Erwerbstätigkeit und illegaler grenzüberschreitender Leiharbeit",
+			"giiReference": "schwarzarbvtr_nld"
+		},
+		{
 			"code": "SchwarzArbVtrGNLD",
 			"title": "Gesetz zu dem Vertrag vom 12. Januar 2012 zwischen der Bundesrepublik Deutschland und dem Königreich der Niederlande über die Zusammenarbeit bei der Bekämpfung des grenzüberschreitenden Missbrauchs bei Sozialversicherungsleistungen und -beiträgen durch Erwerbstätigkeit und bei Leistungen der Grundsicherung für Arbeitsuchende sowie von nicht angemeldeter Erwerbstätigkeit und illegaler grenzüberschreitender Leiharbeit (Deutsch-Niederländischer Vertrag zur Bekämpfung grenzüberschreitender Schwarzarbeit)",
 			"giiReference": "schwarzarbvtrg_nld"
@@ -20826,6 +20841,11 @@
 			"giiReference": "steinkohlefing"
 		},
 		{
+			"code": "SteinmetzArbbV",
+			"title": "Verordnung über zwingende Arbeitsbedingungen im Steinmetz- und Steinbildhauerhandwerk",
+			"giiReference": "steinmetzarbbv"
+		},
+		{
 			"code": "SterilEntschAufhG",
 			"title": "Gesetz zur Aufhebung von Sterilisationsentscheidungen der ehemaligen Erbgesundheitsgerichte (Artikel 2 des Gesetzes zur Aufhebung nationalsozialistischer Unrechtsurteile in der Strafrechtspflege und von Sterilisationsentscheidungen der ehemaligen Erbgesundheitsgerichte)",
 			"giiReference": "sterilentschaufhg"
@@ -22102,6 +22122,11 @@
 			"giiReference": "tvmindestlohn_sicherheit"
 		},
 		{
+			"code": "TVMindestlohnSteinmetzArbbV",
+			"title": "Rechtsnormen des Tarifvertrages vom 17. Mai 2012 zur Regelung eines Mindestlohnes im Steinmetz- und Steinbildhauerhandwerk (TV Mindestlohn)",
+			"giiReference": "tvmindestlohn_steinmetzarbbv"
+		},
+		{
 			"code": "TVMindestlohnDachd6",
 			"title": "Rechtsnormen des Tarifvertrages zur Regelung der Mindestlohnes im Dachdeckerhandwerk - Dach-, Wand- und Abdichtungstechnik - im Gebiet der Bundesrepublik Deutschland (TV Mindestlohn) (siehe: TVMindestlohnDachd 6)",
 			"giiReference": "tvmindestlohndachd_6"
@@ -22894,11 +22919,6 @@
 			"code": "VerkPBG",
 			"title": "Gesetz zur Beschleunigung der Planungen für Verkehrswege in den neuen Ländern sowie im Land Berlin",
 			"giiReference": "verkpbg"
-		},
-		{
-			"code": "VerkPrV",
-			"title": "Verordnung über die Prüfung zum anerkannten Abschluß Geprüfter Verkehrsfachwirt\/Geprüfte Verkehrsfachwirtin",
-			"giiReference": "verkprv"
 		},
 		{"code":"VerkSiG","title":"Gesetz zur Sicherstellung des Verkehrs","giiReference":"verksig"},
 		{
@@ -24655,11 +24675,6 @@
 			"code": "WZSchBek20100730",
 			"title": "Bekanntmachung über den Schutz von Mustern und Marken auf Ausstellungen",
 			"giiReference": "wzschbek_2010-07-30"
-		},
-		{
-			"code": "WZSchBek20120711",
-			"title": "Bekanntmachung über den Schutz von Mustern und Marken auf Ausstellungen",
-			"giiReference": "wzschbek_2012-07-11"
 		},
 		{
 			"code": "WZSchBek20121220",
