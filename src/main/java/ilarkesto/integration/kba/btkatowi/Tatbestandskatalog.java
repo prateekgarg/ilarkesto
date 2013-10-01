@@ -14,11 +14,15 @@
  */
 package ilarkesto.integration.kba.btkatowi;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class Tatbestandskatalog extends AJsonWrapper {
 
@@ -85,6 +89,14 @@ public class Tatbestandskatalog extends AJsonWrapper {
 			}
 		}
 
+		public Set<String> getLawNormCodes() {
+			Set<String> codes = new LinkedHashSet<String>();
+			for (Tatbestand tb : getTatbestands()) {
+				codes.add(tb.getLawNormCode());
+			}
+			return codes;
+		}
+
 		public int getIndex() {
 			return getParent(Tatbestandskatalog.class).getTatbestandGroups().indexOf(this);
 		}
@@ -103,6 +115,14 @@ public class Tatbestandskatalog extends AJsonWrapper {
 
 		public List<Tatbestand> getTatbestands() {
 			return getWrapperArray("tatbestands", Tatbestand.class);
+		}
+
+		public List<Tatbestand> getTatbestandsByLawCode(String lawNormCode) {
+			List<Tatbestand> ret = new LinkedList<Tatbestandskatalog.Tatbestand>();
+			for (Tatbestand tb : getTatbestands()) {
+				if (lawNormCode.equals(tb.getLawNormCode())) ret.add(tb);
+			}
+			return ret;
 		}
 
 		public Tatbestand getTatbestand(int tbnr) {
@@ -128,6 +148,12 @@ public class Tatbestandskatalog extends AJsonWrapper {
 			json.put("fv", fv);
 		}
 
+		public String getLawNormCode() {
+			String code = getTbnr().toString().substring(1, 3);
+			code = Str.removePrefix(code, "0");
+			return code;
+		}
+
 		public TatbestandGroup getGroup() {
 			return getParent(TatbestandGroup.class);
 		}
@@ -149,7 +175,12 @@ public class Tatbestandskatalog extends AJsonWrapper {
 
 		public String getHeaderAsHtml() {
 			if (header == null) {
-				header = "<strong>" + getTbnr() + "</strong> " + getText();
+				String tbnr = getTbnr().toString();
+				String lawNr = tbnr.substring(0, 1);
+				String normNr = tbnr.substring(1, 3);
+				String nr = tbnr.substring(3);
+				header = "<strong>" + lawNr + "</strong><em>" + normNr + "</em><strong>" + nr + "</strong> "
+						+ getText();
 			}
 			return header;
 		}
