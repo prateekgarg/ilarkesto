@@ -19,9 +19,14 @@ import ilarkesto.json.JsonObject;
 
 public class FuelStation extends AJsonWrapper {
 
-	public FuelStation(String label, String tonlineId) {
+	public FuelStation(String label, String address, String tonlineId) {
 		putMandatory("label", label);
 		putMandatory("tonlineId", tonlineId);
+		putMandatory("address", address);
+	}
+
+	public String getAddress() {
+		return json.getString("address");
 	}
 
 	public String getLabel() {

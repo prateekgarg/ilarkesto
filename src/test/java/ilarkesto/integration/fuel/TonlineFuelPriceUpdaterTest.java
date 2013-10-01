@@ -24,8 +24,13 @@ public class TonlineFuelPriceUpdaterTest extends ATest {
 
 	@Test
 	public void update() {
-		FuelStation station = FuelStations.createRintelnJet();
 		TonlineFuelPriceUpdater updater = new TonlineFuelPriceUpdater();
+		for (FuelStation station : FuelStations.createRintelnStations()) {
+			update(station, updater);
+		}
+	}
+
+	private void update(FuelStation station, TonlineFuelPriceUpdater updater) {
 		updater.updatePrices(station);
 		Price diesel = station.getLatestPriceByFuel(Fuel.ID_DIESEL);
 		assertNotNull(diesel);

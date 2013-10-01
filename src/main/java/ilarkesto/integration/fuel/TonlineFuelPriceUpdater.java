@@ -29,7 +29,6 @@ public class TonlineFuelPriceUpdater extends AFuelPriceUpdater {
 		HttpDownloader httpDownloader = new HttpDownloader();
 		String url = "http://tanken.t-online.de/tankstelle/Diesel/" + station.getTonlineId();
 		String data = httpDownloader.downloadText(url);
-		MyParser parser = new MyParser(data);
 
 		updatePrice(Fuel.ID_E5, "Super", station, data);
 		updatePrice(Fuel.ID_DIESEL, "Diesel", station, data);

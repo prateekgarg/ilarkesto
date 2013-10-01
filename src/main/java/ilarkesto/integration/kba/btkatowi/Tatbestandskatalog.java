@@ -141,7 +141,7 @@ public class Tatbestandskatalog extends AJsonWrapper {
 
 		private boolean matchesWord(String word) {
 			if (getTbnr().toString().contains(word)) return true;
-			if (getText().contains(word)) return true;
+			if (getText().toLowerCase().contains(word)) return true;
 			return false;
 		}
 
