@@ -11,6 +11,14 @@ public class Parser {
 		this.data = data;
 	}
 
+	public boolean isEnd() {
+		return pos >= data.length() - 1;
+	}
+
+	public String tail() {
+		return data.substring(pos);
+	}
+
 	public boolean isBefore(String s, String... others) {
 		int idx = data.indexOf(s, pos);
 		if (idx < 0) return false;

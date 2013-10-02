@@ -60,6 +60,7 @@ public class Str {
 	}
 
 	public static String formatUrlAsLink(String url, int maxLength) {
+		if (url == null) return null;
 		url = removePrefix(url, "http://");
 		url = removePrefix(url, "https://");
 		url = removePrefix(url, "ftp://");
@@ -67,6 +68,9 @@ public class Str {
 		url = removePrefix(url, "apt://");
 		url = removePrefix(url, "file://");
 		url = removePrefix(url, "www.");
+		int paramsIdx = url.indexOf('?');
+		if (paramsIdx > 0) url = url.substring(0, paramsIdx);
+		url = removeSuffix(url, "/");
 		url = cutRight(url, maxLength, "...");
 		return url;
 	}

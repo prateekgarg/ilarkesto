@@ -189,6 +189,14 @@ public abstract class Reflect {
 		return s.equals(Boolean.TRUE.toString());
 	}
 
+	public static Object newInstance(String className, Object... constructorParameters) {
+		try {
+			return newInstance(Class.forName(className), constructorParameters);
+		} catch (ClassNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public static Object newInstance(String className) {
 		try {
 			return newInstance(Class.forName(className));

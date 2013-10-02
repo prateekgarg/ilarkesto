@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.base;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +50,8 @@ public class Utl {
 
 	public static String getUserMessage(Throwable ex) {
 		if (ex instanceof NullPointerException && ex.getMessage() == null) return "NullPointerException";
-		if (ex instanceof RuntimeException) return ex.getMessage();
+		if (ex.getClass().equals(RuntimeException.class)) return ex.getMessage();
+		if (ex.getClass().equals(UnknownHostException.class)) return ex.getMessage();
 		return Str.getSimpleName(ex.getClass()) + ": " + ex.getMessage();
 	}
 
