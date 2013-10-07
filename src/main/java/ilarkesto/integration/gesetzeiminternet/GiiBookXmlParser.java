@@ -16,6 +16,7 @@ package ilarkesto.integration.gesetzeiminternet;
 
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
 import ilarkesto.law.Book;
 import ilarkesto.law.Norm;
 import ilarkesto.law.NormRef;
@@ -104,20 +105,23 @@ public class GiiBookXmlParser extends Parser {
 			NormRef ref = new NormRef(book.getRef().getCode(), enbez);
 			Norm norm = new Norm(ref, titel);
 
-			gotoAfter("<textdaten>");
-			if (gotoAfterIf("<text")) {
-				gotoAfter(">");
-				if (gotoAfterIf("<Content>")) {
-					String content = getUntil("</Content>");
-					content = xmlToHtml(content);
-					norm.setTextAsHtml(content);
+			if (gotoAfterIf("<textdaten>")) {
+				if (gotoAfterIf("<text")) {
+					gotoAfter(">");
+					if (gotoAfterIf("<Content>")) {
+						String content = getUntil("</Content>");
+						content = xmlToHtml(content);
+						norm.setTextAsHtml(content);
 
-					if (section == null) {
-						book.addNorm(norm);
-					} else {
-						section.addNorm(norm);
+						if (section == null) {
+							book.addNorm(norm);
+						} else {
+							section.addNorm(norm);
+						}
 					}
 				}
+			} else {
+				Log.TEST("No <textdaten>:", ref);
 			}
 		}
 	}

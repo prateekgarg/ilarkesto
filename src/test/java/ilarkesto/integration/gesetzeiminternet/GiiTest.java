@@ -89,6 +89,16 @@ public class GiiTest extends ATest {
 	}
 
 	@Test
+	public void testStgb() {
+		BookRef ref = getBookIndex().getBookByCode("StGB");
+		Book book = getGii().loadBook(ref);
+		assertNotNull(book);
+
+		List<Norm> norms = book.getAllNorms();
+		assertSize(norms, 533);
+	}
+
+	@Test
 	public void testAEG() {
 		BookRef ref = getBookIndex().getBookByCode("AEG");
 		Book book = getGii().loadBook(ref);
