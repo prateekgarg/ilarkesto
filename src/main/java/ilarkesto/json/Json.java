@@ -1,5 +1,7 @@
 package ilarkesto.json;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -7,12 +9,21 @@ import java.util.Map;
 
 public class Json {
 
-	public static String valueToString(Object value, int indentation) {
-		if (value == null) return "null";
-		if (value instanceof String) return '"' + escapeString((String) value) + '"';
+	public static void printValue(Object value, PrintWriter out, int indentation) {
+		if (value == null) {
+			out.print("null");
+			return;
+		}
+
+		if (value instanceof String) {
+			out.print('"');
+			out.print(escapeString((String) value));
+			out.print('"');
+			return;
+		}
+
 		if (value instanceof Iterable) {
-			StringBuilder sb = new StringBuilder();
-			sb.append('[');
+			out.print('[');
 			if (indentation >= 0) indentation++;
 			boolean indentArray = indentation > 0 && !isShort((Iterable) value);
 			Iterable list = (Iterable) value;
@@ -21,25 +32,42 @@ public class Json {
 				if (first) {
 					first = false;
 				} else {
-					sb.append(',');
+					out.print(',');
 				}
 				if (indentArray) {
-					sb.append('\n');
-					indent(sb, indentation);
+					out.print('\n');
+					indent(out, indentation);
 				}
-				sb.append(valueToString(element, indentation));
+				printValue(element, out, indentation);
 			}
 			if (indentArray) {
-				sb.append('\n');
+				out.print('\n');
 			}
 			if (indentation >= 0) indentation--;
-			indent(sb, indentation);
-			sb.append(']');
-			return sb.toString();
+			indent(out, indentation);
+			out.print(']');
+			return;
 		}
-		if (value instanceof JsonObject) return ((JsonObject) value).toString(indentation);
-		if (value instanceof JsonWrapper) return ((JsonWrapper) value).getJson().toString(indentation);
-		return value.toString();
+
+		if (value instanceof JsonObject) {
+			((JsonObject) value).print(out, indentation);
+			return;
+		}
+
+		if (value instanceof JsonWrapper) {
+			((JsonWrapper) value).getJson().print(out, indentation);
+			return;
+		}
+
+		out.print(value);
+	}
+
+	public static String valueToString(Object value, int indentation) {
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter out = new PrintWriter(stringWriter);
+		printValue(value, out, indentation);
+		out.flush();
+		return stringWriter.toString();
 	}
 
 	static boolean isShort(Iterable iterable) {
@@ -61,9 +89,9 @@ public class Json {
 		return false;
 	}
 
-	static void indent(StringBuilder sb, int indentation) {
+	static void indent(PrintWriter out, int indentation) {
 		for (int i = 0; i < indentation; i++) {
-			sb.append('\t');
+			out.print('\t');
 		}
 	}
 

@@ -14,8 +14,12 @@
  */
 package ilarkesto.integration.fuel;
 
+import ilarkesto.core.base.Utl;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
+
+import java.math.BigDecimal;
+import java.util.Comparator;
 
 public class FuelStation extends AJsonWrapper {
 
@@ -53,7 +57,7 @@ public class FuelStation extends AJsonWrapper {
 		return getLabel();
 	}
 
-	public static class Price extends AJsonWrapper {
+	public static class Price extends AJsonWrapper implements Comparable<Price> {
 
 		public Price(long priceTicks, long time) {
 			putMandatory("priceTicks", priceTicks);
@@ -77,12 +81,38 @@ public class FuelStation extends AJsonWrapper {
 		}
 
 		public String getPriceAsString() {
-			return String.valueOf(getPriceAsFloat()).replace('.', ',');
+			return format(getPriceAsFloat());
 		}
 
 		@Override
 		public String toString() {
 			return getPriceAsString();
+		}
+
+		@Override
+		public int compareTo(Price o) {
+			return Utl.compare(getPriceTicks(), o.getPriceTicks());
+		}
+
+		public static String format(float price) {
+			BigDecimal bd = new BigDecimal(price);
+			bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
+			return bd.toString().replace('.', ',');
+		}
+	}
+
+	public static class PriceComparator implements Comparator<FuelStation> {
+
+		private String fuel;
+
+		public PriceComparator(String fuel) {
+			super();
+			this.fuel = fuel;
+		}
+
+		@Override
+		public int compare(FuelStation a, FuelStation b) {
+			return Utl.compare(a.getLatestPriceByFuel(fuel), b.getLatestPriceByFuel(fuel));
 		}
 
 	}

@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -310,31 +311,39 @@ public class JsonObject {
 
 	// --- formating ---
 
-	String toString(int indentation) {
+	void print(PrintWriter out, int indentation) {
 		if (Json.isShort(elements.values())) indentation = -1;
-		StringBuilder sb = new StringBuilder();
-		sb.append('{');
+		out.print('{');
 		if (indentation >= 0) indentation++;
 		boolean first = true;
 		for (Map.Entry<String, Object> element : elements.entrySet()) {
 			if (first) {
 				first = false;
 			} else {
-				sb.append(',');
+				out.print(',');
 			}
-			if (indentation >= 0) sb.append('\n');
-			Json.indent(sb, indentation);
-			sb.append('"').append(Json.escapeString(element.getKey())).append("\":");
-			if (indentation >= 0) sb.append(' ');
-			sb.append(Json.valueToString(element.getValue(), indentation));
+			if (indentation >= 0) out.print('\n');
+			Json.indent(out, indentation);
+			out.print('"');
+			out.print(Json.escapeString(element.getKey()));
+			out.print("\":");
+			if (indentation >= 0) out.print(' ');
+			Json.printValue(element.getValue(), out, indentation);
 		}
 		if (indentation >= 0) {
 			indentation--;
-			sb.append('\n');
-			Json.indent(sb, indentation);
+			out.print('\n');
+			Json.indent(out, indentation);
 		}
-		sb.append('}');
-		return sb.toString();
+		out.print('}');
+	}
+
+	public String toString(int indentation) {
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter out = new PrintWriter(stringWriter);
+		print(out, indentation);
+		out.flush();
+		return stringWriter.toString();
 	}
 
 	public String toFormatedString() {
@@ -485,11 +494,8 @@ public class JsonObject {
 	}
 
 	public void write(PrintWriter out, boolean formated) {
-		if (formated) {
-			out.print(toFormatedString());
-		} else {
-			out.print(toString());
-		}
+		int indentation = formated ? 0 : -1;
+		print(out, indentation);
 		out.flush();
 	}
 

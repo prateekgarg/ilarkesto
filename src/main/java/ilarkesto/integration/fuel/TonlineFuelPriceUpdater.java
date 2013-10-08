@@ -30,17 +30,17 @@ public class TonlineFuelPriceUpdater extends AFuelPriceUpdater {
 		String url = "http://tanken.t-online.de/tankstelle/Diesel/" + station.getTonlineId();
 		String data = httpDownloader.downloadText(url);
 
-		updatePrice(Fuel.ID_E5, "Super", station, data);
-		updatePrice(Fuel.ID_DIESEL, "Diesel", station, data);
-		updatePrice(Fuel.ID_E10, "Super E10", station, data);
-		// updatePrice(Fuel.ID_PLUS, "SuperPlus", station, parser);
+		updatePrice(Fuel.E5, "Super", station, data);
+		updatePrice(Fuel.DIESEL, "Diesel", station, data);
+		updatePrice(Fuel.E10, "Super E10", station, data);
+		updatePrice(Fuel.PLUS, "SuperPlus", station, data);
 	}
 
 	private void updatePrice(String fuelId, String fuelLabel, FuelStation station, String data) {
 		MyParser parser = new MyParser(data);
 		try {
 			Price price = parser.parsePrice(fuelLabel);
-			log.info("Price parsed:", station, fuelId, price);
+			log.info("Price parsed:", station, fuelId, price, price.getPriceTicks());
 			station.addPrice(fuelId, price);
 		} catch (ParseException ex) {
 			log.error("Updating price failed:", fuelId, station, ex);
@@ -60,7 +60,7 @@ public class TonlineFuelPriceUpdater extends AFuelPriceUpdater {
 			int cent10 = parseBigNumber();
 			int cent = parseBigNumber();
 			int extra = parseSmallNumber();
-			long price = (eur + 1000) + (cent10 * 100) + (cent * 10) + (extra);
+			long price = (eur * 1000) + (cent10 * 100) + (cent * 10) + (extra);
 
 			String time = parseTime();
 			if (time == null) return null;
