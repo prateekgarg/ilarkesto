@@ -37,4 +37,12 @@ public class DateAndTimeTest extends ATest {
 		assertFalse(new DateAndTime(2010, 1, 1, 10, 10, 0).isBefore(new DateAndTime(2010, 1, 1, 10, 10, 0)));
 	}
 
+	@Test
+	public void test24() {
+		Time t24 = new Time(24, 0);
+		assertTrue(t24.isAfter(new Time(10, 9)));
+
+		assertEquals(new DateAndTime(1979, 8, 2, 24, 0, 0), new DateAndTime(1979, 8, 3, 0, 0, 0));
+		assertEquals(new DateAndTime(1979, 8, 2, 24, 0, 0).compareTo(new DateAndTime(1979, 8, 3, 0, 0, 0)), 0);
+	}
 }

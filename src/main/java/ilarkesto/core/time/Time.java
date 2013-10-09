@@ -25,6 +25,11 @@ public class Time implements Comparable<Time>, Serializable {
 	private transient int hashCode;
 
 	public Time(int hour, int minute, int second) {
+		if (hour > 24 || minute > 59 || second > 59)
+			throw new IllegalArgumentException("Illegal time: " + hour + ":" + minute + ":" + second);
+		if (hour == 24 && (minute > 0 || second > 0))
+			throw new IllegalArgumentException("Illegal time: " + hour + ":" + minute + ":" + second);
+
 		this.hour = hour;
 		this.minute = minute;
 		this.second = second;
@@ -68,6 +73,10 @@ public class Time implements Comparable<Time>, Serializable {
 	}
 
 	// ---
+
+	public final boolean isBetween(Time from, Time to) {
+		return isAfterOrSame(from) && isBeforeOrSame(to);
+	}
 
 	public final boolean isBefore(Time other) {
 		return compareTo(other) < 0;

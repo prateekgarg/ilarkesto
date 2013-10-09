@@ -167,13 +167,16 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 	public final boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (!(obj instanceof DateAndTime)) return false;
-		return date.equals(((DateAndTime) obj).date) && time.equals(((DateAndTime) obj).time);
+		return toMillis() == ((DateAndTime) obj).toMillis();
 	}
 
 	@Override
 	public final int compareTo(DateAndTime o) {
-		int i = date.compareTo(o.date);
-		return i == 0 ? time.compareTo(o.time) : i;
+		long a = toMillis();
+		long b = o.toMillis();
+		if (a > b) return 1;
+		if (a < b) return -1;
+		return 0;
 	}
 
 	// --- static ---

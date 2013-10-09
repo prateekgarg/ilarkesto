@@ -15,11 +15,14 @@
 package ilarkesto.integration.fuel;
 
 import ilarkesto.core.base.Utl;
+import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.Time;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.List;
 
 public class FuelStation extends AJsonWrapper {
 
@@ -50,6 +53,33 @@ public class FuelStation extends AJsonWrapper {
 		Price latest = getLatestPriceByFuel(fuelId);
 		if (latest != null && price.getTime() < latest.getTime()) return;
 		json.put("latestPrice_" + fuelId, price);
+	}
+
+	public FuelStation addServiceTime(Time from, Time to) {
+		ServiceTime serviceTime = new ServiceTime(from, to);
+		json.addToArray("serviceTimes", serviceTime);
+		return this;
+	}
+
+	public FuelStation addServiceTime(int fromHour, int toHour) {
+		return addServiceTime(new Time(fromHour, 0), new Time(toHour, 0));
+	}
+
+	public List<ServiceTime> getServiceTimes() {
+		return getWrapperArray("serviceTimes", ServiceTime.class);
+	}
+
+	public boolean isServiceTime(DateAndTime dateAndTime) {
+		List<ServiceTime> serviceTimes = getServiceTimes();
+		if (serviceTimes.isEmpty()) return true;
+		for (ServiceTime serviceTime : serviceTimes) {
+			if (serviceTime.isServiceTime(dateAndTime)) return true;
+		}
+		return false;
+	}
+
+	public boolean isServiceTime() {
+		return isServiceTime(DateAndTime.now());
 	}
 
 	@Override
@@ -99,6 +129,31 @@ public class FuelStation extends AJsonWrapper {
 			bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
 			return bd.toString().replace('.', ',');
 		}
+	}
+
+	public static class ServiceTime extends AJsonWrapper {
+
+		public ServiceTime(Time from, Time to) {
+			json.put("from", from.toString());
+			json.put("to", to.toString());
+		}
+
+		public ServiceTime(JsonObject json) {
+			super(json);
+		}
+
+		public Time getFrom() {
+			return new Time(json.getString("from"));
+		}
+
+		public Time getTo() {
+			return new Time(json.getString("to"));
+		}
+
+		public boolean isServiceTime(DateAndTime dateAndTime) {
+			return dateAndTime.getTime().isBetween(getFrom(), getTo());
+		}
+
 	}
 
 	public static class PriceComparator implements Comparator<FuelStation> {
