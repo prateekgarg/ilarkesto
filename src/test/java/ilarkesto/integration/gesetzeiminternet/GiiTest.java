@@ -2,6 +2,7 @@ package ilarkesto.integration.gesetzeiminternet;
 
 import ilarkesto.base.Str;
 import ilarkesto.core.base.SimpleFileStorage;
+import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
 import ilarkesto.law.Book;
 import ilarkesto.law.BookCache;
@@ -151,6 +152,9 @@ public class GiiTest extends ATest {
 		BookRef ref = getBookIndex().getBookByCode("StVO");
 		Book book = getGii().loadBook(ref);
 		assertNotNull(book);
+		assertEquals(book.getIssueDate(), new Date(2013, 3, 6));
+		assertContains(book.getStatusComment(), "in Kraft");
+		assertContains(book.getFooterAsHtml(), "Textnachweis");
 		List<Norm> norms = book.getAllNorms();
 		assertSize(norms, 61);
 	}

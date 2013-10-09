@@ -25,12 +25,14 @@ public class Fuel {
 	public static final String E5 = "E5";
 	public static final String E10 = "E10";
 	public static final String PLUS = "PLUS";
+	public static final String AUTOGAS = "AUTOGAS";
 
 	public static String getFuelLabel(String fuelType) {
 		if (DIESEL.equals(fuelType)) return "Diesel";
 		if (E5.equals(fuelType)) return "Super 95";
 		if (E10.equals(fuelType)) return "Super E10";
 		if (PLUS.equals(fuelType)) return "Super Plus";
+		if (AUTOGAS.equals(fuelType)) return "Autogas";
 		return fuelType;
 	}
 

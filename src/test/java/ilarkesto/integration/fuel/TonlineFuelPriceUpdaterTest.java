@@ -40,7 +40,9 @@ public class TonlineFuelPriceUpdaterTest extends ATest {
 		assertNotNull(e10);
 		Price plus = station.getLatestPriceByFuel(Fuel.PLUS);
 		assertNotNull(plus);
-		Log.TEST(diesel, e5, e10, plus);
+		Price autogas = station.getLatestPriceByFuel(Fuel.AUTOGAS);
+		assertNotNull(plus);
+		Log.TEST(diesel, e5, e10, plus, autogas);
 	}
 
 }

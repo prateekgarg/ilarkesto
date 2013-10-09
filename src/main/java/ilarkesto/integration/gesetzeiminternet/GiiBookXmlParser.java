@@ -16,7 +16,9 @@ package ilarkesto.integration.gesetzeiminternet;
 
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.html.Html;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
 import ilarkesto.law.Book;
 import ilarkesto.law.Norm;
 import ilarkesto.law.NormRef;
@@ -34,10 +36,30 @@ public class GiiBookXmlParser extends Parser {
 
 	public void parseInto(Book book) throws ParseException {
 		this.book = book;
+
+		gotoAfter("<norm");
+
+		gotoAfter("<ausfertigung-datum");
+		gotoAfter(">");
+		String ausfertigungsdatum = getUntil("</ausfertigung-datum>");
+		book.setIssueDate(new Date(ausfertigungsdatum));
+
+		if (gotoAfterIf("<standkommentar>")) {
+			String standkommentar = getUntil("</standkommentar>");
+			book.setStatusComment(Html.convertHtmlToText(standkommentar));
+		}
+
+		if (isBefore("<fussnoten>", "</norm")) {
+			gotoAfter("<fussnoten>");
+			gotoAfter("<Content>");
+			String fussnoten = getUntil("</Content>");
+			book.setFooterAsHtml(xmlToHtml(fussnoten));
+		}
+
+		gotoAfter("</norm");
+
 		this.section = null;
 		this.currentDepth = 0;
-		gotoAfter("<norm");
-		gotoAfter("</norm");
 		while (gotoAfterIf("<norm")) {
 			String s = getUntil("</norm>");
 			new NormParser(s).parseNorm();
@@ -140,6 +162,7 @@ public class GiiBookXmlParser extends Parser {
 
 		s = s.replace(" Type=\"TIF\"", "");
 		s = s.replace(" Units=\"", "width=\"");
+		s = s.replace(" xml:space=\"preserve\"", "");
 
 		return s;
 	}

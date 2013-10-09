@@ -14,6 +14,7 @@
  */
 package ilarkesto.law;
 
+import ilarkesto.core.time.Date;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
 
@@ -32,6 +33,32 @@ public class Book extends AJsonWrapper {
 
 	public BookRef getRef() {
 		return getWrapper("ref", BookRef.class);
+	}
+
+	public String getFooterAsHtml() {
+		return json.getString("footerAsHtml");
+	}
+
+	public void setFooterAsHtml(String footer) {
+		json.put("footerAsHtml", footer);
+	}
+
+	public String getStatusComment() {
+		return json.getString("statusComment");
+	}
+
+	public void setStatusComment(String comment) {
+		json.put("statusComment", comment);
+	}
+
+	public Date getIssueDate() {
+		String date = json.getString("issueDate");
+		if (date == null) return null;
+		return new Date(date);
+	}
+
+	public void setIssueDate(Date date) {
+		json.put("issueDate", date.toString());
 	}
 
 	public List<Section> getSections() {

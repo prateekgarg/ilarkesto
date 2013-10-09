@@ -34,16 +34,20 @@ public class TonlineFuelPriceUpdater extends AFuelPriceUpdater {
 		updatePrice(Fuel.DIESEL, "Diesel", station, data);
 		updatePrice(Fuel.E10, "Super E10", station, data);
 		updatePrice(Fuel.PLUS, "SuperPlus", station, data);
+		updatePrice(Fuel.AUTOGAS, "Autogas", station, data);
 	}
 
-	private void updatePrice(String fuelId, String fuelLabel, FuelStation station, String data) {
+	private Price updatePrice(String fuelId, String fuelLabel, FuelStation station, String data) {
 		MyParser parser = new MyParser(data);
 		try {
 			Price price = parser.parsePrice(fuelLabel);
+			if (price == null) return null;
 			log.info("Price parsed:", station, fuelId, price, price.getPriceTicks());
 			station.addPrice(fuelId, price);
+			return price;
 		} catch (ParseException ex) {
 			log.error("Updating price failed:", fuelId, station, ex);
+			return null;
 		}
 	}
 
@@ -57,6 +61,7 @@ public class TonlineFuelPriceUpdater extends AFuelPriceUpdater {
 			gotoAfter("<div class='price'>");
 			gotoAfter("<div class='name'>" + typeLabel + "</div>");
 			int eur = parseBigNumber();
+			if (eur < 0) return null;
 			int cent10 = parseBigNumber();
 			int cent = parseBigNumber();
 			int extra = parseSmallNumber();
@@ -88,6 +93,7 @@ public class TonlineFuelPriceUpdater extends AFuelPriceUpdater {
 			gotoAfterNext("<div class='big number_");
 			String s = getUntil("'");
 			gotoAfter("</div>");
+			if (s.equals("-")) return -1;
 			try {
 				return Integer.parseInt(s);
 			} catch (NumberFormatException ex) {
