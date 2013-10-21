@@ -96,7 +96,7 @@ public class GiiTest extends ATest {
 		assertNotNull(book);
 
 		List<Norm> norms = book.getAllNorms();
-		assertSize(norms, 533);
+		assertSize(norms, 534);
 	}
 
 	@Test
