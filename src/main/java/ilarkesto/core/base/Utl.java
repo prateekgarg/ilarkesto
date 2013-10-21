@@ -50,8 +50,8 @@ public class Utl {
 	public static String getUserMessage(Throwable ex) {
 		if (ex instanceof NullPointerException && ex.getMessage() == null) return "NullPointerException";
 		if (ex.getClass().equals(RuntimeException.class)) return ex.getMessage();
-		if (ex.getClass().getSimpleName().equals("UnknownHostException")) return ex.getMessage();
-		return Str.getSimpleName(ex.getClass()) + ": " + ex.getMessage();
+		if (getSimpleName(ex.getClass()).equals("UnknownHostException")) return ex.getMessage();
+		return getSimpleName(ex.getClass()) + ": " + ex.getMessage();
 	}
 
 	public static String getUserMessageStack(Throwable ex) {
@@ -217,9 +217,13 @@ public class Utl {
 		return Integer.parseInt(hex, 16);
 	}
 
-	@Deprecated
 	public static String getSimpleName(Class type) {
-		return Str.getSimpleName(type);
+		String name = type.getName();
+		int idx = name.lastIndexOf('.');
+		if (idx > 0) {
+			name = name.substring(idx + 1);
+		}
+		return name;
 	}
 
 	public static <T> List<T> toList(Enumeration<T> e) {
