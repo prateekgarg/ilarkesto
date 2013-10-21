@@ -246,6 +246,33 @@ public class JsonObject {
 		return parent;
 	}
 
+	public String getDeepString(String... path) {
+		JsonObject json = getDeepParent(path);
+		if (json == null) return null;
+		return json.getString(path[path.length - 1]);
+	}
+
+	public JsonObject getDeepObject(String... path) {
+		JsonObject json = getDeepParent(path);
+		if (json == null) return null;
+		return json.getObject(path[path.length - 1]);
+	}
+
+	public List<JsonObject> getDeepArrayOfObjects(String... path) {
+		JsonObject json = getDeepParent(path);
+		if (json == null) return null;
+		return json.getArrayOfObjects(path[path.length - 1]);
+	}
+
+	private JsonObject getDeepParent(String... path) {
+		JsonObject json = this;
+		for (int i = 0; i < path.length - 1; i++) {
+			json = json.getObject(path[i]);
+			if (json == null) return null;
+		}
+		return json;
+	}
+
 	// --- manipulating ---
 
 	public <V> V put(String name, V value) {

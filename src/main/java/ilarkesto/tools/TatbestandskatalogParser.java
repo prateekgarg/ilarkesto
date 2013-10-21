@@ -34,6 +34,8 @@ public class TatbestandskatalogParser {
 	private List<Tatbestand> tatbestaende = new LinkedList<Tatbestandskatalog.Tatbestand>();
 	private int page;
 	private boolean inTable;
+	private boolean inBemerkungen = true;
+	private List<String> bemerkungen;
 	private TatbestandBuilder tb;
 	int lineNr = 0;
 
@@ -75,6 +77,13 @@ public class TatbestandskatalogParser {
 
 		if (page < 23) return;
 
+		if (inBemerkungen) {
+			if (line.startsWith("</page")) {
+				inBemerkungen = false;
+				return;
+			}
+		}
+
 		if (!line.startsWith("<text")) return;
 
 		int left = Integer.parseInt(Str.cutFromTo(line, "left=\"", "\""));
@@ -83,8 +92,20 @@ public class TatbestandskatalogParser {
 		int font = Integer.parseInt(Str.cutFromTo(line, "font=\"", "\""));
 		String text = Str.cutFromTo(line, ">", "</text>");
 
+		if (inBemerkungen) {
+			System.out.println("-bem-->" + text);
+			if (text.equals("<b> </b>")) return;
+			if (text.trim().length() == 0) return;
+		}
+
 		if (!inTable) {
 			if (text.equals("FV")) inTable = true;
+
+			if (text.equals("<b>Bemerkungen</b>")) {
+				inBemerkungen = true;
+				return;
+			}
+
 			return;
 		}
 
@@ -113,7 +134,6 @@ public class TatbestandskatalogParser {
 				int fv = Integer.parseInt(Str.cutFromTo(line, ">", "M").trim());
 				tb.setFv(fv);
 			} catch (Exception ex) {
-				System.out.println("!!!! " + line);
 				throw new RuntimeException(lineNr + ":" + line, ex);
 			}
 			return;
@@ -138,6 +158,10 @@ public class TatbestandskatalogParser {
 		Tatbestand tatbestand = tb.createTatbestand();
 		tatbestaende.add(tatbestand);
 		System.out.println(tatbestand);
+	}
+
+	public static class BemerkungenBuilder {
+
 	}
 
 	public static class TatbestandBuilder {

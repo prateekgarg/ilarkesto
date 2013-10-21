@@ -133,6 +133,65 @@ public class Tatbestandskatalog extends AJsonWrapper {
 		}
 	}
 
+	public static String getNormLabel(String bookCode, String normCode) {
+		if ("StVO".equals(bookCode)) {
+			if ("1".equals(normCode)) return "Grundregeln";
+			if ("2".equals(normCode)) return "Straßenbenutzung";
+			if ("3".equals(normCode)) return "Geschwindigkeit";
+			if ("4".equals(normCode)) return "Abstand";
+			if ("5".equals(normCode)) return "Überholen";
+			if ("6".equals(normCode)) return "Vorbeifahren";
+			if ("7".equals(normCode)) return "Fahrstreifen";
+			if ("7a".equals(normCode)) return "Abgehende";
+			if ("8".equals(normCode)) return "Vorfahrt";
+			if ("9".equals(normCode)) return "Abbiegen";
+			if ("10".equals(normCode)) return "Einfahren";
+			if ("11".equals(normCode)) return "Verkehrslagen";
+			if ("12".equals(normCode)) return "Halten/Parken";
+			if ("13".equals(normCode)) return "Parkzeit";
+			if ("14".equals(normCode)) return "Ein- und Aussteigen";
+			if ("15".equals(normCode)) return "Liegenbleiben";
+			if ("15a".equals(normCode)) return "Abschleppen";
+			if ("16".equals(normCode)) return "Warnzeichen";
+			if ("17".equals(normCode)) return "Beleuchtung";
+			if ("18".equals(normCode)) return "Kraftfahrstraßen";
+			if ("19".equals(normCode)) return "Bahnübergänge";
+			if ("20".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+			if ("".equals(normCode)) return "";
+		}
+		return null;
+	}
+
 	public static class Tatbestand extends AJsonWrapper {
 
 		public Tatbestand(JsonObject json) {
@@ -221,6 +280,21 @@ public class Tatbestandskatalog extends AJsonWrapper {
 			Integer fv = getFv();
 			if (fv == null) return "-";
 			return fv + (fv > 1 ? " Monate" : " Monat");
+		}
+
+		public String getAnnotations() {
+			return json.getString("annotations");
+		}
+
+		public void appendAnnotationLine(String line) {
+			String annotations = getAnnotations();
+			if (annotations == null) {
+				annotations = "";
+			} else {
+				annotations += "\n";
+			}
+			annotations += line;
+			json.put("annotations", annotations);
 		}
 
 		@Override
