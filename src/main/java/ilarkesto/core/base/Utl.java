@@ -50,7 +50,7 @@ public class Utl {
 	public static String getUserMessage(Throwable ex) {
 		if (ex instanceof NullPointerException && ex.getMessage() == null) return "NullPointerException";
 		if (ex.getClass().equals(RuntimeException.class)) return ex.getMessage();
-		if (getSimpleName(ex.getClass()).equals("UnknownHostException")) return ex.getMessage();
+		if (ex.getClass().getName().equals("java.net.UnknownHostException")) return ex.getMessage();
 		return getSimpleName(ex.getClass()) + ": " + ex.getMessage();
 	}
 
