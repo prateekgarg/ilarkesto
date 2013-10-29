@@ -24,6 +24,8 @@ public class MaxDevice {
 	private DeviceState state;
 	private String stateInfo;
 
+	private MaxRoom room;
+
 	public static MaxDevice createDummyForRoom(int variant) {
 		MaxDevice dummy = new MaxDevice();
 		dummy.deviceType = "? roomDevice";
@@ -49,8 +51,18 @@ public class MaxDevice {
 		return dummy;
 	}
 
+	public String getNameWithRoomName() {
+		MaxRoom r = getRoom();
+		if (r == null) return getName();
+		return r.getName() + ", " + getName();
+	}
+
 	public String getDeviceType() {
 		return deviceType;
+	}
+
+	public boolean isDeviceTypeShutterContact() {
+		return "ShutterContact".equals(getDeviceType());
 	}
 
 	public String getName() {
@@ -80,6 +92,14 @@ public class MaxDevice {
 	@Override
 	public String toString() {
 		return deviceType + ":" + name + " " + stateInfo;
+	}
+
+	public void wire(MaxRoom room) {
+		this.room = room;
+	}
+
+	public MaxRoom getRoom() {
+		return room;
 	}
 
 }

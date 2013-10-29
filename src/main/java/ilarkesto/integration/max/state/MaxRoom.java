@@ -77,6 +77,27 @@ public class MaxRoom {
 		return dummy;
 	}
 
+	public boolean isWindowOpen() {
+		for (MaxDevice device : getDevices()) {
+			if (!device.isDeviceTypeShutterContact()) continue;
+			MaxShutterContactDeviceState state = (MaxShutterContactDeviceState) device.getState();
+			if (state.isWindowOpen()) return true;
+		}
+		return false;
+	}
+
+	/**
+	 * permanent or temporary warming
+	 */
+	public boolean isManualWarming() {
+		if (isControlModeAuto()) return false;
+		return getSetPointTemperature() > getEcoTemperature();
+	}
+
+	public boolean isAutoOrEco() {
+		return isControlModeAuto() || isTemperatureModeEco();
+	}
+
 	@Override
 	public String toString() {
 		return name;
@@ -114,6 +135,18 @@ public class MaxRoom {
 		return temperatureMode;
 	}
 
+	public boolean isTemperatureModeNormal() {
+		return "Normal".equals(getTemperatureMode());
+	}
+
+	public boolean isTemperatureModeEco() {
+		return "Eco".equals(getTemperatureMode());
+	}
+
+	public boolean isTemperatureModeComfort() {
+		return "Comfort".equals(getTemperatureMode());
+	}
+
 	public boolean isTemperatureControllable() {
 		return temperatureControllable;
 	}
@@ -130,6 +163,22 @@ public class MaxRoom {
 		return devices;
 	}
 
+	public List<MaxDevice> getDevicesWithLowBattery() {
+		List<MaxDevice> ret = new ArrayList<MaxDevice>();
+		for (MaxDevice device : getDevices()) {
+			if (device.getState().isBatteryLow()) ret.add(device);
+		}
+		return ret;
+	}
+
+	public List<MaxDevice> getDevicesWithTransmitError() {
+		List<MaxDevice> ret = new ArrayList<MaxDevice>();
+		for (MaxDevice device : getDevices()) {
+			if (device.getState().isTransmitError()) ret.add(device);
+		}
+		return ret;
+	}
+
 	public int getDecalcificationHour() {
 		return decalcificationHour;
 	}
@@ -140,6 +189,18 @@ public class MaxRoom {
 
 	public String getControlMode() {
 		return controlMode;
+	}
+
+	public boolean isControlModeAuto() {
+		return "Auto".equals(getControlMode());
+	}
+
+	public boolean isControlModePermanently() {
+		return "Permanently".equals(getControlMode());
+	}
+
+	public boolean isControlModeTemporary() {
+		return "Temporary".equals(getControlMode());
 	}
 
 	public boolean isSetPointTemperatureValid() {
@@ -180,6 +241,12 @@ public class MaxRoom {
 
 	public int getId() {
 		return id;
+	}
+
+	void wire() {
+		for (MaxDevice device : getDevices()) {
+			device.wire(this);
+		}
 	}
 
 }

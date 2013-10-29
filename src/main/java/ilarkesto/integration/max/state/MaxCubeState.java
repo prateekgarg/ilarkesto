@@ -14,6 +14,8 @@
  */
 package ilarkesto.integration.max.state;
 
+import ilarkesto.core.time.Tm;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +46,47 @@ public class MaxCubeState {
 		dummy.stateCubeTime = System.currentTimeMillis() - 123456;
 		dummy.cubeDate = "2011-01-02";
 		return dummy;
+	}
+
+	public boolean isInSync() {
+		long lastPingTime = getCubeLastPing().getDate().getTime();
+		long lastPingAge = System.currentTimeMillis() - lastPingTime;
+		return lastPingAge < (Tm.MINUTE * 5);
+	}
+
+	public List<MaxDevice> getDevicesWithTransmitError() {
+		List<MaxDevice> ret = new ArrayList<MaxDevice>();
+		ret.addAll(getHouse().getDevicesWithTransmitError());
+		for (MaxRoom room : getRooms()) {
+			ret.addAll(room.getDevicesWithTransmitError());
+		}
+		return ret;
+	}
+
+	public List<MaxDevice> getDevicesWithLowBattery() {
+		List<MaxDevice> ret = new ArrayList<MaxDevice>();
+		ret.addAll(getHouse().getDevicesWithLowBattery());
+		for (MaxRoom room : getRooms()) {
+			ret.addAll(room.getDevicesWithLowBattery());
+		}
+		return ret;
+	}
+
+	public List<MaxDevice> getDevices() {
+		List<MaxDevice> ret = new ArrayList<MaxDevice>();
+		ret.addAll(getHouse().getDevices());
+		for (MaxRoom room : getRooms()) {
+			ret.addAll(room.getDevices());
+		}
+		return ret;
+	}
+
+	public List<MaxRoom> getRoomsWithOpenWindow() {
+		List<MaxRoom> ret = new ArrayList<MaxRoom>();
+		for (MaxRoom room : getRooms()) {
+			if (room.isWindowOpen()) ret.add(room);
+		}
+		return ret;
 	}
 
 	public String getCubeDate() {
@@ -88,6 +131,12 @@ public class MaxCubeState {
 		sb.append(firmwareVersion);
 		if (daylightSaving) sb.append(" daylight-saving");
 		return sb.toString();
+	}
+
+	public void wire() {
+		for (MaxRoom room : getRooms()) {
+			room.wire();
+		}
 	}
 
 }

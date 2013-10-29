@@ -18,6 +18,7 @@ import ilarkesto.base.Reflect;
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Utl;
 import ilarkesto.integration.max.state.MaxCubeState;
+import ilarkesto.json.Json;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,13 +51,13 @@ public class DwrParser extends Parser {
 				String varName = statement.substring(idx + 1, statement.lastIndexOf(')'));
 				Object object = objects.get(varName);
 				if (object == null)
-					throw new MaxPortalProtocolException("Callback variable does not exist: " + varName);
+					throw new MaxProtocolException("Callback variable does not exist: " + varName);
 				return object;
 			} else {
-				throw new MaxPortalProtocolException("Unsupported statement: " + statement);
+				throw new MaxProtocolException("Unsupported statement: " + statement);
 			}
 		}
-		throw new MaxPortalProtocolException("Missing callback statement");
+		throw new MaxProtocolException("Missing callback statement");
 	}
 
 	private void parseValueAssignment(String statement, Map<String, Object> objects) {
@@ -65,7 +66,7 @@ public class DwrParser extends Parser {
 		String name = statement.substring(0, dotIdx);
 
 		Object object = objects.get(name);
-		if (object == null) throw new MaxPortalProtocolException("Variable not defined: " + name);
+		if (object == null) throw new MaxProtocolException("Variable not defined: " + name);
 
 		String property = statement.substring(dotIdx + 1, eqIdx);
 		String value = statement.substring(eqIdx + 1);
@@ -86,7 +87,7 @@ public class DwrParser extends Parser {
 		String name = statement.substring(0, dotIdx);
 
 		Collection object = (Collection) objects.get(name);
-		if (object == null) throw new MaxPortalProtocolException("Variable not defined: " + name);
+		if (object == null) throw new MaxProtocolException("Variable not defined: " + name);
 
 		String value = statement.substring(eqIdx + 1);
 
@@ -96,6 +97,7 @@ public class DwrParser extends Parser {
 	}
 
 	private Object parseAssignementValue(String value, Map<String, Object> objects) {
+
 		if (value.equals("true")) return true;
 
 		if (value.equals("false")) return false;
@@ -104,7 +106,7 @@ public class DwrParser extends Parser {
 
 		if (value.startsWith("s") && value.length() <= 5) {
 			Object valueObject = objects.get(value);
-			if (valueObject == null) throw new MaxPortalProtocolException("Variable not defined: " + value);
+			if (valueObject == null) throw new MaxProtocolException("Variable not defined: " + value);
 			return valueObject;
 		}
 
@@ -114,13 +116,14 @@ public class DwrParser extends Parser {
 			return new Date(millis);
 		}
 
-		if (value.startsWith("\'") || value.startsWith("\"")) return value.substring(1, value.length() - 1);
+		if (value.startsWith("\'") || value.startsWith("\""))
+			return Json.parseString(value.substring(1, value.length() - 1));
 
 		if (isInteger(value)) return Integer.parseInt(value);
 
 		if (isFloat(value)) return Float.parseFloat(value);
 
-		throw new MaxPortalProtocolException("Unsupported variable assignment value: " + value);
+		throw new MaxProtocolException("Unsupported variable assignment value: " + value);
 	}
 
 	private void parseVarStatement(String statement, Map<String, Object> objects) {
@@ -134,7 +137,7 @@ public class DwrParser extends Parser {
 			String className = value.substring(4, value.indexOf('('));
 			object = Reflect.newInstance(MaxCubeState.class.getPackage().getName() + "." + className);
 		} else {
-			throw new MaxPortalProtocolException("Unsupported variable value: " + value);
+			throw new MaxProtocolException("Unsupported variable value: " + value);
 		}
 		objects.put(name, object);
 	}
@@ -174,7 +177,7 @@ public class DwrParser extends Parser {
 				if (first) {
 					first = false;
 				} else {
-					sb.append("-> ");
+					sb.append(" -> ");
 				}
 				sb.append(s);
 			}

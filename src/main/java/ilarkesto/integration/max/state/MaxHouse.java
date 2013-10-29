@@ -30,6 +30,22 @@ public class MaxHouse {
 		return dummy;
 	}
 
+	public List<MaxDevice> getDevicesWithLowBattery() {
+		List<MaxDevice> ret = new ArrayList<MaxDevice>();
+		for (MaxDevice device : getDevices()) {
+			if (device.getState().isBatteryLow()) ret.add(device);
+		}
+		return ret;
+	}
+
+	public List<MaxDevice> getDevicesWithTransmitError() {
+		List<MaxDevice> ret = new ArrayList<MaxDevice>();
+		for (MaxDevice device : getDevices()) {
+			if (device.getState().isTransmitError()) ret.add(device);
+		}
+		return ret;
+	}
+
 	public int getId() {
 		return id;
 	}

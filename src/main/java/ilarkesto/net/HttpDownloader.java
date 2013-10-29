@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -21,6 +22,14 @@ public class HttpDownloader {
 	private String username;
 	private String password;
 	private String baseUrl;
+
+	public String getSessionId() {
+		return null;
+	}
+
+	public String post(String url, Map<String, String> parameters) {
+		return IO.postAndGetResult(url, parameters, charset, null, null);
+	}
 
 	public void downloadUrlToFile(String url, File file) {
 		IO.downloadUrlToFile(url, file.getPath());

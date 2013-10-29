@@ -14,6 +14,7 @@
  */
 package ilarkesto.di;
 
+import ilarkesto.base.Beans;
 import ilarkesto.base.Reflect;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.scope.In;
@@ -101,7 +102,8 @@ public class Autowire {
 			}
 		}
 
-		Reflect.processAnnotations(bean, new Reflect.FieldAnnotationHandler() {
+		// TODO create beanless annotation processor in Reflect.java
+		Beans.processAnnotations(bean, new Beans.FieldAnnotationHandler() {
 
 			@Override
 			public void handle(Annotation annotation, Field field, Object object) {

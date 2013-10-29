@@ -1,15 +1,19 @@
 package ilarkesto.integration.max;
 
 import ilarkesto.integration.max.state.MaxCubeState;
+import ilarkesto.integration.max.state.MaxHouse;
+import ilarkesto.integration.max.state.MaxRoom;
+import ilarkesto.testng.ATest;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
-import org.testng.Assert;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -28,7 +32,7 @@ import org.testng.annotations.Test;
  * see <http://www.gnu.org/licenses/>.
  */
 
-public class PortalConnectorTest extends Assert {
+public class PortalConnectorTest extends ATest {
 
 	private String username;
 	private String password;
@@ -45,7 +49,7 @@ public class PortalConnectorTest extends Assert {
 
 	// @Test
 	public void initialize() {
-		PortalConnector pc = PortalConnector.createElvInstance();
+		MaxConnector pc = MaxConnector.createElvInstance(new DefaultHttpClient());
 		pc.initialize();
 		String scriptSessionId = pc.getScriptSessionId();
 		System.out.println(scriptSessionId);
@@ -54,17 +58,24 @@ public class PortalConnectorTest extends Assert {
 
 	// @Test
 	public void login() {
-		PortalConnector pc = PortalConnector.createElvInstance();
+		MaxConnector pc = MaxConnector.createElvInstance(new DefaultHttpClient());
 		pc.login(username, password);
 	}
 
 	@Test
 	public void getMaxCubeState() {
 		if (username == null) return;
-		PortalConnector pc = PortalConnector.createElvInstance();
+		MaxConnector pc = MaxConnector.createElvInstance(new DefaultHttpClient());
 		pc.login(username, password);
 		MaxCubeState state = pc.getMaxCubeState();
 		System.out.println(state.toString());
+		MaxHouse house = state.getHouse();
+		assertNotNull(house);
+		List<MaxRoom> rooms = state.getRooms();
+		assertSize(rooms, 8);
+		for (MaxRoom room : rooms) {
+			System.out.println(room.getName() + ": " + room.getControlMode());
+		}
 	}
 
 }

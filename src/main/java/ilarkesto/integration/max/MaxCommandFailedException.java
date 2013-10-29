@@ -14,10 +14,10 @@
  */
 package ilarkesto.integration.max;
 
-public class LoginFailedException extends RuntimeException {
+public class MaxCommandFailedException extends RuntimeException {
 
-	public LoginFailedException(String url, String user, String cause) {
-		super("Login as " + user + " on " + url + " failed. " + cause);
+	public MaxCommandFailedException(String message) {
+		super(message);
 	}
 
 }

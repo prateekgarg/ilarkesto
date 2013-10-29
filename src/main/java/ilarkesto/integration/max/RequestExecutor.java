@@ -41,18 +41,11 @@ public class RequestExecutor {
 
 	private DefaultHttpClient httpClient;
 
-	public RequestExecutor() {
-		httpClient = WebClientDevWrapper.createClient();
+	public RequestExecutor(DefaultHttpClient httpClient) {
+		this.httpClient = httpClient;
 		// HttpProtocolParams.setUserAgent(httpClient.getParams(),
 		// "Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1");
 		HttpClientParams.setCookiePolicy(httpClient.getParams(), CookiePolicy.BROWSER_COMPATIBILITY);
-	}
-
-	public String postAndReturnLocation(String url, Map<String, String> parameters) {
-		HttpResponse response = post(url, parameters);
-		Header[] headers = response.getHeaders("Location");
-		if (headers.length == 0) return null;
-		return (headers[0].getValue());
 	}
 
 	public String postAndGetContent(String url, Map<String, String> parameters) {
@@ -93,7 +86,7 @@ public class RequestExecutor {
 		return getContent(response);
 	}
 
-	public String getCookieValue(String name) {
+	private String getCookieValue(String name) {
 		CookieStore cookieStore = httpClient.getCookieStore();
 		for (Cookie cookie : cookieStore.getCookies()) {
 			if (name.equals(cookie.getName())) return cookie.getValue();
