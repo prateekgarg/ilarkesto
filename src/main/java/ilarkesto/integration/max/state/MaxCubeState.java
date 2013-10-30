@@ -89,6 +89,15 @@ public class MaxCubeState {
 		return ret;
 	}
 
+	public List<String> getRoomsWithOpenWindowAsRoomNames() {
+		List<MaxRoom> rooms = getRoomsWithOpenWindow();
+		List<String> ret = new ArrayList<String>(rooms.size());
+		for (MaxRoom room : rooms) {
+			ret.add(room.getName());
+		}
+		return ret;
+	}
+
 	public String getCubeDate() {
 		return cubeDate;
 	}

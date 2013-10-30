@@ -84,6 +84,8 @@ public class MaxConnector {
 	}
 
 	public void executeSetRoomTemporaryMode(MaxRoom room, float temperature, Date until) {
+		if (room == null) throw new IllegalArgumentException("room == null");
+		if (until == null) throw new IllegalArgumentException("until == null");
 		Map<String, String> extra = new LinkedHashMap<String, String>();
 		extra.put("c0-e2", "string:" + room.getId());
 		extra.put("c0-e3", "Date:" + until.getTime());
