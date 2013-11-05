@@ -32,7 +32,7 @@ import org.testng.annotations.Test;
  * see <http://www.gnu.org/licenses/>.
  */
 
-public class PortalConnectorTest extends ATest {
+public class MaxConnectorTest extends ATest {
 
 	private String username;
 	private String password;
@@ -66,6 +66,7 @@ public class PortalConnectorTest extends ATest {
 	public void getMaxCubeState() {
 		if (username == null) return;
 		MaxConnector pc = MaxConnector.createElvInstance(new DefaultHttpClient());
+		// MaxConnector pc = MaxConnector.createEq3Instance(new DefaultHttpClient());
 		pc.login(username, password);
 		MaxCubeState state = pc.getMaxCubeState();
 		System.out.println(state.toString());

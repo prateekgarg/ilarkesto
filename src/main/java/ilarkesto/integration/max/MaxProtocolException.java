@@ -16,8 +16,8 @@ package ilarkesto.integration.max;
 
 public class MaxProtocolException extends RuntimeException {
 
-	public MaxProtocolException(String message) {
-		super(message);
+	public MaxProtocolException(String message, String data) {
+		super(message + "\nDATA:\n");
 	}
 
 }

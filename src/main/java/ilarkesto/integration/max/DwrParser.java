@@ -51,13 +51,13 @@ public class DwrParser extends Parser {
 				String varName = statement.substring(idx + 1, statement.lastIndexOf(')'));
 				Object object = objects.get(varName);
 				if (object == null)
-					throw new MaxProtocolException("Callback variable does not exist: " + varName);
+					throw new MaxProtocolException("Callback variable does not exist: " + varName, data);
 				return object;
 			} else {
-				throw new MaxProtocolException("Unsupported statement: " + statement);
+				throw new MaxProtocolException("Unsupported statement: " + statement, data);
 			}
 		}
-		throw new MaxProtocolException("Missing callback statement");
+		throw new MaxProtocolException("Missing callback statement", data);
 	}
 
 	private void parseValueAssignment(String statement, Map<String, Object> objects) {
@@ -66,7 +66,7 @@ public class DwrParser extends Parser {
 		String name = statement.substring(0, dotIdx);
 
 		Object object = objects.get(name);
-		if (object == null) throw new MaxProtocolException("Variable not defined: " + name);
+		if (object == null) throw new MaxProtocolException("Variable not defined: " + name, data);
 
 		String property = statement.substring(dotIdx + 1, eqIdx);
 		String value = statement.substring(eqIdx + 1);
@@ -87,7 +87,7 @@ public class DwrParser extends Parser {
 		String name = statement.substring(0, dotIdx);
 
 		Collection object = (Collection) objects.get(name);
-		if (object == null) throw new MaxProtocolException("Variable not defined: " + name);
+		if (object == null) throw new MaxProtocolException("Variable not defined: " + name, data);
 
 		String value = statement.substring(eqIdx + 1);
 
@@ -106,7 +106,7 @@ public class DwrParser extends Parser {
 
 		if (value.startsWith("s") && value.length() <= 5) {
 			Object valueObject = objects.get(value);
-			if (valueObject == null) throw new MaxProtocolException("Variable not defined: " + value);
+			if (valueObject == null) throw new MaxProtocolException("Variable not defined: " + value, data);
 			return valueObject;
 		}
 
@@ -123,7 +123,7 @@ public class DwrParser extends Parser {
 
 		if (isFloat(value)) return Float.parseFloat(value);
 
-		throw new MaxProtocolException("Unsupported variable assignment value: " + value);
+		throw new MaxProtocolException("Unsupported variable assignment value: " + value, data);
 	}
 
 	private void parseVarStatement(String statement, Map<String, Object> objects) {
@@ -137,7 +137,7 @@ public class DwrParser extends Parser {
 			String className = value.substring(4, value.indexOf('('));
 			object = Reflect.newInstance(MaxCubeState.class.getPackage().getName() + "." + className);
 		} else {
-			throw new MaxProtocolException("Unsupported variable value: " + value);
+			throw new MaxProtocolException("Unsupported variable value: " + value, data);
 		}
 		objects.put(name, object);
 	}

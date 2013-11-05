@@ -19,6 +19,7 @@ import ilarkesto.integration.max.state.MaxCubeState;
 import ilarkesto.integration.max.state.MaxRoom;
 import ilarkesto.json.Json;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,6 +59,10 @@ public class MaxConnector {
 		return new MaxConnector("https://www.max-portal.elv.de/", httpClient);
 	}
 
+	public static MaxConnector createEq3Instance(DefaultHttpClient httpClient) {
+		return new MaxConnector("https://max.eq-3.de/", httpClient);
+	}
+
 	public void executeSetRoomAutoMode(MaxRoom room) {
 		Map<String, String> extra = new LinkedHashMap<String, String>();
 		extra.put("c0-e2", "string:" + room.getId());
@@ -86,14 +91,28 @@ public class MaxConnector {
 	public void executeSetRoomTemporaryMode(MaxRoom room, float temperature, Date until) {
 		if (room == null) throw new IllegalArgumentException("room == null");
 		if (until == null) throw new IllegalArgumentException("until == null");
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(until);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.SECOND, 0);
+		int minute = cal.get(Calendar.MINUTE);
+		if (minute > 30) {
+			cal.roll(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 0);
+		} else {
+			cal.set(Calendar.MINUTE, 30);
+		}
+		until = cal.getTime();
+
 		Map<String, String> extra = new LinkedHashMap<String, String>();
 		extra.put("c0-e2", "string:" + room.getId());
 		extra.put("c0-e3", "Date:" + until.getTime());
 		extra.put("c0-e4", "number:" + temperature);
 		extra.put("c0-e1",
-			"Object_MaxSetRoomPermanentMode:{roomId:reference:c0-e2, temperature:reference:c0-e3, temperature:reference:c0-e4}");
+			"Object_MaxSetRoomTemporaryMode:{roomId:reference:c0-e2, date:reference:c0-e3, temperature:reference:c0-e4}");
 		executeApiMethod("setClientCommands", extra, "Array:[reference:c0-e1]");
-		log.info("Command transmitted:", "SetRoomTemporaryModeMode", temperature, room.getName());
+		log.info("Command transmitted:", "SetRoomTemporaryMode", temperature, until, room.getName());
 	}
 
 	public MaxCubeState getMaxCubeState() {
@@ -102,7 +121,7 @@ public class MaxConnector {
 		DwrParser parser = new DwrParser(result);
 
 		if (!parser.contains("var s0=new MaxCubeState();"))
-			throw new MaxProtocolException("Missing 'new MaxCubeState()' in response");
+			throw new MaxProtocolException("Missing 'new MaxCubeState()' in response", result);
 
 		maxCubeState = (MaxCubeState) parser.parseCallbackObject();
 		maxCubeState.wire();
@@ -123,7 +142,7 @@ public class MaxConnector {
 		if (parser.isError()) throw new LoginFailedException(baseUrl, user, parser.getErrorMessage());
 
 		if (!parser.contains("dwr.engine._remoteHandleCallback("))
-			throw new MaxProtocolException("Missing callback in response");
+			throw new MaxProtocolException("Missing callback in response", result);
 
 		this.user = user;
 		this.password = password;
@@ -158,7 +177,7 @@ public class MaxConnector {
 		httpSessionId = requestExecutor.getSessionId();
 
 		if (result.contains("MaxClientException")) {
-			String message = "Command execution failed.";
+			String message = "Command execution failed: " + name;
 			int messageIdx = result.indexOf("message=\"");
 			if (messageIdx > 0) {
 				messageIdx += 9;
@@ -182,10 +201,11 @@ public class MaxConnector {
 
 		DwrParser parser = new DwrParser(script);
 		if (!parser.gotoAfterIf("dwr.engine._origScriptSessionId = \""))
-			throw new MaxProtocolException("Missing 'dwr.engine._origScriptSessionId' in " + engineScriptUrl);
+			throw new MaxProtocolException("Missing 'dwr.engine._origScriptSessionId' in " + engineScriptUrl, script);
 		String origScriptSessionId = parser.getUntilIf("\"");
 		if (origScriptSessionId == null)
-			throw new MaxProtocolException("Missing 'dwr.engine._origScriptSessionId = \"...\"' in " + engineScriptUrl);
+			throw new MaxProtocolException("Missing 'dwr.engine._origScriptSessionId = \"...\"' in " + engineScriptUrl,
+					script);
 		scriptSessionId = origScriptSessionId + Math.floor(Math.random() * 1000);
 	}
 
