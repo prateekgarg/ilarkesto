@@ -1,8 +1,10 @@
 package ilarkesto.integration.max;
 
+import ilarkesto.core.time.Weekday;
 import ilarkesto.integration.max.state.MaxCubeState;
 import ilarkesto.integration.max.state.MaxHouse;
 import ilarkesto.integration.max.state.MaxRoom;
+import ilarkesto.integration.max.state.MaxWeekTemperatureProfile;
 import ilarkesto.testng.ATest;
 
 import java.io.BufferedReader;
@@ -76,6 +78,15 @@ public class MaxSessionTest extends ATest {
 		assertSize(rooms, 8);
 		for (MaxRoom room : rooms) {
 			System.out.println(room.getName() + ": " + room.getControlMode());
+			MaxWeekTemperatureProfile profile = room.getWeekTemperatureProfile();
+			assertEquals(profile.getDayTemperatureProfile(Weekday.MONDAY).getDayOfWeek(), "Monday");
+			assertEquals(profile.getDayTemperatureProfile(Weekday.TUESDAY).getDayOfWeek(), "Tuesday");
+			assertEquals(profile.getDayTemperatureProfile(Weekday.WEDNESDAY).getDayOfWeek(), "Wednesday");
+			assertEquals(profile.getDayTemperatureProfile(Weekday.THURSDAY).getDayOfWeek(), "Thursday");
+			assertEquals(profile.getDayTemperatureProfile(Weekday.FRIDAY).getDayOfWeek(), "Friday");
+			assertEquals(profile.getDayTemperatureProfile(Weekday.SATURDAY).getDayOfWeek(), "Saturday");
+			assertEquals(profile.getDayTemperatureProfile(Weekday.SUNDAY).getDayOfWeek(), "Sunday");
+			assertEquals(profile.getDayTemperatureProfileForToday().getDayOfWeek(), Weekday.today().toString());
 		}
 	}
 

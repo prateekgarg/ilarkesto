@@ -14,6 +14,7 @@
  */
 package ilarkesto.integration.max.state;
 
+import ilarkesto.core.time.Time;
 import ilarkesto.integration.max.Max;
 
 import java.util.Date;
@@ -28,6 +29,10 @@ public class MaxTemperatureProfilSwitchPoint {
 		dummy.temperature = variant == 0 ? 23.42f : 42.23f;
 		dummy.stop = new Date(variant == 0 ? System.currentTimeMillis() - 10000 : System.currentTimeMillis() + 10000);
 		return dummy;
+	}
+
+	public Time getStopAsTime() {
+		return new Time(getStop());
 	}
 
 	public Date getStop() {

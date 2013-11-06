@@ -81,6 +81,13 @@ public class MaxRoom {
 		return dummy;
 	}
 
+	public Float getCurrentAutoTemperatureFromProfile() {
+		MaxTemperatureProfilSwitchPoint switchPoint = getWeekTemperatureProfile().getDayTemperatureProfileForToday()
+				.getSwitchPointForNow();
+		if (switchPoint == null) return null;
+		return switchPoint.getTemperature();
+	}
+
 	public boolean isWindowOpen() {
 		for (MaxDevice device : getDevices()) {
 			if (!device.isDeviceTypeShutterContact()) continue;
@@ -88,14 +95,6 @@ public class MaxRoom {
 			if (state.isWindowOpen()) return true;
 		}
 		return false;
-	}
-
-	/**
-	 * permanent or temporary warming
-	 */
-	public boolean isManualWarming() {
-		if (isControlModeAuto()) return false;
-		return getSetPointTemperature() > getEcoTemperature();
 	}
 
 	public boolean isAutoOrEco() {

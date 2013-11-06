@@ -14,6 +14,8 @@
  */
 package ilarkesto.integration.max.state;
 
+import ilarkesto.core.time.Weekday;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,30 @@ public class MaxWeekTemperatureProfile {
 			dummy.dayTemperatureProfiles.add(MaxDayTemperatureProfile.createDummy(i));
 		}
 		return dummy;
+	}
+
+	public MaxDayTemperatureProfile getDayTemperatureProfileForToday() {
+		return getDayTemperatureProfile(Weekday.today());
+	}
+
+	public MaxDayTemperatureProfile getDayTemperatureProfile(Weekday weekday) {
+		switch (weekday) {
+			case SATURDAY:
+				return dayTemperatureProfiles.get(0);
+			case SUNDAY:
+				return dayTemperatureProfiles.get(1);
+			case MONDAY:
+				return dayTemperatureProfiles.get(2);
+			case TUESDAY:
+				return dayTemperatureProfiles.get(3);
+			case WEDNESDAY:
+				return dayTemperatureProfiles.get(4);
+			case THURSDAY:
+				return dayTemperatureProfiles.get(5);
+			case FRIDAY:
+				return dayTemperatureProfiles.get(6);
+		}
+		throw new IllegalStateException("Unsupported weekday: " + weekday);
 	}
 
 	public List<MaxDayTemperatureProfile> getDayTemperatureProfiles() {

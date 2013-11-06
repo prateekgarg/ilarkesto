@@ -43,6 +43,10 @@ public enum Weekday {
 		throw new RuntimeException("Weekday does not exist: " + dayOfWeek);
 	}
 
+	public static Weekday today() {
+		return get(Tm.getWeekday());
+	}
+
 	public boolean isWeekend() {
 		return this == SATURDAY || this == SUNDAY;
 	}

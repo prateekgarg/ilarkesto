@@ -14,7 +14,10 @@
  */
 package ilarkesto.integration.max.state;
 
+import ilarkesto.core.time.Time;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MaxDayTemperatureProfile {
@@ -29,6 +32,29 @@ public class MaxDayTemperatureProfile {
 		dummy.switchPoints.add(MaxTemperatureProfilSwitchPoint.createDummy(0));
 		dummy.switchPoints.add(MaxTemperatureProfilSwitchPoint.createDummy(1));
 		return dummy;
+	}
+
+	public MaxTemperatureProfilSwitchPoint getSwitchPointForNow() {
+		return getSwitchPoint(Time.now());
+	}
+
+	public MaxTemperatureProfilSwitchPoint getSwitchPoint(Time time) {
+		List<MaxTemperatureProfilSwitchPoint> points = new ArrayList<MaxTemperatureProfilSwitchPoint>(getSwitchPoints());
+		if (points.isEmpty()) return null;
+
+		Collections.reverse(points);
+
+		MaxTemperatureProfilSwitchPoint best = null;
+		for (MaxTemperatureProfilSwitchPoint sp : points) {
+			if (best == null) {
+				best = sp;
+				continue;
+			}
+			Time stop = sp.getStopAsTime();
+			if (stop.isBefore(time)) return best;
+			best = sp;
+		}
+		return best;
 	}
 
 	public String getDayOfWeek() {

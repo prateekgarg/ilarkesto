@@ -211,6 +211,10 @@ public class Tm {
 		return date.getDay() + 1;
 	}
 
+	public static int getWeekday() {
+		return getWeekday(new Date());
+	}
+
 	@SuppressWarnings("deprecation")
 	public static int getDay(Date date) {
 		return date.getDate();

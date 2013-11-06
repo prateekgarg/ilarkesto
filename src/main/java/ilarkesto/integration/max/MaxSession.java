@@ -111,7 +111,7 @@ public class MaxSession {
 		extra.put("c0-e4", "number:" + temperature);
 		extra.put("c0-e1",
 			"Object_MaxSetRoomTemporaryMode:{roomId:reference:c0-e2, date:reference:c0-e3, temperature:reference:c0-e4}");
-		executeApiMethod("setClientCommands", extra, "Array:[reference:c0-e1]");
+		String ret = executeApiMethod("setClientCommands", extra, "Array:[reference:c0-e1]");
 		log.info("Command transmitted:", "SetRoomTemporaryMode", temperature, until, room.getName());
 	}
 
@@ -185,6 +185,9 @@ public class MaxSession {
 			}
 			throw new MaxCommandFailedException(message);
 		}
+
+		if (!result.contains("dwr.engine._remoteHandleCallback('" + batchId + "'"))
+			throw new MaxCommandFailedException("Command execution failed: " + name + ". Unexpected result: " + result);
 
 		return result;
 	}
