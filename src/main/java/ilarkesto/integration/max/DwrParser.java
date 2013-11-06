@@ -16,7 +16,7 @@ package ilarkesto.integration.max;
 
 import ilarkesto.base.Reflect;
 import ilarkesto.core.base.Parser;
-import ilarkesto.core.base.Utl;
+import ilarkesto.core.logging.Log;
 import ilarkesto.integration.max.state.MaxCubeState;
 import ilarkesto.json.Json;
 
@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DwrParser extends Parser {
+
+	private static Log log = Log.get(DwrParser.class);
 
 	public DwrParser(String data) {
 		super(data);
@@ -75,9 +77,9 @@ public class DwrParser extends Parser {
 
 		try {
 			Reflect.setFieldValue(object, property, valueObject);
-		} catch (Throwable ex) {
-			System.err.println("Setting property <" + property + "> on object <" + object.getClass().getSimpleName()
-					+ "> failed: " + Utl.getRootCause(ex).getMessage());
+		} catch (Exception ex) {
+			log.error("Setting property <" + property + "> with value " + valueObject.getClass().getSimpleName() + ":<"
+					+ valueObject + "> on object <" + object.getClass().getSimpleName() + "> failed:", ex);
 		}
 	}
 

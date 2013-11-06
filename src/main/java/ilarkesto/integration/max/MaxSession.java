@@ -27,11 +27,11 @@ import java.util.Map;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
- * https://www.max-portal.elv.de/dwr/test/MaxRemoteApi
+ * https://www.max-portal.elv.de/dwr/test/MaxRemoteApi http://www.fhemwiki.de/wiki/MAX
  */
-public class MaxConnector {
+public class MaxSession {
 
-	private static Log log = Log.get(MaxConnector.class);
+	private static Log log = Log.get(MaxSession.class);
 
 	private DefaultHttpClient httpClient;
 	private String baseUrl;
@@ -46,7 +46,7 @@ public class MaxConnector {
 
 	private MaxCubeState maxCubeState;
 
-	public MaxConnector(String baseUrl, DefaultHttpClient httpClient) {
+	public MaxSession(String baseUrl, DefaultHttpClient httpClient) {
 		super();
 		this.baseUrl = baseUrl;
 		this.httpClient = httpClient;
@@ -55,12 +55,12 @@ public class MaxConnector {
 
 	}
 
-	public static MaxConnector createElvInstance(DefaultHttpClient httpClient) {
-		return new MaxConnector("https://www.max-portal.elv.de/", httpClient);
+	public static MaxSession createElvInstance(DefaultHttpClient httpClient) {
+		return new MaxSession("https://www.max-portal.elv.de/", httpClient);
 	}
 
-	public static MaxConnector createEq3Instance(DefaultHttpClient httpClient) {
-		return new MaxConnector("https://max.eq-3.de/", httpClient);
+	public static MaxSession createEq3Instance(DefaultHttpClient httpClient) {
+		return new MaxSession("https://max.eq-3.de/", httpClient);
 	}
 
 	public void executeSetRoomAutoMode(MaxRoom room) {
@@ -97,7 +97,7 @@ public class MaxConnector {
 		cal.set(Calendar.MILLISECOND, 0);
 		cal.set(Calendar.SECOND, 0);
 		int minute = cal.get(Calendar.MINUTE);
-		if (minute > 30) {
+		if (minute > 27) {
 			cal.roll(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 0);
 		} else {

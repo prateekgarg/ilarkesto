@@ -30,6 +30,8 @@ public class MaxCubeState {
 	private int NTPCounter;
 	private long stateCubeTime;
 	private String cubeDate;
+	private Integer rfAddress;
+	private String serialNumber;
 
 	public static MaxCubeState createDummy() {
 		MaxCubeState dummy = new MaxCubeState();
@@ -54,7 +56,7 @@ public class MaxCubeState {
 		return lastPingAge < (Tm.MINUTE * 5);
 	}
 
-	public List<MaxDevice> getDevicesWithTransmitError() {
+	public List<MaxDevice> getAllDevicesWithTransmitError() {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
 		ret.addAll(getHouse().getDevicesWithTransmitError());
 		for (MaxRoom room : getRooms()) {
@@ -63,7 +65,7 @@ public class MaxCubeState {
 		return ret;
 	}
 
-	public List<MaxDevice> getDevicesWithLowBattery() {
+	public List<MaxDevice> getAllDevicesWithLowBattery() {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
 		ret.addAll(getHouse().getDevicesWithLowBattery());
 		for (MaxRoom room : getRooms()) {
@@ -72,7 +74,7 @@ public class MaxCubeState {
 		return ret;
 	}
 
-	public List<MaxDevice> getDevices() {
+	public List<MaxDevice> getAllDevices() {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
 		ret.addAll(getHouse().getDevices());
 		for (MaxRoom room : getRooms()) {
@@ -96,6 +98,14 @@ public class MaxCubeState {
 			ret.add(room.getName());
 		}
 		return ret;
+	}
+
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public Integer getRfAddress() {
+		return rfAddress;
 	}
 
 	public String getCubeDate() {
@@ -144,7 +154,7 @@ public class MaxCubeState {
 
 	public void wire() {
 		for (MaxRoom room : getRooms()) {
-			room.wire();
+			room.wire(this);
 		}
 	}
 

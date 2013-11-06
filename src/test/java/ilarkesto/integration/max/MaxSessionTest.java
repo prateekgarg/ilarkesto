@@ -32,7 +32,7 @@ import org.testng.annotations.Test;
  * see <http://www.gnu.org/licenses/>.
  */
 
-public class MaxConnectorTest extends ATest {
+public class MaxSessionTest extends ATest {
 
 	private String username;
 	private String password;
@@ -49,7 +49,7 @@ public class MaxConnectorTest extends ATest {
 
 	// @Test
 	public void initialize() {
-		MaxConnector pc = MaxConnector.createElvInstance(new DefaultHttpClient());
+		MaxSession pc = MaxSession.createElvInstance(new DefaultHttpClient());
 		pc.initialize();
 		String scriptSessionId = pc.getScriptSessionId();
 		System.out.println(scriptSessionId);
@@ -58,17 +58,17 @@ public class MaxConnectorTest extends ATest {
 
 	// @Test
 	public void login() {
-		MaxConnector pc = MaxConnector.createElvInstance(new DefaultHttpClient());
+		MaxSession pc = MaxSession.createElvInstance(new DefaultHttpClient());
 		pc.login(username, password);
 	}
 
 	@Test
 	public void getMaxCubeState() {
 		if (username == null) return;
-		MaxConnector pc = MaxConnector.createElvInstance(new DefaultHttpClient());
-		// MaxConnector pc = MaxConnector.createEq3Instance(new DefaultHttpClient());
-		pc.login(username, password);
-		MaxCubeState state = pc.getMaxCubeState();
+		MaxSession session = MaxSession.createElvInstance(new DefaultHttpClient());
+		// MaxSession pc = MaxSession.createEq3Instance(new DefaultHttpClient());
+		session.login(username, password);
+		MaxCubeState state = session.getMaxCubeState();
 		System.out.println(state.toString());
 		MaxHouse house = state.getHouse();
 		assertNotNull(house);

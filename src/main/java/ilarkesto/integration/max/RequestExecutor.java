@@ -121,7 +121,7 @@ public class RequestExecutor {
 			pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
 		}
 		try {
-			return new UrlEncodedFormEntity(pairs);
+			return new UrlEncodedFormEntity(pairs, IO.UTF_8);
 		} catch (UnsupportedEncodingException ex) {
 			throw new RuntimeException(ex);
 		}

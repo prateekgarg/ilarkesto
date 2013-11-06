@@ -45,6 +45,10 @@ public class MaxRoom {
 	private int maximumNoOfHeatingThermostats;
 	private int maximumNoOfShutterContacts;
 	private int maximumNoOfWallMountedThermostats;
+	private Float currentAutoTemperature;
+	private float actualTemperature;
+
+	private MaxCubeState cube;
 
 	public static MaxRoom createDummy(int variant) {
 		MaxRoom dummy = new MaxRoom();
@@ -98,9 +102,25 @@ public class MaxRoom {
 		return isControlModeAuto() || isTemperatureModeEco();
 	}
 
+	public boolean isActualTemperatureAvailable() {
+		return actualTemperature > 0;
+	}
+
+	public MaxCubeState getCube() {
+		return cube;
+	}
+
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public float getActualTemperature() {
+		return actualTemperature;
+	}
+
+	public Float getCurrentAutoTemperature() {
+		return currentAutoTemperature;
 	}
 
 	public int getMaximumNoOfShutterContacts() {
@@ -243,7 +263,8 @@ public class MaxRoom {
 		return id;
 	}
 
-	void wire() {
+	void wire(MaxCubeState cube) {
+		this.cube = cube;
 		for (MaxDevice device : getDevices()) {
 			device.wire(this);
 		}
