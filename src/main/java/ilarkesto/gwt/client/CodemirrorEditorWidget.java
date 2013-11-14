@@ -121,6 +121,10 @@ public class CodemirrorEditorWidget extends AWidget {
 		wrapSelection(editor, prefix, suffix);
 	}
 
+	public void replaceSelection(String text) {
+		replaceSelection(editor, text);
+	}
+
 	public void wrapLine(String prefix, String suffix) {
 		wrapLine(editor, prefix, suffix);
 	}
@@ -182,6 +186,17 @@ public class CodemirrorEditorWidget extends AWidget {
 			from = cursorPosition.character+prefix.length;
 			to = cursorPosition.character+prefix.length+selection.length;
 			editor.selectLines(cursorPosition.line, from, cursorPosition.line, to);
+		});
+	}-*/;
+
+	private native void replaceSelection(JavaScriptObject editor, String text)
+	/*-{
+	 	editor.execute( function() {
+		    cursorPosition = editor.cursorPosition(true);
+			editor.replaceSelection(text);
+			from = cursorPosition.character;
+			to = cursorPosition.character+text.length;
+			editor.selectLines(cursorPosition.line, 0, cursorPosition.line, 0);
 		});
 	}-*/;
 
