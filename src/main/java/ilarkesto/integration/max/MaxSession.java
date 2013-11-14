@@ -59,6 +59,10 @@ public class MaxSession {
 		return new MaxSession("https://www.max-portal.elv.de/", httpClient);
 	}
 
+	public static MaxSession createMdInstance(DefaultHttpClient httpClient) {
+		return new MaxSession("https://smarthome.md.de/", httpClient);
+	}
+
 	public static MaxSession createEq3Instance(DefaultHttpClient httpClient) {
 		return new MaxSession("https://max.eq-3.de/", httpClient);
 	}
@@ -97,7 +101,9 @@ public class MaxSession {
 		cal.set(Calendar.MILLISECOND, 0);
 		cal.set(Calendar.SECOND, 0);
 		int minute = cal.get(Calendar.MINUTE);
-		if (minute > 27) {
+		if (minute == 30 || minute == 0) {
+			// no change
+		} else if (minute > 27) {
 			cal.roll(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 0);
 		} else {
@@ -111,7 +117,7 @@ public class MaxSession {
 		extra.put("c0-e4", "number:" + temperature);
 		extra.put("c0-e1",
 			"Object_MaxSetRoomTemporaryMode:{roomId:reference:c0-e2, date:reference:c0-e3, temperature:reference:c0-e4}");
-		String ret = executeApiMethod("setClientCommands", extra, "Array:[reference:c0-e1]");
+		executeApiMethod("setClientCommands", extra, "Array:[reference:c0-e1]");
 		log.info("Command transmitted:", "SetRoomTemporaryMode", temperature, until, room.getName());
 	}
 

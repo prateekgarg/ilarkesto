@@ -82,7 +82,7 @@ public class RequestExecutor {
 			throw new RuntimeException(ex);
 		}
 		int statusCode = response.getStatusLine().getStatusCode();
-		if (statusCode != 200) throw new RuntimeException("HTTP GET failed: " + response.toString());
+		if (statusCode != 200) throw new RuntimeException("HTTP GET failed with HTTP Code " + statusCode);
 		return getContent(response);
 	}
 

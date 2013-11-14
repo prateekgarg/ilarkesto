@@ -81,6 +81,19 @@ public class MaxRoom {
 		return dummy;
 	}
 
+	public List<Float> getSettableTemperatures() {
+		List<Float> ret = new ArrayList<Float>();
+		float max = getMaximumTemperature();
+		for (int i = 5; i <= max; i++) {
+			ret.add(Float.valueOf(i));
+			float iPlus = i + 0.5f;
+			if (iPlus <= max && iPlus > 17) {
+				ret.add(Float.valueOf(iPlus));
+			}
+		}
+		return ret;
+	}
+
 	public Float getCurrentAutoTemperatureFromProfile() {
 		MaxTemperatureProfilSwitchPoint switchPoint = getWeekTemperatureProfile().getDayTemperatureProfileForToday()
 				.getSwitchPointForNow();

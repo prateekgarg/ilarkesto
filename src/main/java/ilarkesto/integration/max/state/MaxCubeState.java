@@ -17,7 +17,10 @@ package ilarkesto.integration.max.state;
 import ilarkesto.core.time.Tm;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MaxCubeState {
 
@@ -156,6 +159,28 @@ public class MaxCubeState {
 		for (MaxRoom room : getRooms()) {
 			room.wire(this);
 		}
+	}
+
+	public float getDefaultEcoTemperature() {
+		List<MaxRoom> rooms = getRooms();
+		if (rooms.isEmpty()) return 17;
+		return rooms.iterator().next().getEcoTemperature();
+	}
+
+	public float getDefaultComportTemperature() {
+		List<MaxRoom> rooms = getRooms();
+		if (rooms.isEmpty()) return 22;
+		return rooms.iterator().next().getComfortTemperature();
+	}
+
+	public List<Float> getSettableTemperatures() {
+		Set<Float> all = new HashSet<Float>();
+		for (MaxRoom room : getRooms()) {
+			all.addAll(room.getSettableTemperatures());
+		}
+		List<Float> ret = new ArrayList<Float>(all);
+		Collections.sort(ret);
+		return ret;
 	}
 
 }

@@ -42,6 +42,16 @@ public enum Month {
 		return Tm.getLocalizer(language).full(this);
 	}
 
+	public String toLocalShortString() {
+		return toShortString(Utl.getLanguage());
+	}
+
+	public String toShortString(String language) {
+		String month = toString(language);
+		if (month.length() <= 3) return month;
+		return month.substring(0, 3);
+	}
+
 	public String toLocalString() {
 		return toString(Utl.getLanguage());
 	}

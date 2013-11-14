@@ -68,7 +68,8 @@ public class MaxSessionTest extends ATest {
 	public void getMaxCubeState() {
 		if (username == null) return;
 		MaxSession session = MaxSession.createElvInstance(new DefaultHttpClient());
-		// MaxSession pc = MaxSession.createEq3Instance(new DefaultHttpClient());
+		// MaxSession session = MaxSession.createEq3Instance(new DefaultHttpClient());
+		// MaxSession session = MaxSession.createMdInstance(new DefaultHttpClient());
 		session.login(username, password);
 		MaxCubeState state = session.getMaxCubeState();
 		System.out.println(state.toString());
