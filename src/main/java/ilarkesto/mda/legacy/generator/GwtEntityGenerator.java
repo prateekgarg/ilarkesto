@@ -239,6 +239,9 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 		ln("        @Override");
 		ln("        protected void onChangeValue(" + type + " oldValue, " + type + " newValue) {");
 		ln("            super.onChangeValue(oldValue, newValue);");
+		if (property.isMandatory()) {
+			ln("            if (oldValue == null) return;");
+		}
 		ln("            addUndo(this, oldValue);");
 		ln("        }");
 		ln();
