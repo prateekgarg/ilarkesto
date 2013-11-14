@@ -140,7 +140,7 @@ public class GiiTest extends ATest {
 		assertEquals(book.getRef().getTitle(), "Straßenverkehrsgesetz");
 
 		List<Norm> norms = book.getAllNorms();
-		assertSize(norms, 99);
+		assertSize(norms, 108);
 
 		Norm n1 = norms.get(0);
 		assertStartsWith(n1.getTextAsString(), "(1) Kraftfahrzeuge ");
