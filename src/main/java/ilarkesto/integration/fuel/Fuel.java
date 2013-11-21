@@ -63,9 +63,21 @@ public class Fuel {
 		ret.add(new FuelStation("Reiffeisen (Krankenhagen)", "Extertalstraße 10c, Rinteln", "519b4bcbbed7139bf0d45ac0")
 				.addServiceTime(6, 22));
 
-		// ret.add(new FuelStation("HEM", "Hannoversche Straße 16, Bückeburg", "519b49bfbed7139bf0d43e77"));
-
 		return ret;
 	}
 
+	public static List<FuelStation> createBueckeburgStations() {
+		List<FuelStation> ret = new ArrayList<FuelStation>();
+
+		ret.add(new FuelStation("Jantzon & Hocke (Bückeburg)", "Röcker Straße 24, Bückeburg",
+				"519b4b43bed7139bf0d45466").addServiceTime(6, 22)); // TODO
+		ret.add(new FuelStation("HEM (Bückeburg)", "Hannoversche Straße 16, Bückeburg", "519b49bfbed7139bf0d43e77"));
+		ret.add(new FuelStation("Alte Molkerei (Bückeburg)", "Hannoversche Straße 15, Bückeburg",
+				"519b4a5abed7139bf0d44847").addServiceTime(new Time(6, 0), new Time(22, 30))); // TODO
+		ret.add(new FuelStation("Westfalen (Bückeburg)", "Petzer Straße 6c, Bückeburg", "519b48f8bed7139bf0d42d77")
+				.addServiceTime(6, 22)); // TODO
+		ret.add(new FuelStation("Q1 (Bückeburg)", "Steinberger Straße 36, Bückeburg", "519b49bcbed7139bf0d43e43")
+				.addServiceTime(6, 22)); // TODO
+		return ret;
+	}
 }

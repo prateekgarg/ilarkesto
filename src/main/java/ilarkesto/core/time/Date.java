@@ -340,6 +340,14 @@ public class Date implements Comparable<Date>, Serializable {
 		return sb.toString();
 	}
 
+	public String formatYearMonth() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(year);
+		sb.append('-');
+		formatMonth(sb);
+		return sb.toString();
+	}
+
 	@Override
 	public final String toString() {
 		return formatYearMonthDay();

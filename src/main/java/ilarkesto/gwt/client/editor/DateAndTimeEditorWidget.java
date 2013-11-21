@@ -68,7 +68,7 @@ public class DateAndTimeEditorWidget extends AViewEditWidget {
 	}
 
 	public final void setViewerValue(DateAndTime value) {
-		viewer.setText(value == null ? "." : value.toString());
+		viewer.setText(value == null ? model.getDisplayValueForNull() : value.toString());
 	}
 
 	public final void setEditorValue(DateAndTime value) {

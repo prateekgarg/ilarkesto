@@ -66,7 +66,7 @@ public class TimeEditorWidget extends AViewEditWidget {
 	}
 
 	public final void setViewerValue(Time value) {
-		viewer.setText(value == null ? "." : value.toString());
+		viewer.setText(value == null ? model.getDisplayValueForNull() : value.toString());
 	}
 
 	public final void setEditorValue(Time value) {

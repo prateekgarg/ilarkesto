@@ -80,7 +80,7 @@ public class TextEditorWidget extends AViewEditWidget {
 
 	public final void setViewerText(String text) {
 		if (Str.isBlank(text)) {
-			viewer.setHTML(".");
+			viewer.setHTML(model.getDisplayValueForNull());
 			return;
 		}
 		String html = getRichtextFormater().richtextToHtml(text);
