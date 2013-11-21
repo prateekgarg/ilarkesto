@@ -351,6 +351,10 @@ public class Gwt {
 		return widget;
 	}
 
+	public static void updateRootWidget() {
+		update(rootWidget);
+	}
+
 	public static Widget createBugMarker(String text) {
 		Label label = new Label(text);
 		label.setStyleName("BugMarker");
