@@ -80,4 +80,22 @@ public class Fuel {
 				.addServiceTime(6, 22)); // TODO
 		return ret;
 	}
+
+	public static List<FuelStation> createAuetalStations() {
+		List<FuelStation> ret = new ArrayList<FuelStation>();
+
+		ret.add(new FuelStation("Classic (Auetal)", "Kathrinhagener Straße 19, Auetal", "519b49cbbed7139bf0d43f3c")
+				.addServiceTime(new Time(7, 30), new Time(18, 30))); // TODO
+
+		return ret;
+	}
+
+	public static List<FuelStation> createExtertalStations() {
+		List<FuelStation> ret = new ArrayList<FuelStation>();
+
+		ret.add(new FuelStation("Shell (Extertal)", "Zum Goldenen Winkel 1, Extertal", "519b4913bed7139bf0d43032")
+				.addServiceTime(7, 21)); // TODO
+
+		return ret;
+	}
 }
