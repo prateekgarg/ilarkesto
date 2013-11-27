@@ -34,6 +34,24 @@ public class RintelnDeTest extends ATest {
 	private static final OperationObserver observer = OperationObserver.DUMMY;
 
 	@Test
+	public void downloadPressemitteilungen() throws ParseException {
+		List<Pressemitteilung> mitteilungen = RintelnDe.downloadPressemitteilungen(observer);
+		assertNotEmpty(mitteilungen);
+
+		Pressemitteilung mitteilung = mitteilungen.get(0);
+		assertNotNull(mitteilung.getDate());
+		String html = RintelnDe.downloadPressemitteilungContent(mitteilung.getId(), observer);
+		log.info(mitteilung, "->", html);
+		assertNotNull(html);
+
+		Pressemitteilungen pressemitteilungen = new Pressemitteilungen();
+		RintelnDe.downloadPressemitteilungen(pressemitteilungen, observer);
+		assertEquals(pressemitteilungen.getMitteilungen().size(), mitteilungen.size());
+		RintelnDe.downloadPressemitteilungen(pressemitteilungen, observer);
+		assertEquals(pressemitteilungen.getMitteilungen().size(), mitteilungen.size());
+	}
+
+	@Test
 	public void downloadBranchenbuch() throws ParseException {
 		Branchenbuch branchenbuch = RintelnDe.downloadBranchenbuch(observer);
 		assertNotNull(branchenbuch);

@@ -29,10 +29,14 @@ import ilarkesto.integration.rintelnde.Branchenbuch.Entry;
 import ilarkesto.io.IO;
 import ilarkesto.net.HttpDownloader;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,6 +52,7 @@ public class RintelnDe {
 	public static final String PAGE_BISS = "app-biss";
 	public static final String PAGE_BRANCHENBUCH = "branchenbuch";
 	public static final String PAGE_CALENDAR = "veranstaltungskalender";
+	public static final String PAGE_PRESSEMITTEILUNGEN = "pressemitteilungen-der-stadt-rinteln";
 
 	public static HttpDownloader http = new HttpDownloader();
 
@@ -124,6 +129,61 @@ public class RintelnDe {
 
 	public static String getPageUrl(String path) {
 		return URL_BASE + path;
+	}
+
+	// --- Pressemitteilungen ---
+
+	static String downloadPressemitteilungContent(int pageId, OperationObserver observer) {
+		String html = downloadPageContent("/pressemitteilungen-der-stadt-rinteln/details/" + pageId + "_", observer);
+		html = trimPageContent(html);
+
+		Parser parser = new Parser(html);
+		if (parser.gotoAfterIf("<span class=\"subtitle\">")) {
+			parser.gotoAfterIf("</span>");
+			html = parser.getRemaining();
+		}
+
+		html = html.trim();
+
+		html = Str.removeSuffix(html, "</div>");
+
+		return html;
+	}
+
+	public static void downloadPressemitteilungen(Pressemitteilungen pressemitteilungen, OperationObserver observer)
+			throws ParseException {
+		List<Pressemitteilung> mitteilungen = downloadPressemitteilungen(observer);
+		for (Pressemitteilung m : mitteilungen) {
+			if (pressemitteilungen.containsMitteilung(m.getId())) continue;
+			log.info("New Pressemitteilung:", m);
+			m.setTextAsHtml(downloadPressemitteilungContent(m.getId(), observer));
+			pressemitteilungen.addMitteilung(m);
+		}
+	}
+
+	static List<Pressemitteilung> downloadPressemitteilungen(OperationObserver observer) throws ParseException {
+		String s = downloadPageContent(PAGE_PRESSEMITTEILUNGEN, observer);
+		List<Pressemitteilung> ret = new ArrayList<Pressemitteilung>();
+		DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
+		for (Pair<Integer, String> pair : parseApplist(s, PAGE_PRESSEMITTEILUNGEN + "/details/")) {
+			String label = pair.b;
+			Integer pageId = pair.a;
+			int idx = s.indexOf(PAGE_PRESSEMITTEILUNGEN + "/details/" + pageId);
+			idx = s.indexOf("<span>vom ", idx);
+			String dateS = s.substring(idx + 10, idx + 20);
+			Date date;
+			try {
+				date = new Date(dateFormat.parse(dateS));
+			} catch (java.text.ParseException ex) {
+				throw new ParseException("Invalid date: " + dateS);
+			}
+			ret.add(new Pressemitteilung(label, pageId, date));
+		}
+		return ret;
+	}
+
+	public static String getPressemitteilungPagePath(int pageId) {
+		return PAGE_PRESSEMITTEILUNGEN + "/details/" + pageId + "_";
 	}
 
 	// --- Branchenbuch ---

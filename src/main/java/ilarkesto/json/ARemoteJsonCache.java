@@ -34,6 +34,10 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 		this.file = file;
 	}
 
+	protected boolean isPotentialUpdateAvailable() {
+		return true;
+	}
+
 	private JsonObject getJson() {
 		synchronized (getLock()) {
 			if (wrapper == null) {
@@ -103,6 +107,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 
 	public void update(boolean force, OperationObserver observer) throws RemoteUpdateFailedException {
 		if (observer == null) observer = OperationObserver.DUMMY;
+		if (!force && !isInvalidated() && !isPotentialUpdateAvailable()) return;
 		synchronized (getLock()) {
 			P payload = getPayload();
 			log.info("Updating payload", force ? "(forced)" : "");
