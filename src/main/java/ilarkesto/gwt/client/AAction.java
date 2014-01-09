@@ -26,8 +26,6 @@ public abstract class AAction implements Command, ClickHandler {
 
 	protected final Log log = Log.get(getClass());
 
-	private Updatable[] widgetsToUpdate;
-
 	public abstract String getLabel();
 
 	protected abstract void onExecute();

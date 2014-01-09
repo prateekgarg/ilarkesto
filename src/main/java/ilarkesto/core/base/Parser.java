@@ -145,14 +145,16 @@ public class Parser {
 		return sb.toString();
 	}
 
-	public void gotoAfterIfNext(String s) {
+	public boolean gotoAfterIfNext(String s) {
 		if (isNext(s)) {
 			try {
 				gotoAfter(s);
+				return true;
 			} catch (ParseException ex) {
 				throw new IllegalStateException(ex);
 			}
 		}
+		return false;
 	}
 
 	public void gotoAfterNext(String s) throws ParseException {

@@ -14,6 +14,7 @@
  */
 package ilarkesto.testng;
 
+import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 
@@ -33,6 +34,7 @@ public class ATest extends Assert {
 	public static final String INPUT_DIR = "test-input";
 
 	protected Log log = Log.get(getClass());
+	protected static final OperationObserver observer = OperationObserver.DUMMY;
 
 	@BeforeSuite
 	public void enableDebugLogging() {

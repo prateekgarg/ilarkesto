@@ -1,4 +1,4 @@
-package ilarkesto.integration.gesetzeiminternet;
+package ilarkesto.integration.law.gesetzeiminternetde;
 
 import ilarkesto.base.Str;
 import ilarkesto.core.base.SimpleFileStorage;

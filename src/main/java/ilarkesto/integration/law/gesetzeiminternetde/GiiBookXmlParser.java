@@ -12,12 +12,11 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.gesetzeiminternet;
+package ilarkesto.integration.law.gesetzeiminternetde;
 
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.html.Html;
-import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.law.Book;
 import ilarkesto.law.Norm;
@@ -143,7 +142,7 @@ public class GiiBookXmlParser extends Parser {
 					}
 				}
 			} else {
-				Log.TEST("No <textdaten>:", ref);
+				// Log.TEST("No <textdaten>:", ref);
 			}
 		}
 	}

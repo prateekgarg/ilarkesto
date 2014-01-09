@@ -6,4 +6,8 @@ public class ParseException extends RuntimeException {
 		super(message + "\n" + idx + ":" + json);
 	}
 
+	public ParseException(String message) {
+		super(message);
+	}
+
 }

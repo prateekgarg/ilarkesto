@@ -20,6 +20,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -289,6 +292,43 @@ public abstract class Reflect {
 			}
 		}
 		return m;
+	}
+
+	public static boolean isTransient(Field field) {
+		return Modifier.isTransient(field.getModifiers());
+	}
+
+	public static boolean isPrivate(Field field) {
+		return Modifier.isPrivate(field.getModifiers());
+	}
+
+	public static boolean isStatic(Field field) {
+		return Modifier.isStatic(field.getModifiers());
+	}
+
+	public static List<Field> getSerializableFields(Object object) {
+		return getFields(object, false, true, false);
+	}
+
+	public static List<Field> getFields(Object object, boolean includeStatic, boolean includePrivate,
+			boolean includeTransient) {
+		if (object == null) return Collections.emptyList();
+		return getFields(object.getClass(), includeStatic, includePrivate, includeTransient);
+	}
+
+	public static List<Field> getFields(Class<?> clazz, boolean includeStatic, boolean includePrivate,
+			boolean includeTransient) {
+		List<Field> ret = new ArrayList<Field>();
+		while (clazz != null && !clazz.equals(Object.class)) {
+			for (Field field : clazz.getDeclaredFields()) {
+				if (!includeStatic && isStatic(field)) continue;
+				if (!includePrivate && isPrivate(field)) continue;
+				if (!includeTransient && isTransient(field)) continue;
+				ret.add(field);
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return ret;
 	}
 
 	public static List<Method> getSetters(Class<?> clazz) {

@@ -14,7 +14,6 @@
  */
 package ilarkesto.integration.fuel;
 
-import ilarkesto.core.logging.Log;
 import ilarkesto.integration.fuel.FuelStation.Price;
 import ilarkesto.testng.ATest;
 
@@ -42,7 +41,6 @@ public class TonlineFuelPriceUpdaterTest extends ATest {
 		assertNotNull(plus);
 		Price autogas = station.getLatestPriceByFuel(Fuel.AUTOGAS);
 		assertNotNull(plus);
-		Log.TEST(diesel, e5, e10, plus, autogas);
 	}
 
 }

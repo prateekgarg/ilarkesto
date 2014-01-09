@@ -1,4 +1,4 @@
-package ilarkesto.integration.gesetzeiminternet;
+package ilarkesto.integration.law.gesetzeiminternetde;
 
 import ilarkesto.core.base.AFileStorage;
 import ilarkesto.core.base.Parser;
