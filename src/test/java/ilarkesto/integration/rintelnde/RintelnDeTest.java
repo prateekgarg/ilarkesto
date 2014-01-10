@@ -76,8 +76,8 @@ public class RintelnDeTest extends ATest {
 	@Test
 	public void downloadBranchenbuchEntriesVerbaende() throws ParseException {
 		List<Entry> verbaende = RintelnDe.downloadBranchenbuchEntries(28, observer);
-		assertSize(verbaende, 13);
-		Entry volkshochschule = verbaende.get(12);
+		assertSize(verbaende, 12);
+		Entry volkshochschule = verbaende.get(11);
 		assertEquals(volkshochschule.getLabel(), "Volkshochschule Schaumburg");
 	}
 

@@ -18,11 +18,8 @@ import ilarkesto.testng.ATest;
 
 import java.util.List;
 
-import org.testng.annotations.Test;
-
 public class HochschulkompassTest extends ATest {
 
-	@Test
 	public void values() {
 		ValuesCache valuesCache = new ValuesCache(getTestOutputFile("values.json"));
 		valuesCache.delete();
