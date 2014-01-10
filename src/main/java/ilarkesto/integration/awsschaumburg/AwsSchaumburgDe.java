@@ -77,7 +77,8 @@ public class AwsSchaumburgDe {
 		}
 
 		private void parsePickup() throws ParseException {
-			gotoAfter("<td>");
+			gotoAfter("<td");
+			gotoAfter(">");
 			String dateS = getUntil("</td>");
 			Date date;
 			try {
@@ -86,9 +87,11 @@ public class AwsSchaumburgDe {
 				throw new RuntimeException("Parsing date failed: " + dateS, ex);
 			}
 			if (date.isBefore(minDate)) return;
-			gotoAfter("<td>");
+			gotoAfter("<td");
+			gotoAfter(">");
 			String weekday = getUntil("</td>");
-			gotoAfter("<td>");
+			gotoAfter("<td");
+			gotoAfter(">");
 			String waste = getUntil("</td>");
 			gotoAfter("</tr>");
 			schedule.addPickupDate(waste, date);

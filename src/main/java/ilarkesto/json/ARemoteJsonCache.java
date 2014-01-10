@@ -116,10 +116,6 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 			try {
 				payload = onUpdate(payload, force, isInvalidated(), observer);
 			} catch (Exception ex) {
-				if (payload != null) {
-					log.warn("Updating payload failed.", ex);
-					return;
-				}
 				throw new RemoteUpdateFailedException("Updating payload failed.", ex);
 			}
 			if (payload == null) {
@@ -174,10 +170,11 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 		}
 	}
 
-	@Deprecated
 	public void invalidatePayload() {
-		if (file == null) return;
+		if (file == null) throw new IllegalStateException("file == null");
+		file.setLastModified(0);
 		IO.writeFile(getInvalidMarkerFile(), "invalid", IO.UTF_8);
+		log.info("Invalidated:", this);
 	}
 
 	private File getInvalidMarkerFile() {
