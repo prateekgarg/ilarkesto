@@ -33,10 +33,38 @@ public class TestDe {
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
+	public static Article downloadArticle(ArticleRef ref, OperationObserver observer) {
+		String url = getArticleUrl(ref);
+		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
+		String data = IO.downloadUrlToString(url);
+
+		return new Article(ref);
+	}
+
+	public static String getArticleUrl(ArticleRef ref) {
+		return URL_BASE + "/" + ref.getPageId() + "/";
+	}
+
+	public static List<ArticleRef> downloadNewArticleRefs(List<ArticleRef> lastKnown, OperationObserver observer)
+			throws ParseException {
+		List<ArticleRef> ret = new ArrayList<TestDe.ArticleRef>();
+		int offset = 1;
+		while (true) {
+			List<ArticleRef> newArticles = downloadArticleRefs(offset, observer);
+			if (newArticles.isEmpty()) return ret;
+			for (ArticleRef ref : newArticles) {
+				if (ref.equals(lastKnown)) return ret;
+				ret.add(ref);
+			}
+			offset++;
+		}
+	}
+
 	public static List<ArticleRef> downloadArticleRefs(int indexOffset, OperationObserver observer)
 			throws ParseException {
 		if (indexOffset == 0) throw new IllegalArgumentException("page 0 does not exist");
 		String url = URL_TEST_INDEX + "?fd=" + indexOffset;
+		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
 		String data = IO.downloadUrlToString(url);
 
 		ArrayList<ArticleRef> ret = new ArrayList<ArticleRef>();
@@ -61,6 +89,34 @@ public class TestDe {
 		}
 
 		return ret;
+	}
+
+	public static class Article {
+
+		private ArticleRef ref;
+		private String pdfUrl;
+
+		public Article(ArticleRef ref) {
+			super();
+			this.ref = ref;
+		}
+
+		@Override
+		public int hashCode() {
+			return ref.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof Article)) return false;
+			return ref.equals(((Article) obj).ref);
+		}
+
+		@Override
+		public String toString() {
+			return ref.toString();
+		}
+
 	}
 
 	public static class ArticleRef implements Comparable<ArticleRef> {

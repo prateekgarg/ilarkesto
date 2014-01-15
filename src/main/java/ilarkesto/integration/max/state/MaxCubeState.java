@@ -54,9 +54,13 @@ public class MaxCubeState {
 	}
 
 	public boolean isInSync() {
+		return isInSync(Tm.MINUTE * 5);
+	}
+
+	public boolean isInSync(long maxMillis) {
 		long lastPingTime = getCubeLastPing().getDate().getTime();
 		long lastPingAge = System.currentTimeMillis() - lastPingTime;
-		return lastPingAge < (Tm.MINUTE * 5);
+		return lastPingAge < maxMillis;
 	}
 
 	public List<MaxDevice> getAllDevicesWithTransmitError() {

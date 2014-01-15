@@ -44,6 +44,13 @@ public abstract class AFileStorage {
 		return new SubStorage(path);
 	}
 
+	@Override
+	public String toString() {
+		File file = getFile(null);
+		if (file == null) return "<no base dir defined>";
+		return file.getAbsolutePath();
+	}
+
 	private class SubStorage extends AFileStorage {
 
 		private String sub;

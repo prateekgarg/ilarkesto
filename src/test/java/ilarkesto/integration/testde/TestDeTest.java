@@ -15,6 +15,7 @@
 package ilarkesto.integration.testde;
 
 import ilarkesto.core.base.Parser.ParseException;
+import ilarkesto.core.time.Date;
 import ilarkesto.integration.testde.TestDe.ArticleRef;
 import ilarkesto.testng.ATest;
 
@@ -25,9 +26,19 @@ import org.testng.annotations.Test;
 public class TestDeTest extends ATest {
 
 	@Test
+	public void downloadArticle() {
+		ArticleRef ref = new ArticleRef(new Date(2014 - 01 - 10), "Tages­geld: Die besten Zinsen",
+				"Tagesgeld-Die-besten-Zinsen-4196794-0");
+		TestDe.downloadArticle(ref, observer);
+	}
+
+	@Test
 	public void downloadArticleRefs() throws ParseException {
 		List<ArticleRef> articles = TestDe.downloadArticleRefs(1, observer);
 		assertSize(articles, 10);
+		for (int i = 0; i < 10; i++) {
+			log.debug(articles.get(i));
+		}
 	}
 
 }
