@@ -81,6 +81,14 @@ public class MaxRoom {
 		return dummy;
 	}
 
+	public List<MaxDevice> getDevicesOfTypeWallMountedThermostat() {
+		List<MaxDevice> ret = new ArrayList<MaxDevice>();
+		for (MaxDevice device : getDevices()) {
+			if (device.isDeviceTypeWallMountedThermostat()) ret.add(device);
+		}
+		return ret;
+	}
+
 	public List<Float> getSettableTemperatures() {
 		List<Float> ret = new ArrayList<Float>();
 		float max = getMaximumTemperature();

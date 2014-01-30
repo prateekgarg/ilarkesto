@@ -7,6 +7,7 @@ public interface OperationObserver {
 	public static final String DOWNLOADING = "downloading";
 	public static final String LOADING_CACHE = "loadingCache";
 	public static final String UPDATING = "updating";
+	public static final String SAVING = "saving";
 
 	boolean isAbortRequested();
 

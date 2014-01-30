@@ -106,6 +106,14 @@ public abstract class Reflect {
 		Field field = getDeclaredField(c, fieldName);
 		if (field == null) throw new RuntimeException("Field does not exist: " + c.getName() + "." + fieldName);
 		if (!field.isAccessible()) field.setAccessible(true);
+		if (value != null) {
+			if (value instanceof Long) {
+				Class<?> fieldType = field.getType();
+				if (fieldType == int.class || fieldType == Integer.class) {
+					value = ((Long) value).intValue();
+				}
+			}
+		}
 		try {
 			field.set(object, value);
 		} catch (IllegalArgumentException ex) {

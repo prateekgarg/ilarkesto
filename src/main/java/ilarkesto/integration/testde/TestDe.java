@@ -17,16 +17,23 @@ package ilarkesto.integration.testde;
 import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Parser.ParseException;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class TestDe {
+
+	private static final Log log = Log.get(TestDe.class);
 
 	public static final String URL_BASE = "https://www.test.de";
 	public static final String URL_TEST_INDEX = URL_BASE + "/tests/";
@@ -37,31 +44,43 @@ public class TestDe {
 		String url = getArticleUrl(ref);
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
 		String data = IO.downloadUrlToString(url);
-
+		// TODO impl
 		return new Article(ref);
 	}
 
 	public static String getArticleUrl(ArticleRef ref) {
-		return URL_BASE + "/" + ref.getPageId() + "/";
+		return URL_BASE + "/" + ref.getPageRef() + "/";
 	}
 
-	public static List<ArticleRef> downloadNewArticleRefs(List<ArticleRef> lastKnown, OperationObserver observer)
+	public static boolean update(ArticlesIndex index, OperationObserver observer) throws ParseException {
+		List<ArticleRef> newArticles = downloadNewArticleRefs(index.getArticles(), observer);
+		if (newArticles.isEmpty()) return false;
+		index.addNewArticles(newArticles);
+		return true;
+	}
+
+	static List<ArticleRef> downloadNewArticleRefs(Collection<ArticleRef> knownArticles, OperationObserver observer)
 			throws ParseException {
+		Set<String> knownArticleIds = new HashSet<String>();
+		for (ArticleRef articleRef : knownArticles) {
+			knownArticleIds.add(articleRef.getPageId());
+		}
+		log.debug("Downloading new articles. Known:", knownArticleIds.size(), "->", knownArticleIds);
 		List<ArticleRef> ret = new ArrayList<TestDe.ArticleRef>();
 		int offset = 1;
 		while (true) {
 			List<ArticleRef> newArticles = downloadArticleRefs(offset, observer);
 			if (newArticles.isEmpty()) return ret;
 			for (ArticleRef ref : newArticles) {
-				if (ref.equals(lastKnown)) return ret;
+				if (knownArticleIds.contains(ref.getPageId())) return ret;
+				if (ret.contains(ref)) return ret;
 				ret.add(ref);
 			}
 			offset++;
 		}
 	}
 
-	public static List<ArticleRef> downloadArticleRefs(int indexOffset, OperationObserver observer)
-			throws ParseException {
+	static List<ArticleRef> downloadArticleRefs(int indexOffset, OperationObserver observer) throws ParseException {
 		if (indexOffset == 0) throw new IllegalArgumentException("page 0 does not exist");
 		String url = URL_TEST_INDEX + "?fd=" + indexOffset;
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
@@ -72,7 +91,7 @@ public class TestDe {
 		parser.gotoAfter("<ul class=\"search-result-list\">");
 		while (parser.gotoAfterIfNext("<li>")) {
 			parser.gotoAfter("<a href=\"/");
-			String pageId = parser.getUntil("/\"");
+			String pageRef = parser.getUntil("/\"");
 			parser.gotoAfter("<span class=\"date\">");
 			String dateS = parser.getUntil("</span>");
 			Date date;
@@ -84,7 +103,7 @@ public class TestDe {
 			parser.gotoAfter("<h3>");
 			String title = parser.getUntil("</h3>");
 			parser.gotoAfter("</li>");
-			ArticleRef articleRef = new ArticleRef(date, title, pageId);
+			ArticleRef articleRef = new ArticleRef(date, title, pageRef);
 			ret.add(articleRef);
 		}
 
@@ -119,17 +138,80 @@ public class TestDe {
 
 	}
 
+	public static class ArticlesIndex {
+
+		private List<ArticleRef> articles = new ArrayList<ArticleRef>();
+
+		public List<ArticleRef> getArticles() {
+			return articles;
+		}
+
+		public void addNewArticles(List<ArticleRef> newArticles) {
+			articles.addAll(0, newArticles);
+		}
+
+		public ArticleRef getLastKnownArticle() {
+			if (articles.isEmpty()) return null;
+			return articles.get(0);
+		}
+
+		@Override
+		public String toString() {
+			return articles.size() + " articles";
+		}
+
+		public Object getArticlesCount() {
+			if (articles == null) return 0;
+			return articles.size();
+		}
+
+	}
+
 	public static class ArticleRef implements Comparable<ArticleRef> {
 
 		private String title;
 		private Date date;
+		private String pageRef;
 		private String pageId;
 
-		public ArticleRef(Date date, String title, String pageId) {
+		private transient String titleMainPart;
+		private transient String titleSubPart;
+
+		public ArticleRef(Date date, String title, String pageRef) {
 			super();
 			this.date = date;
 			this.title = title;
-			this.pageId = pageId;
+			this.pageRef = pageRef;
+
+			pageId = pageRef;
+			pageId = Str.removeSuffix(pageId, "-0");
+			if (pageId.contains("-")) {
+				pageId = pageId.substring(pageId.lastIndexOf('-') + 1);
+			}
+		}
+
+		public ArticleRef() {}
+
+		public String getUrl() {
+			return URL_BASE + "/" + pageRef + "/";
+		}
+
+		public String getTitleMainPart() {
+			if (titleMainPart == null) {
+				int idx = title.indexOf(": ");
+				if (idx < 0) return title;
+				titleMainPart = title.substring(0, idx);
+			}
+			return titleMainPart;
+		}
+
+		public String getTitleSubPart() {
+			if (titleSubPart == null) {
+				int idx = title.indexOf(": ");
+				if (idx < 0) return "";
+				titleSubPart = title.substring(idx + 2);
+			}
+			return titleSubPart;
 		}
 
 		public Date getDate() {
@@ -138,6 +220,10 @@ public class TestDe {
 
 		public String getTitle() {
 			return title;
+		}
+
+		public String getPageRef() {
+			return pageRef;
 		}
 
 		public String getPageId() {

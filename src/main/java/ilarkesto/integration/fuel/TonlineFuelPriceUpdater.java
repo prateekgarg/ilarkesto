@@ -103,8 +103,20 @@ public class TonlineFuelPriceUpdater extends AFuelPriceUpdater {
 
 		private int parseSmallNumber() throws ParseException {
 			skipWhitespace();
-			gotoAfterNext("<div class='small ");
-			String s = getUntil("'");
+			gotoAfterNext("<div class='");
+			String s;
+			if (isNext("small ")) {
+				gotoAfterNext("small ");
+				s = getUntil("'");
+			} else {
+				s = getUntil(" ");
+			}
+
+			if (s.startsWith("number_")) {
+				String num = s.substring(s.indexOf('_') + 1);
+				return Integer.parseInt(num);
+			}
+
 			if (s.equals("nine")) return 9;
 			if (s.equals("eight")) return 8;
 			if (s.equals("seven")) return 7;

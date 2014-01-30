@@ -65,6 +65,10 @@ public class MaxDevice {
 		return "ShutterContact".equals(getDeviceType());
 	}
 
+	public boolean isDeviceTypeWallMountedThermostat() {
+		return "WallMountedThermostat".equals(getDeviceType());
+	}
+
 	public String getName() {
 		return name;
 	}

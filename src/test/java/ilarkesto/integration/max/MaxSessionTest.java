@@ -2,6 +2,7 @@ package ilarkesto.integration.max;
 
 import ilarkesto.core.time.Weekday;
 import ilarkesto.integration.max.state.MaxCubeState;
+import ilarkesto.integration.max.state.MaxDevice;
 import ilarkesto.integration.max.state.MaxHouse;
 import ilarkesto.integration.max.state.MaxRoom;
 import ilarkesto.integration.max.state.MaxWeekTemperatureProfile;
@@ -79,6 +80,11 @@ public class MaxSessionTest extends ATest {
 		assertSize(rooms, 8);
 		for (MaxRoom room : rooms) {
 			System.out.println(room.getName() + ": " + room.getControlMode());
+			List<MaxDevice> devices = room.getDevices();
+			assertNotEmpty(devices);
+			for (MaxDevice device : devices) {
+				System.out.println("  " + device);
+			}
 			MaxWeekTemperatureProfile profile = room.getWeekTemperatureProfile();
 			assertEquals(profile.getDayTemperatureProfile(Weekday.MONDAY).getDayOfWeek(), "Monday");
 			assertEquals(profile.getDayTemperatureProfile(Weekday.TUESDAY).getDayOfWeek(), "Tuesday");

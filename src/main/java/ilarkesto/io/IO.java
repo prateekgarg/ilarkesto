@@ -1012,28 +1012,31 @@ public abstract class IO {
 		return readToString(connection.getInputStream(), UTF_8);
 	}
 
-	public static void copyResource(String name, String dst) {
-		File dstFile = new File(dst);
+	public static void copyResource(String name, File dstFile, Class relativePath) {
 		if (dstFile.isDirectory()) {
-			dst = dstFile.getPath() + "/" + name;
-			dstFile = new File(dst);
+			dstFile = new File(dstFile.getPath() + "/" + name);
 		}
-		createDirectory(dstFile.getAbsoluteFile().getParentFile());
+		createDirectory(dstFile.getParentFile());
 		FileOutputStream out;
 		try {
-			out = new FileOutputStream(dst, false);
+			out = new FileOutputStream(dstFile, false);
 		} catch (FileNotFoundException ex) {
 			throw new RuntimeException("Directory does not exist: " + dstFile.getParent(), ex);
 		}
-		URL url = IO.class.getClassLoader().getResource(name);
-		if (url == null) throw new RuntimeException("Resource '" + name + "' does not exist.");
-		URLConnection connection;
 		try {
-			connection = url.openConnection();
-			copyData(connection.getInputStream(), out, connection.getContentLength());
-			out.close();
-		} catch (IOException ex) {
-			throw new RuntimeException("Writing resource '" + name + "' to '" + dst + "' failed.", ex);
+			URL url = relativePath == null ? IO.class.getClassLoader().getResource(name) : relativePath
+					.getResource(name);
+			if (url == null) throw new RuntimeException("Resource '" + name + "' does not exist.");
+			URLConnection connection;
+			try {
+				connection = url.openConnection();
+				copyData(connection.getInputStream(), out, connection.getContentLength());
+				out.close();
+			} catch (IOException ex) {
+				throw new RuntimeException("Writing resource '" + name + "' to '" + dstFile + "' failed.", ex);
+			}
+		} finally {
+			closeQuiet(out);
 		}
 	}
 
