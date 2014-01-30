@@ -76,9 +76,9 @@ public class RintelnDeTest extends ATest {
 	@Test
 	public void downloadBranchenbuchEntriesVerbaende() throws ParseException {
 		List<Entry> verbaende = RintelnDe.downloadBranchenbuchEntries(28, observer);
-		assertSize(verbaende, 12);
-		Entry volkshochschule = verbaende.get(11);
-		assertEquals(volkshochschule.getLabel(), "Volkshochschule Schaumburg");
+		assertSize(verbaende, 11);
+		Entry volkshochschule = verbaende.get(10);
+		assertEquals(volkshochschule.getLabel(), "Ver.di Ortsverein Rinteln");
 	}
 
 	@Test
@@ -116,7 +116,7 @@ public class RintelnDeTest extends ATest {
 	public void downloadCalendarEventIds() throws ParseException {
 		Collection<Integer> ids = RintelnDe.downloadCalendarEventIds(new Date(2013, 8, 4), observer);
 		assertContains(ids, 8890);
-		assertSize(ids, 23);
+		assertSize(ids, 22);
 	}
 
 	@Test

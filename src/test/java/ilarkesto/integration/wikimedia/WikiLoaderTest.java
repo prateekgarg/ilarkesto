@@ -37,7 +37,7 @@ public class WikiLoaderTest extends ATest {
 		Map<String, String> info = getWikipediaDeLoader().loadInfobox(463628, OperationObserver.DUMMY);
 		assertNotNull(info);
 		System.out.println(info);
-		assertEquals(info.get("Marke"), "Mercedes-Benz");
+		assertEquals(info.get("Marke"), "Mercedes-Benz-PKW|Mercedes-Benz");
 		assertEquals(info.get("Bezeichnung"), "C-Klasse");
 	}
 
@@ -46,7 +46,7 @@ public class WikiLoaderTest extends ATest {
 		Map<String, String> info = getWikipediaDeLoader().loadInfobox(6538315, OperationObserver.DUMMY);
 		assertNotNull(info);
 		System.out.println(info);
-		assertEquals(info.get("Marke"), "P.G.O");
+		assertEquals(info.get("Marke"), "PGO Automobiles|P.G.O");
 		assertEquals(info.get("Modell"), "356 Classic");
 		// assertEquals(info.get("Hersteller"), "P.G.O Automobiles");
 	}
