@@ -17,5 +17,5 @@ SEARCHPATH=$1
 PATTERN=$2
 AGE=$3
 
-echo "Deleting files older then $AGE minutes: $SEARCHPATH$PATTERN"
+echo "Deleting files older then $AGE minutes: $PATTERN in $SEARCHPATH"
 find $SEARCHPATH -name "$PATTERN" -mmin "+$AGE" -type f -printf '%T@ %p\n' | sort -k 1nr | tail -n +2 | cut -d ' ' -f 2 | xargs rm -vf {}
