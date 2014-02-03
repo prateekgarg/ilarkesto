@@ -13,5 +13,6 @@ fi
 DST=$1
 CLEANOLDERTHENMINUTES=$2
 
-find "${DST}" -name "*_20*.tbz" -mmin +$CLEANOLDERTHENMINUTES -exec rm -vf {} \;
-find "${DST}" -name "*-data_20*.zip" -mmin +$CLEANOLDERTHENMINUTES -exec rm -vf {} \;
+
+/opt/ilarkesto/bin/deleteoldfilesexceptone $DST "*_20*.tbz" $CLEANOLDERTHENMINUTES
+/opt/ilarkesto/bin/deleteoldfilesexceptone $DST "*-data_20*.zip" $CLEANOLDERTHENMINUTES

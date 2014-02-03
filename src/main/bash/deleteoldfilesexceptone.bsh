@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# Deletes old files except one.
+#
+
+if [[ $# -lt 3 ]]
+then
+    echo " "
+    echo "$0: Illegal arguments."
+    echo " "
+    echo "Syntax:"
+    echo "$0 path filename-pattern age-in-minutes"
+    exit 1
+fi
+
+SEARCHPATH=$1
+PATTERN=$2
+AGE=$3
+
+echo "Deleting files older then $AGE minutes: $SEARCHPATH$PATTERN"
+find $SEARCHPATH -name "$PATTERN" -mmin "+$AGE" -type f -printf '%T@ %p\n' | sort -k 1nr | tail -n +2 | cut -d ' ' -f 2 | xargs rm -vf {}
