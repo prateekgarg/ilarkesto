@@ -79,7 +79,9 @@ public class LogRecord {
 			for (Object parameter : parameters) {
 				textSb.append(' ');
 				if (parameter instanceof Throwable) {
-					textSb.append("\n").append(Str.getStackTrace((Throwable) parameter));
+					Throwable ex = (Throwable) parameter;
+					textSb.append(Utl.getUserMessageStack(ex, " <- "));
+					textSb.append("\n").append(Str.getStackTrace(ex));
 				} else {
 					textSb.append(Str.format(parameter));
 				}

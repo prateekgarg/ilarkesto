@@ -598,6 +598,25 @@ public abstract class IO {
 		return true;
 	}
 
+	public static void write(byte[] data, File file) {
+		createDirectory(file.getParentFile());
+		BufferedOutputStream out;
+		try {
+			out = new BufferedOutputStream(new FileOutputStream(file));
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
+		try {
+			try {
+				out.write(data);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		} finally {
+			IO.close(out);
+		}
+	}
+
 	public static void write(byte[] data, File file, long position) {
 		try {
 			RandomAccessFile f = new RandomAccessFile(file, "rw");
