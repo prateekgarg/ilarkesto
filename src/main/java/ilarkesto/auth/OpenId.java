@@ -23,7 +23,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.consumer.VerificationResult;
 import org.openid4java.discovery.DiscoveryException;
@@ -258,7 +257,11 @@ public class OpenId {
 		String sessionAttribute = "openIdConsumerManager";
 		ConsumerManager manager = (ConsumerManager) session.getAttribute(sessionAttribute);
 		if (manager == null) {
-			manager = new ConsumerManager();
+			try {
+				manager = new ConsumerManager();
+			} catch (Exception ex) {
+				throw new RuntimeException("Creating OpenID ConsumerManager failed.", ex);
+			}
 			session.setAttribute(sessionAttribute, manager);
 		}
 		return manager;
