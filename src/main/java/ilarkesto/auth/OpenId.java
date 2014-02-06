@@ -257,11 +257,7 @@ public class OpenId {
 		String sessionAttribute = "openIdConsumerManager";
 		ConsumerManager manager = (ConsumerManager) session.getAttribute(sessionAttribute);
 		if (manager == null) {
-			try {
-				manager = new ConsumerManager();
-			} catch (Exception ex) {
-				throw new RuntimeException("Creating OpenID ConsumerManager failed.", ex);
-			}
+			manager = new ConsumerManager();
 			session.setAttribute(sessionAttribute, manager);
 		}
 		return manager;
