@@ -14,11 +14,12 @@
  */
 package ilarkesto.integration.max.state;
 
-public class MaxIDeviceState extends DeviceState {
+public final class MaxIDeviceState extends DeviceState {
 
 	private boolean displayActualTemperature;
 	private float setPointTemperature;
 	private float temperatureOffset;
+	private float actualTemperature;
 
 	public boolean isDisplayActualTemperature() {
 		return displayActualTemperature;
@@ -32,4 +33,14 @@ public class MaxIDeviceState extends DeviceState {
 		return temperatureOffset;
 	}
 
+	public float getActualTemperature() {
+		return actualTemperature;
+	}
+
+	@Override
+	public String toString() {
+		String s = super.toString();
+		if (actualTemperature > 0) s += " " + actualTemperature;
+		return s;
+	}
 }

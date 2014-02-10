@@ -30,6 +30,7 @@ public abstract class DeviceState {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
 		if (transmitError) sb.append(" transmit-error");
 		if (batteryLow) sb.append(" battery-low");
 		return sb.toString();

@@ -95,7 +95,7 @@ public class MaxDevice {
 
 	@Override
 	public String toString() {
-		return deviceType + ":" + name + " " + stateInfo;
+		return deviceType + ": " + name + " " + state;
 	}
 
 	public void wire(MaxRoom room) {

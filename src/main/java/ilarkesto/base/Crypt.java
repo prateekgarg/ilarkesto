@@ -27,6 +27,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -42,10 +43,21 @@ public class Crypt {
 	private String keyAlgorithm = "PBKDF2WithHmacSHA1";
 	private int keyLength = 128; // 192 and 256 bits may not be available
 	private byte[] keySalt = Base64.decode("4XmAmqaxiT2GXZVvqXy1dA==");
-	private int keyIterationCount = 666;
+	private byte[] initializationVector = Base64.decode("gCOfQThgK1QnZ2v5YvDCLA==");
+	private int keyIterationCount = 6666;
 
 	public Crypt(String algorithm) {
 		this.algorithm = algorithm;
+	}
+
+	public Crypt setKeyIterationCount(int keyIterationCount) {
+		this.keyIterationCount = keyIterationCount;
+		return this;
+	}
+
+	public Crypt setInitializationVector(byte[] initializationVector) {
+		this.initializationVector = initializationVector;
+		return this;
 	}
 
 	public Crypt setKeyLength(int keyLength) {
@@ -75,7 +87,8 @@ public class Crypt {
 		SecretKeySpec skeySpec = new SecretKeySpec(key, algorithm);
 		try {
 			Cipher cipher = Cipher.getInstance(algorithm + algorithmSuffix);
-			cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+			IvParameterSpec ivSpec = new IvParameterSpec(initializationVector);
+			cipher.init(Cipher.DECRYPT_MODE, skeySpec, ivSpec);
 			return cipher.doFinal(encryptedData);
 		} catch (Exception ex) {
 			throw new DecryptionFailedException(ex);
@@ -104,7 +117,8 @@ public class Crypt {
 		SecretKeySpec skeySpec = new SecretKeySpec(key, algorithm);
 		try {
 			Cipher cipher = Cipher.getInstance(algorithm + algorithmSuffix);
-			cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+			IvParameterSpec ivSpec = new IvParameterSpec(initializationVector);
+			cipher.init(Cipher.ENCRYPT_MODE, skeySpec, ivSpec);
 			return cipher.doFinal(data);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
