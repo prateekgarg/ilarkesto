@@ -43,7 +43,7 @@ public class Crypt {
 	private String keyAlgorithm = "PBKDF2WithHmacSHA1";
 	private int keyLength = 128; // 192 and 256 bits may not be available
 	private byte[] keySalt = Base64.decode("4XmAmqaxiT2GXZVvqXy1dA==");
-	private byte[] initializationVector = Base64.decode("gCOfQThgK1QnZ2v5YvDCLA==");
+	private byte[] initializationVector;
 	private int keyIterationCount = 6666;
 
 	public Crypt(String algorithm) {
@@ -87,7 +87,7 @@ public class Crypt {
 		SecretKeySpec skeySpec = new SecretKeySpec(key, algorithm);
 		try {
 			Cipher cipher = Cipher.getInstance(algorithm + algorithmSuffix);
-			IvParameterSpec ivSpec = new IvParameterSpec(initializationVector);
+			IvParameterSpec ivSpec = initializationVector == null ? null : new IvParameterSpec(initializationVector);
 			cipher.init(Cipher.DECRYPT_MODE, skeySpec, ivSpec);
 			return cipher.doFinal(encryptedData);
 		} catch (Exception ex) {
@@ -117,7 +117,7 @@ public class Crypt {
 		SecretKeySpec skeySpec = new SecretKeySpec(key, algorithm);
 		try {
 			Cipher cipher = Cipher.getInstance(algorithm + algorithmSuffix);
-			IvParameterSpec ivSpec = new IvParameterSpec(initializationVector);
+			IvParameterSpec ivSpec = initializationVector == null ? null : new IvParameterSpec(initializationVector);
 			cipher.init(Cipher.ENCRYPT_MODE, skeySpec, ivSpec);
 			return cipher.doFinal(data);
 		} catch (Exception ex) {
