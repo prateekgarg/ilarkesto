@@ -249,6 +249,7 @@ public class MenuBar extends Widget implements PopupListener, HasAnimation, HasC
 		this(false, resources);
 	}
 
+	@Override
 	public HandlerRegistration addCloseHandler(CloseHandler<PopupPanel> handler) {
 		return addHandler(handler, CloseEvent.getType());
 	}
@@ -454,6 +455,7 @@ public class MenuBar extends Widget implements PopupListener, HasAnimation, HasC
 		return separator;
 	}
 
+	@Override
 	public boolean isAnimationEnabled() {
 		return isAnimationEnabled;
 	}
@@ -596,6 +598,7 @@ public class MenuBar extends Widget implements PopupListener, HasAnimation, HasC
 	 * 
 	 * @deprecated Use {@link #addCloseHandler(CloseHandler)} instead
 	 */
+	@Override
 	@Deprecated
 	public void onPopupClosed(PopupPanel sender, boolean autoClosed) {
 		// If the menu popup was auto-closed, close all of its parents as well.
@@ -684,6 +687,7 @@ public class MenuBar extends Widget implements PopupListener, HasAnimation, HasC
 		selectedItem = item;
 	}
 
+	@Override
 	public void setAnimationEnabled(boolean enable) {
 		isAnimationEnabled = enable;
 	}
@@ -949,7 +953,7 @@ public class MenuBar extends Widget implements PopupListener, HasAnimation, HasC
 
 		this.vertical = vertical;
 
-		Element outer = FocusPanel.impl.createFocusable();
+		com.google.gwt.dom.client.Element outer = FocusPanel.impl.createFocusable();
 		DOM.appendChild(outer, table);
 		setElement(outer);
 
@@ -1088,6 +1092,7 @@ public class MenuBar extends Widget implements PopupListener, HasAnimation, HasC
 		// of the popup's.
 		popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 
+			@Override
 			public void setPosition(int offsetWidth, int offsetHeight) {
 
 				// depending on the bidi direction position a menu on the left or right
