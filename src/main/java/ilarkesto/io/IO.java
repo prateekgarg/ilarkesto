@@ -25,6 +25,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1102,6 +1103,20 @@ public abstract class IO {
 			out.write("\n");
 		}
 		out.close();
+	}
+
+	public static List<String> readLines(File file) {
+		BufferedReader in;
+		try {
+			in = new BufferedReader(new FileReader(file));
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
+		try {
+			return readLines(in);
+		} finally {
+			IO.closeQuiet(in);
+		}
 	}
 
 	public static List<String> readLines(BufferedReader in) {
