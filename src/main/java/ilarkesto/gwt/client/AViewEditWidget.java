@@ -128,7 +128,7 @@ public abstract class AViewEditWidget extends AWidget {
 		if (!isEditMode()) throw new RuntimeException("submitEditor() not allowed. Not in edit mode: " + toString());
 		try {
 			onEditorSubmit();
-		} catch (Throwable ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			setEditorError(Utl.getUserMessageStack(ex));
 			return false;

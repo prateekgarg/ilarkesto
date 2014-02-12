@@ -15,7 +15,10 @@
 package ilarkesto.gwt.client.editor;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.Time;
 import ilarkesto.gwt.client.AViewEditWidget;
 
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -27,6 +30,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DateAndTimeEditorWidget extends AViewEditWidget {
+
+	private static Log log = Log.get(DateAndTimeEditorWidget.class);
 
 	private Label viewer;
 	private TextBox editor;
@@ -83,7 +88,18 @@ public class DateAndTimeEditorWidget extends AViewEditWidget {
 		try {
 			return new DateAndTime(s);
 		} catch (Exception ex) {
-			return null;
+			Date date = new Date();
+			Time time = new Time();
+			try {
+				if (s.contains(":")) {
+					time = new Time(s);
+				} else {
+					date = new Date(s);
+				}
+			} catch (Exception ex2) {
+				throw new RuntimeException("Invalid date and time format. Example: " + new DateAndTime());
+			}
+			return new DateAndTime(date, time);
 		}
 	}
 
