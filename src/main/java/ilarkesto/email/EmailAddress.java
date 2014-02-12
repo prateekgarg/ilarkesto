@@ -141,15 +141,7 @@ public final class EmailAddress {
 
 	public static final void validatePlainAddress(String email) {
 		String msg = "Illegal email address: " + email;
-		if (email.length() < 5) throw new RuntimeException(msg);
-		if (email.contains(" ") || email.contains("\n") || email.contains("\t")) throw new RuntimeException(msg);
-		int idx = email.indexOf('@');
-		if (idx < 1) throw new RuntimeException(msg);
-		if (idx >= email.length() - 3) throw new RuntimeException(msg);
-		int idx2 = email.lastIndexOf('.');
-		if (idx2 < 3) throw new RuntimeException(msg);
-		if (idx2 <= idx) throw new RuntimeException(msg);
-		if (idx2 >= email.length() - 1) throw new RuntimeException(msg);
+		if (!Str.isEmail(email)) throw new RuntimeException(msg);
 	}
 
 	public static final List<EmailAddress> parseList(String s) {
