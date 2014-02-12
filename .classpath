@@ -27,7 +27,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar" sourcepath="lib/src/commons-collections-3.2.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="lib/src/commons-lang-2.5-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/scribe-1.1.2.jar" sourcepath="lib/src/scribe-1.1.2-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib/gwt-dnd-3.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xstream-1.4.1.jar" sourcepath="lib/src/xstream-1.4.1-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/iTextAsian.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.20-bin.jar"/>
@@ -38,5 +37,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/httpcore-4.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/guice-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gwtupload-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwt-dnd-3.3.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
