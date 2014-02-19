@@ -19,6 +19,7 @@ import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +59,14 @@ public class Tatbestandskatalog extends AJsonWrapper {
 
 	public List<TatbestandGroup> getTatbestandGroups() {
 		return getWrapperArray("tatbestandGroups", TatbestandGroup.class);
+	}
+
+	public List<Tatbestand> getTatbestands() {
+		List<Tatbestand> ret = new ArrayList<Tatbestandskatalog.Tatbestand>();
+		for (TatbestandGroup group : getTatbestandGroups()) {
+			ret.addAll(group.getTatbestands());
+		}
+		return ret;
 	}
 
 	public static class TatbestandGroup extends AJsonWrapper {

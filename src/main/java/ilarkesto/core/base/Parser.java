@@ -123,7 +123,7 @@ public class Parser {
 				len = sub.length();
 			}
 		}
-		if (idx < 0) throw new ParseException("gotoAfter <" + format(ss) + "> failed", pos, data);
+		if (idx < 0) throw new ParseException("gotoAfter <" + format(ss) + "> failed", pos, getRemaining());
 		pos = idx + len;
 	}
 

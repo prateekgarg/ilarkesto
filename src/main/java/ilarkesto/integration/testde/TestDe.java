@@ -40,12 +40,33 @@ public class TestDe {
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
-	public static Article downloadArticle(ArticleRef ref, OperationObserver observer) {
+	public static Article downloadArticle(ArticleRef ref, OperationObserver observer) throws ParseException {
 		String url = getArticleUrl(ref);
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
 		String data = IO.downloadUrlToString(url);
-		// TODO impl
-		return new Article(ref);
+
+		String navigData = Str.cutFromTo(data, "<ol class=\"articlenav-nav\">", "</ol>");
+		Parser parser = new Parser(navigData);
+		parser.skipWhitespace();
+		List<SubArticleRef> subArticles = new ArrayList<TestDe.SubArticleRef>();
+		while (parser.gotoAfterIf("<li")) {
+			parser.gotoAfter("<a ");
+			parser.gotoAfter("href=\"");
+			String pageRef;
+			if (parser.isNext("/")) {
+				parser.gotoAfter("/");
+				pageRef = parser.getUntil("/\"");
+			} else {
+				pageRef = parser.getUntil("\"");
+			}
+			parser.gotoAfter(">");
+			String title = parser.getUntil("</a>");
+			parser.gotoAfter("</li>");
+			SubArticleRef subArticleRef = new SubArticleRef(title, pageRef);
+			subArticles.add(subArticleRef);
+		}
+
+		return new Article(ref, subArticles);
 	}
 
 	public static String getArticleUrl(ArticleRef ref) {
@@ -62,18 +83,31 @@ public class TestDe {
 	static List<ArticleRef> downloadNewArticleRefs(Collection<ArticleRef> knownArticles, OperationObserver observer)
 			throws ParseException {
 		Set<String> knownArticleIds = new HashSet<String>();
+		Date newest = new Date(1999, 1, 1);
 		for (ArticleRef articleRef : knownArticles) {
+			if (articleRef.getDate().isAfter(newest)) newest = articleRef.getDate();
 			knownArticleIds.add(articleRef.getPageId());
 		}
-		log.debug("Downloading new articles. Known:", knownArticleIds.size(), "->", knownArticleIds);
+		log.info("Downloading new articles. Known:", knownArticleIds.size(), "->", knownArticleIds);
 		List<ArticleRef> ret = new ArrayList<TestDe.ArticleRef>();
 		int offset = 1;
+		Date deadline = newest.addMonths(-1);
 		while (true) {
 			List<ArticleRef> newArticles = downloadArticleRefs(offset, observer);
-			if (newArticles.isEmpty()) return ret;
+			if (newArticles.isEmpty()) {
+				log.info("No articles on page", offset);
+				return ret;
+			}
 			for (ArticleRef ref : newArticles) {
-				if (knownArticleIds.contains(ref.getPageId())) return ret;
-				if (ret.contains(ref)) return ret;
+				if (ref.getDate().isBefore(deadline)) {
+					log.info("Deadline reached on page", offset, "->", deadline);
+					return ret;
+				}
+				if (ret.contains(ref)) {
+					log.info("Last page reached:", offset);
+					return ret;
+				}
+				if (knownArticleIds.contains(ref.getPageId())) continue;
 				ret.add(ref);
 			}
 			offset++;
@@ -113,11 +147,19 @@ public class TestDe {
 	public static class Article {
 
 		private ArticleRef ref;
-		private String pdfUrl;
+		// private String imageUrl;
+		// private String pdfUrl;
+		// private String videoUrl;
+		private List<SubArticleRef> subArticles;
 
-		public Article(ArticleRef ref) {
+		public Article(ArticleRef ref, List<SubArticleRef> subArticles) {
 			super();
 			this.ref = ref;
+			this.subArticles = subArticles;
+		}
+
+		public List<SubArticleRef> getSubArticles() {
+			return subArticles;
 		}
 
 		@Override
@@ -133,9 +175,42 @@ public class TestDe {
 
 		@Override
 		public String toString() {
-			return ref.toString();
+			return subArticles.size() + " in " + ref.toString();
 		}
 
+	}
+
+	public static class SubArticleRef {
+
+		private String title;
+		private String pageRef;
+		private String pageId;
+
+		public SubArticleRef(String title, String pageRef) {
+			super();
+			this.title = title;
+			this.pageRef = pageRef;
+
+			pageId = pageRef;
+			pageId = pageId.substring(pageId.lastIndexOf('-') + 1);
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public String getPageRef() {
+			return pageRef;
+		}
+
+		public String getPageId() {
+			return pageId;
+		}
+
+		@Override
+		public String toString() {
+			return getTitle();
+		}
 	}
 
 	public static class ArticlesIndex {

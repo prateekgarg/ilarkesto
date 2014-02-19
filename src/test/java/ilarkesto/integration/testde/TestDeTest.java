@@ -16,7 +16,9 @@ package ilarkesto.integration.testde;
 
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.time.Date;
+import ilarkesto.integration.testde.TestDe.Article;
 import ilarkesto.integration.testde.TestDe.ArticleRef;
+import ilarkesto.integration.testde.TestDe.SubArticleRef;
 import ilarkesto.testng.ATest;
 
 import java.util.List;
@@ -26,10 +28,29 @@ import org.testng.annotations.Test;
 public class TestDeTest extends ATest {
 
 	@Test
-	public void downloadArticle() {
-		ArticleRef ref = new ArticleRef(new Date(2014 - 01 - 10), "Tages­geld: Die besten Zinsen",
+	public void downloadArticleStaubsauger() throws ParseException {
+		ArticleRef ref = new ArticleRef(new Date(2014, 02, 7), "Staubsauger: 74 Boden­staub­sauger im Test",
+				"Staubsauger-im-Test-1838262-0");
+		Article article = TestDe.downloadArticle(ref, observer);
+		log.info(article);
+		List<SubArticleRef> subArticles = article.getSubArticles();
+		assertNotEmpty(subArticles);
+		for (SubArticleRef sub : subArticles) {
+			log.info("  ", sub);
+		}
+	}
+
+	@Test
+	public void downloadArticleTagesgeld() throws ParseException {
+		ArticleRef ref = new ArticleRef(new Date(2014, 01, 10), "Tages­geld: Die besten Zinsen",
 				"Tagesgeld-Die-besten-Zinsen-4196794-0");
-		TestDe.downloadArticle(ref, observer);
+		Article article = TestDe.downloadArticle(ref, observer);
+		log.info(article);
+		List<SubArticleRef> subArticles = article.getSubArticles();
+		assertSize(subArticles, 3);
+		for (SubArticleRef sub : subArticles) {
+			log.info("  ", sub);
+		}
 	}
 
 	@Test

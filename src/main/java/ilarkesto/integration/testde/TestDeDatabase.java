@@ -19,7 +19,8 @@ import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.core.logging.Log;
-import ilarkesto.core.time.Tm;
+import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.TimePeriod;
 import ilarkesto.integration.testde.TestDe.ArticleRef;
 import ilarkesto.integration.testde.TestDe.ArticlesIndex;
 import ilarkesto.io.IO;
@@ -84,7 +85,9 @@ public class TestDeDatabase {
 
 	public void updateIndexIfNecessary(OperationObserver observer) {
 		File indexFile = getIndexFile();
-		if (indexFile.exists() && System.currentTimeMillis() - indexFile.lastModified() < Tm.DAY) return;
+		TimePeriod age = new DateAndTime(indexFile.lastModified()).getPeriodToNow();
+		log.info("Last update was", age.toShortestString(), "ago");
+		// if (indexFile.exists() && age.toDays() < 1) return;
 		updateIndex(observer);
 	}
 
