@@ -47,10 +47,10 @@ public class TestDeTest extends ATest {
 		Article article = TestDe.downloadArticle(ref, observer);
 		log.info(article);
 		List<SubArticleRef> subArticles = article.getSubArticles();
-		assertSize(subArticles, 3);
 		for (SubArticleRef sub : subArticles) {
 			log.info("  ", sub);
 		}
+		assertSize(subArticles, 7);
 	}
 
 	@Test

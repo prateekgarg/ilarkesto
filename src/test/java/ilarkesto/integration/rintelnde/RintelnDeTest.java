@@ -114,9 +114,9 @@ public class RintelnDeTest extends ATest {
 
 	@Test
 	public void downloadCalendarEventIds() throws ParseException {
-		Collection<Integer> ids = RintelnDe.downloadCalendarEventIds(new Date(2013, 8, 4), observer);
-		assertContains(ids, 8890);
-		assertSize(ids, 22);
+		Collection<Integer> ids = RintelnDe.downloadCalendarEventIds(new Date(2014, 8, 4), observer);
+		assertContains(ids, 8305);
+		// assertSize(ids, 3);
 	}
 
 	@Test
