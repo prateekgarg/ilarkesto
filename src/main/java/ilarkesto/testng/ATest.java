@@ -59,7 +59,14 @@ public class ATest extends Assert {
 				+ collection.size() + ">: <" + collection + ">");
 	}
 
-	public static <T> void assertContains(String string, String substring) {
+	public static void assertContainsNot(String string, String substring) {
+		assertNotNull(string);
+		assertTrue(!string.contains(substring), "<" + string + "> expected not to contain <" + substring
+				+ ">, but it does.");
+	}
+
+	public static void assertContains(String string, String substring) {
+		assertNotNull(string);
 		assertTrue(string.contains(substring), "<" + string + "> expected to contain <" + substring + ">");
 	}
 

@@ -14,7 +14,7 @@
  */
 package ilarkesto.ui.swing;
 
-import ilarkesto.auth.LoginData;
+import ilarkesto.core.auth.LoginData;
 import ilarkesto.swing.PanelBuilder;
 
 import java.awt.event.ActionListener;

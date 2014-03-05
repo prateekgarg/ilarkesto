@@ -51,6 +51,14 @@ public class MaxDevice {
 		return dummy;
 	}
 
+	public boolean isRadioOk() {
+		return isRadioStateOk() && !getState().isTransmitError();
+	}
+
+	public boolean isRadioStateOk() {
+		return "Ok".equals(getRadioState());
+	}
+
 	public String getNameWithRoomName() {
 		MaxRoom r = getRoom();
 		if (r == null) return getName();

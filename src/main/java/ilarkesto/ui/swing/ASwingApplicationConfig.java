@@ -14,7 +14,7 @@
  */
 package ilarkesto.ui.swing;
 
-import ilarkesto.auth.LoginData;
+import ilarkesto.core.auth.LoginData;
 import ilarkesto.di.app.AApplicationConfig;
 import ilarkesto.properties.APropertiesStore;
 

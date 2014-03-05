@@ -31,6 +31,25 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String toFileCompatibleString(String s) {
+		s = s.replace('/', '-');
+		s = s.replace('\\', '-');
+		s = s.replace(':', '_');
+		s = s.replace(';', '_');
+		s = s.replace('&', '@');
+		s = s.replace('?', '@');
+		s = s.replace('=', '_');
+		s = s.replace(String.valueOf(ae), "ae");
+		s = s.replace(String.valueOf(AE), "Ae");
+		s = s.replace(String.valueOf(ue), "ue");
+		s = s.replace(String.valueOf(UE), "Ue");
+		s = s.replace(String.valueOf(oe), "oe");
+		s = s.replace(String.valueOf(OE), "Oe");
+		s = s.replace(String.valueOf(sz), "ss");
+		s = s.replace(String.valueOf(EUR), "EUR");
+		return s;
+	}
+
 	public static boolean containsDigit(String s) {
 		if (s == null) return false;
 		for (int i = 0; i < s.length(); i++) {
@@ -390,6 +409,15 @@ public class Str {
 			sb.append(' ');
 		}
 		return sb.toString();
+	}
+
+	public static String removeCenter(String s, String from, String to) {
+		if (s == null) return null;
+		int startIdx = s.indexOf(from);
+		if (startIdx < 0) return s;
+		int endIdx = s.indexOf(to, startIdx + from.length());
+		if (endIdx < 0) return s;
+		return s.substring(0, startIdx) + s.substring(endIdx + to.length());
 	}
 
 	public static String cutFromTo(String s, String from, String to) {

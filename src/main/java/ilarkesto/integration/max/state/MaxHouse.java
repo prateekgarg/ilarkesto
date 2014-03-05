@@ -38,10 +38,10 @@ public class MaxHouse {
 		return ret;
 	}
 
-	public List<MaxDevice> getDevicesWithTransmitError() {
+	public List<MaxDevice> getDevicesWithError() {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
 		for (MaxDevice device : getDevices()) {
-			if (device.getState().isTransmitError()) ret.add(device);
+			if (!device.isRadioOk()) ret.add(device);
 		}
 		return ret;
 	}

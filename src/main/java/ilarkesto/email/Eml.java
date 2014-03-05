@@ -15,11 +15,11 @@
 package ilarkesto.email;
 
 import ilarkesto.Servers;
-import ilarkesto.auth.LoginData;
-import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
+import ilarkesto.core.auth.LoginData;
+import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.html.Html;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;

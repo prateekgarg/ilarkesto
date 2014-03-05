@@ -1,7 +1,7 @@
 package ilarkesto.integration.oauth;
 
-import ilarkesto.auth.LoginData;
-import ilarkesto.auth.LoginDataProvider;
+import ilarkesto.core.auth.LoginData;
+import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.logging.Log;
 import ilarkesto.json.JsonObject;
 

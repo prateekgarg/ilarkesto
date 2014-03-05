@@ -14,10 +14,10 @@
  */
 package ilarkesto.integration.google;
 
-import ilarkesto.auth.LoginData;
-import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Proc;
 import ilarkesto.base.Str;
+import ilarkesto.core.auth.LoginData;
+import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;

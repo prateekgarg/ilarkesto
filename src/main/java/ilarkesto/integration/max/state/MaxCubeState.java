@@ -65,9 +65,9 @@ public class MaxCubeState {
 
 	public List<MaxDevice> getAllDevicesWithTransmitError() {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
-		ret.addAll(getHouse().getDevicesWithTransmitError());
+		ret.addAll(getHouse().getDevicesWithError());
 		for (MaxRoom room : getRooms()) {
-			ret.addAll(room.getDevicesWithTransmitError());
+			ret.addAll(room.getDevicesWithError());
 		}
 		return ret;
 	}

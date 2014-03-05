@@ -18,17 +18,29 @@ import ilarkesto.core.base.AFileStorage;
 import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.base.SimpleFileStorage;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.base.TextFileCache;
 import ilarkesto.core.logging.Log;
-import ilarkesto.core.time.DateAndTime;
-import ilarkesto.core.time.TimePeriod;
+import ilarkesto.integration.testde.TestDe.Article;
 import ilarkesto.integration.testde.TestDe.ArticleRef;
 import ilarkesto.integration.testde.TestDe.ArticlesIndex;
+import ilarkesto.integration.testde.TestDe.SubArticleRef;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonMapper;
 import ilarkesto.json.JsonMapper.TypeResolver;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class TestDeDatabase {
 
@@ -41,21 +53,94 @@ public class TestDeDatabase {
 
 	private AFileStorage storage;
 
+	private TextFileCache articlePagesCache;
 	private ArticlesIndex index;
-
 	private Class indexResourcePath;
+	private Set<String> viewedArticles;
 
 	public TestDeDatabase(AFileStorage storage) {
 		super();
 		this.storage = storage;
+
+		articlePagesCache = new TextFileCache(storage.getSubStorage("articlePagesCache"), new ArticlePageLoader());
+
+		loadViewedArticles();
 	}
 
-	private void importFromResource() {
-		if (indexResourcePath == null) return;
+	public boolean isViewed(ArticleRef articleRef) {
+		return viewedArticles.contains(articleRef.getPageId());
+	}
+
+	public synchronized void markViewed(ArticleRef articleRef) {
+		viewedArticles.add(articleRef.getPageId());
+		saveViewedArticles();
+	}
+
+	public synchronized void markViewed(Collection<ArticleRef> articleRefs) {
+		for (ArticleRef articleRef : articleRefs) {
+			viewedArticles.add(articleRef.getPageId());
+		}
+		saveViewedArticles();
+	}
+
+	private synchronized void saveViewedArticles() {
+		PrintWriter out;
+		try {
+			out = new PrintWriter(new FileWriter(getViewedArticlesFile()));
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		for (String id : viewedArticles) {
+			out.println(id);
+		}
+		IO.close(out);
+	}
+
+	private synchronized void loadViewedArticles() {
+		viewedArticles = new HashSet<String>();
+		File file = getViewedArticlesFile();
+		if (file.exists()) {
+			BufferedReader in;
+			try {
+				in = new BufferedReader(new FileReader(file));
+			} catch (FileNotFoundException ex) {
+				throw new RuntimeException(ex);
+			}
+			try {
+				String line;
+				while ((line = in.readLine()) != null) {
+					String articleId = line.trim();
+					if (Str.isBlank(articleId)) continue;
+					viewedArticles.add(articleId);
+				}
+			} catch (IOException ex) {
+				log.error(ex);
+			} finally {
+				IO.closeQuiet(in);
+			}
+		}
+	}
+
+	private File getViewedArticlesFile() {
+		return storage.getFile("viewedArticles.txt");
+	}
+
+	public Article loadArticle(ArticleRef ref, OperationObserver observer) throws ParseException {
+		String html = articlePagesCache.load(ref.getPageRef(), observer);
+		return TestDe.parseArticle(ref, html);
+	}
+
+	public String loadSubArticleHtml(SubArticleRef ref, OperationObserver observer) {
+		return articlePagesCache.load(ref.getPageRef(), observer);
+	}
+
+	private synchronized boolean importFromResource() {
+		if (indexResourcePath == null) return false;
 		File indexFile = getIndexFile();
-		if (indexFile.exists()) return;
+		if (indexFile.exists()) return false;
 		log.info("Importing index from resource");
 		IO.copyResource("index.json", indexFile, indexResourcePath);
+		return true;
 	}
 
 	public TestDeDatabase setIndexResourcePath(Class indexResourcePath) {
@@ -63,9 +148,9 @@ public class TestDeDatabase {
 		return this;
 	}
 
-	public ArticlesIndex getIndex(OperationObserver observer) {
+	public synchronized ArticlesIndex getIndex(OperationObserver observer) {
 		if (index == null) {
-			importFromResource();
+			boolean imported = importFromResource();
 			File indexFile = getIndexFile();
 			observer.onOperationInfoChanged(OperationObserver.LOADING_CACHE, indexFile.getAbsolutePath());
 			if (!indexFile.exists()) {
@@ -79,27 +164,28 @@ public class TestDeDatabase {
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
+			if (imported) markViewed(index.getArticles());
 		}
 		return index;
 	}
 
-	public void updateIndexIfNecessary(OperationObserver observer) {
-		File indexFile = getIndexFile();
-		TimePeriod age = new DateAndTime(indexFile.lastModified()).getPeriodToNow();
-		log.info("Last update was", age.toShortestString(), "ago");
-		// if (indexFile.exists() && age.toDays() < 1) return;
-		updateIndex(observer);
-	}
+	// public void updateIndexIfNecessary(OperationObserver observer) {
+	// File indexFile = getIndexFile();
+	// TimePeriod age = new DateAndTime(indexFile.lastModified()).getPeriodToNow();
+	// long ageInHours = age.toHours();
+	// log.info("Last update was", ageInHours, "hours ago");
+	// if (indexFile.exists() && ageInHours < 24) return;
+	// updateIndex(observer);
+	// }
 
-	public void updateIndex(OperationObserver observer) {
+	public synchronized List<ArticleRef> updateIndex(OperationObserver observer) {
 		getIndex(observer);
-		boolean changed;
+		List<ArticleRef> newArticles;
 		try {
-			changed = TestDe.update(index, observer);
+			newArticles = TestDe.update(index, observer);
 		} catch (ParseException ex1) {
 			throw new RuntimeException(ex1);
 		}
-		if (!changed) return;
 		File indexFile = getIndexFile();
 		observer.onOperationInfoChanged(OperationObserver.SAVING, indexFile.getAbsolutePath());
 		try {
@@ -107,6 +193,17 @@ public class TestDeDatabase {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+		return newArticles;
+	}
+
+	public List<ArticleRef> getNewArticles(OperationObserver observer) {
+		ArticlesIndex index = getIndex(observer);
+		List<ArticleRef> ret = new ArrayList<ArticleRef>();
+		for (ArticleRef ref : index.getArticles()) {
+			if (isViewed(ref)) continue;
+			ret.add(ref);
+		}
+		return ret;
 	}
 
 	public File getIndexFile() {

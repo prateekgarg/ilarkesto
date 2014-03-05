@@ -1,5 +1,8 @@
 package ilarkesto.auth;
 
+import ilarkesto.core.auth.LoginData;
+import ilarkesto.core.auth.LoginDataProvider;
+
 import java.util.Properties;
 
 public class PropertiesLoginDataProvider implements LoginDataProvider {

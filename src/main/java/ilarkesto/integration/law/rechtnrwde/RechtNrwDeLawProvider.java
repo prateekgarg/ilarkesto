@@ -34,12 +34,14 @@ public class RechtNrwDeLawProvider extends ALawProvider {
 
 	public String BASE_URL = "https://recht.nrw.de/";
 
+	private static final String charset = IO.ISO_LATIN_1;
+
 	private HttpDownloader downloader;
 	private AFileStorage dataStorage;
 
 	public RechtNrwDeLawProvider(AFileStorage dataStorage) {
 		this.dataStorage = dataStorage;
-		this.downloader = new HttpDownloader().setCharset(IO.ISO_LATIN_1).setBaseUrl(BASE_URL);
+		this.downloader = new HttpDownloader().setBaseUrl(BASE_URL);
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class RechtNrwDeLawProvider extends ALawProvider {
 
 	private void loadGliederung(BookIndex index, int gldNr) throws DataLoadFailedException {
 		String path = "lmi/owa/br_gliederung?gld_nr=" + gldNr;
-		String data = downloader.downloadText(path);
+		String data = downloader.downloadText(path, charset);
 		// log.TEST(data);
 
 		List<String> listPaths = new ArrayList<String>();
@@ -89,7 +91,7 @@ public class RechtNrwDeLawProvider extends ALawProvider {
 	}
 
 	private void loadUntergliederung(BookIndex index, String path) {
-		String data = downloader.downloadText("lmi/owa/" + path);
+		String data = downloader.downloadText("lmi/owa/" + path, charset);
 		Parser parser = new Parser(data);
 
 		try {

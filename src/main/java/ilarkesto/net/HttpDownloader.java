@@ -18,7 +18,6 @@ public class HttpDownloader {
 
 	private static final Log log = Log.get(HttpDownloader.class);
 
-	private String charset = IO.ISO_LATIN_1;
 	private String username;
 	private String password;
 	private String baseUrl;
@@ -27,7 +26,7 @@ public class HttpDownloader {
 		return null;
 	}
 
-	public String post(String url, Map<String, String> parameters) {
+	public String post(String url, Map<String, String> parameters, String charset) {
 		return IO.postAndGetResult(url, parameters, charset, null, null);
 	}
 
@@ -68,7 +67,7 @@ public class HttpDownloader {
 		}
 	}
 
-	public String downloadText(String url) {
+	public String downloadText(String url, String charset) {
 		url = getFullUrl(url);
 		log.info(url);
 		return IO.downloadUrlToString(url, charset, username, password);
@@ -77,15 +76,6 @@ public class HttpDownloader {
 	private String getFullUrl(String url) {
 		if (baseUrl == null) return url;
 		return baseUrl + url;
-	}
-
-	public HttpDownloader setCharset(String charset) {
-		this.charset = charset;
-		return this;
-	}
-
-	public String getCharset() {
-		return charset;
 	}
 
 	public HttpDownloader setBaseUrl(String baseUrl) {

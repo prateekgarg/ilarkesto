@@ -44,6 +44,8 @@ public class RintelnDe {
 
 	private static final Log log = Log.get(RintelnDe.class);
 
+	private static final String charset = IO.UTF_8;
+
 	public static final String URL_BASE = "http://www.rinteln.de/";
 	public static final String URL_WEBCAM_IMAGE = "http://adx-cache.de/webcam/webcam.jpg";
 
@@ -117,8 +119,7 @@ public class RintelnDe {
 		String url = getDataPageUrl(path, offset);
 		log.info("Downloading", url);
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
-		http.setCharset(IO.UTF_8);
-		return http.downloadText(url);
+		return http.downloadText(url, charset);
 	}
 
 	private static String getDataPageUrl(String path, int offset) {

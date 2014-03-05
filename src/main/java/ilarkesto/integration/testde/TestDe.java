@@ -21,14 +21,17 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
+import ilarkesto.net.HttpDownloader;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 public class TestDe {
@@ -37,15 +40,53 @@ public class TestDe {
 
 	public static final String URL_BASE = "https://www.test.de";
 	public static final String URL_TEST_INDEX = URL_BASE + "/tests/";
+	public static final String URL_LOGIN = URL_BASE + "/meintest/login/default.ashx";
+
+	public static HttpDownloader http = new HttpDownloader();
+	private static final String charset = IO.UTF_8;
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
+	public static void login(String username, String password) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("login", username);
+		params.put("password", password);
+		params.put("source", "login");
+		String data = http.post(URL_LOGIN, params, charset);
+		log.warn(data);
+	}
+
+	public static String removeSpamFromPageHtml(String html) {
+		if (Str.isBlank(html)) return null;
+
+		String beginIndicator = "<h2>";
+		if (html.contains("<div id=\"primary\" class=\"l-primary\">"))
+			beginIndicator = "<div id=\"primary\" class=\"l-primary\">";
+		String endIndicator = "<div id=\"secondary\"";
+		if (html.contains("<div id=\"ugc\">")) endIndicator = "<div id=\"ugc\">";
+		if (html.contains("<div class=\"paymentbox\" id=\"payment\""))
+			endIndicator = "<div class=\"paymentbox\" id=\"payment\"";
+		if (html.contains("<div class=\"articlepage-next\"")) endIndicator = "<div class=\"articlepage-next\">";
+		html = Str.cutFromTo(html, beginIndicator, endIndicator);
+
+		html = Str.removeCenter(html, "<div class=\"paymentbox\"", "\n</div>");
+		html = Str.removeCenter(html, "<div class=\"articlepage-next\"", "</div>");
+		html = Str.removeCenter(html, "<div class=\"productlist-header\"", "</div>");
+		html = Str.removeCenter(html, "<div class=\"productlist-footer\"", "</div>");
+		html = Str.removeCenter(html, "<div id=\"mp3content", "</div>");
+		html = Str.removeCenter(html, "<p class=\"back\"", "</p>");
+		return html;
+	}
+
 	public static Article downloadArticle(ArticleRef ref, OperationObserver observer) throws ParseException {
 		String url = getArticleUrl(ref);
-		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
-		String data = IO.downloadUrlToString(url);
+		String data = downloadPageHtml(ref.getPageRef(), observer);
 
-		String navigData = Str.cutFromTo(data, "<ol class=\"articlenav-nav\">", "</ol>");
+		return parseArticle(ref, data);
+	}
+
+	public static Article parseArticle(ArticleRef ref, String html) throws ParseException {
+		String navigData = Str.cutFromTo(html, "<ol class=\"articlenav-nav\">", "</ol>");
 		Parser parser = new Parser(navigData);
 		parser.skipWhitespace();
 		List<SubArticleRef> subArticles = new ArrayList<TestDe.SubArticleRef>();
@@ -62,22 +103,45 @@ public class TestDe {
 			parser.gotoAfter(">");
 			String title = parser.getUntil("</a>");
 			parser.gotoAfter("</li>");
+
+			if (pageRef.startsWith("#")) continue; // login required
+
 			SubArticleRef subArticleRef = new SubArticleRef(title, pageRef);
 			subArticles.add(subArticleRef);
 		}
 
-		return new Article(ref, subArticles);
+		parser = new Parser(html);
+		parser.gotoAfter("<div id=\"primary\"");
+		parser.gotoAfter("<p");
+		parser.gotoAfter(">");
+		String summary = parser.getUntil("</p>");
+		// String summary = Str.cutFromTo(data, "<p class=\"intro\">", "</p>");
+
+		return new Article(ref, subArticles, summary);
 	}
 
 	public static String getArticleUrl(ArticleRef ref) {
-		return URL_BASE + "/" + ref.getPageRef() + "/";
+		return getPageUrl(ref.getPageRef());
 	}
 
-	public static boolean update(ArticlesIndex index, OperationObserver observer) throws ParseException {
+	public static String getSubArticleUrl(SubArticleRef ref) {
+		return getPageUrl(ref.getPageRef());
+	}
+
+	public static String getPageUrl(String pageRef) {
+		return URL_BASE + "/" + pageRef + "/";
+	}
+
+	public static String downloadPageHtml(String pageRef, OperationObserver observer) {
+		String url = TestDe.getPageUrl(pageRef);
+		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
+		return http.downloadText(url, charset);
+	}
+
+	public static List<ArticleRef> update(ArticlesIndex index, OperationObserver observer) throws ParseException {
 		List<ArticleRef> newArticles = downloadNewArticleRefs(index.getArticles(), observer);
-		if (newArticles.isEmpty()) return false;
-		index.addNewArticles(newArticles);
-		return true;
+		if (!newArticles.isEmpty()) index.addNewArticles(newArticles);
+		return newArticles;
 	}
 
 	static List<ArticleRef> downloadNewArticleRefs(Collection<ArticleRef> knownArticles, OperationObserver observer)
@@ -118,7 +182,7 @@ public class TestDe {
 		if (indexOffset == 0) throw new IllegalArgumentException("page 0 does not exist");
 		String url = URL_TEST_INDEX + "?fd=" + indexOffset;
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
-		String data = IO.downloadUrlToString(url);
+		String data = http.downloadText(url, charset);
 
 		ArrayList<ArticleRef> ret = new ArrayList<ArticleRef>();
 		Parser parser = new Parser(data);
@@ -147,19 +211,33 @@ public class TestDe {
 	public static class Article {
 
 		private ArticleRef ref;
+		private String summary;
 		// private String imageUrl;
 		// private String pdfUrl;
 		// private String videoUrl;
 		private List<SubArticleRef> subArticles;
 
-		public Article(ArticleRef ref, List<SubArticleRef> subArticles) {
+		public Article(ArticleRef ref, List<SubArticleRef> subArticles, String summary) {
 			super();
 			this.ref = ref;
 			this.subArticles = subArticles;
+			this.summary = summary;
+		}
+
+		public String getSummary() {
+			return summary;
 		}
 
 		public List<SubArticleRef> getSubArticles() {
 			return subArticles;
+		}
+
+		public ArticleRef getRef() {
+			return ref;
+		}
+
+		public String getUrl() {
+			return getArticleUrl(ref);
 		}
 
 		@Override
@@ -207,9 +285,13 @@ public class TestDe {
 			return pageId;
 		}
 
+		public String getUrl() {
+			return getSubArticleUrl(this);
+		}
+
 		@Override
 		public String toString() {
-			return getTitle();
+			return getPageId() + " " + getTitle();
 		}
 	}
 
@@ -268,7 +350,7 @@ public class TestDe {
 		public ArticleRef() {}
 
 		public String getUrl() {
-			return URL_BASE + "/" + pageRef + "/";
+			return getArticleUrl(this);
 		}
 
 		public String getTitleMainPart() {

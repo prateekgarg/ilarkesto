@@ -1,8 +1,8 @@
 package ilarkesto.integration.twitter;
 
-import ilarkesto.auth.LoginData;
-import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.base.Sys;
+import ilarkesto.core.auth.LoginData;
+import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.jdom.JDom;

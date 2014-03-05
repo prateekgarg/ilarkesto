@@ -113,6 +113,18 @@ public class Parser {
 		return true;
 	}
 
+	public void gotoTo(String... ss) throws ParseException {
+		int idx = -1;
+		for (String sub : ss) {
+			int i = data.indexOf(sub, pos);
+			if (idx == -1 || i < idx) {
+				idx = i;
+			}
+		}
+		if (idx < 0) throw new ParseException("gotoTo <" + format(ss) + "> failed", pos, getRemaining());
+		pos = idx;
+	}
+
 	public void gotoAfter(String... ss) throws ParseException {
 		int idx = -1;
 		int len = 0;

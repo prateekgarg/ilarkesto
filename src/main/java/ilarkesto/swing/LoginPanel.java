@@ -1,8 +1,8 @@
 package ilarkesto.swing;
 
-import ilarkesto.auth.LoginData;
-import ilarkesto.auth.LoginDataProvider;
 import ilarkesto.auth.PropertiesLoginDataProvider;
+import ilarkesto.core.auth.LoginData;
+import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.io.IO;
 
 import java.awt.Component;

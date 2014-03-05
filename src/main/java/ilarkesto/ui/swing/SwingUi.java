@@ -14,9 +14,9 @@
  */
 package ilarkesto.ui.swing;
 
-import ilarkesto.auth.LoginData;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Url;
+import ilarkesto.core.auth.LoginData;
 import ilarkesto.form.Form;
 import ilarkesto.form.FormButton;
 import ilarkesto.form.swing.FormDialog;

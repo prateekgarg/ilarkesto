@@ -1369,7 +1369,7 @@ public abstract class IO {
 	}
 
 	public static String downloadUrlToString(String url) {
-		return downloadUrlToString(url, UTF_8);
+		return downloadUrlToString(url, ISO_LATIN_1);
 	}
 
 	public static String downloadUrlToString(String url, String charset) {

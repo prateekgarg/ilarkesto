@@ -19,13 +19,14 @@ import java.util.Map;
 public class GiiLawProvider extends ALawProvider {
 
 	public String BASE_URL = "http://www.gesetze-im-internet.de/";
+	private static final String charset = IO.ISO_LATIN_1;
 
 	private HttpDownloader downloader;
 	private AFileStorage dataStorage;
 
 	public GiiLawProvider(AFileStorage dataStorage) {
 		this.dataStorage = dataStorage;
-		this.downloader = new HttpDownloader().setCharset(IO.ISO_LATIN_1).setBaseUrl(BASE_URL);
+		this.downloader = new HttpDownloader().setBaseUrl(BASE_URL);
 	}
 
 	@Override
@@ -111,7 +112,7 @@ public class GiiLawProvider extends ALawProvider {
 
 	private void loadBooks(BookIndex index, String teilliste) throws DataLoadFailedException {
 		String path = "Teilliste_" + teilliste + ".html";
-		String data = downloader.downloadText(path);
+		String data = downloader.downloadText(path, charset);
 		Parser parser = new Parser(data);
 
 		try {

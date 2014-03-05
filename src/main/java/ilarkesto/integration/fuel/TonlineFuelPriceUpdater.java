@@ -20,15 +20,18 @@ import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
 import ilarkesto.integration.fuel.FuelStation.Price;
+import ilarkesto.io.IO;
 import ilarkesto.net.HttpDownloader;
 
 public class TonlineFuelPriceUpdater extends AFuelPriceUpdater {
+
+	private static final String charset = IO.ISO_LATIN_1;
 
 	@Override
 	protected void onUpdatePrices(FuelStation station) {
 		HttpDownloader httpDownloader = new HttpDownloader();
 		String url = "http://tanken.t-online.de/tankstelle/Diesel/" + station.getTonlineId();
-		String data = httpDownloader.downloadText(url);
+		String data = httpDownloader.downloadText(url, charset);
 
 		updatePrice(Fuel.E5, "Super", station, data);
 		updatePrice(Fuel.DIESEL, "Diesel", station, data);

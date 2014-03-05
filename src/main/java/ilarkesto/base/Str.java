@@ -608,25 +608,6 @@ public class Str extends ilarkesto.core.base.Str {
 		return sb.toString();
 	}
 
-	public static String toFileCompatibleString(String s) {
-		s = s.replace('/', '-');
-		s = s.replace('\\', '-');
-		s = s.replace(':', '_');
-		s = s.replace(';', '_');
-		s = s.replace('&', '@');
-		s = s.replace('?', '@');
-		s = s.replace('=', '_');
-		s = s.replace(String.valueOf(ae), "ae");
-		s = s.replace(String.valueOf(AE), "Ae");
-		s = s.replace(String.valueOf(ue), "ue");
-		s = s.replace(String.valueOf(UE), "Ue");
-		s = s.replace(String.valueOf(oe), "oe");
-		s = s.replace(String.valueOf(OE), "Oe");
-		s = s.replace(String.valueOf(sz), "ss");
-		s = s.replace(String.valueOf(EUR), "EUR");
-		return s;
-	}
-
 	public static String getPrimitiveTypeName(String className) {
 		if (className.startsWith("java.lang.")) className = className.substring(10);
 		if (className.equals("Long")) className = "long";

@@ -19,6 +19,7 @@ import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
+import ilarkesto.io.IO;
 import ilarkesto.json.JsonObject;
 import ilarkesto.net.HttpDownloader;
 
@@ -30,6 +31,8 @@ import java.util.Map;
 public class WikiLoader {
 
 	private static final Log log = Log.get(WikiLoader.class);
+
+	private static final String charset = IO.ISO_LATIN_1;
 
 	public static final String BASE_URL_WIKIPEDIA_EN = "https://en.wikipedia.org/";
 	public static final String BASE_URL_WIKIPEDIA_DE = "https://de.wikipedia.org/";
@@ -84,7 +87,7 @@ public class WikiLoader {
 		if (html) url += "&rvparse=1";
 		if (followRedirect) url += "&redirects=1";
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
-		String data = httpDownloader.downloadText(url);
+		String data = httpDownloader.downloadText(url, charset);
 		JsonObject json = new JsonObject(data);
 		JsonObject query = json.getObject("query");
 		JsonObject pages = query.getObject("pages");
@@ -113,7 +116,7 @@ public class WikiLoader {
 		if (continueToken != null) url += "&cmcontinue=" + continueToken;
 		if (urlSuffix != null) url += urlSuffix;
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
-		String data = httpDownloader.downloadText(url);
+		String data = httpDownloader.downloadText(url, charset);
 		JsonObject json = new JsonObject(data);
 		log.debug("Loaded", url, "->", json.toFormatedString());
 		return json;
