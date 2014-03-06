@@ -22,11 +22,13 @@ public class HttpDownloader {
 	private String password;
 	private String baseUrl;
 
-	public String getSessionId() {
-		return null;
+	public String post(String url, Map<String, String> parameters, String charset) {
+		return post(url, parameters, null, charset);
 	}
 
-	public String post(String url, Map<String, String> parameters, String charset) {
+	public String post(String url, Map<String, String> parameters, Map<String, String> requestHeaders, String charset) {
+		if (requestHeaders != null && !requestHeaders.isEmpty())
+			throw new IllegalArgumentException("request headers not supported with " + getClass().getName());
 		return IO.postAndGetResult(url, parameters, charset, null, null);
 	}
 

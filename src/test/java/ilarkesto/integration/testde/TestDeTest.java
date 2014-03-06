@@ -51,14 +51,16 @@ public class TestDeTest extends ATest {
 	@Test
 	public void loginBad() {
 		try {
-			TestDe.login(Str.generateRandomWord(5, 10, false), Str.generatePassword());
+			TestDe.login(Str.generateRandomWord(5, 10, false), Str.generatePassword(), observer);
 			fail("Exception expected");
-		} catch (Exception ex) {}
+		} catch (Exception ex) {
+			log.info(ex.getMessage());
+		}
 	}
 
 	@Test
 	public void loginGood() {
-		TestDe.login(username, password);
+		TestDe.login(username, password, observer);
 	}
 
 	@Test

@@ -492,8 +492,7 @@ public abstract class IO {
 	public static String postAndGetResult(URL url, Map<String, String> parameters, String encoding, String username,
 			String password) throws IOException {
 		URLConnection connection = post(url, parameters, encoding, username, password);
-		encoding = connection.getContentEncoding();
-		if (encoding == null) encoding = UTF_8;
+		if (connection.getContentEncoding() != null) encoding = connection.getContentEncoding();
 		return readToString(connection.getInputStream(), encoding);
 	}
 

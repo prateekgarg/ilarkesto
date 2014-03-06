@@ -21,6 +21,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
+import ilarkesto.net.ApacheHttpDownloader;
 import ilarkesto.net.HttpDownloader;
 
 import java.text.DateFormat;
@@ -42,18 +43,35 @@ public class TestDe {
 	public static final String URL_TEST_INDEX = URL_BASE + "/tests/";
 	public static final String URL_LOGIN = URL_BASE + "/meintest/login/default.ashx";
 
-	public static HttpDownloader http = new HttpDownloader();
+	public static HttpDownloader http = new ApacheHttpDownloader();
 	private static final String charset = IO.UTF_8;
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
-	public static void login(String username, String password) {
+	public static void login(String username, String password, OperationObserver observer) {
+		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, URL_LOGIN);
+		// http.downloadText(URL_LOGIN, charset); // required?
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("login", username);
+		params.put("username", username);
 		params.put("password", password);
 		params.put("source", "login");
+		params.put("autologin", "on");
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+		headers.put("Accept-Language", "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3");
+		headers.put("Connection", "keep-alive");
+		headers.put("DNT", "1");
+		headers.put("Host", "www.test.de");
+		headers.put("Referer", "https://www.test.de/meintest/login/default.ashx");
+		headers.put("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0");
 		String data = http.post(URL_LOGIN, params, charset);
 		log.warn(data);
+		String error = Str.cutFromTo(data, "<div class=\"msg error\"", "</div>");
+		if (error != null) {
+			if (error.contains("<p>")) error = Str.cutFromTo(error, "<p>", "</p>");
+			throw new RuntimeException(error);
+		}
+		if (!data.contains("class=\"loggedin")) throw new RuntimeException("Login failed, missing 'class=\"loggedin'");
 	}
 
 	public static String removeSpamFromPageHtml(String html) {
