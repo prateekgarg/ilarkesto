@@ -44,6 +44,10 @@ public class TextFileCache {
 		return text;
 	}
 
+	public synchronized void delete(String key) {
+		IO.delete(getFile(key));
+	}
+
 	private File getFile(String key) {
 		return storage.getFile(Str.toFileCompatibleString(key) + ".cache.txt");
 	}

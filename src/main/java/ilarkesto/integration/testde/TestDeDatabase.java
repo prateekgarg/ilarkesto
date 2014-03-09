@@ -14,6 +14,8 @@
  */
 package ilarkesto.integration.testde;
 
+import ilarkesto.core.auth.LoginData;
+import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.base.AFileStorage;
 import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.Parser.ParseException;
@@ -21,6 +23,7 @@ import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.TextFileCache;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Tm;
 import ilarkesto.integration.testde.TestDe.Article;
 import ilarkesto.integration.testde.TestDe.ArticleRef;
 import ilarkesto.integration.testde.TestDe.ArticlesIndex;
@@ -45,7 +48,8 @@ import java.util.Set;
 public class TestDeDatabase {
 
 	public static void main(String[] args) throws ParseException {
-		TestDeDatabase db = new TestDeDatabase(new SimpleFileStorage(new File("runtimedata/test.de")));
+		TestDeDatabase db = new TestDeDatabase(new SimpleFileStorage(new File("runtimedata/test.de")),
+				LoginDataProvider.NULL_PROVIDER);
 		db.updateIndex(OperationObserver.DUMMY);
 	}
 
@@ -57,10 +61,12 @@ public class TestDeDatabase {
 	private ArticlesIndex index;
 	private Class indexResourcePath;
 	private Set<String> viewedArticles;
+	private LoginDataProvider loginDataProvider;
 
-	public TestDeDatabase(AFileStorage storage) {
+	public TestDeDatabase(AFileStorage storage, LoginDataProvider loginDataProvider) {
 		super();
 		this.storage = storage;
+		this.loginDataProvider = loginDataProvider;
 
 		articlePagesCache = new TextFileCache(storage.getSubStorage("articlePagesCache"), new ArticlePageLoader());
 
@@ -126,11 +132,32 @@ public class TestDeDatabase {
 	}
 
 	public Article loadArticle(ArticleRef ref, OperationObserver observer) throws ParseException {
+		loginIfAvailable(observer);
 		String html = articlePagesCache.load(ref.getPageRef(), observer);
 		return TestDe.parseArticle(ref, html);
 	}
 
+	private void loginIfAvailable(OperationObserver observer) {
+		LoginData loginData = loginDataProvider.getLoginData();
+		if (loginData == null) return;
+		if (System.currentTimeMillis() - lastLogin < Tm.MINUTE * 10) return;
+		login(loginData, observer);
+	}
+
+	private long lastLogin;
+
+	private void login(LoginData loginData, OperationObserver observer) {
+		lastLogin = 0;
+		TestDe.login(loginData, observer);
+		lastLogin = System.currentTimeMillis();
+	}
+
+	public void clearArticle(ArticleRef articleRef) {
+		articlePagesCache.delete(articleRef.getPageRef());
+	}
+
 	public String loadSubArticleHtml(SubArticleRef ref, OperationObserver observer) {
+		if (ref.isLocked()) loginIfAvailable(observer);
 		return articlePagesCache.load(ref.getPageRef(), observer);
 	}
 

@@ -14,6 +14,7 @@
  */
 package ilarkesto.integration.testde;
 
+import ilarkesto.core.auth.LoginData;
 import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Parser.ParseException;
@@ -42,36 +43,36 @@ public class TestDe {
 	public static final String URL_BASE = "https://www.test.de";
 	public static final String URL_TEST_INDEX = URL_BASE + "/tests/";
 	public static final String URL_LOGIN = URL_BASE + "/meintest/login/default.ashx";
+	public static final String URL_LOGOUT = URL_BASE + "/?logout=true";
 
 	public static HttpDownloader http = new ApacheHttpDownloader();
 	private static final String charset = IO.UTF_8;
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
-	public static void login(String username, String password, OperationObserver observer) {
+	public static void login(LoginData loginData, OperationObserver observer) {
+		logout(observer);
+		log.info("Login as", loginData.getLogin());
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, URL_LOGIN);
-		// http.downloadText(URL_LOGIN, charset); // required?
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("username", username);
-		params.put("password", password);
+		params.put("username", loginData.getLogin());
+		params.put("password", loginData.getPassword());
 		params.put("source", "login");
 		params.put("autologin", "on");
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		headers.put("Accept-Language", "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3");
-		headers.put("Connection", "keep-alive");
-		headers.put("DNT", "1");
-		headers.put("Host", "www.test.de");
-		headers.put("Referer", "https://www.test.de/meintest/login/default.ashx");
-		headers.put("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0");
 		String data = http.post(URL_LOGIN, params, charset);
-		log.warn(data);
 		String error = Str.cutFromTo(data, "<div class=\"msg error\"", "</div>");
 		if (error != null) {
 			if (error.contains("<p>")) error = Str.cutFromTo(error, "<p>", "</p>");
 			throw new RuntimeException(error);
 		}
-		if (!data.contains("class=\"loggedin")) throw new RuntimeException("Login failed, missing 'class=\"loggedin'");
+		if (!data.contains("logout=true")) {
+			log.warn("Logged in indicator 'logout=true' missing:", data);
+			throw new RuntimeException("Login failed. Missing indicator 'logout=true'");
+		}
+	}
+
+	public static void logout(OperationObserver observer) {
+		http.downloadText(URL_LOGOUT, charset);
 	}
 
 	public static String removeSpamFromPageHtml(String html) {
@@ -97,14 +98,13 @@ public class TestDe {
 	}
 
 	public static Article downloadArticle(ArticleRef ref, OperationObserver observer) throws ParseException {
-		String url = getArticleUrl(ref);
 		String data = downloadPageHtml(ref.getPageRef(), observer);
-
 		return parseArticle(ref, data);
 	}
 
 	public static Article parseArticle(ArticleRef ref, String html) throws ParseException {
 		String navigData = Str.cutFromTo(html, "<ol class=\"articlenav-nav\">", "</ol>");
+		if (navigData == null) throw new ParseException("Unexpected html: " + html);
 		Parser parser = new Parser(navigData);
 		parser.skipWhitespace();
 		List<SubArticleRef> subArticles = new ArrayList<TestDe.SubArticleRef>();
@@ -112,17 +112,16 @@ public class TestDe {
 			parser.gotoAfter("<a ");
 			parser.gotoAfter("href=\"");
 			String pageRef;
-			if (parser.isNext("/")) {
-				parser.gotoAfter("/");
-				pageRef = parser.getUntil("/\"");
-			} else {
-				pageRef = parser.getUntil("\"");
-			}
+			pageRef = parser.getUntil("\"");
+			pageRef = Str.removePrefix(pageRef, "/");
+			pageRef = Str.removeSuffix(pageRef, "/");
 			parser.gotoAfter(">");
-			String title = parser.getUntil("</a>");
+			if (parser.gotoAfterIfNext("<i")) {
+				parser.gotoAfter("</i>");
+			}
+			String title = parser.getUntil("<");
+			title = title.trim();
 			parser.gotoAfter("</li>");
-
-			if (pageRef.startsWith("#")) continue; // login required
 
 			SubArticleRef subArticleRef = new SubArticleRef(title, pageRef);
 			subArticles.add(subArticleRef);
@@ -246,6 +245,13 @@ public class TestDe {
 			return summary;
 		}
 
+		public boolean containsLockedSubArticles() {
+			for (SubArticleRef sub : getSubArticles()) {
+				if (sub.isLocked()) return true;
+			}
+			return false;
+		}
+
 		public List<SubArticleRef> getSubArticles() {
 			return subArticles;
 		}
@@ -289,6 +295,10 @@ public class TestDe {
 
 			pageId = pageRef;
 			pageId = pageId.substring(pageId.lastIndexOf('-') + 1);
+		}
+
+		public boolean isLocked() {
+			return pageRef.startsWith("#");
 		}
 
 		public String getTitle() {

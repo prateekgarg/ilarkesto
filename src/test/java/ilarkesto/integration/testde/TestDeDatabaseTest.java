@@ -14,6 +14,7 @@
  */
 package ilarkesto.integration.testde;
 
+import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.core.time.Date;
@@ -32,7 +33,8 @@ public class TestDeDatabaseTest extends ATest {
 
 	@Test
 	public void update() throws ParseException {
-		TestDeDatabase db = new TestDeDatabase(new SimpleFileStorage(getTestOutputFile("test.de")));
+		TestDeDatabase db = new TestDeDatabase(new SimpleFileStorage(getTestOutputFile("test.de")),
+				LoginDataProvider.NULL_PROVIDER);
 		db.updateIndex(observer);
 		ArticlesIndex index = db.getIndex(observer);
 		assertNotNull(index);

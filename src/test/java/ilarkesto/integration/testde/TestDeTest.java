@@ -15,6 +15,7 @@
 package ilarkesto.integration.testde;
 
 import ilarkesto.base.Str;
+import ilarkesto.core.auth.LoginData;
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.time.Date;
 import ilarkesto.integration.testde.TestDe.Article;
@@ -35,8 +36,7 @@ import org.testng.annotations.Test;
 
 public class TestDeTest extends ATest {
 
-	private String username;
-	private String password;
+	private LoginData loginData;
 
 	@BeforeClass
 	public void loadCredentials() throws FileNotFoundException, IOException {
@@ -44,14 +44,13 @@ public class TestDeTest extends ATest {
 		if (!file.exists()) return;
 		Properties properties = new Properties();
 		properties.load(new BufferedReader(new FileReader(file)));
-		username = properties.getProperty("username");
-		password = properties.getProperty("password");
+		loginData = new LoginData(properties.getProperty("username"), properties.getProperty("password"));
 	}
 
 	@Test
 	public void loginBad() {
 		try {
-			TestDe.login(Str.generateRandomWord(5, 10, false), Str.generatePassword(), observer);
+			TestDe.login(new LoginData(Str.generateRandomWord(5, 10, false), Str.generatePassword()), observer);
 			fail("Exception expected");
 		} catch (Exception ex) {
 			log.info(ex.getMessage());
@@ -60,7 +59,11 @@ public class TestDeTest extends ATest {
 
 	@Test
 	public void loginGood() {
-		TestDe.login(username, password, observer);
+		try {
+			TestDe.login(loginData, observer);
+		} finally {
+			TestDe.logout(observer);
+		}
 	}
 
 	@Test
@@ -118,7 +121,7 @@ public class TestDeTest extends ATest {
 	}
 
 	@Test
-	public void downloadArticleStaubsauger() throws ParseException {
+	public void staubsauger() throws ParseException {
 		ArticleRef ref = new ArticleRef(new Date(2014, 02, 7), "Staubsauger: 74 Boden­staub­sauger im Test",
 				"Staubsauger-im-Test-1838262-0");
 		Article article = TestDe.downloadArticle(ref, observer);
@@ -132,6 +135,43 @@ public class TestDeTest extends ATest {
 		String summary = article.getSummary();
 		assertContains(summary, "Ob Beutels­auger oder Sauger mit Staubbox");
 		assertContains(summary, "Einem Gerät reichen bereits 870 Watt für gute Saug­ergeb­nisse.");
+
+		assertSize(subArticles, 10);
+
+		SubArticleRef subArticleStaubsauger = subArticles.get(8);
+		assertEquals(subArticleStaubsauger.getTitle(), "Staubsauger");
+		assertTrue(subArticleStaubsauger.isLocked());
+
+		SubArticleRef subArticlePdf = subArticles.get(9);
+		assertEquals(subArticlePdf.getTitle(), "Heft­artikel aus test als PDF-Download");
+
+		TestDe.login(loginData, observer);
+		try {
+			article = TestDe.downloadArticle(ref, observer);
+			subArticles = article.getSubArticles();
+			subArticleStaubsauger = subArticles.get(8);
+			assertFalse(subArticleStaubsauger.isLocked());
+			assertEquals(subArticleStaubsauger.getPageRef(), "Staubsauger-im-Test-1838262-2838262");
+		} finally {
+			TestDe.logout(observer);
+		}
+	}
+
+	@Test
+	public void druckertinte() throws ParseException {
+		ArticleRef ref = new ArticleRef(new Date(2014, 02, 7), "Druckertinten: Bis zu 90 Prozent Ersparnis",
+				"Druckertinten-Bis-zu-90-Prozent-Ersparnis-4673398-0");
+		TestDe.login(loginData, observer);
+		try {
+			Article article = TestDe.downloadArticle(ref, observer);
+			List<SubArticleRef> subArticles = article.getSubArticles();
+			assertSize(subArticles, 9);
+
+			SubArticleRef subArticlePdf = subArticles.get(8);
+			assertEquals(subArticlePdf.getTitle(), "Artikel als PDF");
+		} finally {
+			TestDe.logout(observer);
+		}
 	}
 
 	@Test
@@ -144,7 +184,7 @@ public class TestDeTest extends ATest {
 		for (SubArticleRef sub : subArticles) {
 			log.info("  ", sub);
 		}
-		assertSize(subArticles, 5);
+		assertSize(subArticles, 7);
 	}
 
 	@Test

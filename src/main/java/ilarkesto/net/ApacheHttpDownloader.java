@@ -38,17 +38,27 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 public class ApacheHttpDownloader extends HttpDownloader {
 
 	private HttpClient client;
+	private HttpContext context;
 
 	@Override
 	public String post(String url, Map<String, String> parameters, Map<String, String> requestHeaders, String charset) {
-		HttpResponse response = doPost(url, parameters, requestHeaders, charset);
+		HttpResponse response;
+		try {
+			response = doPost(url, parameters, requestHeaders, charset);
+		} catch (HttpRedirectException ex) {
+			return downloadText(ex.getLocation(), charset);
+		}
 		try {
 			return getText(response);
 		} catch (IOException ex) {
@@ -56,10 +66,8 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		}
 	}
 
-	private HttpResponse doPost(String url, Map<String, String> parameters, Map<String, String> requestHeaders,
-			String charset) {
-		HttpClient client = getClient();
-
+	private synchronized HttpResponse doPost(String url, Map<String, String> parameters,
+			Map<String, String> requestHeaders, String charset) throws HttpRedirectException {
 		HttpPost request = new HttpPost(url);
 		if (requestHeaders != null) {
 			for (Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
@@ -77,15 +85,23 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		// }
 		// }
 
+		HttpClient client = getClient();
 		try {
-			HttpResponse response = client.execute(request);
+			HttpResponse response = client.execute(request, getContext());
 			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode != 200) throw new RuntimeException("HTTP POST failed: " + getText(response));
+			if (statusCode == 302) {
+				getText(response);
+				throw new HttpRedirectException(getHeader(response, "Location"));
+			}
+			if (statusCode != 200)
+				throw new RuntimeException("HTTP POST failed. HTTP Status " + statusCode + " -> " + getText(response));
 			return response;
 		} catch (ClientProtocolException ex) {
 			throw new RuntimeException(ex);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
+		} finally {
+			close(client);
 		}
 	}
 
@@ -102,50 +118,66 @@ public class ApacheHttpDownloader extends HttpDownloader {
 	}
 
 	@Override
-	public void downloadUrlToFile(String url, File file) {
-		HttpClient client = getClient();
+	public synchronized void downloadUrlToFile(String url, File file) {
 		BufferedOutputStream out;
 		try {
 			out = new BufferedOutputStream(new FileOutputStream(file));
 		} catch (FileNotFoundException ex) {
 			throw new RuntimeException("Writing file failed: " + file, ex);
 		}
+		HttpClient client = getClient();
 		try {
-			HttpResponse response = client.execute(new HttpGet(url));
+			HttpResponse response = client.execute(new HttpGet(url), getContext());
 			HttpEntity entity = response.getEntity();
 			entity.writeTo(out);
 		} catch (Exception ex) {
 			throw new RuntimeException("Downloading failed: " + url, ex);
 		} finally {
 			IO.close(out);
+			close(client);
 		}
 	}
 
 	@Override
-	public String downloadText(String url, String charset) {
+	public synchronized String downloadText(String url, String charset) {
 		HttpClient client = getClient();
 		try {
-			HttpResponse response = client.execute(new HttpGet(url));
+			HttpResponse response = client.execute(new HttpGet(url), getContext());
 			String text = getText(response, charset);
 			return text;
 		} catch (Exception ex) {
 			throw new RuntimeException("Downloading failed: " + url, ex);
+		} finally {
+			close(client);
 		}
 	}
 
-	public HttpClient getClient() {
+	public HttpContext getContext() {
+		if (context == null) {
+			context = new BasicHttpContext();
+			context.setAttribute(ClientContext.COOKIE_STORE, new BasicCookieStore());
+		}
+		return context;
+	}
+
+	public synchronized HttpClient getClient() {
 		if (client == null) client = createClient();
 		return client;
 	}
 
 	protected HttpClient createClient() {
 		DefaultHttpClient client = new DefaultHttpClient();
-		HttpParams params = client.getParams();
-		HttpClientParams.setCookiePolicy(params, CookiePolicy.BROWSER_COMPATIBILITY);
+		initializeClient(client);
 		return client;
 	}
 
-	protected void close(HttpClient client) {
+	protected void initializeClient(HttpClient client) {
+		HttpParams params = client.getParams();
+		HttpClientParams.setCookiePolicy(params, CookiePolicy.BROWSER_COMPATIBILITY);
+		HttpClientParams.setRedirecting(params, false);
+	}
+
+	protected synchronized void close(HttpClient client) {
 		client = null;
 	}
 
@@ -166,6 +198,26 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		entity.writeTo(buffer);
 		return buffer.toString(charsetName == null ? IO.UTF_8 : charsetName);
+	}
+
+	public static String getHeader(HttpResponse response, String name) {
+		Header[] headers = response.getHeaders(name);
+		if (headers == null || headers.length == 0) return null;
+		return headers[0].getValue();
+	}
+
+	// ---
+
+	public static class HttpRedirectException extends Exception {
+
+		public HttpRedirectException(String location) {
+			super(location);
+		}
+
+		public String getLocation() {
+			return getMessage();
+		}
+
 	}
 
 }

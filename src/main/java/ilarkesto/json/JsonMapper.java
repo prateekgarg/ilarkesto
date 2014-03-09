@@ -127,11 +127,24 @@ public class JsonMapper {
 	}
 
 	public static void serialize(Object object, File file) throws IOException {
+		serialize(object, file, true);
+	}
+
+	public static void serialize(Object object, File file, boolean wirteToTemporaryFileFirst) throws IOException {
 		if (file == null) throw new IllegalArgumentException("file == null");
 		file.getParentFile().mkdirs();
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+
+		File tempFile = new File(file.getPath() + ".tmp");
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(tempFile)));
 		serialize(object, out);
 		out.close();
+
+		try {
+			IO.delete(file);
+			IO.move(tempFile, file);
+		} finally {
+			IO.delete(tempFile);
+		}
 	}
 
 	public static String serialize(Object object) {
