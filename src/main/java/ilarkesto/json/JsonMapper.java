@@ -45,8 +45,11 @@ public class JsonMapper {
 		return ret;
 	}
 
-	public static <T> T deserialize(String s, Class<T> type, TypeResolver typeResolver) throws IOException,
-			ParseException {
+	public static <T> T deserialize(String s, Class<T> type) throws ParseException {
+		return deserialize(s, type, TypeResolver.NONE);
+	}
+
+	public static <T> T deserialize(String s, Class<T> type, TypeResolver typeResolver) throws ParseException {
 		JsonSaxParser parser = new JsonSaxParser();
 		ObjectMappingContentHandler<T> handler = new ObjectMappingContentHandler<T>(type, typeResolver);
 		parser.parse(s, handler);
@@ -162,6 +165,15 @@ public class JsonMapper {
 		}
 
 		public abstract Class resolveArrayType(Object object, String field);
+
+		public static TypeResolver NONE = new TypeResolver() {
+
+			@Override
+			public Class resolveArrayType(Object object, String field) {
+				throw new IllegalStateException("NONE type resolver can not resolve type for field: "
+						+ object.getClass().getSimpleName() + "." + field);
+			}
+		};
 
 	}
 

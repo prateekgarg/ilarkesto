@@ -14,6 +14,7 @@
  */
 package ilarkesto.net;
 
+import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
 import java.io.BufferedOutputStream;
@@ -47,6 +48,8 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 public class ApacheHttpDownloader extends HttpDownloader {
+
+	private static final Log log = Log.get(ApacheHttpDownloader.class);
 
 	private HttpClient client;
 	private HttpContext context;
@@ -89,9 +92,9 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		try {
 			HttpResponse response = client.execute(request, getContext());
 			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode == 302) {
+			if (isHttpStatusCodeRedirect(statusCode)) {
 				getText(response);
-				throw new HttpRedirectException(getHeader(response, "Location"));
+				throw new HttpRedirectException(getRedirectLocation(response));
 			}
 			if (statusCode != 200)
 				throw new RuntimeException("HTTP POST failed. HTTP Status " + statusCode + " -> " + getText(response));
@@ -103,6 +106,10 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		} finally {
 			close(client);
 		}
+	}
+
+	private boolean isHttpStatusCodeRedirect(int statusCode) {
+		return statusCode == 301 || statusCode == 302;
 	}
 
 	private HttpEntity createParametersEntity(Map<String, String> parameters, String charset) {
@@ -118,17 +125,33 @@ public class ApacheHttpDownloader extends HttpDownloader {
 	}
 
 	@Override
-	public synchronized void downloadUrlToFile(String url, File file) {
-		BufferedOutputStream out;
-		try {
-			out = new BufferedOutputStream(new FileOutputStream(file));
-		} catch (FileNotFoundException ex) {
-			throw new RuntimeException("Writing file failed: " + file, ex);
-		}
+	public synchronized void downloadUrlToFile(String url, File file, int followRedirects) {
+		file.getParentFile().mkdirs();
+		BufferedOutputStream out = null;
 		HttpClient client = getClient();
 		try {
 			HttpResponse response = client.execute(new HttpGet(url), getContext());
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (isHttpStatusCodeRedirect(statusCode)) {
+				String location = getRedirectLocation(response);
+				if (followRedirects > 0) {
+					log.info("HTTP Redirect:", location);
+					downloadUrlToFile(location, file, followRedirects - 1);
+					return;
+				}
+				getText(response);
+				throw new HttpRedirectException(location);
+			}
+			if (statusCode != 200) {
+				String text = getText(response);
+				throw new RuntimeException("HTTP GET failed. HTTP Status " + statusCode + " -> " + text);
+			}
 			HttpEntity entity = response.getEntity();
+			try {
+				out = new BufferedOutputStream(new FileOutputStream(file));
+			} catch (FileNotFoundException ex) {
+				throw new RuntimeException("Writing file failed: " + file, ex);
+			}
 			entity.writeTo(out);
 		} catch (Exception ex) {
 			throw new RuntimeException("Downloading failed: " + url, ex);
@@ -138,12 +161,30 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		}
 	}
 
+	private String getRedirectLocation(HttpResponse response) {
+		String location = getHeader(response, "Location");
+		if (location == null) return null;
+		// location = location.replace("&amp;", "&");
+		return location;
+	}
+
 	@Override
-	public synchronized String downloadText(String url, String charset) {
+	public synchronized String downloadText(String url, String charset, int followRedirects) {
 		HttpClient client = getClient();
 		try {
 			HttpResponse response = client.execute(new HttpGet(url), getContext());
+			int statusCode = response.getStatusLine().getStatusCode();
 			String text = getText(response, charset);
+			if (isHttpStatusCodeRedirect(statusCode)) {
+				String location = getRedirectLocation(response);
+				if (followRedirects > 0) {
+					log.info("HTTP Redirect:", location);
+					return downloadText(location, charset, followRedirects - 1);
+				}
+				return text;
+			}
+			if (statusCode != 200)
+				throw new RuntimeException("HTTP GET failed. HTTP Status " + statusCode + " -> " + text);
 			return text;
 		} catch (Exception ex) {
 			throw new RuntimeException("Downloading failed: " + url, ex);

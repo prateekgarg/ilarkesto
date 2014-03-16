@@ -25,6 +25,7 @@ import ilarkesto.io.IO;
 import ilarkesto.net.ApacheHttpDownloader;
 import ilarkesto.net.HttpDownloader;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,6 +51,25 @@ public class TestDe {
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
 
+	public static void downloadPdf(SubArticleRef subArticlePdf, ArticleRef articleRef, File file,
+			OperationObserver observer) throws ParseException {
+		if (subArticlePdf.isLocked()) throw new IllegalStateException("Article is locked: " + subArticlePdf);
+		if (!subArticlePdf.isPdf()) throw new IllegalStateException("Article is not PDF: " + subArticlePdf);
+		String url = loadPdfUrl(subArticlePdf, articleRef, observer);
+		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
+		http.downloadUrlToFile(url, file);
+	}
+
+	private static String loadPdfUrl(SubArticleRef subArticlePdf, ArticleRef articleRef, OperationObserver observer)
+			throws ParseException {
+		String data = downloadPageHtml(articleRef.getPageRef(), observer);
+		Parser parser = new Parser(data);
+		parser.gotoTo("/filestore/" + subArticlePdf.getPageRef());
+		String path = parser.getUntil("\"");
+		path = path.replace("&amp;", "&");
+		return URL_BASE + path;
+	}
+
 	public static void login(LoginData loginData, OperationObserver observer) {
 		logout(observer);
 		log.info("Login as", loginData.getLogin());
@@ -72,7 +92,7 @@ public class TestDe {
 	}
 
 	public static void logout(OperationObserver observer) {
-		http.downloadText(URL_LOGOUT, charset);
+		http.downloadText(URL_LOGOUT, charset, 0);
 	}
 
 	public static String removeSpamFromPageHtml(String html) {
@@ -114,7 +134,9 @@ public class TestDe {
 			String pageRef;
 			pageRef = parser.getUntil("\"");
 			pageRef = Str.removePrefix(pageRef, "/");
+			pageRef = Str.removePrefix(pageRef, "filestore/");
 			pageRef = Str.removeSuffix(pageRef, "/");
+			if (pageRef.contains("?")) pageRef = pageRef.substring(0, pageRef.indexOf('?'));
 			parser.gotoAfter(">");
 			if (parser.gotoAfterIfNext("<i")) {
 				parser.gotoAfter("</i>");
@@ -146,6 +168,7 @@ public class TestDe {
 	}
 
 	public static String getPageUrl(String pageRef) {
+		if (pageRef.contains("key=")) return URL_BASE + "/" + pageRef;
 		return URL_BASE + "/" + pageRef + "/";
 	}
 
@@ -297,6 +320,8 @@ public class TestDe {
 			pageId = pageId.substring(pageId.lastIndexOf('-') + 1);
 		}
 
+		public SubArticleRef() {}
+
 		public boolean isLocked() {
 			return pageRef.startsWith("#");
 		}
@@ -320,6 +345,11 @@ public class TestDe {
 		@Override
 		public String toString() {
 			return getPageId() + " " + getTitle();
+		}
+
+		public boolean isPdf() {
+			if (isLocked()) return false;
+			return getPageRef().contains(".pdf");
 		}
 	}
 

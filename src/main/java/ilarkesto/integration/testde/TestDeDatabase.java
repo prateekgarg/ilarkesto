@@ -131,22 +131,44 @@ public class TestDeDatabase {
 		return storage.getFile("viewedArticles.txt");
 	}
 
-	public Article loadArticle(ArticleRef ref, OperationObserver observer) throws ParseException {
+	public File loadPdf(SubArticleRef subArticleRef, ArticleRef articleRef, OperationObserver observer)
+			throws ParseException {
+		if (!subArticleRef.isPdf()) throw new IllegalArgumentException("Sub article is not PDF: " + subArticleRef);
+		File pdfFile = getPdfFile(subArticleRef);
+		if (pdfFile.exists()) return pdfFile;
 		loginIfAvailable(observer);
-		String html = articlePagesCache.load(ref.getPageRef(), observer);
+		TestDe.downloadPdf(subArticleRef, articleRef, pdfFile, observer);
+		return pdfFile;
+	}
+
+	private File getPdfFile(SubArticleRef ref) {
+		String filename = Str.toFileCompatibleString(ref.getPageRef());
+		return storage.getFile(filename);
+	}
+
+	public Article loadArticle(ArticleRef ref, OperationObserver observer) throws ParseException {
+		String html = articlePagesCache.loadFromCache(ref.getPageRef(), observer);
+		if (html == null) {
+			loginIfAvailable(observer);
+			html = articlePagesCache.load(ref.getPageRef(), observer);
+		}
 		return TestDe.parseArticle(ref, html);
 	}
 
-	private void loginIfAvailable(OperationObserver observer) {
+	private synchronized void loginIfAvailable(OperationObserver observer) {
 		LoginData loginData = loginDataProvider.getLoginData();
 		if (loginData == null) return;
-		if (System.currentTimeMillis() - lastLogin < Tm.MINUTE * 10) return;
+		if (getLastLoginAgeInMinutes() < 10) return;
 		login(loginData, observer);
+	}
+
+	private long getLastLoginAgeInMinutes() {
+		return (System.currentTimeMillis() - lastLogin) / Tm.MINUTE;
 	}
 
 	private long lastLogin;
 
-	private void login(LoginData loginData, OperationObserver observer) {
+	private synchronized void login(LoginData loginData, OperationObserver observer) {
 		lastLogin = 0;
 		TestDe.login(loginData, observer);
 		lastLogin = System.currentTimeMillis();
@@ -156,9 +178,17 @@ public class TestDeDatabase {
 		articlePagesCache.delete(articleRef.getPageRef());
 	}
 
+	public void clearSubArticle(SubArticleRef subArticleRef) {
+		articlePagesCache.delete(subArticleRef.getPageRef());
+	}
+
+	public String loadSubArticleHtml(String pageRef, OperationObserver observer) {
+		return articlePagesCache.load(pageRef, observer);
+	}
+
 	public String loadSubArticleHtml(SubArticleRef ref, OperationObserver observer) {
-		if (ref.isLocked()) loginIfAvailable(observer);
-		return articlePagesCache.load(ref.getPageRef(), observer);
+		loginIfAvailable(observer);
+		return loadSubArticleHtml(ref.getPageRef(), observer);
 	}
 
 	private synchronized boolean importFromResource() {

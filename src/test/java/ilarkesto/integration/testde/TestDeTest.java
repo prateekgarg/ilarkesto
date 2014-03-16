@@ -101,7 +101,23 @@ public class TestDeTest extends ATest {
 	}
 
 	@Test
-	public void downloadArticleAbrufkredit() throws ParseException {
+	public void kindermatratzen() throws ParseException {
+		ArticleRef ref = new ArticleRef(new Date(2014, 3, 3), "Kinder­matratzen: Ganz schön ausgeschlafen",
+				"Kindermatratzen-Ganz-schoen-ausgeschlafen-4673558-0");
+		Article article = TestDe.downloadArticle(ref, observer);
+		log.info(article);
+		List<SubArticleRef> subArticles = article.getSubArticles();
+		assertNotEmpty(subArticles);
+		for (SubArticleRef sub : subArticles) {
+			log.info("  ", sub);
+		}
+
+		String summary = article.getSummary();
+		assertContains(summary, "Alle Test­ergeb­nisse für 12 Kinder­matratzen finden Sie im");
+	}
+
+	@Test
+	public void abrufkredit() throws ParseException {
 		ArticleRef ref = new ArticleRef(new Date(2014, 2, 18),
 				"Abruf­kredit: Diese Banken bieten güns­tige und flexible Kredite",
 				"Abrufkredit-Diese-Banken-bieten-guenstige-und-flexible-Kredite-4667323-0");
@@ -118,6 +134,27 @@ public class TestDeTest extends ATest {
 		assertContains(
 			summary,
 			" Eine Tabelle nennt unter anderem die Höhe des Kredit­rahmens, die Mindest­rück­zahlungs­raten und den Effektiven Jahres­zins des jeweiligen Angebots.");
+	}
+
+	@Test
+	public void pdfKatzenfutter() throws ParseException {
+		ArticleRef ref = new ArticleRef(new Date(2014, 2, 27), "Katzenfutter: Drei sind sehr gut, sechs mangelhaft",
+				"Katzenfutter-Drei-sind-sehr-gut-sechs-mangelhaft-4672532-0");
+		TestDe.login(loginData, observer);
+		Article article = TestDe.downloadArticle(ref, observer);
+		List<SubArticleRef> subArticles = article.getSubArticles();
+
+		SubArticleRef subArticlePdf = subArticles.get(13);
+		assertEquals(subArticlePdf.getTitle(), "Artikel als PDF");
+		assertTrue(subArticlePdf.isPdf());
+
+		assertEquals(subArticlePdf.getPageRef(), "4673855_t201403080.pdf");
+
+		File file = getTestOutputFile(ref.getPageRef() + ".pdf");
+		TestDe.downloadPdf(subArticlePdf, ref, file, observer);
+		assertTrue(file.exists());
+		assertTrue(file.length() > 23000);
+		log.info(file.getAbsolutePath());
 	}
 
 	@Test
@@ -144,11 +181,13 @@ public class TestDeTest extends ATest {
 
 		SubArticleRef subArticlePdf = subArticles.get(9);
 		assertEquals(subArticlePdf.getTitle(), "Heft­artikel aus test als PDF-Download");
+		assertFalse(subArticlePdf.isPdf());
 
 		TestDe.login(loginData, observer);
 		try {
 			article = TestDe.downloadArticle(ref, observer);
 			subArticles = article.getSubArticles();
+
 			subArticleStaubsauger = subArticles.get(8);
 			assertFalse(subArticleStaubsauger.isLocked());
 			assertEquals(subArticleStaubsauger.getPageRef(), "Staubsauger-im-Test-1838262-2838262");
@@ -175,7 +214,7 @@ public class TestDeTest extends ATest {
 	}
 
 	@Test
-	public void downloadArticleTagesgeld() throws ParseException {
+	public void tagesgeld() throws ParseException {
 		ArticleRef ref = new ArticleRef(new Date(2014, 01, 10), "Tages­geld: Die besten Zinsen",
 				"Tagesgeld-Die-besten-Zinsen-4196794-0");
 		Article article = TestDe.downloadArticle(ref, observer);

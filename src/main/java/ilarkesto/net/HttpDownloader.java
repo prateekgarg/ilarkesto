@@ -18,6 +18,8 @@ public class HttpDownloader {
 
 	private static final Log log = Log.get(HttpDownloader.class);
 
+	private static final int DEFAULT_REDIRECTS = 3;
+
 	private String username;
 	private String password;
 	private String baseUrl;
@@ -32,7 +34,11 @@ public class HttpDownloader {
 		return IO.postAndGetResult(url, parameters, charset, null, null);
 	}
 
-	public void downloadUrlToFile(String url, File file) {
+	public final void downloadUrlToFile(String url, File file) {
+		downloadUrlToFile(url, file, DEFAULT_REDIRECTS);
+	}
+
+	public void downloadUrlToFile(String url, File file, int followRedirects) {
 		IO.downloadUrlToFile(url, file.getPath());
 	}
 
@@ -69,7 +75,11 @@ public class HttpDownloader {
 		}
 	}
 
-	public String downloadText(String url, String charset) {
+	public final String downloadText(String url, String charset) {
+		return downloadText(url, charset, DEFAULT_REDIRECTS);
+	}
+
+	public String downloadText(String url, String charset, int followRedirects) {
 		url = getFullUrl(url);
 		log.info(url);
 		return IO.downloadUrlToString(url, charset, username, password);

@@ -213,19 +213,10 @@ public abstract class Reflect {
 		}
 	}
 
-	public static <T extends Object> T newInstance(Class<T> type) {
-		try {
-			return type.newInstance();
-		} catch (InstantiationException ex) {
-			throw new RuntimeException(ex);
-		} catch (IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-
 	public static <T extends Object> T newInstance(Class<T> type, Object... constructorParameters) {
 		try {
 			Constructor<T> constructor = type.getConstructor(getClasses(constructorParameters));
+			constructor.setAccessible(true);
 			return constructor.newInstance(constructorParameters);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);

@@ -30,18 +30,25 @@ public class TextFileCache {
 	}
 
 	public synchronized String load(String key, OperationObserver operationObserver) {
+		String text = loadFromCache(key, operationObserver);
+
+		if (text != null) return text;
+
+		text = loader.load(key, operationObserver);
+
 		File file = getFile(key);
-
-		if (file.exists()) {
-			operationObserver.onOperationInfoChanged(OperationObserver.LOADING_CACHE);
-			return IO.readFile(file, IO.UTF_8);
-		}
-
-		String text = loader.load(key, operationObserver);
-
 		operationObserver.onOperationInfoChanged(OperationObserver.SAVING, file);
 		IO.writeFile(file, text, IO.UTF_8);
 		return text;
+	}
+
+	public synchronized String loadFromCache(String key, OperationObserver operationObserver) {
+		File file = getFile(key);
+
+		if (!file.exists()) return null;
+
+		operationObserver.onOperationInfoChanged(OperationObserver.LOADING_CACHE);
+		return IO.readFile(file, IO.UTF_8);
 	}
 
 	public synchronized void delete(String key) {
