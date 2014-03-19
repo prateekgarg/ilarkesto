@@ -181,12 +181,12 @@ public class ApacheHttpDownloader extends HttpDownloader {
 					log.info("HTTP Redirect:", location);
 					return downloadText(location, charset, followRedirects - 1);
 				}
-				return text;
+				throw new HttpRedirectException(location);
 			}
 			if (statusCode != 200)
 				throw new RuntimeException("HTTP GET failed. HTTP Status " + statusCode + " -> " + text);
 			return text;
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			throw new RuntimeException("Downloading failed: " + url, ex);
 		} finally {
 			close(client);
@@ -219,7 +219,7 @@ public class ApacheHttpDownloader extends HttpDownloader {
 	}
 
 	protected synchronized void close(HttpClient client) {
-		client = null;
+		this.client = null;
 	}
 
 	// --- helper ---
@@ -245,20 +245,6 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		Header[] headers = response.getHeaders(name);
 		if (headers == null || headers.length == 0) return null;
 		return headers[0].getValue();
-	}
-
-	// ---
-
-	public static class HttpRedirectException extends Exception {
-
-		public HttpRedirectException(String location) {
-			super(location);
-		}
-
-		public String getLocation() {
-			return getMessage();
-		}
-
 	}
 
 }

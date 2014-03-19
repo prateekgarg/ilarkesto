@@ -24,6 +24,10 @@ public class HttpDownloader {
 	private String password;
 	private String baseUrl;
 
+	public boolean isInternetAvailable() {
+		return true;
+	}
+
 	public String post(String url, Map<String, String> parameters, String charset) {
 		return post(url, parameters, null, charset);
 	}
@@ -79,7 +83,7 @@ public class HttpDownloader {
 		return downloadText(url, charset, DEFAULT_REDIRECTS);
 	}
 
-	public String downloadText(String url, String charset, int followRedirects) {
+	public String downloadText(String url, String charset, int followRedirects) throws HttpRedirectException {
 		url = getFullUrl(url);
 		log.info(url);
 		return IO.downloadUrlToString(url, charset, username, password);
@@ -101,4 +105,17 @@ public class HttpDownloader {
 		return this;
 	}
 
+	// ---
+
+	public static class HttpRedirectException extends RuntimeException {
+
+		public HttpRedirectException(String location) {
+			super(location);
+		}
+
+		public String getLocation() {
+			return getMessage();
+		}
+
+	}
 }

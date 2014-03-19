@@ -1024,6 +1024,20 @@ public abstract class IO {
 		}
 	}
 
+	public static String readResource(String name, Class relativePath) {
+		URL url = relativePath.getResource(name);
+		if (url == null)
+			throw new RuntimeException("Resource '" + name + "' does not exist in "
+					+ relativePath.getPackage().getName());
+		URLConnection connection;
+		try {
+			connection = url.openConnection();
+			return readToString(connection.getInputStream(), UTF_8);
+		} catch (IOException ex) {
+			throw new RuntimeException("Loading resource failed: " + name, ex);
+		}
+	}
+
 	public static String readResource(String name) throws IOException {
 		URL url = IO.class.getClassLoader().getResource(name);
 		if (url == null) throw new IOException("Resource '" + name + "' does not exist.");

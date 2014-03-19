@@ -67,6 +67,26 @@ public class TestDeTest extends ATest {
 	}
 
 	@Test
+	public void removeSpamDruckerpatronen() throws ParseException {
+		TestDe.login(loginData, observer);
+		try {
+			String html = TestDe
+					.downloadPageHtml("Druckertinten-Bis-zu-90-Prozent-Ersparnis-4673398-4673669", observer);
+			html = TestDe.removeSpamFromPageHtml(html);
+			log.info(html);
+			assertContains(html, "Druckerpatronen 03/2014");
+			assertContains(html, "gut (1,8)");
+			assertContainsNot(html, "Zurück zum Artikel");
+			assertContainsNot(html, "Aktivierte Filter");
+			assertContainsNot(html, "Bewertung im Detail");
+			assertContainsNot(html, "Details vergleichen");
+			assertContainsNot(html, "Vergleich öffnen");
+		} finally {
+			TestDe.logout(observer);
+		}
+	}
+
+	@Test
 	public void removeSpamSpritpreisApps() throws ParseException {
 		String html = TestDe.downloadPageHtml("Spritpreis-Apps-im-Datenschutz-Test-Vier-sind-kritisch-4663692-4663694",
 			observer);
@@ -141,20 +161,24 @@ public class TestDeTest extends ATest {
 		ArticleRef ref = new ArticleRef(new Date(2014, 2, 27), "Katzenfutter: Drei sind sehr gut, sechs mangelhaft",
 				"Katzenfutter-Drei-sind-sehr-gut-sechs-mangelhaft-4672532-0");
 		TestDe.login(loginData, observer);
-		Article article = TestDe.downloadArticle(ref, observer);
-		List<SubArticleRef> subArticles = article.getSubArticles();
+		try {
+			Article article = TestDe.downloadArticle(ref, observer);
+			List<SubArticleRef> subArticles = article.getSubArticles();
 
-		SubArticleRef subArticlePdf = subArticles.get(13);
-		assertEquals(subArticlePdf.getTitle(), "Artikel als PDF");
-		assertTrue(subArticlePdf.isPdf());
+			SubArticleRef subArticlePdf = subArticles.get(13);
+			assertEquals(subArticlePdf.getTitle(), "Artikel als PDF");
+			assertTrue(subArticlePdf.isPdf());
 
-		assertEquals(subArticlePdf.getPageRef(), "4673855_t201403080.pdf");
+			assertEquals(subArticlePdf.getPageRef(), "4673855_t201403080.pdf");
 
-		File file = getTestOutputFile(ref.getPageRef() + ".pdf");
-		TestDe.downloadPdf(subArticlePdf, ref, file, observer);
-		assertTrue(file.exists());
-		assertTrue(file.length() > 23000);
-		log.info(file.getAbsolutePath());
+			File file = getTestOutputFile(ref.getPageRef() + ".pdf");
+			TestDe.downloadPdf(subArticlePdf, ref, file, observer);
+			assertTrue(file.exists());
+			assertTrue(file.length() > 23000);
+			log.info(file.getAbsolutePath());
+		} finally {
+			TestDe.logout(observer);
+		}
 	}
 
 	@Test

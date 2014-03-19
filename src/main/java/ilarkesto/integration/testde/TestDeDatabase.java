@@ -146,12 +146,28 @@ public class TestDeDatabase {
 		return storage.getFile(filename);
 	}
 
+	public void preloadArticle(ArticleRef articleRef, OperationObserver observer) throws ParseException {
+		Article article = loadArticle(articleRef, observer);
+		for (SubArticleRef subArticle : article.getSubArticles()) {
+			if (subArticle.isLocked()) continue;
+			if (subArticle.isPdf()) {
+				loadPdf(subArticle, articleRef, observer);
+			} else {
+				loadSubArticleHtml(subArticle, observer);
+			}
+		}
+	}
+
 	public Article loadArticle(ArticleRef ref, OperationObserver observer) throws ParseException {
 		String html = articlePagesCache.loadFromCache(ref.getPageRef(), observer);
-		if (html == null) {
-			loginIfAvailable(observer);
-			html = articlePagesCache.load(ref.getPageRef(), observer);
+		if (html != null) {
+			Article article = TestDe.parseArticle(ref, html);
+			if (!article.containsLockedSubArticles()) return article;
+			if (loginDataProvider.getLoginData() == null) return article;
+			if (!TestDe.http.isInternetAvailable()) return article;
 		}
+		loginIfAvailable(observer);
+		html = articlePagesCache.load(ref.getPageRef(), observer);
 		return TestDe.parseArticle(ref, html);
 	}
 

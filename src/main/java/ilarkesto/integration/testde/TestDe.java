@@ -24,6 +24,7 @@ import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
 import ilarkesto.net.ApacheHttpDownloader;
 import ilarkesto.net.HttpDownloader;
+import ilarkesto.net.HttpDownloader.HttpRedirectException;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -92,21 +93,36 @@ public class TestDe {
 	}
 
 	public static void logout(OperationObserver observer) {
-		http.downloadText(URL_LOGOUT, charset, 0);
+		try {
+			http.downloadText(URL_LOGOUT, charset, 0);
+		} catch (HttpRedirectException ex) {}
 	}
 
 	public static String removeSpamFromPageHtml(String html) {
 		if (Str.isBlank(html)) return null;
 
 		String beginIndicator = "<h2>";
-		if (html.contains("<div id=\"primary\" class=\"l-primary\">"))
-			beginIndicator = "<div id=\"primary\" class=\"l-primary\">";
 		String endIndicator = "<div id=\"secondary\"";
-		if (html.contains("<div id=\"ugc\">")) endIndicator = "<div id=\"ugc\">";
-		if (html.contains("<div class=\"paymentbox\" id=\"payment\""))
+
+		if (html.contains("<div class=\"ct-products\">")) {
+			beginIndicator = "<div class=\"ct-products\">";
+		} else if (html.contains("<div class=\"ct-wrapper\"")) {
+			beginIndicator = "<div class=\"ct-wrapper\">";
+		} else if (html.contains("<div id=\"primary\" class=\"l-primary\">")) {
+			beginIndicator = "<div id=\"primary\" class=\"l-primary\">";
+		}
+
+		if (html.contains("<!--CT ProductComparisonPromoControl")) {
+			endIndicator = "<!--CT ProductComparisonPromoControl";
+		} else if (html.contains("<div class=\"articlepage-next\"")) {
+			endIndicator = "<div class=\"articlepage-next\">";
+		} else if (html.contains("<div class=\"paymentbox\" id=\"payment\"")) {
 			endIndicator = "<div class=\"paymentbox\" id=\"payment\"";
-		if (html.contains("<div class=\"articlepage-next\"")) endIndicator = "<div class=\"articlepage-next\">";
-		html = Str.cutFromTo(html, beginIndicator, endIndicator);
+		} else if (html.contains("<div id=\"ugc\">")) {
+			endIndicator = "<div id=\"ugc\">";
+		}
+
+		html = beginIndicator + Str.cutFromTo(html, beginIndicator, endIndicator);
 
 		html = Str.removeCenter(html, "<div class=\"paymentbox\"", "\n</div>");
 		html = Str.removeCenter(html, "<div class=\"articlepage-next\"", "</div>");
@@ -114,6 +130,8 @@ public class TestDe {
 		html = Str.removeCenter(html, "<div class=\"productlist-footer\"", "</div>");
 		html = Str.removeCenter(html, "<div id=\"mp3content", "</div>");
 		html = Str.removeCenter(html, "<p class=\"back\"", "</p>");
+		html = Str.removeCenters(html, "<div class=\"product-compare\">", "</div></div></div>");
+		html = Str.removeCenters(html, "<div class=\"product-comparison ", "</div>");
 		return html;
 	}
 
@@ -175,7 +193,7 @@ public class TestDe {
 	public static String downloadPageHtml(String pageRef, OperationObserver observer) {
 		String url = TestDe.getPageUrl(pageRef);
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
-		return http.downloadText(url, charset);
+		return http.downloadText(url, charset, 0);
 	}
 
 	public static List<ArticleRef> update(ArticlesIndex index, OperationObserver observer) throws ParseException {
@@ -222,7 +240,7 @@ public class TestDe {
 		if (indexOffset == 0) throw new IllegalArgumentException("page 0 does not exist");
 		String url = URL_TEST_INDEX + "?fd=" + indexOffset;
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
-		String data = http.downloadText(url, charset);
+		String data = http.downloadText(url, charset, 0);
 
 		ArrayList<ArticleRef> ret = new ArrayList<ArticleRef>();
 		Parser parser = new Parser(data);

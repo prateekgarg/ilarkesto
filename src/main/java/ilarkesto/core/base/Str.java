@@ -411,6 +411,15 @@ public class Str {
 		return sb.toString();
 	}
 
+	public static String removeCenters(String s, String from, String to) {
+		if (s == null) return null;
+		while (true) {
+			int previousLength = s.length();
+			s = removeCenter(s, from, to);
+			if (previousLength == s.length()) return s;
+		}
+	}
+
 	public static String removeCenter(String s, String from, String to) {
 		if (s == null) return null;
 		int startIdx = s.indexOf(from);
