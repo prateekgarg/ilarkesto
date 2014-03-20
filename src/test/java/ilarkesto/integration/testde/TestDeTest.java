@@ -126,11 +126,6 @@ public class TestDeTest extends ATest {
 				"Kindermatratzen-Ganz-schoen-ausgeschlafen-4673558-0");
 		Article article = TestDe.downloadArticle(ref, observer);
 		log.info(article);
-		List<SubArticleRef> subArticles = article.getSubArticles();
-		assertNotEmpty(subArticles);
-		for (SubArticleRef sub : subArticles) {
-			log.info("  ", sub);
-		}
 
 		String summary = article.getSummary();
 		assertContains(summary, "Alle Test­ergeb­nisse für 12 Kinder­matratzen finden Sie im");
@@ -232,6 +227,26 @@ public class TestDeTest extends ATest {
 
 			SubArticleRef subArticlePdf = subArticles.get(8);
 			assertEquals(subArticlePdf.getTitle(), "Artikel als PDF");
+		} finally {
+			TestDe.logout(observer);
+		}
+	}
+
+	@Test
+	public void multipageDruckertinten() throws ParseException {
+		TestDe.login(loginData, observer);
+		try {
+			String html = TestDe
+					.downloadPageHtml("Druckertinten-Bis-zu-90-Prozent-Ersparnis-4673398-4673669", observer);
+			Integer nextPageStartOffset = TestDe.parseNextPageStartOffset(html);
+			assertEquals(nextPageStartOffset, Integer.valueOf(19));
+
+			String html2 = TestDe.downloadPageHtml("Druckertinten-Bis-zu-90-Prozent-Ersparnis-4673398-4673669",
+				nextPageStartOffset, observer);
+			assertContains(html2, "H75; H76");
+
+			nextPageStartOffset = TestDe.parseNextPageStartOffset(html2);
+			assertNull(nextPageStartOffset);
 		} finally {
 			TestDe.logout(observer);
 		}

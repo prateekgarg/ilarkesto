@@ -19,12 +19,12 @@ import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.html.Html;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
 import ilarkesto.net.ApacheHttpDownloader;
 import ilarkesto.net.HttpDownloader;
-import ilarkesto.net.HttpDownloader.HttpRedirectException;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -93,9 +93,7 @@ public class TestDe {
 	}
 
 	public static void logout(OperationObserver observer) {
-		try {
-			http.downloadText(URL_LOGOUT, charset, 0);
-		} catch (HttpRedirectException ex) {}
+		http.downloadText(URL_LOGOUT, charset, 1);
 	}
 
 	public static String removeSpamFromPageHtml(String html) {
@@ -142,37 +140,39 @@ public class TestDe {
 
 	public static Article parseArticle(ArticleRef ref, String html) throws ParseException {
 		String navigData = Str.cutFromTo(html, "<ol class=\"articlenav-nav\">", "</ol>");
-		if (navigData == null) throw new ParseException("Unexpected html: " + html);
-		Parser parser = new Parser(navigData);
-		parser.skipWhitespace();
 		List<SubArticleRef> subArticles = new ArrayList<TestDe.SubArticleRef>();
-		while (parser.gotoAfterIf("<li")) {
-			parser.gotoAfter("<a ");
-			parser.gotoAfter("href=\"");
-			String pageRef;
-			pageRef = parser.getUntil("\"");
-			pageRef = Str.removePrefix(pageRef, "/");
-			pageRef = Str.removePrefix(pageRef, "filestore/");
-			pageRef = Str.removeSuffix(pageRef, "/");
-			if (pageRef.contains("?")) pageRef = pageRef.substring(0, pageRef.indexOf('?'));
-			parser.gotoAfter(">");
-			if (parser.gotoAfterIfNext("<i")) {
-				parser.gotoAfter("</i>");
-			}
-			String title = parser.getUntil("<");
-			title = title.trim();
-			parser.gotoAfter("</li>");
+		if (navigData != null) {
+			Parser parser = new Parser(navigData);
+			parser.skipWhitespace();
+			while (parser.gotoAfterIf("<li")) {
+				parser.gotoAfter("<a ");
+				parser.gotoAfter("href=\"");
+				String pageRef;
+				pageRef = parser.getUntil("\"");
+				pageRef = Str.removePrefix(pageRef, "/");
+				pageRef = Str.removePrefix(pageRef, "filestore/");
+				pageRef = Str.removeSuffix(pageRef, "/");
+				if (pageRef.contains("?")) pageRef = pageRef.substring(0, pageRef.indexOf('?'));
+				parser.gotoAfter(">");
+				if (parser.gotoAfterIfNext("<i")) {
+					parser.gotoAfter("</i>");
+				}
+				String title = parser.getUntil("<");
+				title = Html.convertHtmlToText(title);
+				parser.gotoAfter("</li>");
 
-			SubArticleRef subArticleRef = new SubArticleRef(title, pageRef);
-			subArticles.add(subArticleRef);
+				SubArticleRef subArticleRef = new SubArticleRef(title, pageRef);
+				subArticles.add(subArticleRef);
+			}
 		}
 
-		parser = new Parser(html);
+		Parser parser = new Parser(html);
 		parser.gotoAfter("<div id=\"primary\"");
 		parser.gotoAfter("<p");
 		parser.gotoAfter(">");
 		String summary = parser.getUntil("</p>");
 		// String summary = Str.cutFromTo(data, "<p class=\"intro\">", "</p>");
+		summary = Html.convertHtmlToText(summary);
 
 		return new Article(ref, subArticles, summary);
 	}
@@ -190,10 +190,34 @@ public class TestDe {
 		return URL_BASE + "/" + pageRef + "/";
 	}
 
+	public static List<String> downloadPageHtmlWithMultipage(String pageRef, OperationObserver observer) {
+		List<String> ret = new ArrayList<String>();
+		Integer start = 1;
+		while (start != null) {
+			String html = downloadPageHtml(pageRef, start, observer);
+			ret.add(html);
+			start = parseNextPageStartOffset(html);
+		}
+		return ret;
+	}
+
 	public static String downloadPageHtml(String pageRef, OperationObserver observer) {
+		return downloadPageHtml(pageRef, 1, observer);
+	}
+
+	public static String downloadPageHtml(String pageRef, Integer startOffset, OperationObserver observer) {
 		String url = TestDe.getPageUrl(pageRef);
+		if (startOffset != null) url += "?start=" + startOffset;
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
 		return http.downloadText(url, charset, 0);
+	}
+
+	public static Integer parseNextPageStartOffset(String html) {
+		String nav = Str.cutFromTo(html, "<a class=\"fwd\"", "</a>");
+		if (nav == null) return null;
+		String start = Str.cutFromTo(nav, "start=", "\"");
+		if (start == null) return null;
+		return Integer.parseInt(start);
 	}
 
 	public static List<ArticleRef> update(ArticlesIndex index, OperationObserver observer) throws ParseException {

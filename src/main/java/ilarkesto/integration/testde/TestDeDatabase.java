@@ -50,7 +50,8 @@ public class TestDeDatabase {
 	public static void main(String[] args) throws ParseException {
 		TestDeDatabase db = new TestDeDatabase(new SimpleFileStorage(new File("runtimedata/test.de")),
 				LoginDataProvider.NULL_PROVIDER);
-		db.updateIndex(OperationObserver.DUMMY);
+		List<ArticleRef> newArticles = db.updateIndex(OperationObserver.DUMMY);
+		log.info("New articles:", newArticles);
 	}
 
 	private static Log log = Log.get(TestDeDatabase.class);
@@ -60,7 +61,9 @@ public class TestDeDatabase {
 	private TextFileCache articlePagesCache;
 	private ArticlesIndex index;
 	private Class indexResourcePath;
-	private Set<String> viewedArticles;
+
+	private ArticleList viewed;
+	private ArticleList favorites;
 	private LoginDataProvider loginDataProvider;
 
 	public TestDeDatabase(AFileStorage storage, LoginDataProvider loginDataProvider) {
@@ -70,65 +73,16 @@ public class TestDeDatabase {
 
 		articlePagesCache = new TextFileCache(storage.getSubStorage("articlePagesCache"), new ArticlePageLoader());
 
-		loadViewedArticles();
+		viewed = new ArticleList("viewedArticles.txt");
+		favorites = new ArticleList("favoriteArticles.txt");
 	}
 
-	public boolean isViewed(ArticleRef articleRef) {
-		return viewedArticles.contains(articleRef.getPageId());
+	public ArticleList getViewed() {
+		return viewed;
 	}
 
-	public synchronized void markViewed(ArticleRef articleRef) {
-		viewedArticles.add(articleRef.getPageId());
-		saveViewedArticles();
-	}
-
-	public synchronized void markViewed(Collection<ArticleRef> articleRefs) {
-		for (ArticleRef articleRef : articleRefs) {
-			viewedArticles.add(articleRef.getPageId());
-		}
-		saveViewedArticles();
-	}
-
-	private synchronized void saveViewedArticles() {
-		PrintWriter out;
-		try {
-			out = new PrintWriter(new FileWriter(getViewedArticlesFile()));
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		for (String id : viewedArticles) {
-			out.println(id);
-		}
-		IO.close(out);
-	}
-
-	private synchronized void loadViewedArticles() {
-		viewedArticles = new HashSet<String>();
-		File file = getViewedArticlesFile();
-		if (file.exists()) {
-			BufferedReader in;
-			try {
-				in = new BufferedReader(new FileReader(file));
-			} catch (FileNotFoundException ex) {
-				throw new RuntimeException(ex);
-			}
-			try {
-				String line;
-				while ((line = in.readLine()) != null) {
-					String articleId = line.trim();
-					if (Str.isBlank(articleId)) continue;
-					viewedArticles.add(articleId);
-				}
-			} catch (IOException ex) {
-				log.error(ex);
-			} finally {
-				IO.closeQuiet(in);
-			}
-		}
-	}
-
-	private File getViewedArticlesFile() {
-		return storage.getFile("viewedArticles.txt");
+	public ArticleList getFavorites() {
+		return favorites;
 	}
 
 	public File loadPdf(SubArticleRef subArticleRef, ArticleRef articleRef, OperationObserver observer)
@@ -165,6 +119,7 @@ public class TestDeDatabase {
 			if (!article.containsLockedSubArticles()) return article;
 			if (loginDataProvider.getLoginData() == null) return article;
 			if (!TestDe.http.isInternetAvailable()) return article;
+			articlePagesCache.delete(ref.getPageRef());
 		}
 		loginIfAvailable(observer);
 		html = articlePagesCache.load(ref.getPageRef(), observer);
@@ -198,7 +153,7 @@ public class TestDeDatabase {
 		articlePagesCache.delete(subArticleRef.getPageRef());
 	}
 
-	public String loadSubArticleHtml(String pageRef, OperationObserver observer) {
+	private String loadSubArticleHtml(String pageRef, OperationObserver observer) {
 		return articlePagesCache.load(pageRef, observer);
 	}
 
@@ -237,7 +192,7 @@ public class TestDeDatabase {
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
-			if (imported) markViewed(index.getArticles());
+			if (imported) viewed.addAll(index.getArticles());
 		}
 		return index;
 	}
@@ -269,11 +224,21 @@ public class TestDeDatabase {
 		return newArticles;
 	}
 
+	public List<ArticleRef> getFavoriteArticles(OperationObserver observer) {
+		ArticlesIndex index = getIndex(observer);
+		List<ArticleRef> ret = new ArrayList<ArticleRef>();
+		for (ArticleRef ref : index.getArticles()) {
+			if (!favorites.contains(ref)) continue;
+			ret.add(ref);
+		}
+		return ret;
+	}
+
 	public List<ArticleRef> getNewArticles(OperationObserver observer) {
 		ArticlesIndex index = getIndex(observer);
 		List<ArticleRef> ret = new ArrayList<ArticleRef>();
 		for (ArticleRef ref : index.getArticles()) {
-			if (isViewed(ref)) continue;
+			if (viewed.contains(ref)) continue;
 			ret.add(ref);
 		}
 		return ret;
@@ -295,5 +260,81 @@ public class TestDeDatabase {
 			return ArticleRef.class;
 		}
 	};
+
+	public class ArticleList {
+
+		private String filename;
+		private Set<String> pageIds;
+
+		public ArticleList(String filename) {
+			super();
+			this.filename = filename;
+			load();
+		}
+
+		public boolean contains(ArticleRef articleRef) {
+			if (articleRef == null) return false;
+			return pageIds.contains(articleRef.getPageId());
+		}
+
+		public synchronized void add(ArticleRef articleRef) {
+			pageIds.add(articleRef.getPageId());
+			save();
+		}
+
+		public synchronized void remove(ArticleRef articleRef) {
+			pageIds.remove(articleRef.getPageId());
+			save();
+		}
+
+		public synchronized void addAll(Collection<ArticleRef> articleRefs) {
+			for (ArticleRef articleRef : articleRefs) {
+				pageIds.add(articleRef.getPageId());
+			}
+			save();
+		}
+
+		private synchronized void save() {
+			PrintWriter out;
+			try {
+				out = new PrintWriter(new FileWriter(getFile()));
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+			for (String id : pageIds) {
+				out.println(id);
+			}
+			IO.close(out);
+		}
+
+		private synchronized void load() {
+			pageIds = new HashSet<String>();
+			File file = getFile();
+			if (file.exists()) {
+				BufferedReader in;
+				try {
+					in = new BufferedReader(new FileReader(file));
+				} catch (FileNotFoundException ex) {
+					throw new RuntimeException(ex);
+				}
+				try {
+					String line;
+					while ((line = in.readLine()) != null) {
+						String articleId = line.trim();
+						if (Str.isBlank(articleId)) continue;
+						pageIds.add(articleId);
+					}
+				} catch (IOException ex) {
+					log.error(ex);
+				} finally {
+					IO.closeQuiet(in);
+				}
+			}
+		}
+
+		private File getFile() {
+			return storage.getFile(filename);
+		}
+	}
 
 }
