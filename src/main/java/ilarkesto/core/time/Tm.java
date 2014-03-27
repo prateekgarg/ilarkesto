@@ -37,6 +37,7 @@ public class Tm {
 
 	private static TmLocalizer tmLocalizer;
 	private static TmLocalizerDe tmLocalizerDe;
+	private static TmLocalizerPl tmLocalizerPl;
 
 	private static long timeOffset = 0;
 
@@ -93,6 +94,9 @@ public class Tm {
 		if (language.equals("de")) {
 			if (tmLocalizerDe == null) tmLocalizerDe = new TmLocalizerDe();
 			return tmLocalizerDe;
+		} else if (language.equals("pl")) {
+			if (tmLocalizerPl == null) tmLocalizerPl = new TmLocalizerPl();
+			return tmLocalizerPl;
 		}
 		if (tmLocalizer == null) tmLocalizer = new TmLocalizer();
 		return tmLocalizer;

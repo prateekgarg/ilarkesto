@@ -81,6 +81,10 @@ public class MaxRoom {
 		return dummy;
 	}
 
+	public String getUniqueId() {
+		return getCube().getSerialNumber() + ":" + getId();
+	}
+
 	public List<MaxDevice> getDevicesOfTypeWallMountedThermostat() {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
 		for (MaxDevice device : getDevices()) {

@@ -54,7 +54,7 @@ public class MaxCubeState {
 	}
 
 	public boolean isInSync() {
-		return isInSync(Tm.MINUTE * 5);
+		return isInSync(Tm.MINUTE * 15);
 	}
 
 	public boolean isInSync(long maxMillis) {
