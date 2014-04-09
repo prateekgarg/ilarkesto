@@ -5,6 +5,11 @@ public class TmLocalizerDe extends TmLocalizer {
 	public static final TmLocalizerDe INSTANCE = new TmLocalizerDe();
 
 	@Override
+	public String date(int year, int month, int day) {
+		return prefixZeros(day, 2) + "." + prefixZeros(month, 2) + "." + year;
+	}
+
+	@Override
 	public String full(Weekday day) {
 		switch (day) {
 			case MONDAY:

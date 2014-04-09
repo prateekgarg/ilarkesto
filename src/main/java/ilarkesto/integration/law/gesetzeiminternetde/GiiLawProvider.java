@@ -31,8 +31,11 @@ public class GiiLawProvider extends ALawProvider {
 
 	@Override
 	public BookIndex loadPrepackagedBookIndex() {
-		JsonObject json = JsonObject.loadResource("GiiBookIndex.json", getClass(), false);
-		if (json == null) return null;
+		JsonObject json = JsonObject.loadResource("/GiiBookIndex.json", getClass(), false);
+		if (json == null) {
+			log.warn("Resource does not exist: /GiiBookIndex.json");
+			return null;
+		}
 		return new BookIndex(json);
 	}
 

@@ -52,7 +52,7 @@ public class GiiTest extends ATest {
 	@Test
 	public void searchBGB() {
 		SearchResultConsumerImpl consumer = new SearchResultConsumerImpl();
-		Searcher searcher = new Searcher("BGB", consumer, getBookCaches());
+		Searcher searcher = new Searcher("BGB", consumer, getBookCaches(), false);
 		searcher.run();
 
 		assertContains(consumer.books, getBookIndex().getBookByCode("BGB"));
@@ -63,7 +63,7 @@ public class GiiTest extends ATest {
 	public void searchUrhg2() {
 		SearchResultConsumerImpl consumer = new SearchResultConsumerImpl();
 		BookCacheCollection bookCaches = getBookCaches();
-		Searcher searcher = new Searcher("UrhG 10", consumer, bookCaches);
+		Searcher searcher = new Searcher("UrhG 10", consumer, bookCaches, false);
 		searcher.run();
 
 		BookRef urhgRef = getBookIndex().getBookByCode("UrhG");

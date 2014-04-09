@@ -20,11 +20,13 @@ public class Searcher implements Runnable {
 	private boolean stopRequested;
 	private BookRef restrictToBook;
 
-	public Searcher(String query, SearchResultConsumer consumer, BookCacheCollection bookCaches) {
+	public Searcher(String query, SearchResultConsumer consumer, BookCacheCollection bookCaches,
+			boolean broadenToCachedBooksEnabled) {
 		super();
 		this.searchStrings = parseQuery(query);
 		this.consumer = consumer;
 		this.bookCaches = bookCaches;
+		this.broadenToCachedBooksEnabled = broadenToCachedBooksEnabled;
 	}
 
 	@Override
@@ -144,10 +146,6 @@ public class Searcher implements Runnable {
 			ret.add(tokenizer.nextToken().toLowerCase());
 		}
 		return ret;
-	}
-
-	public void setBroadenToCachedBooksEnabled(boolean broadenToCachedBooksEnabled) {
-		this.broadenToCachedBooksEnabled = broadenToCachedBooksEnabled;
 	}
 
 	public static interface SearchResultConsumer {

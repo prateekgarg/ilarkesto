@@ -16,6 +16,9 @@ package ilarkesto.json;
 
 import ilarkesto.base.Reflect;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.Time;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonSaxParser.ContentHandler;
 import ilarkesto.json.JsonSaxParser.ParseException;
@@ -71,6 +74,11 @@ public class JsonMapper {
 	public static void serialize(Object object, PrintWriter out, int indent) {
 		if (object == null || object instanceof String || object instanceof Number || object instanceof Boolean) {
 			Json.printValue(object, out, 0);
+			return;
+		}
+
+		if (object instanceof Date || object instanceof Time || object instanceof DateAndTime) {
+			Json.printValue(object.toString(), out, 0);
 			return;
 		}
 
@@ -304,6 +312,22 @@ public class JsonMapper {
 				currentArray.add(value);
 				return true;
 			}
+
+			if (value instanceof String) {
+				String s = (String) value;
+				Field field = Reflect.getDeclaredField(object.getClass(), currentAttributeName);
+				if (field != null) {
+					Class<?> fieldType = field.getType();
+					if (fieldType.equals(Date.class)) {
+						value = new Date(s);
+					} else if (fieldType.equals(Time.class)) {
+						value = new Time(s);
+					} else if (fieldType.equals(DateAndTime.class)) {
+						value = new DateAndTime(s);
+					}
+				}
+			}
+
 			Reflect.setFieldValue(object, currentAttributeName, value);
 			return true;
 		}

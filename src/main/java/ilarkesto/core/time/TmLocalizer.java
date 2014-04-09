@@ -2,6 +2,19 @@ package ilarkesto.core.time;
 
 public class TmLocalizer {
 
+	public String date(int year, int month, int day) {
+		return year + "-" + prefixZeros(month, 2) + "-" + prefixZeros(day, 2);
+	}
+
+	String prefixZeros(int value, int requiredDigits) {
+		String ret = String.valueOf(value);
+		int zerosToAdd = requiredDigits - ret.length();
+		for (int i = 0; i < zerosToAdd; i++) {
+			ret = "0" + ret;
+		}
+		return ret;
+	}
+
 	public String shortestPeriod(long millis) {
 		StringBuilder sb = new StringBuilder();
 		long m = millis >= 0 ? millis : -millis;

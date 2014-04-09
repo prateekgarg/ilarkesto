@@ -15,6 +15,7 @@
 package ilarkesto.core.time;
 
 import java.util.Date;
+import java.util.Locale;
 
 public class Tm {
 
@@ -88,6 +89,10 @@ public class Tm {
 		Date dateOfFirstWeek = getDateOfFirstWeek(year);
 		int days = getDaysBetweenDates(dateOfFirstWeek, date);
 		return (days / 7) + 1;
+	}
+
+	public static TmLocalizer getLocalizer() {
+		return getLocalizer(Locale.getDefault().getLanguage().toLowerCase());
 	}
 
 	public static TmLocalizer getLocalizer(String language) {

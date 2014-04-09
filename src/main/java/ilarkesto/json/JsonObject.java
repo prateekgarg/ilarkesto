@@ -91,7 +91,8 @@ public class JsonObject {
 
 	public static JsonObject loadResource(String resourceName, Class<?> resourcePackageClass,
 			boolean createemptyIfNoResource) {
-		InputStream is = resourcePackageClass.getResourceAsStream(resourceName);
+		InputStream is = resourcePackageClass == null ? ClassLoader.getSystemResourceAsStream(resourceName)
+				: resourcePackageClass.getResourceAsStream(resourceName);
 		if (is == null) {
 			if (createemptyIfNoResource) return new JsonObject();
 			return null;

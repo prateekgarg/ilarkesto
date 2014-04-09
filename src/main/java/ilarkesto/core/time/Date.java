@@ -273,6 +273,10 @@ public class Date implements Comparable<Date>, Serializable {
 		return 0;
 	}
 
+	public String format() {
+		return Tm.getLocalizer().date(year, month, day);
+	}
+
 	public String formatDayMonth() {
 		StringBuilder sb = new StringBuilder();
 		formatDay(sb);
