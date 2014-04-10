@@ -125,7 +125,7 @@ public class BeanForm<O> extends Form {
 		return field;
 	}
 
-	public DropdownFormField addDropdownProperty(String name, Object[] selectableItems) {
+	public DropdownFormField addDropdownProperty(String name, Object... selectableItems) {
 		Collection items = new ArrayList(selectableItems.length);
 		for (Object item : selectableItems)
 			items.add(item);
