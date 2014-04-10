@@ -691,6 +691,7 @@ public class Google {
 		LoginData loginData = login.getLoginData();
 		ContactsService contactsService = new ContactsService(clientApplicationId);
 		try {
+			contactsService.setHeader("GData-Version", "3.0");
 			contactsService.setUserCredentials(loginData.getLogin(), loginData.getPassword());
 		} catch (AuthenticationException ex) {
 			throw new RuntimeException("Google authentication failed.", ex);
