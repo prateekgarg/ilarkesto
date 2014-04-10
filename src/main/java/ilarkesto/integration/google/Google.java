@@ -681,7 +681,7 @@ public class Google {
 
 	public static URL getFeedUrl(String entity, String email, String feed) {
 		try {
-			return new URL("http://www.google.com/m8/feeds/" + entity + "/" + email + "/" + feed);
+			return new URL("https://www.google.com/m8/feeds/" + entity + "/" + email + "/" + feed);
 		} catch (MalformedURLException ex) {
 			throw new RuntimeException(ex);
 		}
