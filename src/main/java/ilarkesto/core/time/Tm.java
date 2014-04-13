@@ -14,8 +14,9 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.core.base.Utl;
+
 import java.util.Date;
-import java.util.Locale;
 
 public class Tm {
 
@@ -91,10 +92,6 @@ public class Tm {
 		return (days / 7) + 1;
 	}
 
-	public static TmLocalizer getLocalizer() {
-		return getLocalizer(Locale.getDefault().getLanguage().toLowerCase());
-	}
-
 	public static TmLocalizer getLocalizer(String language) {
 		if (language.equals("de")) {
 			if (tmLocalizerDe == null) tmLocalizerDe = new TmLocalizerDe();
@@ -105,6 +102,10 @@ public class Tm {
 		}
 		if (tmLocalizer == null) tmLocalizer = new TmLocalizer();
 		return tmLocalizer;
+	}
+
+	public static TmLocalizer getLocalizer() {
+		return getLocalizer(Utl.language);
 	}
 
 	@SuppressWarnings("deprecation")

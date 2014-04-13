@@ -16,6 +16,7 @@ package ilarkesto.base;
 
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
+import ilarkesto.core.time.TmLocalizer;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -69,6 +70,10 @@ public final class Tm extends ilarkesto.core.time.Tm {
 
 	public static final TimeZone TZ_BERLIN = TimeZone.getTimeZone("Europe/Berlin");
 	public static final TimeZone TZ_GMT = TimeZone.getTimeZone("GMT");
+
+	public static TmLocalizer getLocalizer() {
+		return getLocalizer(Locale.getDefault().getLanguage().toLowerCase());
+	}
 
 	public static Date toUtc(Date date) {
 		return toUtc(date, TimeZone.getDefault());
