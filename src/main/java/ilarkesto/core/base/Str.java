@@ -499,6 +499,17 @@ public class Str {
 		return sb.toString();
 	}
 
+	public static boolean isLink(String s) {
+		if (isBlank(s)) return false;
+		if (s.contains(" ")) return false;
+		if (s.contains("\n")) return false;
+		if (s.startsWith("http://")) return true;
+		if (s.startsWith("https://")) return true;
+		if (s.startsWith("www.")) return true;
+		if (s.startsWith("ftp://")) return true;
+		return false;
+	}
+
 	public static boolean isEmail(String s) {
 		if (isBlank(s)) return false;
 		if (s.length() < 5) return false;
