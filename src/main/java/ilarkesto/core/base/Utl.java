@@ -61,12 +61,15 @@ public class Utl {
 	public static String getUserMessageStack(Throwable ex, String separator) {
 		StringBuilder sb = null;
 		while (ex != null) {
-			if (sb == null) {
-				sb = new StringBuilder();
-			} else {
-				sb.append(separator);
+			String userMessage = getUserMessage(ex);
+			if (userMessage != null) {
+				if (sb == null) {
+					sb = new StringBuilder();
+				} else {
+					sb.append(separator);
+				}
+				sb.append(userMessage);
 			}
-			sb.append(getUserMessage(ex));
 			ex = ex.getCause();
 		}
 		return sb == null ? null : sb.toString();

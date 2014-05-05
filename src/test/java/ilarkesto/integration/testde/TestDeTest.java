@@ -192,14 +192,14 @@ public class TestDeTest extends ATest {
 		assertContains(summary, "Ob Beutels­auger oder Sauger mit Staubbox");
 		assertContains(summary, "Einem Gerät reichen bereits 870 Watt für gute Saug­ergeb­nisse.");
 
-		assertSize(subArticles, 10);
+		assertSize(subArticles, 11);
 
-		SubArticleRef subArticleStaubsauger = subArticles.get(8);
+		SubArticleRef subArticleStaubsauger = subArticles.get(9);
 		assertEquals(subArticleStaubsauger.getTitle(), "Staubsauger");
 		assertTrue(subArticleStaubsauger.isLocked());
 
-		SubArticleRef subArticlePdf = subArticles.get(9);
-		assertEquals(subArticlePdf.getTitle(), "Heft­artikel aus test als PDF-Download");
+		SubArticleRef subArticlePdf = subArticles.get(10);
+		assertEquals(subArticlePdf.getTitle(), "Heft­artikel als PDF");
 		assertFalse(subArticlePdf.isPdf());
 
 		TestDe.login(loginData, observer);
@@ -209,7 +209,7 @@ public class TestDeTest extends ATest {
 
 			subArticleStaubsauger = subArticles.get(8);
 			assertFalse(subArticleStaubsauger.isLocked());
-			assertEquals(subArticleStaubsauger.getPageRef(), "Staubsauger-im-Test-1838262-2838262");
+			assertEquals(subArticleStaubsauger.getPageRef(), "Staubsauger-im-Test-1838262-4702066");
 		} finally {
 			TestDe.logout(observer);
 		}
