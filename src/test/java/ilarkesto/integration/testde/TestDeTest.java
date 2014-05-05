@@ -199,7 +199,7 @@ public class TestDeTest extends ATest {
 		assertTrue(subArticleStaubsauger.isLocked());
 
 		SubArticleRef subArticlePdf = subArticles.get(10);
-		assertEquals(subArticlePdf.getTitle(), "Heft­artikel als PDF");
+		assertEquals(subArticlePdf.getTitle(), "Heftartikel als PDF");
 		assertFalse(subArticlePdf.isPdf());
 
 		TestDe.login(loginData, observer);
