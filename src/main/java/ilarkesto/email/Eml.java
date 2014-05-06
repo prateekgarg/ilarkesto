@@ -704,6 +704,10 @@ public class Eml {
 		Properties properties = new Properties();
 		properties.setProperty("mail.user", user);
 		properties.setProperty("mail.host", host);
+		properties.setProperty("mail.imap.ssl.checkserveridentity", "false");
+		properties.setProperty("mail.imap.ssl.trust", "*");
+		properties.setProperty("mail.imaps.ssl.checkserveridentity", "false");
+		properties.setProperty("mail.imaps.ssl.trust", "*");
 		Session session = Session.getInstance(properties);
 		Store store;
 		try {
