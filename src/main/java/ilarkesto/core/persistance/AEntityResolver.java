@@ -21,11 +21,11 @@ public abstract class AEntityResolver {
 
 	public abstract AEntity get(String id);
 
-	public abstract <T extends AEntity> List<T> list(Collection<String> ids);
+	public abstract List<AEntity> list(Collection<String> ids);
 
-	public abstract <T extends AEntity> T get(AEntityQuery<T> query);
+	public abstract AEntity get(AEntityQuery query);
 
-	public abstract <T extends AEntity> List<T> list(AEntityQuery<T> query);
+	public abstract List<AEntity> list(AEntityQuery query);
 
 	public abstract void save(AEntity entity);
 

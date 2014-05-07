@@ -180,6 +180,10 @@ public abstract class AClassGenerator {
 		return this;
 	}
 
+	public AClassGenerator lnOverride() {
+		return ln("    @Override");
+	}
+
 	public AClassGenerator ln(String... ss) {
 		s(ss);
 		s("\n");

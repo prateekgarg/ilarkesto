@@ -81,6 +81,8 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 
 		if (!isLegacyBean(bean)) {
+			String queryName = "A" + bean.getName() + "Query";
+
 			ln();
 			ln("    public static List<" + bean.getName() + "> listAll() {");
 			ln("        return new " + AllByTypeQuery.class.getName() + "(" + bean.getName() + ".class).list();");
@@ -96,8 +98,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 				if (p.isUnique()) {
 					ln("    public static", bean.getName(), "getBy" + Str.uppercaseFirstLetter(p.getName()) + "(final "
 							+ p.getType() + " " + p.getName() + ") {");
-					ln("        return (" + bean.getName() + ") entityResolver.get(new " + AEntityQuery.class.getName()
-							+ "<" + bean.getName() + ">() {");
+					ln("        return (" + bean.getName() + ") entityResolver.get(new " + queryName + "() {");
 					ln("            @Override");
 					ln("            public boolean matches(" + bean.getName() + " entity) {");
 					ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
@@ -109,17 +110,24 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					ln("    public static List<", bean.getName() + ">",
 						"listBy" + Str.uppercaseFirstLetter(p.getName()) + "(final " + p.getType() + " " + p.getName()
 								+ ") {");
-					ln("        return entityResolver.list(new " + AEntityQuery.class.getName() + "<" + bean.getName()
-							+ ">() {");
+					ln("        return new " + queryName + "() {");
 					ln("            @Override");
 					ln("            public boolean matches(" + bean.getName() + " entity) {");
 					ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
 							+ ");");
 					ln("            }");
-					ln("        });");
+					ln("        }.list();");
 					ln("    }");
 				}
 			}
+
+			ln();
+			ln("    public abstract static class A" + bean.getName() + "Query extends " + AEntityQuery.class.getName()
+					+ "<" + bean.getName() + "> {");
+			ln("        public Class<" + bean.getName() + "> getType() {");
+			ln("            return " + bean.getName() + ".class;");
+			ln("        }");
+			ln("    }");
 		}
 
 		ln();

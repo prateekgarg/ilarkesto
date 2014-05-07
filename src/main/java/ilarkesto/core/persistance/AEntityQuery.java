@@ -19,9 +19,13 @@ import java.util.List;
 public abstract class AEntityQuery<T extends AEntity> {
 
 	public List<T> list() {
-		return AEntity.entityResolver.list(this);
+		return (List<T>) AEntity.entityResolver.list(this);
 	}
 
 	public abstract boolean matches(T entity);
+
+	public Class<T> getType() {
+		return null;
+	}
 
 }
