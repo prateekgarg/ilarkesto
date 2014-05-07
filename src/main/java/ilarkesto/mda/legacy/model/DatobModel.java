@@ -17,7 +17,6 @@ package ilarkesto.mda.legacy.model;
 import ilarkesto.base.Str;
 import ilarkesto.persistence.AEntity;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -61,7 +60,7 @@ public class DatobModel extends BeanModel {
 	}
 
 	public final Set<PropertyModel> getSearchableProperties() {
-		Set<PropertyModel> ret = new HashSet<PropertyModel>();
+		Set<PropertyModel> ret = new LinkedHashSet<PropertyModel>();
 		for (PropertyModel property : getProperties()) {
 			if (property.isSearchable()) ret.add(property);
 		}
