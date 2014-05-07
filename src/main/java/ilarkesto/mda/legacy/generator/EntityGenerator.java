@@ -83,15 +83,32 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		if (!isLegacyBean(bean)) {
 			String queryName = "A" + bean.getName() + "Query";
 
-			ln();
-			ln("    public static List<" + bean.getName() + "> listAll() {");
-			ln("        return new " + AllByTypeQuery.class.getName() + "(" + bean.getName() + ".class).list();");
-			ln("    }");
+			if (bean.isSingleton()) {
+				ln();
+				ln("    public static", bean.getName(), "get() {");
+				ln("        List<" + bean.getName() + "> ret = new " + AllByTypeQuery.class.getName() + "("
+						+ bean.getName() + ".class).list();");
+				ln("        if (ret.isEmpty()) return null;");
+				ln("        return ret.get(0);");
+				ln("    }");
 
-			ln();
-			ln("    public static", bean.getName(), "getById(String id) {");
-			ln("        return (" + bean.getName() + ") entityResolver.get(id);");
-			ln("    }");
+				ln();
+				ln("    protected", bean.getName(), "createSingleton() {");
+				ln("        return new", bean.getName() + "();");
+				ln("    }");
+			}
+
+			if (!bean.isSingleton()) {
+				ln();
+				ln("    public static List<" + bean.getName() + "> listAll() {");
+				ln("        return new " + AllByTypeQuery.class.getName() + "(" + bean.getName() + ".class).list();");
+				ln("    }");
+
+				ln();
+				ln("    public static", bean.getName(), "getById(String id) {");
+				ln("        return (" + bean.getName() + ") entityResolver.get(id);");
+				ln("    }");
+			}
 
 			for (PropertyModel p : bean.getProperties()) {
 				ln();
@@ -107,17 +124,20 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					ln("        });");
 					ln("    }");
 				} else {
-					ln("    public static List<", bean.getName() + ">",
-						"listBy" + Str.uppercaseFirstLetter(p.getName()) + "(final " + p.getType() + " " + p.getName()
-								+ ") {");
-					ln("        return new " + queryName + "() {");
-					ln("            @Override");
-					ln("            public boolean matches(" + bean.getName() + " entity) {");
-					ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
-							+ ");");
-					ln("            }");
-					ln("        }.list();");
-					ln("    }");
+					if (!p.isCollection()) {
+						ln("    public static List<",
+							bean.getName() + ">",
+							"listBy" + Str.uppercaseFirstLetter(p.getName()) + "(final " + p.getType() + " "
+									+ p.getName() + ") {");
+						ln("        return new " + queryName + "() {");
+						ln("            @Override");
+						ln("            public boolean matches(" + bean.getName() + " entity) {");
+						ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "("
+								+ p.getName() + ");");
+						ln("            }");
+						ln("        }.list();");
+						ln("    }");
+					}
 				}
 			}
 

@@ -101,6 +101,13 @@ public class Str {
 		return sb.toString();
 	}
 
+	public static String lowercaseFirstLetter(String s) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(Character.toLowerCase(s.charAt(0)));
+		sb.append(s.substring(1));
+		return sb.toString();
+	}
+
 	public static String getFirstLine(String s) {
 		return getFirstLine(s, Integer.MAX_VALUE, null);
 	}

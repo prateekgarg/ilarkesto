@@ -19,7 +19,10 @@ import ilarkesto.core.base.Uuid;
 import ilarkesto.core.time.Tm;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class AEntity implements Serializable {
 
@@ -29,6 +32,7 @@ public class AEntity implements Serializable {
 	private long lastModified;
 
 	public final void persist() {
+		ensureIntegrity();
 		entityResolver.save(this);
 	}
 
@@ -87,6 +91,13 @@ public class AEntity implements Serializable {
 
 	public static AEntity getById(String id) {
 		return entityResolver.get(id);
+	}
+
+	protected static Set<String> getIdsAsSet(Collection<? extends AEntity> entities) {
+		Set<String> result = new HashSet<String>(entities.size());
+		for (AEntity entity : entities)
+			result.add(entity.getId());
+		return result;
 	}
 
 }

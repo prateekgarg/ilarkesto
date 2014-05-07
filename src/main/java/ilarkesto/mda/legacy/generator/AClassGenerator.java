@@ -14,7 +14,7 @@
  */
 package ilarkesto.mda.legacy.generator;
 
-import ilarkesto.base.Str;
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 import ilarkesto.mda.legacy.model.ParameterModel;

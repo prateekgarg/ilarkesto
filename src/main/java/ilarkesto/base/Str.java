@@ -500,13 +500,6 @@ public class Str extends ilarkesto.core.base.Str {
 		return true;
 	}
 
-	public static String lowercaseFirstLetter(String s) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(Character.toLowerCase(s.charAt(0)));
-		sb.append(s.substring(1));
-		return sb.toString();
-	}
-
 	public static String concatWithUppercaseFirstLetter(String[] sa, boolean ignoreFirst) {
 		StringBuilder sb = new StringBuilder();
 		if (ignoreFirst) {

@@ -15,7 +15,7 @@
 package ilarkesto.mda.legacy.generator;
 
 import ilarkesto.auth.AUser;
-import ilarkesto.base.Str;
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.SearchText;
@@ -124,7 +124,11 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					if (p.isAbstract()) {
 						ln("                getDaoService().getById(entityId);");
 					} else {
-						ln("                " + p.getDaoName() + ".getById(entityId);");
+						if (isLegacyBean(bean)) {
+							ln("                " + p.getDaoName() + ".getById(entityId);");
+						} else {
+							ln("                entityResolver.get(entityId);");
+						}
 					}
 					ln("            } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
 					ln("                LOG.info(\"Repairing dead " + p.getNameSingular() + " reference\");");
@@ -334,14 +338,18 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 	private void writeGetXxxContent(PropertyModel p) {
 		if (p.isReference()) {
-			String daoExpr = p.getDaoName();
-			if (p.isAbstract()) {
-				daoExpr = "getDaoService()";
-			}
 			if (p.isCollection()) {
-				String suffix = p instanceof SetPropertyModel ? "AsSet" : "";
-				ln("        return (" + p.getCollectionType() + ") " + daoExpr + ".getByIds" + suffix + "("
-						+ getFieldName(p) + ");");
+				if (isLegacyBean(bean)) {
+					String daoExpr = p.getDaoName();
+					if (p.isAbstract()) {
+						daoExpr = "getDaoService()";
+					}
+					String suffix = p instanceof SetPropertyModel ? "AsSet" : "";
+					ln("        return (" + p.getCollectionType() + ") " + daoExpr + ".getByIds" + suffix + "("
+							+ getFieldName(p) + ");");
+				} else {
+					ln("    return (" + p.getCollectionType() + ") entityResolver.list(" + getFieldName(p) + ");");
+				}
 			} else {
 				ln("        if (" + p.getName() + "Cache == null) update" + Str.uppercaseFirstLetter(p.getName())
 						+ "Cache();");
@@ -615,13 +623,18 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("    protected final void update" + pNameUpper + "(Object value) {");
 		if (p.isReference()) {
 			ln("        Collection<String> ids = (Collection<String>) value;");
-			String daoExpr = p.getDaoName();
-			if (p.isAbstract()) {
-				daoExpr = "getDaoService()";
+			if (isLegacyBean(bean)) {
+				String daoExpr = p.getDaoName();
+				if (p.isAbstract()) {
+					daoExpr = "getDaoService()";
+				}
+				String suffix = p instanceof SetPropertyModel ? "AsSet" : "";
+				ln("        set" + Str.uppercaseFirstLetter(p.getName()) + "((" + p.getCollectionType() + ") "
+						+ daoExpr + ".getByIds" + suffix + "(ids));");
+			} else {
+				ln("        set" + Str.uppercaseFirstLetter(p.getName()) + "((" + p.getCollectionType()
+						+ ") entityResolver.list(ids));");
 			}
-			String suffix = p instanceof SetPropertyModel ? "AsSet" : "";
-			ln("        set" + Str.uppercaseFirstLetter(p.getName()) + "((" + p.getCollectionType() + ") " + daoExpr
-					+ ".getByIds" + suffix + "(ids));");
 		} else {
 			ln("        set" + Str.uppercaseFirstLetter(p.getName()) + "((" + p.getType() + ") value);");
 		}
