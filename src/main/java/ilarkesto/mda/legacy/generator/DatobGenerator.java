@@ -18,6 +18,7 @@ import ilarkesto.auth.AUser;
 import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+import ilarkesto.core.persistance.SearchText;
 import ilarkesto.core.persistance.UniqueFieldConstraintException;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
@@ -195,19 +196,41 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 	}
 
 	private void writeSearchable() {
+		Set<PropertyModel> searchableProperties = bean.getSearchableProperties();
+		if (searchableProperties.isEmpty()) return;
 
 		ln();
 		section("Searchable");
 
-		ln();
-		ln("    public boolean matchesKey(String key) {");
-		ln("        if (super.matchesKey(key)) return true;");
-		for (PropertyModel p : bean.getProperties()) {
-			if (!p.isSearchable()) continue;
-			ln("        if (matchesKey(get" + Str.uppercaseFirstLetter(p.getName()) + "(), key)) return true;");
+		if (isLegacyBean(bean)) {
+			ln();
+			ln("    public boolean matchesKey(String key) {");
+			ln("        if (super.matchesKey(key)) return true;");
+			for (PropertyModel p : searchableProperties) {
+				ln("        if (matchesKey(get" + Str.uppercaseFirstLetter(p.getName()) + "(), key)) return true;");
+			}
+			ln("        return false;");
+			ln("    }");
 		}
-		ln("        return false;");
-		ln("    }");
+
+		if (!isLegacyBean(bean)) {
+			ln();
+			ln("    @Override");
+			ln("    public boolean matches(" + SearchText.class.getName() + " search) {");
+			s("         return search.matches(");
+			boolean first = true;
+			for (PropertyModel p : searchableProperties) {
+				if (first) {
+					first = false;
+				} else {
+					s(", ");
+				}
+				s("get" + Str.uppercaseFirstLetter(p.getName()) + "()");
+			}
+			ln(");");
+			ln("    }");
+
+		}
 	}
 
 	private void writeProperty(PropertyModel p) {

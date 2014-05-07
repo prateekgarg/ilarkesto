@@ -228,8 +228,10 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		if (bean.isEditProtected()) result.add(EditProtected.class.getName() + "<" + getUserClassName() + ">");
 		if (bean.isDeleteProtected()) result.add(DeleteProtected.class.getName() + "<" + getUserClassName() + ">");
 		if (bean.isOwnable()) result.add(Ownable.class.getName() + "<" + getUserClassName() + ">");
-		if (bean.isSearchable()) result.add(Searchable.class.getName());
 		if (!bean.isAbstract()) result.add(Comparable.class.getName() + "<" + bean.getName() + ">");
+		if (isLegacyBean(bean)) {
+			if (bean.isSearchable()) result.add(Searchable.class.getName());
+		}
 		return result;
 	}
 

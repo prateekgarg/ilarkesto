@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -17,6 +17,7 @@ package ilarkesto.mda.legacy.model;
 import ilarkesto.base.Str;
 import ilarkesto.persistence.AEntity;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -57,6 +58,14 @@ public class DatobModel extends BeanModel {
 
 	public final Set<PropertyModel> getProperties() {
 		return properties;
+	}
+
+	public final Set<PropertyModel> getSearchableProperties() {
+		Set<PropertyModel> ret = new HashSet<PropertyModel>();
+		for (PropertyModel property : getProperties()) {
+			if (property.isSearchable()) ret.add(property);
+		}
+		return ret;
 	}
 
 	public StringPropertyModel addStringProperty(String name) {
