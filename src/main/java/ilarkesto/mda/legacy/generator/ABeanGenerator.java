@@ -100,12 +100,22 @@ public abstract class ABeanGenerator<B extends BeanModel> extends AClassGenerato
 		}
 	}
 
+	public final boolean isLegacyBean(BeanModel model) {
+		if (model == null) return false;
+		if (model.getName().equals("AEntity")) return true;
+		if (model.getName().equals("AStructure")) return true;
+		if (model.getName().equals("AUser")) return true;
+		return isLegacyBean(model.getSuperbean());
+	}
+
 	protected void writeDependencies() {
 		if (bean.getDependencies().isEmpty()) return;
-		ln();
-		section("dependencies");
-		for (DependencyModel dependencyModel : bean.getDependencies()) {
-			dependency(dependencyModel.getType(), dependencyModel.getName(), true, false);
+		if (isLegacyBean(bean)) {
+			ln();
+			section("dependencies");
+			for (DependencyModel dependencyModel : bean.getDependencies()) {
+				dependency(dependencyModel.getType(), dependencyModel.getName(), true, false);
+			}
 		}
 	}
 

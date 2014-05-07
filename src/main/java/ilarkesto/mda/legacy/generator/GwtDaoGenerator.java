@@ -15,12 +15,12 @@
 package ilarkesto.mda.legacy.generator;
 
 import ilarkesto.base.Str;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
 import ilarkesto.gwt.client.AGwtDao;
 import ilarkesto.gwt.client.AGwtEntity;
-import ilarkesto.gwt.client.EntityDoesNotExistException;
 import ilarkesto.mda.legacy.model.ApplicationModel;
 import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PropertyModel;

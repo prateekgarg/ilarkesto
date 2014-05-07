@@ -14,9 +14,9 @@
  */
 package ilarkesto.gwt.client;
 
-import java.util.List;
-
 import ilarkesto.core.logging.Log;
+
+import java.util.List;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;

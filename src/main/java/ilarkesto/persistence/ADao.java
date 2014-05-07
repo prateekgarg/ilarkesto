@@ -22,6 +22,7 @@ import ilarkesto.base.Iconized;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.di.Context;
 import ilarkesto.fp.Predicate;

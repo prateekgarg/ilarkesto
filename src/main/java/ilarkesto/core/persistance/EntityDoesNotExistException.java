@@ -12,12 +12,19 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.persistence;
+package ilarkesto.core.persistance;
 
-public class UniqueFieldConstraintException extends RuntimeException {
+public class EntityDoesNotExistException extends RuntimeException {
 
-	public UniqueFieldConstraintException(AEntity entity, String field, Object value) {
-		super("\"" + value + "\" already exists.");
-	}
+    private String entityId;
+
+    public EntityDoesNotExistException(String entityId) {
+        super("Entity does not exist: " + entityId);
+        this.entityId = entityId;
+    }
+
+    public String getEntityId() {
+        return entityId;
+    }
 
 }

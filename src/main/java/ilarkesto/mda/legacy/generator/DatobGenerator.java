@@ -17,6 +17,8 @@ package ilarkesto.mda.legacy.generator;
 import ilarkesto.auth.AUser;
 import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
+import ilarkesto.core.persistance.UniqueFieldConstraintException;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
@@ -27,8 +29,6 @@ import ilarkesto.mda.legacy.model.SetPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.persistence.AStructure;
-import ilarkesto.persistence.EntityDoesNotExistException;
-import ilarkesto.persistence.UniqueFieldConstraintException;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -95,7 +95,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("        }");
 		ln("    }");
 
-		writeRepairDeadReferences();
+		if (isLegacyBean(bean)) writeRepairDeadReferences();
 
 		writeEnsureIntegrity();
 
@@ -125,7 +125,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					} else {
 						ln("                " + p.getDaoName() + ".getById(entityId);");
 					}
-					ln("            } catch (EntityDoesNotExistException ex) {");
+					ln("            } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
 					ln("                LOG.info(\"Repairing dead " + p.getNameSingular() + " reference\");");
 					ln("                repairDead" + Str.uppercaseFirstLetter(p.getNameSingular())
 							+ "Reference(entityId);");
@@ -143,7 +143,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					}
 					ln("        try {");
 					ln("            get" + Str.uppercaseFirstLetter(p.getName()) + "();");
-					ln("        } catch (EntityDoesNotExistException ex) {");
+					ln("        } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
 					ln("            LOG.info(\"Repairing dead " + p.getNameSingular() + " reference\");");
 					ln("            repairDead" + Str.uppercaseFirstLetter(p.getNameSingular()) + "Reference("
 							+ getFieldName(p) + ");");
@@ -253,15 +253,22 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		if (p.isReference() && !p.isCollection()) {
 			// --- updateXxxCache ---
-			String daoExpr = p.getDaoName();
-			if (p.isAbstract()) {
-				daoExpr = "getDaoService()";
-			}
 			ln();
-			ln("    private void update" + pNameUpper + "Cache() {");
-			ln("        " + p.getName() + "Cache = " + getFieldName(p) + " == null ? null : (" + p.getContentType()
-					+ ")" + daoExpr + ".getById(" + getFieldName(p) + ");");
-			ln("    }");
+			if (isLegacyBean(bean)) {
+				String daoExpr = p.getDaoName();
+				if (p.isAbstract()) {
+					daoExpr = "getDaoService()";
+				}
+				ln("    private void update" + pNameUpper + "Cache() {");
+				ln("        " + p.getName() + "Cache = " + getFieldName(p) + " == null ? null : (" + p.getContentType()
+						+ ")" + daoExpr + ".getById(" + getFieldName(p) + ");");
+				ln("    }");
+			} else {
+				ln("    private void update" + pNameUpper + "Cache() {");
+				ln("        " + p.getName() + "Cache = " + getFieldName(p) + " == null ? null : (" + p.getContentType()
+						+ ") entityResolver.get(" + getFieldName(p) + ");");
+				ln("    }");
+			}
 
 			// --- getXxxId ---
 			ln();
@@ -366,11 +373,21 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 			} else {
 				ln("        if (is" + pNameUpper + "(" + p.getName() + ")) return;");
+				if (p.isMandatory() && !p.isPrimitive()) {
+					ln("        if (" + p.getName()
+							+ " == null) throw new IllegalArgumentException(\"Mandatory field can not be set to null: "
+							+ p.getName() + "\");");
+				}
 				if (p.isUnique()) {
-					ln("        if (" + p.getName() + " != null && getDao().get" + bean.getName() + "By" + pNameUpper
-							+ "(" + p.getName() + ") != null) throw new "
-							+ UniqueFieldConstraintException.class.getName() + "(this, \"" + p.getName() + "\", "
-							+ p.getName() + ");");
+					String findExpression;
+					if (isLegacyBean(bean)) {
+						findExpression = "getDao().get" + bean.getName() + "By" + pNameUpper + "(" + p.getName() + ")";
+					} else {
+						findExpression = bean.getName() + ".getBy" + pNameUpper + "(" + p.getName() + ")";
+					}
+					ln("        if (" + p.getName() + " != null && " + findExpression + " != null) throw new "
+							+ UniqueFieldConstraintException.class.getName() + "(\"" + bean.getName() + "\" ,\""
+							+ p.getName() + "\", " + p.getName() + ");");
 				}
 				if (p.isValueObject()) {
 					ln("        " + getFieldName(p) + " = " + p.getName() + ".clone(this);");
@@ -636,12 +653,17 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln();
 		ln("    protected final void update" + pNameUpper + "(Object value) {");
 		if (p.isReference()) {
-			String daoExpr = p.getDaoName();
-			if (p.isAbstract()) {
-				daoExpr = "getDaoService()";
+			if (isLegacyBean(bean)) {
+				String daoExpr = p.getDaoName();
+				if (p.isAbstract()) {
+					daoExpr = "getDaoService()";
+				}
+				ln("        set" + pNameUpper + "(value == null ? null : (" + p.getType() + ")" + daoExpr
+						+ ".getById((String)value));");
+			} else {
+				ln("        set" + pNameUpper + "(value == null ? null : (" + p.getType()
+						+ ") entityResolver.get((String)value));");
 			}
-			ln("        set" + pNameUpper + "(value == null ? null : (" + p.getType() + ")" + daoExpr
-					+ ".getById((String)value));");
 		} else if (p.isPrimitive()) {
 			String type = p.getType();
 			if (type.equals("int")) type = Integer.class.getSimpleName();
@@ -670,11 +692,12 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 	protected Set<String> getImports() {
 		Set<String> result = new LinkedHashSet<String>();
 		result.addAll(super.getImports());
-		result.add(ADatob.class.getName());
-		result.add(AEntity.class.getName());
-		result.add(AStructure.class.getName());
-		result.add(AUser.class.getName());
-		result.add(EntityDoesNotExistException.class.getName());
+		if (isLegacyBean(bean)) {
+			result.add(ADatob.class.getName());
+			result.add(AEntity.class.getName());
+			result.add(AStructure.class.getName());
+			result.add(AUser.class.getName());
+		}
 		result.add(Str.class.getName());
 		return result;
 	}
