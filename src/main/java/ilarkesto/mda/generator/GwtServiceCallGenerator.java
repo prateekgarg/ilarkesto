@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 public class GwtServiceCallGenerator extends AJavaClassGenerator implements NodeTypes {
 
 	private Node call;
@@ -68,11 +70,14 @@ public class GwtServiceCallGenerator extends AJavaClassGenerator implements Node
 			callParameters.append(parameter.getValue()).append(", ");
 		}
 
-		out.beginMethod("void", "execute", Arrays.asList("Runnable returnHandler"));
-		out.statement("serviceCaller.onServiceCall(this)");
-		out.statement("serviceCaller.getService()." + Str.lowercaseFirstLetter(call.getValue())
-				+ "(serviceCaller.getConversationNumber(), " + callParameters
-				+ "new DefaultCallback(this, returnHandler))");
+		out.annotationOverride();
+		out.beginMethod(
+			"void",
+			"onExecute",
+			Arrays.asList("int conversationNumber", AsyncCallback.class.getName()
+					+ "<scrum.client.DataTransferObject> callback"));
+		out.statement("getService()." + Str.lowercaseFirstLetter(call.getValue()) + "(conversationNumber, "
+				+ callParameters + "callback)");
 		out.endMethod();
 
 		Node dispensable = call.getChildByType(Dispensable);

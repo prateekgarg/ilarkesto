@@ -4,6 +4,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -52,6 +53,20 @@ public class ErrorWrapper implements Serializable, IsSerializable {
 		if (!(obj instanceof ErrorWrapper)) return false;
 		ErrorWrapper other = (ErrorWrapper) obj;
 		return name.equals(other.name) && Utl.equals(message, other.message);
+	}
+
+	public static String toString(Collection<ErrorWrapper> errors) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (ErrorWrapper error : errors) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append(error);
+		}
+		return sb.toString();
 	}
 
 }

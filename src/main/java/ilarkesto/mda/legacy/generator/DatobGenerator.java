@@ -622,7 +622,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln();
 		ln("    protected final void update" + pNameUpper + "(Object value) {");
 		if (p.isReference()) {
-			ln("        Collection<String> ids = (Collection<String>) value;");
+			ln("        " + getFieldType(p) + " ids = (" + getFieldType(p) + ") value;");
 			if (isLegacyBean(bean)) {
 				String daoExpr = p.getDaoName();
 				if (p.isAbstract()) {
@@ -632,8 +632,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("        set" + Str.uppercaseFirstLetter(p.getName()) + "((" + p.getCollectionType() + ") "
 						+ daoExpr + ".getByIds" + suffix + "(ids));");
 			} else {
-				ln("        set" + Str.uppercaseFirstLetter(p.getName()) + "((" + p.getCollectionType()
-						+ ") entityResolver.list(ids));");
+				ln("        " + getFieldName(p), "=", "ids;");
 			}
 		} else {
 			ln("        set" + Str.uppercaseFirstLetter(p.getName()) + "((" + p.getType() + ") value);");
@@ -697,8 +696,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("        set" + pNameUpper + "(value == null ? null : (" + p.getType() + ")" + daoExpr
 						+ ".getById((String)value));");
 			} else {
-				ln("        set" + pNameUpper + "(value == null ? null : (" + p.getType()
-						+ ") entityResolver.get((String)value));");
+				ln("        " + p.getName() + "Id = (String)value;");
+				ln("        " + p.getName() + "Cache = null;");
 			}
 		} else if (p.isPrimitive()) {
 			String type = p.getType();

@@ -183,7 +183,7 @@ public abstract class AClassGenerator {
 		return this;
 	}
 
-	public AClassGenerator lnOverride() {
+	public AClassGenerator annotationOverride() {
 		return ln("    @Override");
 	}
 

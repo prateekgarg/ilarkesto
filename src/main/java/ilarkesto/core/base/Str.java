@@ -14,8 +14,11 @@
  */
 package ilarkesto.core.base;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +33,12 @@ public class Str {
 	public static final char sz = '\u00DF';
 
 	public static final char EUR = '\u0080';
+
+	public static List<String> parseCommaSeparatedString(String s) {
+		List<String> result = new ArrayList<String>();
+		if (s == null) return result;
+		return Arrays.asList(s.split(","));
+	}
 
 	public static String toFileCompatibleString(String s) {
 		s = s.replace('/', '-');

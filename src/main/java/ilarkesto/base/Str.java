@@ -418,15 +418,6 @@ public class Str extends ilarkesto.core.base.Str {
 		return s1.equals(s2);
 	}
 
-	public static Collection<String> parseCommaSeparatedString(String s) {
-		Collection<String> result = new ArrayList<String>();
-		if (s == null) return result;
-		StringTokenizer tokenizer = new StringTokenizer(s, ",");
-		while (tokenizer.hasMoreTokens())
-			result.add(tokenizer.nextToken().trim());
-		return result;
-	}
-
 	public static String decodeQuotedPrintable(String s) {
 		if (s == null) return null;
 

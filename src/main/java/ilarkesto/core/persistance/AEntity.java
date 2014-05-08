@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.persistance;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.base.Uuid;
 import ilarkesto.core.time.DateAndTime;
@@ -72,8 +73,17 @@ public class AEntity implements Serializable, TransferableEntity {
 		return id;
 	}
 
+	public final boolean isId(String id) {
+		return getId().equals(id);
+	}
+
 	public void storeProperties(Map properties) {
-		throw new RuntimeException(getClass().getName() + ".storeProperties(Map) not implemented!");
+		properties.put("@type", Str.getSimpleName(getClass()));
+		properties.put("id", getId());
+	}
+
+	public void updateProperties(Map<?, ?> properties) {
+		if (!isId((String) properties.get("id"))) throw new IllegalArgumentException("properties from other entity");
 	}
 
 	@Override

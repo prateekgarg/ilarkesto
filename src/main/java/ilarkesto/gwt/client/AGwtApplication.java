@@ -16,16 +16,21 @@ package ilarkesto.gwt.client;
 
 import ilarkesto.core.logging.Log;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 
-public abstract class AGwtApplication implements EntryPoint {
+public abstract class AGwtApplication<D extends ADataTransferObject> implements EntryPoint {
 
-	private static final Log log = Log.get(AGwtApplication.class);
+	protected final Log log = Log.get(getClass());
 
 	private static AGwtApplication singleton;
+	protected int conversationNumber = -1;
 
 	public abstract void handleServiceCallError(String serviceCall, List<ErrorWrapper> errors);
 
@@ -44,6 +49,45 @@ public abstract class AGwtApplication implements EntryPoint {
 				handleUnexpectedError(ex);
 			}
 		});
+	}
+
+	final void serverDataReceived(D data) {
+		if (data.conversationNumber != null) {
+			log.info("conversatioNumber received:", data.conversationNumber);
+			conversationNumber = data.conversationNumber;
+		}
+		if (data.containsDeletedEntities()) {
+			Set<String> entityIds = data.getDeletedEntities();
+			log.debug("entity deletions received:", entityIds);
+			onEntityDeletionsReceived(entityIds);
+		}
+		if (data.containsEntities()) {
+			Collection<Map<String, Serializable>> entities = data.getEntities();
+			log.debug("entities received:", entities);
+			onEntitiesReceived(entities);
+		}
+		if (data.isUserSet()) {
+			String userId = data.getUserId();
+			log.info("user-id received:", userId);
+			onUserIdReceived(userId);
+		}
+		onServerDataReceived(data);
+	}
+
+	protected void onEntitiesReceived(Collection<Map<String, Serializable>> entities) {}
+
+	protected void onEntityDeletionsReceived(Set<String> entityIds) {}
+
+	protected void onUserIdReceived(String userId) {}
+
+	protected void onServerDataReceived(D data) {}
+
+	public final int getConversationNumber() {
+		return conversationNumber;
+	}
+
+	public final void resetConversation() {
+		conversationNumber = -1;
 	}
 
 	@Override

@@ -59,6 +59,7 @@ public abstract class AWebSession implements Comparable<AWebSession> {
 	public synchronized AGwtConversation getGwtConversation(int conversationNumber) {
 		if (conversationNumber == -1) {
 			AGwtConversation conversation = createGwtConversation();
+			if (conversation == null) throw new IllegalStateException("createGwtConversation() == null");
 			gwtConversations.add(conversation);
 			return conversation;
 		}

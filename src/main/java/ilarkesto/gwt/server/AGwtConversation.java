@@ -99,7 +99,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	public synchronized void sendToClient(E entity) {
 		if (entity == null) return;
 
-		if (!transactionService.isPersistent(entity.getId())) {
+		if (transactionService != null && !transactionService.isPersistent(entity.getId())) {
 			getNextData().addDeletedEntity(entity.getId());
 			return;
 		}
