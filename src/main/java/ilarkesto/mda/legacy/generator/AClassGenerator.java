@@ -66,6 +66,7 @@ public abstract class AClassGenerator {
 		}
 
 		ln();
+		writeBeforeClassDefinition();
 		s("public ");
 		if (!isInterface() && isAbstract()) {
 			s("abstract ");
@@ -120,6 +121,8 @@ public abstract class AClassGenerator {
 		LOG.info("Writing:", file.getPath());
 		IO.writeFile(file, code, IO.UTF_8);
 	}
+
+	protected void writeBeforeClassDefinition() {}
 
 	private boolean isSame(String a, String b) {
 		if (!a.equals(b)) return false;
@@ -182,6 +185,19 @@ public abstract class AClassGenerator {
 
 	public AClassGenerator lnOverride() {
 		return ln("    @Override");
+	}
+
+	public AClassGenerator annotation(String type, String... parameters) {
+		s("@" + type);
+		if (parameters != null) {
+			s("(");
+			for (String parameter : parameters) {
+				s("\"" + parameter + "\"");
+			}
+			s(")");
+		}
+		ln();
+		return this;
 	}
 
 	public AClassGenerator ln(String... ss) {

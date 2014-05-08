@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public abstract class AWebSession implements Comparable<AWebSession> {
 
-	private static final Log LOG = Log.get(AWebSession.class);
+	protected final Log log = Log.get(getClass());
 	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(30);
 
 	private Context context;
@@ -144,7 +144,7 @@ public abstract class AWebSession implements Comparable<AWebSession> {
 	}
 
 	public final void invalidate() {
-		LOG.info("Invalidating session:", this);
+		log.info("Invalidating session:", this);
 		sessionInvalidated = true;
 		onInvalidate();
 	}

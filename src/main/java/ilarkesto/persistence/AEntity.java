@@ -17,13 +17,14 @@ package ilarkesto.persistence;
 import ilarkesto.auth.AUser;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Utl;
+import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.id.Identifiable;
 
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class AEntity extends ADatob implements Identifiable, Iconized {
+public abstract class AEntity extends ADatob implements Identifiable, Iconized, TransferableEntity {
 
 	private static final long serialVersionUID = 1L;
 
@@ -67,6 +68,7 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized {
 		this.id = id;
 	}
 
+	@Override
 	public final DateAndTime getLastModified() {
 		return lastModified;
 	}

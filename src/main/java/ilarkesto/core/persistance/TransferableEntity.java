@@ -14,19 +14,16 @@
  */
 package ilarkesto.core.persistance;
 
-import java.util.Collection;
-import java.util.List;
+import ilarkesto.core.time.DateAndTime;
 
-public abstract class AEntityResolver {
+import java.util.Map;
 
-	public abstract AEntity get(String id);
+public interface TransferableEntity {
 
-	public abstract List<AEntity> list(Collection<String> ids);
+	String getId();
 
-	public abstract AEntity get(AEntityQuery query);
+	DateAndTime getLastModified();
 
-	public abstract List<AEntity> list(AEntityQuery query);
-
-	public abstract void persist(AEntity entity);
+	Map createPropertiesMap();
 
 }

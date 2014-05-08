@@ -31,9 +31,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 
-	private static final Log LOG = Log.get(AGwtServiceImpl.class);
-
-	protected abstract Class<? extends AWebApplication> getWebApplicationClass();
+	protected static final Log log = Log.get(AGwtServiceImpl.class);
 
 	protected abstract AWebApplication getWebApplication();
 
@@ -45,14 +43,14 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 
 	@Override
 	protected void doUnexpectedFailure(Throwable t) {
-		LOG.error("Service execution failed:", t);
+		log.error("Service execution failed:", t);
 		// getSession().getGwtConversation().getNextData().errors.add("Server error:" +
 		// Str.getRootCauseMessage(t));
 		super.doUnexpectedFailure(t);
 	}
 
 	protected final void handleServiceMethodException(int conversationNumber, String method, Throwable t) {
-		LOG.info("Service method failed:", method, "->", t);
+		log.info("Service method failed:", method, "->", t);
 
 		// reset modified entities
 		getWebApplication().getTransactionService().cancel();
@@ -62,7 +60,7 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 			AGwtConversation conversation = getSession().getGwtConversation(conversationNumber);
 			conversation.getNextData().addError(new ErrorWrapper(t));
 		} catch (Throwable ex) {
-			LOG.info(ex);
+			log.info(ex);
 			return;
 		}
 	}

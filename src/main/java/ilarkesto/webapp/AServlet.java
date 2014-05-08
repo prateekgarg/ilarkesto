@@ -31,12 +31,20 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 
 	protected A webApplication;
 
+	protected boolean isAuthorized(RequestWrapper<S> req) {
+		return true;
+	}
+
 	protected void onGet(RequestWrapper<S> req) throws IOException {
 		req.sendErrorNoContent();
 	}
 
 	protected void onPost(RequestWrapper<S> req) throws IOException {
 		req.sendErrorNoContent();
+	}
+
+	protected String getAuthorizationUrl() {
+		return null;
 	}
 
 	protected void onInit(ServletConfig config) {}
@@ -46,6 +54,10 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 			throws ServletException, IOException {
 		RequestWrapper<S> req = new RequestWrapper<S>(httpRequest, httpResponse);
 		if (!init(req)) return;
+		if (!isAuthorized(req)) {
+			onNotAuthorized(req);
+			return;
+		}
 		try {
 			onGet(req);
 		} catch (Throwable ex) {
@@ -58,11 +70,24 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 			throws ServletException, IOException {
 		RequestWrapper<S> req = new RequestWrapper<S>(httpRequest, httpResponse);
 		if (!init(req)) return;
+		if (!isAuthorized(req)) {
+			onNotAuthorized(req);
+			return;
+		}
 		try {
 			onPost(req);
 		} catch (Throwable ex) {
 			handleError(ex, req);
 		}
+	}
+
+	protected void onNotAuthorized(RequestWrapper<S> req) {
+		String url = getAuthorizationUrl();
+		if (url == null) {
+			req.sendErrorForbidden();
+			return;
+		}
+		req.sendRedirect(url);
 	}
 
 	private boolean init(RequestWrapper<S> req) throws IOException {

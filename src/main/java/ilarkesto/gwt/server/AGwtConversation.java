@@ -18,10 +18,10 @@ import ilarkesto.base.PermissionDeniedException;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.gwt.client.ADataTransferObject;
-import ilarkesto.persistence.AEntity;
 import ilarkesto.persistence.TransactionService;
 import ilarkesto.webapp.AWebSession;
 
@@ -32,7 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class AGwtConversation<S extends AWebSession> implements Comparable<AGwtConversation> {
+public abstract class AGwtConversation<S extends AWebSession, E extends TransferableEntity> implements
+		Comparable<AGwtConversation> {
 
 	private static final Log LOG = Log.get(AGwtConversation.class);
 	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(2);
@@ -44,7 +45,7 @@ public abstract class AGwtConversation<S extends AWebSession> implements Compara
 	 */
 	private ADataTransferObject nextData;
 	private Object nextDataLock = new Object();
-	private Map<AEntity, DateAndTime> remoteEntityModificationTimes = new HashMap<AEntity, DateAndTime>();
+	private Map<E, DateAndTime> remoteEntityModificationTimes = new HashMap<E, DateAndTime>();
 
 	private S session;
 	private int number;
@@ -75,27 +76,27 @@ public abstract class AGwtConversation<S extends AWebSession> implements Compara
 		remoteEntityModificationTimes.clear();
 	}
 
-	public final void clearRemoteEntitiesByType(Class<? extends AEntity> type) {
-		List<AEntity> toRemove = new ArrayList<AEntity>();
-		for (AEntity entity : remoteEntityModificationTimes.keySet()) {
+	public final void clearRemoteEntitiesByType(Class<? extends E> type) {
+		List<E> toRemove = new ArrayList<E>();
+		for (E entity : remoteEntityModificationTimes.keySet()) {
 			if (entity.getClass().equals(type)) toRemove.add(entity);
 		}
-		for (AEntity entity : toRemove) {
+		for (E entity : toRemove) {
 			remoteEntityModificationTimes.remove(entity);
 		}
 	}
 
-	protected boolean isEntityVisible(AEntity entity) {
+	protected boolean isEntityVisible(E entity) {
 		return true;
 	}
 
-	protected void filterEntityProperties(AEntity entity, Map propertiesMap) {}
+	protected void filterEntityProperties(E entity, Map propertiesMap) {}
 
-	public synchronized boolean isAvailableOnClient(AEntity entity) {
+	public synchronized boolean isAvailableOnClient(E entity) {
 		return remoteEntityModificationTimes.containsKey(entity);
 	}
 
-	public synchronized void sendToClient(AEntity entity) {
+	public synchronized void sendToClient(E entity) {
 		if (entity == null) return;
 
 		if (!transactionService.isPersistent(entity.getId())) {
@@ -121,9 +122,9 @@ public abstract class AGwtConversation<S extends AWebSession> implements Compara
 		LOG.debug("Sending", Utl.toStringWithType(entity), "to", this);
 	}
 
-	public final void sendToClient(Collection<? extends AEntity> entities) {
+	public final void sendToClient(Collection<? extends E> entities) {
 		if (entities == null) return;
-		for (AEntity entity : entities)
+		for (E entity : entities)
 			sendToClient(entity);
 	}
 

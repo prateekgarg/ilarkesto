@@ -16,30 +16,31 @@ package ilarkesto.core.persistance;
 
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.base.Uuid;
-import ilarkesto.core.time.Tm;
+import ilarkesto.core.time.DateAndTime;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class AEntity implements Serializable {
+public class AEntity implements Serializable, TransferableEntity {
 
 	public static transient AEntityResolver entityResolver;
 
 	private String id;
-	private long lastModified;
+	private DateAndTime lastModified;
 
 	public final void persist() {
 		ensureIntegrity();
-		entityResolver.save(this);
+		entityResolver.persist(this);
 	}
 
 	/**
 	 * Method gets called bevore persiting and after loading
 	 */
-	protected void ensureIntegrity() {}
+	public void ensureIntegrity() {}
 
 	/**
 	 * Gets called when the master entity is deleted.
@@ -49,7 +50,7 @@ public class AEntity implements Serializable {
 	}
 
 	public final void updateLastModified() {
-		lastModified = Tm.getCurrentTimeMillis();
+		lastModified = DateAndTime.now();
 	}
 
 	protected final void fireModified(String comment) {
@@ -60,10 +61,12 @@ public class AEntity implements Serializable {
 		return search.matches(toString());
 	}
 
-	public final long getLastModified() {
+	@Override
+	public final DateAndTime getLastModified() {
 		return lastModified;
 	}
 
+	@Override
 	public final String getId() {
 		if (id == null) id = Uuid.create();
 		return id;
@@ -71,6 +74,13 @@ public class AEntity implements Serializable {
 
 	public void storeProperties(Map properties) {
 		throw new RuntimeException(getClass().getName() + ".storeProperties(Map) not implemented!");
+	}
+
+	@Override
+	public final Map createPropertiesMap() {
+		Map properties = new HashMap();
+		storeProperties(properties);
+		return properties;
 	}
 
 	@Override
