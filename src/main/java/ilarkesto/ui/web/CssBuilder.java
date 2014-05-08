@@ -17,16 +17,16 @@ package ilarkesto.ui.web;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class CssRenderer {
+public class CssBuilder {
 
 	private PrintWriter out;
 	private Style style;
 
-	public CssRenderer() {
+	public CssBuilder() {
 		this(new PrintWriter(new StringWriter()));
 	}
 
-	public CssRenderer(PrintWriter out) {
+	public CssBuilder(PrintWriter out) {
 		this.out = out;
 	}
 

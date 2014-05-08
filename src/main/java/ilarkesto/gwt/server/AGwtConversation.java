@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class AGwtConversation implements Comparable<AGwtConversation> {
+public abstract class AGwtConversation<S extends AWebSession> implements Comparable<AGwtConversation> {
 
 	private static final Log LOG = Log.get(AGwtConversation.class);
 	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(2);
@@ -46,13 +46,13 @@ public abstract class AGwtConversation implements Comparable<AGwtConversation> {
 	private Object nextDataLock = new Object();
 	private Map<AEntity, DateAndTime> remoteEntityModificationTimes = new HashMap<AEntity, DateAndTime>();
 
-	private AWebSession session;
+	private S session;
 	private int number;
 	private DateAndTime lastTouched;
 
 	protected abstract ADataTransferObject createDataTransferObject();
 
-	public AGwtConversation(AWebSession session, int number) {
+	public AGwtConversation(S session, int number) {
 		super();
 		this.session = session;
 		this.number = number;
@@ -140,7 +140,7 @@ public abstract class AGwtConversation implements Comparable<AGwtConversation> {
 		return nextData;
 	}
 
-	public AWebSession getSession() {
+	public S getSession() {
 		return session;
 	}
 

@@ -15,7 +15,7 @@
 package ilarkesto.ui.web.jqm;
 
 import ilarkesto.integration.jquery.JqueryMobileDownloader;
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class JqmHtmlPage extends AContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html, String id) {
+	protected void renderHeader(HtmlBuilder html, String id) {
 		html.startHTML();
 		html.startHEAD(title, language);
 
@@ -85,21 +85,21 @@ public class JqmHtmlPage extends AContainerElement {
 	}
 
 	@Override
-	protected void renderFooter(HtmlRenderer html) {
+	protected void renderFooter(HtmlBuilder html) {
 		html.endBODY();
 		html.endHTML();
 	}
 
 	public void write(PrintWriter out, String encoding) {
-		HtmlRenderer html = new HtmlRenderer(out, encoding);
+		HtmlBuilder html = new HtmlBuilder(out, encoding);
 		render(html);
 		html.flush();
 	}
 
 	public void write(File file, String encoding) {
-		HtmlRenderer html;
+		HtmlBuilder html;
 		try {
-			html = new HtmlRenderer(file, encoding);
+			html = new HtmlBuilder(file, encoding);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

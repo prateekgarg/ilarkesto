@@ -12,26 +12,37 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.ui.web.jqm;
+package ilarkesto.ui.web;
 
-import ilarkesto.ui.web.HtmlBuilder;
+public abstract class AHtmlPageBuilder {
 
-public class Textarea extends AFieldElement {
+	protected abstract void bodyContent(HtmlBuilder html);
 
-	private String value;
+	protected abstract void headerContent(HtmlBuilder html);
 
-	public Textarea(JqmHtmlPage htmlPage, String id, String label) {
-		super(htmlPage, id, label);
+	protected abstract String getTitle();
+
+	protected abstract String getLanguage();
+
+	public HtmlBuilder build(HtmlBuilder html) {
+		html.startHTMLstandard();
+		html.startHEAD(getTitle(), getLanguage());
+		headerContent(html);
+		html.endHEAD();
+		html.startBODY(getBodyId());
+		bodyContent(html);
+		html.endBODY();
+		html.endHTML();
+		return html;
+	}
+
+	protected String getBodyId() {
+		return null;
 	}
 
 	@Override
-	protected void renderField(HtmlBuilder html, String id) {
-		html.TEXTAREA(name, id, value);
-	}
-
-	public Textarea setValue(String value) {
-		this.value = value;
-		return this;
+	public String toString() {
+		return build(new HtmlBuilder()).toString();
 	}
 
 }

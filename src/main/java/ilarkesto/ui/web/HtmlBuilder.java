@@ -31,7 +31,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
-public class HtmlRenderer {
+public class HtmlBuilder {
 
 	private PrintWriter out;
 	private String encoding = IO.UTF_8;
@@ -42,26 +42,26 @@ public class HtmlRenderer {
 	private String startingTag;
 	private int depth;
 
-	public HtmlRenderer() {
+	public HtmlBuilder() {
 		buffer = new StringWriter();
 		out = new PrintWriter(buffer);
 	}
 
-	public HtmlRenderer(PrintWriter out, String encoding) {
+	public HtmlBuilder(PrintWriter out, String encoding) {
 		this.encoding = encoding;
 		this.out = out;
 	}
 
-	public HtmlRenderer(OutputStream out, String encoding) throws UnsupportedEncodingException {
+	public HtmlBuilder(OutputStream out, String encoding) throws UnsupportedEncodingException {
 		this(new PrintWriter(new OutputStreamWriter(out, encoding)), encoding);
 	}
 
-	public HtmlRenderer(FileWriter fileWriter, String encoding) {
+	public HtmlBuilder(FileWriter fileWriter, String encoding) {
 		this(new PrintWriter(fileWriter), encoding);
 		this.fileWriter = fileWriter;
 	}
 
-	public HtmlRenderer(File file, String encoding) throws IOException {
+	public HtmlBuilder(File file, String encoding) throws IOException {
 		this(new FileWriter(file), encoding);
 	}
 
@@ -97,6 +97,20 @@ public class HtmlRenderer {
 		SCRIPTjavascript("http://api.flattr.com/button/load.js", null);
 	}
 
+	// --- NOSCRIPT ---
+
+	private static final String NOSCRIPT = "noscript";
+
+	public void NOSCRIPT(String text) {
+		startTag(NOSCRIPT);
+		text(text);
+		endTag(NOSCRIPT);
+	}
+
+	public void NOSCRIPTdefault() {
+		NOSCRIPT("Your web browser must have JavaScript enabled in order for this application to display correctly.");
+	}
+
 	// --- IFRAME ---
 
 	private static final String IFRAME = "iframe";
@@ -105,6 +119,16 @@ public class HtmlRenderer {
 		startTag(IFRAME).set("src", src).setId(id).set("frameborder", 0).setWidth("100%").set("height", height);
 		A(src, src);
 		endTag(IFRAME);
+	}
+
+	public void IFRAMEhidden(String src, String id) {
+		startTag(IFRAME).set("src", src).setId(id).set("tabIndex", -1)
+				.setStyle("position:absolute", "width:0", "height:0", "border:0");
+		endTag(IFRAME);
+	}
+
+	public void IFRAMEgwthistory() {
+		IFRAMEhidden("javascript:''", "__gwt_historyFrame");
 	}
 
 	// --- TEXTAREA ---
@@ -588,7 +612,11 @@ public class HtmlRenderer {
 	}
 
 	public Tag startBODY() {
-		return startTag(BODY, true).setId("body");
+		return startBODY("body");
+	}
+
+	public Tag startBODY(String id) {
+		return startTag(BODY, true).setId(id);
 	}
 
 	public void endBODY() {
@@ -625,10 +653,10 @@ public class HtmlRenderer {
 
 	private static final String STYLE = "style";
 
-	public CssRenderer startSTYLEcss() {
+	public CssBuilder startSTYLEcss() {
 		startTag(STYLE).set("type", "text/css");
 		closeStartingTag();
-		CssRenderer css = new CssRenderer(out);
+		CssBuilder css = new CssBuilder(out);
 		return css;
 	}
 

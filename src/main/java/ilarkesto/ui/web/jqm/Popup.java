@@ -14,8 +14,8 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.ui.web.HtmlBuilder;
+import ilarkesto.ui.web.HtmlBuilder.Tag;
 
 public class Popup extends Content {
 
@@ -24,7 +24,7 @@ public class Popup extends Content {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html, String id) {
+	protected void renderHeader(HtmlBuilder html, String id) {
 		Tag div = html.startDIV().setId(id);
 		div.setId(id);
 		div.setClass("ui-content");

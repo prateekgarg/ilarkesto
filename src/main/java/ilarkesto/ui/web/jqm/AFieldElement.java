@@ -14,7 +14,7 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlBuilder;
 
 public abstract class AFieldElement extends AElement {
 
@@ -27,10 +27,10 @@ public abstract class AFieldElement extends AElement {
 		this.label = label;
 	}
 
-	protected abstract void renderField(HtmlRenderer html, String id);
+	protected abstract void renderField(HtmlBuilder html, String id);
 
 	@Override
-	protected void render(HtmlRenderer html, String id) {
+	protected void render(HtmlBuilder html, String id) {
 		if (id == null) id = getId();
 
 		String fieldId = id + "_field";

@@ -14,8 +14,8 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.ui.web.HtmlBuilder;
+import ilarkesto.ui.web.HtmlBuilder.Tag;
 
 public class Header extends AHtmlContainerElement {
 
@@ -31,7 +31,7 @@ public class Header extends AHtmlContainerElement {
 	}
 
 	public void addHomeLink(String href) {
-		HtmlRenderer html = addHtmlRenderer();
+		HtmlBuilder html = addHtmlRenderer();
 		Tag a = html.startA(href);
 		a.set("data-icon", "home");
 		a.set("data-iconpos", "notext");
@@ -41,7 +41,7 @@ public class Header extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html, String id) {
+	protected void renderHeader(HtmlBuilder html, String id) {
 		Tag div = html.startDIV().setId(id);
 		div.setDataRole("header");
 		if (theme != null) div.set("data-theme", theme.getName());

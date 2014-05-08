@@ -14,7 +14,7 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,9 @@ public abstract class AContainerElement extends AElement {
 
 	private List<AElement> children = new ArrayList<AElement>();
 
-	protected abstract void renderHeader(HtmlRenderer html, String id);
+	protected abstract void renderHeader(HtmlBuilder html, String id);
 
-	protected void renderFooter(HtmlRenderer html) {
+	protected void renderFooter(HtmlBuilder html) {
 		html.endDIV();
 	}
 
@@ -39,7 +39,7 @@ public abstract class AContainerElement extends AElement {
 	}
 
 	@Override
-	protected final void render(HtmlRenderer html, String id) {
+	protected final void render(HtmlBuilder html, String id) {
 		renderHeader(html, id);
 		for (AElement child : children) {
 			child.render(html);

@@ -15,8 +15,8 @@
 package ilarkesto.ui.web.jqm;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.ui.web.HtmlBuilder;
+import ilarkesto.ui.web.HtmlBuilder.Tag;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class Select extends AFieldElement {
 	}
 
 	@Override
-	protected void renderField(HtmlRenderer html, String id) {
+	protected void renderField(HtmlBuilder html, String id) {
 		Tag select = html.startSELECT(name);
 		select.setId(id);
 		select.setDataRole(dataRole);

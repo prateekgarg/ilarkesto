@@ -14,7 +14,7 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlBuilder;
 
 public abstract class AElement {
 
@@ -23,9 +23,9 @@ public abstract class AElement {
 	private JqmHtmlPage htmlPage;
 	private String id;
 
-	protected abstract void render(HtmlRenderer html, String id);
+	protected abstract void render(HtmlBuilder html, String id);
 
-	public final void render(HtmlRenderer html) {
+	public final void render(HtmlBuilder html) {
 		render(html, id);
 	}
 

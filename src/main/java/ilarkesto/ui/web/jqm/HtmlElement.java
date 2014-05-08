@@ -14,24 +14,24 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlBuilder;
 
 public class HtmlElement extends AElement {
 
-	private HtmlRenderer renderer;
+	private HtmlBuilder renderer;
 
 	public HtmlElement(JqmHtmlPage htmlPage) {
 		super(htmlPage);
-		renderer = new HtmlRenderer();
+		renderer = new HtmlBuilder();
 		// renderer.setIndentationDepth(indentationDepth);
 	}
 
-	public HtmlRenderer getRenderer() {
+	public HtmlBuilder getRenderer() {
 		return renderer;
 	}
 
 	@Override
-	protected void render(HtmlRenderer html, String id) {
+	protected void render(HtmlBuilder html, String id) {
 		if (id == null) {
 			html.html(getRenderer().toString());
 			return;

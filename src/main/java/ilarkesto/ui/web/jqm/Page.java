@@ -14,8 +14,8 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.ui.web.HtmlBuilder;
+import ilarkesto.ui.web.HtmlBuilder.Tag;
 
 public class Page extends AHtmlContainerElement {
 
@@ -43,7 +43,7 @@ public class Page extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html, String id) {
+	protected void renderHeader(HtmlBuilder html, String id) {
 		html.nl();
 		Tag div = html.startDIV().setId(id);
 		div.setDataRole("page");

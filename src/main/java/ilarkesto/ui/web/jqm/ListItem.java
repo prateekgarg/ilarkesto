@@ -14,8 +14,8 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.ui.web.HtmlBuilder;
+import ilarkesto.ui.web.HtmlBuilder.Tag;
 
 public class ListItem extends AHtmlContainerElement {
 
@@ -62,7 +62,7 @@ public class ListItem extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html, String id) {
+	protected void renderHeader(HtmlBuilder html, String id) {
 		html.startLI().setId(id).setDataRole(dataRole);
 		if (linkHref != null) {
 			Tag a = html.startA(linkHref);
@@ -72,7 +72,7 @@ public class ListItem extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderFooter(HtmlRenderer html) {
+	protected void renderFooter(HtmlBuilder html) {
 		if (linkHref != null) html.endA();
 		html.endLI();
 	}

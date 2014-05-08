@@ -14,8 +14,8 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.ui.web.HtmlBuilder;
+import ilarkesto.ui.web.HtmlBuilder.Tag;
 
 public class FlipToggleSwitch extends AFieldElement {
 
@@ -30,7 +30,7 @@ public class FlipToggleSwitch extends AFieldElement {
 	}
 
 	@Override
-	protected void renderField(HtmlRenderer html, String id) {
+	protected void renderField(HtmlBuilder html, String id) {
 		Tag select = html.startSELECT(name);
 		select.setId(id);
 		select.setDataRole("slider");

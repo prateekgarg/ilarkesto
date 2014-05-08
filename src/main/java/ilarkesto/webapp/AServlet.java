@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public abstract class AServlet<A extends AWebApplication, S extends AWebSession> extends HttpServlet {
 
-	private static Log log = Log.get(AServlet.class);
+	protected final Log log = Log.get(getClass());
 
 	protected A webApplication;
 

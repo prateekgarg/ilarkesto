@@ -14,8 +14,8 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.ui.web.HtmlBuilder;
+import ilarkesto.ui.web.HtmlBuilder.Tag;
 
 public abstract class AHtmlContainerElement extends AContainerElement {
 
@@ -33,7 +33,7 @@ public abstract class AHtmlContainerElement extends AContainerElement {
 
 	private void addLinkButton(String href, String text, String id, String target, DataIcon icon, Theme theme,
 			String dataRel) {
-		HtmlRenderer html = addHtmlRenderer();
+		HtmlBuilder html = addHtmlRenderer();
 		Tag a = html.startA(href);
 		a.setId(id);
 		a.setDataRole("button");
@@ -55,7 +55,7 @@ public abstract class AHtmlContainerElement extends AContainerElement {
 		return addChild(new HtmlElement(getHtmlPage()));
 	}
 
-	public HtmlRenderer addHtmlRenderer() {
+	public HtmlBuilder addHtmlRenderer() {
 		return addHtml().getRenderer();
 	}
 

@@ -15,8 +15,8 @@
 package ilarkesto.ui.web.jqm;
 
 import ilarkesto.base.Url;
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.ui.web.HtmlBuilder;
+import ilarkesto.ui.web.HtmlBuilder.Tag;
 
 public class Form extends AHtmlContainerElement {
 
@@ -39,7 +39,7 @@ public class Form extends AHtmlContainerElement {
 	}
 
 	public void addSubmitButton(String label, Theme theme) {
-		HtmlRenderer html = addHtmlRenderer();
+		HtmlBuilder html = addHtmlRenderer();
 		Tag input = html.startTag("input", true).set("type", "submit");
 		input.set("name", name);
 		input.setValue(label);
@@ -68,7 +68,7 @@ public class Form extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html, String id) {
+	protected void renderHeader(HtmlBuilder html, String id) {
 		Tag form = html.startFORM(new Url(action), method, name, false).setId(id);
 		form.setId(id);
 		form.set("data-ajax", ajax);
@@ -76,7 +76,7 @@ public class Form extends AHtmlContainerElement {
 	}
 
 	@Override
-	protected void renderFooter(HtmlRenderer html) {
+	protected void renderFooter(HtmlBuilder html) {
 		html.endFIELDSET();
 		html.endFORM();
 	}

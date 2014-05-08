@@ -14,8 +14,8 @@
  */
 package ilarkesto.ui.web.jqm;
 
-import ilarkesto.ui.web.HtmlRenderer;
-import ilarkesto.ui.web.HtmlRenderer.Tag;
+import ilarkesto.ui.web.HtmlBuilder;
+import ilarkesto.ui.web.HtmlBuilder.Tag;
 
 public class Listview extends AContainerElement {
 
@@ -62,7 +62,7 @@ public class Listview extends AContainerElement {
 	}
 
 	@Override
-	protected void renderHeader(HtmlRenderer html, String id) {
+	protected void renderHeader(HtmlBuilder html, String id) {
 		Tag ul = html.startUL().setId(id);
 		ul.setDataRole("listview");
 		ul.set("data-inset", dataInset);
@@ -71,7 +71,7 @@ public class Listview extends AContainerElement {
 	}
 
 	@Override
-	protected void renderFooter(HtmlRenderer html) {
+	protected void renderFooter(HtmlBuilder html) {
 		html.endUL();
 	}
 
