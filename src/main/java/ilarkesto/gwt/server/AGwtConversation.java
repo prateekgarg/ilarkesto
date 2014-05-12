@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class AGwtConversation<S extends AWebSession, E extends TransferableEntity> implements
@@ -105,6 +106,8 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		}
 
 		if (!isEntityVisible(entity)) throw new PermissionDeniedException(entity + " is not visible");
+
+		sendToClient((Set<E>) entity.getSlaves());
 
 		DateAndTime timeRemote = remoteEntityModificationTimes.get(entity);
 		DateAndTime timeLocal = entity.getLastModified();

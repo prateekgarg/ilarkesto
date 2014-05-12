@@ -307,21 +307,23 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		// --- getXxx ---
 		ln();
-		ln("    public final " + p.getType() + " " + getterMethodPrefix + pNameUpper + "() {");
+		String type2 = p.getType();
+		if (!isLegacyBean(bean) && p.isCollection()) type2 = "List<" + p.getContentType() + ">";
+		ln("    public final " + type2 + " " + getterMethodPrefix + pNameUpper + "() {");
 		writeGetXxxContent(p);
 		ln("    }");
 
 		// --- setXxx ---
 		ln();
-		String type = p.getType();
-		if (p.isCollection()) type = "Collection<" + p.getContentType() + ">";
-		ln("    public final void set" + pNameUpper + "(" + type + " " + p.getName() + ") {");
+		String type3 = p.getType();
+		if (p.isCollection()) type3 = "Collection<" + p.getContentType() + ">";
+		ln("    public final void set" + pNameUpper + "(" + type3 + " " + p.getName() + ") {");
 		ln("        " + p.getName() + " = " + "prepare" + pNameUpper + "(" + p.getName() + ");");
 		writeSetXxxContent(p);
 		ln("    }");
 
 		ln();
-		ln("    protected " + type + " prepare" + pNameUpper + "(" + type + " " + p.getName() + ") {");
+		ln("    protected " + type3 + " prepare" + pNameUpper + "(" + type3 + " " + p.getName() + ") {");
 		if (p.isString()) {
 			ln("        // " + p.getName() + " = Str.removeUnreadableChars(" + p.getName() + ");");
 		}
@@ -348,7 +350,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					ln("        return (" + p.getCollectionType() + ") " + daoExpr + ".getByIds" + suffix + "("
 							+ getFieldName(p) + ");");
 				} else {
-					ln("    return (" + p.getCollectionType() + ") entityResolver.list(" + getFieldName(p) + ");");
+					ln("    return (List) entityResolver.list(" + getFieldName(p) + ");");
 				}
 			} else {
 				ln("        if (" + p.getName() + "Cache == null) update" + Str.uppercaseFirstLetter(p.getName())

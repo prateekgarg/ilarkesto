@@ -18,8 +18,6 @@ import ilarkesto.base.Str;
 
 public abstract class PropertyModel {
 
-	public abstract String getNameSingular();
-
 	public abstract String getType();
 
 	public abstract String getContentType();
@@ -134,6 +132,10 @@ public abstract class PropertyModel {
 		return type.substring(idx + 1);
 	}
 
+	public String getNameSingular() {
+		return getName();
+	}
+
 	public final boolean isSearchable() {
 		return searchable;
 	}
@@ -185,6 +187,10 @@ public abstract class PropertyModel {
 	public final PropertyModel setUnique(boolean unique) {
 		this.unique = unique;
 		return this;
+	}
+
+	public boolean isSlave() {
+		return false;
 	}
 
 }

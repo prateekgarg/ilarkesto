@@ -102,7 +102,11 @@ public abstract class AClassGenerator {
 			ln("    public abstract " + declaration + ";");
 		}
 
-		writeContent();
+		try {
+			writeContent();
+		} catch (Exception ex) {
+			throw new RuntimeException("Class generation failed: " + getFile(), ex);
+		}
 
 		ln();
 		ln("}");

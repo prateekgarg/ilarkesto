@@ -21,7 +21,9 @@ import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.id.Identifiable;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class AEntity extends ADatob implements Identifiable, Iconized, TransferableEntity {
@@ -117,6 +119,11 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	protected void storeProperties(Map properties) {
 		properties.put("@type", getDao().getEntityName());
 		properties.put("id", getId());
+	}
+
+	@Override
+	public <E extends TransferableEntity> Set<E> getSlaves() {
+		return Collections.emptySet();
 	}
 
 	@Override

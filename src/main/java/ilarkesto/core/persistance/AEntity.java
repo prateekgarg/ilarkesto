@@ -21,6 +21,7 @@ import ilarkesto.core.time.DateAndTime;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -42,6 +43,10 @@ public class AEntity implements Serializable, TransferableEntity {
 	 * Method gets called bevore persiting and after loading
 	 */
 	public void ensureIntegrity() {}
+
+	public Set<AEntity> getSlaves() {
+		return Collections.emptySet();
+	}
 
 	/**
 	 * Gets called when the master entity is deleted.

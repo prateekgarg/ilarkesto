@@ -83,6 +83,13 @@ public class Str {
 		return false;
 	}
 
+	public static String toUrl(String s) {
+		if (s == null) return null;
+		if (s.contains("://")) return s;
+		if (s.startsWith("mailto:")) return s;
+		return "http://" + s;
+	}
+
 	public static String formatUrlAsLink(String url) {
 		return formatUrlAsLink(url, 50);
 	}
@@ -104,6 +111,7 @@ public class Str {
 	}
 
 	public static String uppercaseFirstLetter(String s) {
+		if (s.isEmpty()) throw new IllegalArgumentException("empty string");
 		StringBuilder sb = new StringBuilder();
 		sb.append(Character.toUpperCase(s.charAt(0)));
 		sb.append(s.substring(1));

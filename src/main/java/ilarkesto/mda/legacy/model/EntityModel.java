@@ -17,7 +17,9 @@ package ilarkesto.mda.legacy.model;
 import ilarkesto.base.Str;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class EntityModel extends DatobModel {
 
@@ -31,6 +33,14 @@ public final class EntityModel extends DatobModel {
 
 	public EntityModel(String name, String packageName) {
 		super(name, packageName);
+	}
+
+	public Set<PropertyModel> getSlaveProperties() {
+		Set<PropertyModel> ret = new LinkedHashSet<PropertyModel>();
+		for (PropertyModel p : getProperties()) {
+			if (p.isSlave()) ret.add(p);
+		}
+		return ret;
 	}
 
 	public boolean isSingleton() {

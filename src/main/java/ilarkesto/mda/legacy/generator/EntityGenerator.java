@@ -123,26 +123,30 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					ln("            }");
 					ln("        });");
 					ln("    }");
-				} else {
-					// if (!p.isCollection()) {
+
+				}
+				if (!p.isUnique()) {
 					ln("    public static List<", bean.getName() + ">",
 						"listBy" + Str.uppercaseFirstLetter(p.getNameSingular()) + "(final " + p.getContentType() + " "
 								+ p.getNameSingular() + ") {");
 					ln("        return new " + queryName + "() {");
 					ln("            @Override");
 					ln("            public boolean matches(" + bean.getName() + " entity) {");
+
 					if (p.isCollection()) {
 						ln("                return entity.contains" + Str.uppercaseFirstLetter(p.getNameSingular())
 								+ "(" + p.getNameSingular() + ");");
-					} else {
+					}
+
+					if (!p.isCollection()) {
 						ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "("
 								+ p.getName() + ");");
 					}
 					ln("            }");
 					ln("        }.list();");
 					ln("    }");
-					// }
 				}
+
 			}
 
 			ln();
@@ -151,6 +155,24 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("        public Class<" + bean.getName() + "> getType() {");
 			ln("            return " + bean.getName() + ".class;");
 			ln("        }");
+			ln("    }");
+
+			ln();
+			annotationOverride();
+			String setClass = "Set<" + ilarkesto.core.persistance.AEntity.class.getName() + ">";
+			ln("    public " + setClass + " getSlaves() {");
+			ln("        " + setClass + " ret = new HashSet<" + ilarkesto.core.persistance.AEntity.class.getName()
+					+ ">();");
+			ln("        ret.addAll(super.getSlaves());");
+			for (PropertyModel p : bean.getSlaveProperties()) {
+				if (p.isCollection()) {
+					ln("        ret.addAll(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
+				}
+				if (!p.isCollection()) {
+					ln("        ret.add(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
+				}
+			}
+			ln("        return ret;");
 			ln("    }");
 		}
 
