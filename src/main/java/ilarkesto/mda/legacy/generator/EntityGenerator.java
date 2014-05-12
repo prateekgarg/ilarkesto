@@ -124,20 +124,24 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					ln("        });");
 					ln("    }");
 				} else {
-					if (!p.isCollection()) {
-						ln("    public static List<",
-							bean.getName() + ">",
-							"listBy" + Str.uppercaseFirstLetter(p.getName()) + "(final " + p.getType() + " "
-									+ p.getName() + ") {");
-						ln("        return new " + queryName + "() {");
-						ln("            @Override");
-						ln("            public boolean matches(" + bean.getName() + " entity) {");
+					// if (!p.isCollection()) {
+					ln("    public static List<", bean.getName() + ">",
+						"listBy" + Str.uppercaseFirstLetter(p.getNameSingular()) + "(final " + p.getContentType() + " "
+								+ p.getNameSingular() + ") {");
+					ln("        return new " + queryName + "() {");
+					ln("            @Override");
+					ln("            public boolean matches(" + bean.getName() + " entity) {");
+					if (p.isCollection()) {
+						ln("                return entity.contains" + Str.uppercaseFirstLetter(p.getNameSingular())
+								+ "(" + p.getNameSingular() + ");");
+					} else {
 						ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "("
 								+ p.getName() + ");");
-						ln("            }");
-						ln("        }.list();");
-						ln("    }");
 					}
+					ln("            }");
+					ln("        }.list();");
+					ln("    }");
+					// }
 				}
 			}
 

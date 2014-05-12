@@ -73,6 +73,12 @@ public class AEntity implements Serializable, TransferableEntity {
 		return id;
 	}
 
+	public final AEntity setId(String id) {
+		if (this.id != null) throw new IllegalStateException("id already set: " + this.id);
+		this.id = id;
+		return this;
+	}
+
 	public final boolean isId(String id) {
 		return getId().equals(id);
 	}

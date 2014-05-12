@@ -18,6 +18,6 @@ import ilarkesto.core.persistance.AEntity;
 
 public abstract class AGwtEntityFactory {
 
-	public abstract AEntity createEntity(String type);
+	public abstract AEntity createEntity(String type, String id);
 
 }
