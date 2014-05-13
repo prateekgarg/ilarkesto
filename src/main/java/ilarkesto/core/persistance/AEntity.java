@@ -44,6 +44,7 @@ public class AEntity implements Serializable, TransferableEntity {
 	 */
 	public void ensureIntegrity() {}
 
+	@Override
 	public Set<AEntity> getSlaves() {
 		return Collections.emptySet();
 	}
@@ -69,6 +70,7 @@ public class AEntity implements Serializable, TransferableEntity {
 
 	@Override
 	public final DateAndTime getLastModified() {
+		if (lastModified == null) lastModified = DateAndTime.now();
 		return lastModified;
 	}
 
