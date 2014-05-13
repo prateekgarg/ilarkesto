@@ -6,4 +6,4 @@ temp-testng-*
 .build
 build
 ilarkesto-lib.zip
-
+.DS_Store
