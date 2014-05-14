@@ -17,6 +17,7 @@ package ilarkesto.mda.legacy.generator;
 import ilarkesto.core.base.Str;
 import ilarkesto.mda.legacy.model.GwtServiceModel;
 import ilarkesto.mda.legacy.model.MethodModel;
+import ilarkesto.mda.legacy.model.ParameterModel;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -35,6 +36,9 @@ public class GwtServiceInterfaceGenerator extends AClassGenerator {
 		for (MethodModel method : service.getMethods()) {
 			ln();
 			s("    " + service.getDtoClassName(), method.getName() + "(int conversationNumber");
+			for (ParameterModel param : method.getParameters()) {
+				s(",", param.getType(), param.getName());
+			}
 			ln(");");
 		}
 	}

@@ -18,6 +18,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.gwt.server.AGwtServiceImpl;
 import ilarkesto.mda.legacy.model.GwtServiceModel;
 import ilarkesto.mda.legacy.model.MethodModel;
+import ilarkesto.mda.legacy.model.ParameterModel;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -42,10 +43,16 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 		ln();
 		s("    protected abstract void on" + Str.uppercaseFirstLetter(method.getName())
 				+ "(GwtConversation conversation");
+		for (ParameterModel param : method.getParameters()) {
+			s(",", param.getType(), param.getName());
+		}
 		ln(");");
 
 		ln();
 		s("    public", service.getDtoClassName(), method.getName() + "(int conversationNumber");
+		for (ParameterModel param : method.getParameters()) {
+			s(",", param.getType(), param.getName());
+		}
 		ln(") {");
 		ln("        log.debug(\"Handling service call: " + method.getName() + "\");");
 		ln("        WebSession session = (WebSession) getSession();");
@@ -63,7 +70,11 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 		ln("            context.setName(\"gwt-srv:" + method.getName() + "\");");
 		ln("            context.bindCurrentThread();");
 		ln("            try {");
-		ln("                on" + Str.uppercaseFirstLetter(method.getName()) + "(conversation);");
+		s("                on" + Str.uppercaseFirstLetter(method.getName()) + "(conversation");
+		for (ParameterModel param : method.getParameters()) {
+			s(",", param.getName());
+		}
+		ln(");");
 		ln("                onServiceMethodExecuted(context);");
 		ln("            } catch (Throwable ex) {");
 		ln("                handleServiceMethodException(conversationNumber, \"" + method.getName() + "\", ex);");

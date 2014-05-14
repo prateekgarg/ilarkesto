@@ -47,6 +47,10 @@ public class MethodModel extends AModel {
 
 	// --- helper ---
 
+	public MethodModel addParameter(String name) {
+		return addParameter(name, String.class);
+	}
+
 	public MethodModel addParameter(String name, Class type) {
 		return addParameter(name, type.getName());
 	}

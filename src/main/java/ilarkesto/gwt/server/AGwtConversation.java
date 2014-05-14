@@ -125,10 +125,18 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		LOG.debug("Sending", Utl.toStringWithType(entity), "to", this);
 	}
 
+	public final void sendToClient(E... entities) {
+		if (entities == null) return;
+		for (E entity : entities) {
+			sendToClient(entity);
+		}
+	}
+
 	public final void sendToClient(Collection<? extends E> entities) {
 		if (entities == null) return;
-		for (E entity : entities)
+		for (E entity : entities) {
 			sendToClient(entity);
+		}
 	}
 
 	public final ADataTransferObject popNextData() {

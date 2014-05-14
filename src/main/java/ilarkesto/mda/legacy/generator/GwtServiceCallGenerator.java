@@ -18,6 +18,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.gwt.client.AServiceCall;
 import ilarkesto.mda.legacy.model.GwtServiceModel;
 import ilarkesto.mda.legacy.model.MethodModel;
+import ilarkesto.mda.legacy.model.ParameterModel;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -36,14 +37,36 @@ public class GwtServiceCallGenerator extends AClassGenerator {
 	@Override
 	protected void writeContent() {
 		ln();
+		for (ParameterModel param : method.getParameters()) {
+			ln("    " + param.getType(), param.getName() + ";");
+		}
+
+		ln();
+		s("    public", getName() + "(");
+		boolean first = true;
+		for (ParameterModel param : method.getParameters()) {
+			if (first) {
+				first = false;
+			} else {
+				s(", ");
+			}
+			s(param.getType(), param.getName());
+		}
+		ln(") {");
+		for (ParameterModel param : method.getParameters()) {
+			ln("        this." + param.getName(), "=", param.getName() + ";");
+		}
+		ln("    }");
+
+		ln();
 		annotationOverride();
-		s("    protected void onExecute(int conversationNumber");
-		// TODO parameters
-		ln(",", AsyncCallback.class.getName(), "callback) {");
+		ln("    protected void onExecute(int conversationNumber,", AsyncCallback.class.getName(), "callback) {");
 		ln("        " + getServiceClassName() + "Async", "service = (" + getServiceClassName() + "Async) getService("
 				+ getServiceClassName() + ".class);");
 		s("        service." + method.getName() + "(conversationNumber");
-		// TODO parameters
+		for (ParameterModel param : method.getParameters()) {
+			s(",", param.getName());
+		}
 		ln(", callback);");
 		ln("    }");
 	}

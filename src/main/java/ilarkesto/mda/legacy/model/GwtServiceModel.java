@@ -27,6 +27,10 @@ public class GwtServiceModel extends AModel {
 		this.packageName = packageName;
 	}
 
+	public MethodModel addMethod(String name, String packageName) {
+		return addMethod(name).setPackageName(packageName);
+	}
+
 	public MethodModel addMethod(String name) {
 		MethodModel methodModel = new MethodModel(name);
 		methods.add(methodModel);
