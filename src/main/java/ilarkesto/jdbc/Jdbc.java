@@ -157,9 +157,9 @@ public class Jdbc {
 
 	public static abstract class RecordHandler {
 
-		void onExecuted(ResultSet rs) throws SQLException {}
+		public void onExecuted(ResultSet rs) throws SQLException {}
 
-		abstract void onRecord(ResultSet rs) throws SQLException;
+		public abstract void onRecord(ResultSet rs) throws SQLException;
 	}
 
 }
