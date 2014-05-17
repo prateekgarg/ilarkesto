@@ -29,7 +29,7 @@ public final class Sys {
 	private static long startupTime;
 	private static File workDir;
 
-	private static final boolean developmentMode = new File("src").exists();
+	private static final boolean developmentMode = new File("src").exists() || new File("../src").exists();
 
 	public static boolean isDevelopmentMode() {
 		return developmentMode;

@@ -418,9 +418,12 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					} else {
 						findExpression = bean.getName() + ".getBy" + pNameUpper + "(" + p.getName() + ")";
 					}
-					ln("        if (" + p.getName() + " != null && " + findExpression + " != null) throw new "
+					ln("        if (" + p.getName() + " != null) {");
+					ln("            Object existing =", findExpression + ";");
+					ln("            if (existing != null && existing != this) throw new "
 							+ UniqueFieldConstraintException.class.getName() + "(\"" + bean.getName() + "\" ,\""
 							+ p.getName() + "\", " + p.getName() + ");");
+					ln("        }");
 				}
 				if (p.isValueObject()) {
 					ln("        " + getFieldName(p) + " = " + p.getName() + ".clone(this);");

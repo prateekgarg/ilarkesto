@@ -99,7 +99,9 @@ public class Jdbc {
 	}
 
 	private static void execute(RecordHandler handler, PreparedStatement stmt) throws SQLException {
-		log.debug("SQL:", stmt);
+		String sql = stmt.toString();
+		if (sql.startsWith("com.")) sql = sql.substring(sql.indexOf(": ") + 2);
+		log.debug("SQL:", sql);
 
 		synchronized (stmt.getConnection()) {
 			ResultSet rs = null;

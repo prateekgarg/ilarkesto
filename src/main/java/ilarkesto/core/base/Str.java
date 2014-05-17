@@ -34,6 +34,13 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String trimAndNull(String s) {
+		if (s == null) return null;
+		s = s.trim();
+		if (s.length() == 0) return null;
+		return s;
+	}
+
 	public static List<String> parseCommaSeparatedString(String s) {
 		List<String> result = new ArrayList<String>();
 		if (s == null) return result;

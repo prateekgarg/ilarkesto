@@ -58,6 +58,7 @@ public class ReferencePropertyModel extends SimplePropertyModel {
 
 	public ReferencePropertyModel setSlave(boolean slave) {
 		this.slave = slave;
+		setUnique(true);
 		return this;
 	}
 

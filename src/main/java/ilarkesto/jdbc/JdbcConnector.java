@@ -19,7 +19,10 @@ import ilarkesto.jdbc.Jdbc.RecordHandler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JdbcConnector {
 
@@ -44,6 +47,36 @@ public class JdbcConnector {
 		this.database = database;
 		this.login = login;
 		this.password = password;
+	}
+
+	public List<Long> listColumnValuesAsLong(String table, final String column, String condition, Object... params)
+			throws SQLException {
+		final List<Long> ret = new ArrayList<Long>();
+		String sql = "SELECT " + column + " FROM " + table;
+		if (condition != null) sql += " WHERE " + condition;
+		executeQuery(new RecordHandler() {
+
+			@Override
+			public void onRecord(ResultSet rs) throws SQLException {
+				ret.add(rs.getLong(column));
+			}
+		}, sql, params);
+		return ret;
+	}
+
+	public List<String> listColumnValuesAsString(String table, final String column, String condition, Object... params)
+			throws SQLException {
+		final List<String> ret = new ArrayList<String>();
+		String sql = "SELECT " + column + " FROM " + table;
+		if (condition != null) sql += " WHERE " + condition;
+		executeQuery(new RecordHandler() {
+
+			@Override
+			public void onRecord(ResultSet rs) throws SQLException {
+				ret.add(rs.getString(column));
+			}
+		}, sql, params);
+		return ret;
 	}
 
 	public PreparedStatement prepareStatement(String sql, Object... params) {
