@@ -14,10 +14,20 @@
  */
 package ilarkesto.core.persistance;
 
+import ilarkesto.core.logging.Log;
+
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AEntityResolver {
+public abstract class AEntityDatabase {
+
+	protected final Log log = Log.get(getClass());
+
+	public static AEntityDatabase instance;
+
+	public abstract Transaction getTransaction();
+
+	public abstract void onTransactionFinished(Transaction transaction);
 
 	public abstract AEntity get(String id);
 
@@ -27,6 +37,10 @@ public abstract class AEntityResolver {
 
 	public abstract List<AEntity> list(AEntityQuery query);
 
-	public abstract void persist(AEntity entity);
+	public abstract void update(Collection<AEntity> modified, Collection<String> deletedIds);
 
+	public static AEntityDatabase get() {
+		if (instance == null) throw new IllegalStateException("ADatabase.instance == null");
+		return instance;
+	}
 }

@@ -87,7 +87,7 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	public final void setLastEditor(AUser lastEditor) {
 		if (isLastEditor(lastEditor)) return;
 		this.lastEditorId = lastEditor == null ? null : lastEditor.getId();
-		fireModified("lastEditor=" + lastEditor);
+		fireModified("lastEditor", lastEditor);
 	}
 
 	public final boolean isLastEditor(AUser user) {
@@ -100,8 +100,8 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	}
 
 	@Override
-	protected void fireModified(String comment) {
-		super.fireModified(comment);
+	protected void fireModified(String field, Object value) {
+		super.fireModified(field, value);
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	@Override
 	public void ensureIntegrity() {
 		super.ensureIntegrity();
-		if (lastModified == null) fireModified("lastModified!=null");
+		if (lastModified == null) fireModified("lastModified", null);
 	}
 
 	@Override

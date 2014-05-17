@@ -29,14 +29,16 @@ import java.util.Set;
 
 public class AEntity implements Serializable, TransferableEntity {
 
-	public static transient AEntityResolver entityResolver;
-
 	private String id;
 	private DateAndTime lastModified;
 
 	public final void persist() {
 		ensureIntegrity();
-		entityResolver.persist(this);
+		AEntityDatabase.get().getTransaction().persist(this);
+	}
+
+	public final void delete() {
+		AEntityDatabase.get().getTransaction().delete(getId());
 	}
 
 	/**
@@ -60,8 +62,8 @@ public class AEntity implements Serializable, TransferableEntity {
 		lastModified = DateAndTime.now();
 	}
 
-	protected final void fireModified(String comment) {
-
+	protected final void fireModified(String field, Object value) {
+		Transaction.get().modified(this, field, value);
 	}
 
 	protected boolean matches(SearchText search) {
@@ -123,7 +125,7 @@ public class AEntity implements Serializable, TransferableEntity {
 	}
 
 	public static AEntity getById(String id) {
-		return entityResolver.get(id);
+		return AEntityDatabase.get().getTransaction().get(id);
 	}
 
 	protected static Set<String> getIdsAsSet(Collection<? extends AEntity> entities) {

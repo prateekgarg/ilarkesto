@@ -19,6 +19,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.SearchText;
+import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.persistance.UniqueFieldConstraintException;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
@@ -127,7 +128,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 						if (isLegacyBean(bean)) {
 							ln("                " + p.getDaoName() + ".getById(entityId);");
 						} else {
-							ln("                entityResolver.get(entityId);");
+							ln("                " + Transaction.class.getName() + ".get().get(entityId);");
 						}
 					}
 					ln("            } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
@@ -293,7 +294,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			} else {
 				ln("    private void update" + pNameUpper + "Cache() {");
 				ln("        " + p.getName() + "Cache = " + getFieldName(p) + " == null ? null : (" + p.getContentType()
-						+ ") entityResolver.get(" + getFieldName(p) + ");");
+						+ ") " + Transaction.class.getName() + ".get().get(" + getFieldName(p) + ");");
 				ln("    }");
 			}
 
@@ -350,7 +351,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					ln("        return (" + p.getCollectionType() + ") " + daoExpr + ".getByIds" + suffix + "("
 							+ getFieldName(p) + ");");
 				} else {
-					ln("    return (List) entityResolver.list(" + getFieldName(p) + ");");
+					ln("    return (List) " + Transaction.class.getName() + ".get().list(" + getFieldName(p) + ");");
 				}
 			} else {
 				ln("        if (" + p.getName() + "Cache == null) update" + Str.uppercaseFirstLetter(p.getName())
@@ -377,7 +378,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("        " + getFieldName(p) + " = ids;");
 				ln("        updateLastModified();");
 				if (p.isFireModified()) {
-					ln("        fireModified(\"" + p.getName() + "=\"+Str.format(" + p.getName() + "));");
+					ln("        fireModified(\"" + p.getName() + "\", " + p.getName() + ");");
 				}
 			} else {
 				ln("        if (is" + pNameUpper + "(" + p.getName() + ")) return;");
@@ -387,7 +388,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("        " + p.getName() + "Cache = " + p.getName() + ";");
 				ln("        updateLastModified();");
 				if (p.isFireModified()) {
-					ln("        fireModified(\"" + p.getName() + "=\"+" + p.getName() + ");");
+					ln("        fireModified(\"" + p.getName() + "\", " + p.getName() + ");");
 				}
 			}
 		} else {
@@ -402,7 +403,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 				ln("        updateLastModified();");
 				if (p.isFireModified()) {
-					ln("        fireModified(\"" + p.getName() + "=\"+Str.format(" + p.getName() + "));");
+					ln("        fireModified(\"" + p.getName() + "\", " + p.getName() + ");");
 				}
 			} else {
 				ln("        if (is" + pNameUpper + "(" + p.getName() + ")) return;");
@@ -432,7 +433,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 				ln("        updateLastModified();");
 				if (p.isFireModified()) {
-					ln("        fireModified(\"" + p.getName() + "=\"+" + p.getName() + ");");
+					ln("        fireModified(\"" + p.getName() + "\", " + p.getName() + ");");
 				}
 			}
 		}
@@ -503,8 +504,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (p.isReference()) {
 			ln();
 			ln("    protected void repairDead" + pNameSingularUpper + "Reference(String entityId) {");
-			ln("        if (" + getFieldName(p) + ".remove(entityId)) fireModified(\"" + p.getName()
-					+ "-=\" + entityId);");
+			ln("        if (" + getFieldName(p) + ".remove(entityId)) fireModified(\"" + p.getName() + "\", entityId);");
 			ln("    }");
 		}
 
@@ -542,7 +542,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		}
 		ln("        if (added) updateLastModified();");
 		if (p.isFireModified()) {
-			ln("        if (added) fireModified(\"" + p.getName() + "+=\" + " + p.getNameSingular() + ");");
+			ln("        if (added) fireModified(\"" + p.getName() + "\", " + p.getNameSingular() + ");");
 		}
 		ln("        return added;");
 		ln("    }");
@@ -578,7 +578,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("        boolean removed = " + getFieldName(p) + ".remove(" + paramExpr + ");");
 		ln("        if (removed) updateLastModified();");
 		if (p.isFireModified()) {
-			ln("        if (removed) fireModified(\"" + p.getName() + "-=\" + " + p.getNameSingular() + ");");
+			ln("        if (removed) fireModified(\"" + p.getName() + "\", " + p.getNameSingular() + ");");
 		}
 		ln("        return removed;");
 		ln("    }");
@@ -603,7 +603,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("        " + getFieldName(p) + ".clear();");
 		ln("        updateLastModified();");
 		if (p.isFireModified()) {
-			ln("        fireModified(\"" + p.getName() + " cleared\");");
+			ln("        fireModified(\"" + p.getName() + "\", null);");
 		}
 		ln("        return true;");
 		ln("    }");

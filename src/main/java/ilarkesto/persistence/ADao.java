@@ -21,6 +21,7 @@ import ilarkesto.auth.Ownable;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.time.DateAndTime;
@@ -51,12 +52,12 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	// --- ---
 
 	@Override
-	public void onDatobModified(E entity, String comment) {
+	public void onDatobModified(E entity, String field, Object value) {
 		// don's save new entities
 		boolean persistent = isPersistent(entity);
 		if (!persistent) return;
 
-		LOG.info("Entity modified:", Utl.toStringWithType(entity), "->", comment);
+		LOG.info("Entity modified:", Utl.toStringWithType(entity), "->", field, "=", Str.format(value));
 		saveEntity(entity);
 	}
 

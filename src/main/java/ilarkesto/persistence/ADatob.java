@@ -52,10 +52,10 @@ public abstract class ADatob implements Searchable {
 		manager.updateLastModified(this);
 	}
 
-	protected void fireModified(String comment) {
+	protected void fireModified(String field, Object value) {
 		ADatobManager manager = getManager();
 		if (manager == null) return;
-		manager.onDatobModified(this, comment);
+		manager.onDatobModified(this, field, value);
 	}
 
 	protected final void repairMissingMaster() {
@@ -162,8 +162,8 @@ public abstract class ADatob implements Searchable {
 	public class StructureManager<D extends ADatob> extends ADatobManager<D> {
 
 		@Override
-		public void onDatobModified(D datob, String comment) {
-			fireModified(comment);
+		public void onDatobModified(D datob, String field, Object value) {
+			fireModified(field, value);
 		}
 
 		@Override

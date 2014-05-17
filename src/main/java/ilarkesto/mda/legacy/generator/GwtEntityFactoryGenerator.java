@@ -15,7 +15,7 @@
 package ilarkesto.mda.legacy.generator;
 
 import ilarkesto.core.persistance.AEntity;
-import ilarkesto.gwt.client.AGwtEntityFactory;
+import ilarkesto.gwt.client.persistence.AGwtEntityFactory;
 import ilarkesto.mda.legacy.model.EntityModel;
 
 import java.util.Collection;

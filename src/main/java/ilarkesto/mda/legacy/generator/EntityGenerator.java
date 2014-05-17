@@ -22,6 +22,7 @@ import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
+import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
@@ -68,12 +69,12 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 				if (p.isCollection()) {
 					ln("        if (" + getFieldName(p) + ".contains(datob)) {");
 					ln("            " + getFieldName(p) + ".remove(datob);");
-					ln("            fireModified(\"" + p.getName() + "-=\" + datob);");
+					ln("            fireModified(\"" + p.getName() + "\", datob);");
 					ln("        }");
 				} else {
 					ln("        if (valueObject.equals(" + getFieldName(p) + ")) {");
 					ln("        " + getFieldName(p) + " = null;");
-					ln("            fireModified(\"" + p.getName() + "=null\");");
+					ln("            fireModified(\"" + p.getName() + "\", null);");
 					ln("        }");
 				}
 			}
@@ -106,7 +107,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 
 				ln();
 				ln("    public static", bean.getName(), "getById(String id) {");
-				ln("        return (" + bean.getName() + ") entityResolver.get(id);");
+				ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(id);");
 				ln("    }");
 			}
 
@@ -115,7 +116,8 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 				if (p.isUnique()) {
 					ln("    public static", bean.getName(), "getBy" + Str.uppercaseFirstLetter(p.getName()) + "(final "
 							+ p.getType() + " " + p.getName() + ") {");
-					ln("        return (" + bean.getName() + ") entityResolver.get(new " + queryName + "() {");
+					ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(new "
+							+ queryName + "() {");
 					ln("            @Override");
 					ln("            public boolean matches(" + bean.getName() + " entity) {");
 					ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
