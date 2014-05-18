@@ -30,7 +30,7 @@ public class TonlineFuelPriceUpdater extends AFuelPriceUpdater {
 	@Override
 	protected void onUpdatePrices(FuelStation station) {
 		HttpDownloader httpDownloader = new HttpDownloader();
-		String url = "http://tanken.t-online.de/tankstelle/Diesel/" + station.getTonlineId();
+		String url = "http://tanken.t-online.de/tankstelle/Super/" + station.getTonlineId();
 		String data = httpDownloader.downloadText(url, charset);
 
 		updatePrice(Fuel.E5, "Super", station, data);

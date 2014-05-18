@@ -159,6 +159,7 @@ public class TestDe {
 				}
 				String title = parser.getUntil("<");
 				title = Html.convertHtmlToText(title);
+				title = title.replace("­", "");
 				parser.gotoAfter("</li>");
 
 				SubArticleRef subArticleRef = new SubArticleRef(title, pageRef);
