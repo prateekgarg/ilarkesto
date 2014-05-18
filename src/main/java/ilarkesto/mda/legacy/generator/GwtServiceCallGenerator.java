@@ -20,6 +20,7 @@ import ilarkesto.mda.legacy.model.GwtServiceModel;
 import ilarkesto.mda.legacy.model.MethodModel;
 import ilarkesto.mda.legacy.model.ParameterModel;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -36,6 +37,9 @@ public class GwtServiceCallGenerator extends AClassGenerator {
 
 	@Override
 	protected void writeContent() {
+		ln();
+		ln("    private static", getServiceClassName() + "Async", "service;");
+
 		ln();
 		for (ParameterModel param : method.getParameters()) {
 			ln("    " + param.getType(), param.getName() + ";");
@@ -60,9 +64,10 @@ public class GwtServiceCallGenerator extends AClassGenerator {
 
 		ln();
 		annotationOverride();
-		ln("    protected void onExecute(int conversationNumber,", AsyncCallback.class.getName(), "callback) {");
-		ln("        " + getServiceClassName() + "Async", "service = (" + getServiceClassName() + "Async) getService("
-				+ getServiceClassName() + ".class);");
+		ln("    protected synchronized void onExecute(int conversationNumber,", AsyncCallback.class.getName(),
+			"callback) {");
+		ln("        if (service==null) service = (" + getServiceClassName() + "Async) " + GWT.class.getName()
+				+ ".create(" + getServiceClassName() + ".class);");
 		s("        service." + method.getName() + "(conversationNumber");
 		for (ParameterModel param : method.getParameters()) {
 			s(",", param.getName());
