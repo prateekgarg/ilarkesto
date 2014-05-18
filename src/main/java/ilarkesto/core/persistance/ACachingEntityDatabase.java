@@ -16,27 +16,35 @@ package ilarkesto.core.persistance;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public abstract class ACachingEntityDatabase extends AEntityDatabase {
 
 	protected EntityCache cache = new EntityCache();
 
-	protected abstract void onUpdate(Collection<AEntity> entities, Collection<String> entityIds);
+	protected abstract void onUpdate(Collection<AEntity> entities, Collection<String> entityIds,
+			Map<String, Map<String, Object>> modifiedPropertiesByEntityId);
 
 	@Override
-	public void update(Collection<AEntity> modified, Collection<String> deletedIds) {
-		onUpdate(modified, deletedIds);
+	public synchronized void update(Collection<AEntity> modified, Collection<String> deletedIds,
+			Map<String, Map<String, Object>> modifiedPropertiesByEntityId) {
+		onUpdate(modified, deletedIds, modifiedPropertiesByEntityId);
 		cache.addAll(modified);
 		cache.removeAll(deletedIds);
 	}
 
 	@Override
-	public AEntity get(String id) throws EntityDoesNotExistException {
+	public synchronized AEntity get(String id) throws EntityDoesNotExistException {
 		return cache.get(id);
 	}
 
 	@Override
-	public List<AEntity> list(Collection<String> ids) throws EntityDoesNotExistException {
+	public synchronized boolean contains(String id) {
+		return cache.contains(id);
+	}
+
+	@Override
+	public synchronized List<AEntity> list(Collection<String> ids) throws EntityDoesNotExistException {
 		return cache.list(ids);
 	}
 

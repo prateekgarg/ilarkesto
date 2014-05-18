@@ -109,7 +109,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 	protected void onCallbackError(List<ErrorWrapper> errors) {}
 
 	private void callbackError(List<ErrorWrapper> errors) {
-		log.error("Service call failed:", getName(), errors);
+		log.error("Service call", getName(), "failed:", errors);
 		onCallbackError(errors);
 		long timeFromLastSuccess = Tm.getCurrentTimeMillis() - lastSuccessfullServiceCallTime;
 		if (isDispensable() && timeFromLastSuccess < AServiceCall.MAX_FAILURE_TIME) {

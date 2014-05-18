@@ -14,12 +14,16 @@
  */
 package ilarkesto.core.persistance;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Transaction {
@@ -31,6 +35,7 @@ public class Transaction {
 	private AEntityDatabase backend;
 
 	private EntityCache modified = new EntityCache();
+	private Map<String, Map<String, Object>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
 	private Set<String> deleted = new HashSet<String>();
 
 	public Transaction(AEntityDatabase backend, String name, boolean autoCommit) {
@@ -42,56 +47,94 @@ public class Transaction {
 
 	public void commit() {
 		log.info("commit()", toString());
-		backend.update(modified.getAll(), deleted);
+		ensureIntegrity();
+		backend.update(modified.getAll(), deleted, modifiedPropertiesByEntityId);
+		backend.onTransactionFinished(this);
 		modified = null;
 		deleted = null;
-		backend.onTransactionFinished(this);
+	}
+
+	private void ensureIntegrity() {
+		for (AEntity entity : modified.getAll()) {
+			entity.ensureIntegrity();
+		}
 	}
 
 	public void rollback() {
 		log.info("rollback()", toString());
 		backend.onTransactionFinished(this);
+		modified = null;
+		deleted = null;
 	}
 
 	public void persist(AEntity entity) {
+		String id = entity.getId();
+		if (modified.contains(id))
+			throw new IllegalStateException("Persisting " + Str.getSimpleName(entity.getClass()) + " with id " + id
+					+ " failed. Entity already persisted in this transaction: " + entity);
+		if (backend.contains(id))
+			throw new IllegalStateException("Persisting " + Str.getSimpleName(entity.getClass()) + " with id" + id
+					+ " failed. Entity already exists: " + entity);
 		if (autoCommit) {
-			backend.update(Arrays.asList(entity), null);
+			backend.update(Arrays.asList(entity), null, updatePropertiesMap(modifiedPropertiesByEntityId, entity));
 			return;
 		}
 		modified.add(entity);
+		updatePropertiesMap(modifiedPropertiesByEntityId, entity);
 	}
 
 	public void modified(AEntity entity, String field, Object value) {
+		if (!contains(entity.getId())) return;
 		if (autoCommit) {
-			backend.update(Arrays.asList(entity), null);
+			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value));
 			return;
 		}
 		modified.add(entity);
+		updatePropertiesMap(modifiedPropertiesByEntityId, entity, field, value);
 	}
 
 	public void delete(String entityId) {
 		if (autoCommit) {
-			backend.update(null, Arrays.asList(entityId));
+			backend.update(null, Arrays.asList(entityId), null);
 			return;
 		}
 		deleted.add(entityId);
 		modified.remove(entityId);
 	}
 
+	public boolean contains(String id) {
+		if (deleted.contains(id)) return false;
+		return modified.contains(id) || backend.contains(id);
+	}
+
 	public AEntity get(String id) {
+		if (deleted.contains(id)) throw new EntityDoesNotExistException(id);
+		if (modified.contains(id)) return modified.get(id);
 		return backend.get(id);
 	}
 
 	public List<AEntity> list(Collection<String> ids) {
-		return backend.list(ids);
+		List<AEntity> ret = new ArrayList<AEntity>(ids.size());
+		for (String id : ids) {
+			ret.add(get(id));
+		}
+		return ret;
 	}
 
 	public AEntity get(AEntityQuery query) {
+		// TODO skip deleted
+		AEntity entity = modified.get(query);
+		if (entity != null) return entity;
 		return backend.get(query);
 	}
 
 	public List<AEntity> list(AEntityQuery query) {
-		return backend.list(query);
+		// TODO skip deleted
+		List<AEntity> ret = backend.list(query);
+		for (AEntity entity : modified.list(query)) {
+			if (!ret.contains(entity)) ret.add(entity);
+		}
+		return ret;
 	}
 
 	@Override
@@ -108,6 +151,31 @@ public class Transaction {
 		// sb.append("\n    DELETE: ").append(toString(entitiesToDelete));
 		// }
 		return sb.toString();
+	}
+
+	private static Map<String, Map<String, Object>> updatePropertiesMap(
+			Map<String, Map<String, Object>> modifiedPropertiesByEntityId, AEntity entity, String field, Object value) {
+		if (modifiedPropertiesByEntityId == null)
+			modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
+		String id = entity.getId();
+		Map<String, Object> properties = modifiedPropertiesByEntityId.get(id);
+		if (properties == null) {
+			properties = new HashMap<String, Object>();
+			properties.put("id", id);
+			modifiedPropertiesByEntityId.put(id, properties);
+		}
+		properties.put(field, value);
+		return modifiedPropertiesByEntityId;
+	}
+
+	private static Map<String, Map<String, Object>> updatePropertiesMap(
+			Map<String, Map<String, Object>> modifiedPropertiesByEntityId, AEntity entity) {
+		if (modifiedPropertiesByEntityId == null)
+			modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
+		String id = entity.getId();
+		Map<String, Object> properties = entity.createPropertiesMap();
+		modifiedPropertiesByEntityId.put(id, properties);
+		return modifiedPropertiesByEntityId;
 	}
 
 	public static Transaction get() {

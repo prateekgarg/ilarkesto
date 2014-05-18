@@ -34,7 +34,10 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class JsonMapper {
 
@@ -190,7 +193,7 @@ public class JsonMapper {
 		private Class<T> objectType;
 		private T object;
 		private String currentAttributeName;
-		private List currentArray;
+		private Collection currentArray;
 		private ObjectMappingContentHandler subHandler;
 		private ObjectMappingContentHandler parent;
 		private TypeResolver typeResolver;
@@ -281,6 +284,8 @@ public class JsonMapper {
 			Class<?> fieldType = field.getType();
 			if (fieldType.isAssignableFrom(List.class)) {
 				currentArray = new ArrayList();
+			} else if (fieldType.isAssignableFrom(Set.class)) {
+				currentArray = new HashSet();
 			} else {
 				throw new IllegalStateException("Unsupported collection type: " + fieldType.getName());
 			}

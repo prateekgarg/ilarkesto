@@ -75,6 +75,10 @@ public class EntityCache {
 		}
 	}
 
+	public boolean contains(String id) {
+		return entitiesById.containsKey(id);
+	}
+
 	public AEntity get(String id) throws EntityDoesNotExistException {
 		AEntity entity = entitiesById.get(id);
 		if (entity == null) throw new EntityDoesNotExistException(id);
@@ -87,6 +91,10 @@ public class EntityCache {
 			ret.add(get(id));
 		}
 		return ret;
+	}
+
+	public int size() {
+		return entitiesById.size();
 	}
 
 }

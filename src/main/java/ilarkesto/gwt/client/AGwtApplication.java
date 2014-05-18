@@ -15,6 +15,7 @@
 package ilarkesto.gwt.client;
 
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.AEntity;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -98,5 +99,8 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 	public static AGwtApplication get() {
 		return singleton;
 	}
+
+	public abstract void sendChangesToServer(Collection<AEntity> modified, Collection<String> deleted,
+			Map<String, Map<String, Object>> modifiedProperties);
 
 }

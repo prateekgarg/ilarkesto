@@ -18,6 +18,7 @@ import ilarkesto.core.logging.Log;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AEntityDatabase {
 
@@ -37,10 +38,20 @@ public abstract class AEntityDatabase {
 
 	public abstract List<AEntity> list(AEntityQuery query);
 
-	public abstract void update(Collection<AEntity> modified, Collection<String> deletedIds);
+	public abstract void update(Collection<AEntity> modified, Collection<String> deletedIds,
+			Map<String, Map<String, Object>> modifiedPropertiesByEntityId);
+
+	public boolean contains(String id) {
+		try {
+			return get(id) != null;
+		} catch (EntityDoesNotExistException ex) {
+			return false;
+		}
+	}
 
 	public static AEntityDatabase get() {
 		if (instance == null) throw new IllegalStateException("ADatabase.instance == null");
 		return instance;
 	}
+
 }

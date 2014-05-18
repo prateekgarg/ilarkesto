@@ -19,6 +19,7 @@ import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.AEntityDatabase;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.Transaction;
+import ilarkesto.gwt.client.AGwtApplication;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -38,10 +39,10 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 	}
 
 	@Override
-	protected void onUpdate(Collection<AEntity> entities, Collection<String> entityIds) {
+	protected void onUpdate(Collection<AEntity> modified, Collection<String> deleted,
+			Map<String, Map<String, Object>> modifiedProperties) {
 		if (updatingFromRemote) return;
-		// TODO send to server
-		log.warn("TODO: send changes to server");
+		AGwtApplication.get().sendChangesToServer(modified, deleted, modifiedProperties);
 	}
 
 	@Override

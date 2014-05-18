@@ -20,6 +20,8 @@ import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
 import ilarkesto.concurrent.ATask;
 import ilarkesto.concurrent.TaskManager;
+import ilarkesto.core.base.AFileStorage;
+import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
@@ -278,6 +280,13 @@ public abstract class AApplication {
 			applicationName = Str.removeSuffix(applicationName, "Application");
 		}
 		return applicationName;
+	}
+
+	private SimpleFileStorage fileStorage;
+
+	public AFileStorage getFileStorage() {
+		if (fileStorage == null) fileStorage = new SimpleFileStorage(new File(getApplicationDataDir()));
+		return fileStorage;
 	}
 
 	private String applicationDataDir;
