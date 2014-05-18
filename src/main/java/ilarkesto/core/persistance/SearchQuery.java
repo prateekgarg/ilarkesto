@@ -14,18 +14,34 @@
  */
 package ilarkesto.core.persistance;
 
+import java.util.Arrays;
+
 public class SearchQuery extends AEntityQuery {
 
 	private SearchText searchText;
+
+	private Class[] types;
 
 	public SearchQuery(String text) {
 		super();
 		this.searchText = new SearchText(text);
 	}
 
+	public SearchQuery(String text, Class... types) {
+		super();
+		// TODOK kace
+		this.searchText = new SearchText(text);
+		this.types = types;
+	}
+
 	@Override
 	public boolean matches(AEntity entity) {
-		return entity.matches(searchText);
+		return entity.matches(searchText) && acceptType(entity);
+	}
+
+	private boolean acceptType(AEntity entity) {
+		if (types == null || types.length == 0) { return true; }
+		return Arrays.asList(types).contains(entity.getClass());
 	}
 
 }
