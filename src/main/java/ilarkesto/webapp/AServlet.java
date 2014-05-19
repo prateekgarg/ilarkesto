@@ -43,7 +43,7 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 		req.sendErrorNoContent();
 	}
 
-	protected String getAuthorizationUrl() {
+	protected String getAuthorizationUrl(RequestWrapper<S> req) {
 		return null;
 	}
 
@@ -82,7 +82,7 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 	}
 
 	protected void onNotAuthorized(RequestWrapper<S> req) {
-		String url = getAuthorizationUrl();
+		String url = getAuthorizationUrl(req);
 		if (url == null) {
 			req.sendErrorForbidden();
 			return;

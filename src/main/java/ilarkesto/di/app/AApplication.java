@@ -296,10 +296,14 @@ public abstract class AApplication {
 			if (isDevelopmentMode()) {
 				applicationDataDir = new File("runtimedata").getAbsolutePath();
 			} else {
-				applicationDataDir = Sys.getUsersHomePath() + "/." + getApplicationName();
+				applicationDataDir = getProductionModeApplicationDataDir();
 			}
 		}
 		return applicationDataDir;
+	}
+
+	protected String getProductionModeApplicationDataDir() {
+		return Sys.getUsersHomePath() + "/." + getApplicationName();
 	}
 
 	private String applicationTempDir;
