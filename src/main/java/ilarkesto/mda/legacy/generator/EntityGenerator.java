@@ -28,6 +28,7 @@ import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
 import ilarkesto.mda.legacy.model.BackReferenceModel;
 import ilarkesto.mda.legacy.model.EntityModel;
+import ilarkesto.mda.legacy.model.PredicateModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
@@ -176,6 +177,23 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			}
 			ln("        return ret;");
 			ln("    }");
+
+			for (PredicateModel p : bean.getPredicates()) {
+				ln();
+				ln("    public abstract boolean is" + Str.uppercaseFirstLetter(p.getName()) + "();");
+
+				ln();
+				ln("    public static List<" + bean.getBeanClass() + "> listByIs"
+						+ Str.uppercaseFirstLetter(p.getName()) + "() {");
+				ln("        return new " + queryName + "() {");
+				ln("            @Override");
+				ln("            public boolean matches(" + bean.getName() + " entity) {");
+				ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "();");
+				ln("            }");
+				ln("        }.list();");
+				ln("    }");
+			}
+
 		}
 
 		ln();

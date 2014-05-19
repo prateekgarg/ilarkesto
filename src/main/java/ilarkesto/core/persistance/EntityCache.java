@@ -97,4 +97,8 @@ public class EntityCache {
 		return entitiesById.size();
 	}
 
+	public boolean isEmpty() {
+		return entitiesById.isEmpty();
+	}
+
 }

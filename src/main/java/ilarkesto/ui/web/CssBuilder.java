@@ -21,9 +21,11 @@ public class CssBuilder {
 
 	private PrintWriter out;
 	private Style style;
+	private StringWriter stringWriter;
 
 	public CssBuilder() {
-		this(new PrintWriter(new StringWriter()));
+		stringWriter = new StringWriter();
+		out = new PrintWriter(stringWriter);
 	}
 
 	public CssBuilder(PrintWriter out) {
@@ -57,6 +59,14 @@ public class CssBuilder {
 
 	public Style input() {
 		return style("input");
+	}
+
+	public Style button() {
+		return style("button");
+	}
+
+	public Style hr() {
+		return style("hr");
 	}
 
 	public Style textarea() {
@@ -151,10 +161,36 @@ public class CssBuilder {
 
 	@Override
 	public String toString() {
+		flush();
+		if (stringWriter != null) return stringWriter.toString();
 		return out.toString();
 	}
 
 	public class Style {
+
+		public Style backgroundPosition(int x, int y) {
+			return attr("background-position", x + "px " + y + "px");
+		}
+
+		public Style backgroundAttachmentFixed() {
+			return backgroundAttachment("fixed");
+		}
+
+		public Style backgroundAttachment(String attachment) {
+			return attr("background-attachment", attachment);
+		}
+
+		public Style backgroundRepeatNoRepeat() {
+			return backgroundRepeat("no-repeat");
+		}
+
+		public Style backgroundRepeat(String repeat) {
+			return attr("background-repeat", repeat);
+		}
+
+		public Style boxShadow(int hShadow, int vShadow, int blur, String color) {
+			return attr("box-shadow", hShadow + "px " + vShadow + "px " + blur + "px " + color);
+		}
 
 		public Style zIndex(int value) {
 			return attr("z-index", value);
@@ -591,12 +627,24 @@ public class CssBuilder {
 			return attr("margin-right", value + "px");
 		}
 
+		public Style marginRight(String value) {
+			return attr("margin-right", value);
+		}
+
 		public Style marginLeft(int value) {
 			return attr("margin-left", value + "px");
 		}
 
+		public Style marginLeft(String value) {
+			return attr("margin-left", value);
+		}
+
 		public Style margin(int value) {
 			return attr("margin", value + "px");
+		}
+
+		public Style marginLeftRightAuto() {
+			return marginLeft("auto").marginRight("auto");
 		}
 
 		public Style margin(int top, int right, int bottom, int left) {

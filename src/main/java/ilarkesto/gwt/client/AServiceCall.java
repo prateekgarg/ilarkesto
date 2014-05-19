@@ -20,21 +20,16 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.service.ServiceCall;
 import ilarkesto.core.time.Tm;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.RemoteService;
 
 public abstract class AServiceCall<D extends ADataTransferObject> implements ServiceCall {
 
 	public static final long MAX_FAILURE_TIME = 30 * Tm.SECOND;
 
 	private static List<ServiceCall> activeServiceCalls = new LinkedList<ServiceCall>();
-	private static Map<Class, Object> servicesByType = new HashMap<Class, Object>();
 	private static long lastSuccessfullServiceCallTime;
 	public static Runnable listener;
 
@@ -82,15 +77,6 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 	public final String getName() {
 		return Str.removeSuffix(Str.getSimpleName(getClass()), "ServiceCall");
-	}
-
-	public static Object getService(Class<? extends RemoteService> type) {
-		Object service = servicesByType.get(type);
-		if (service == null) {
-			service = GWT.create(type);
-			servicesByType.put(type, service);
-		}
-		return service;
 	}
 
 	public static List<ServiceCall> getActiveServiceCalls() {

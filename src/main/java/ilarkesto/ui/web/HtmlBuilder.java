@@ -653,11 +653,17 @@ public class HtmlBuilder {
 
 	private static final String STYLE = "style";
 
-	public CssBuilder startSTYLEcss() {
-		startTag(STYLE).set("type", "text/css");
+	public CssBuilder startSTYLEcssGetBuilder() {
+		startTag(STYLE, true).set("type", "text/css");
 		closeStartingTag();
 		CssBuilder css = new CssBuilder(out);
 		return css;
+	}
+
+	public void startSTYLEcss() {
+		startTag(STYLE, true).set("type", "text/css");
+		closeStartingTag();
+		nl();
 	}
 
 	public void endSTYLE() {

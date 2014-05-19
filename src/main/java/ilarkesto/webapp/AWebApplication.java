@@ -20,8 +20,8 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
 import ilarkesto.logging.DefaultLogRecordHandler;
-import ilarkesto.webapp.jsonapi.ReflectionJsonApiFactory;
 import ilarkesto.webapp.jsonapi.JsonApiFactory;
+import ilarkesto.webapp.jsonapi.ReflectionJsonApiFactory;
 
 import java.io.File;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ public abstract class AWebApplication extends AApplication {
 
 	private Set<AWebSession> webSessions = new HashSet<AWebSession>();
 
-	private String applicationName;
+	private String contextPath;
 
 	private JsonApiFactory restApiFactory;
 
@@ -63,17 +63,20 @@ public abstract class AWebApplication extends AApplication {
 		return this;
 	}
 
-	public final void setApplicationName(String applicationName) {
-		this.applicationName = applicationName;
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
+	}
+
+	public String getContextPath() {
+		return contextPath;
 	}
 
 	@Override
 	public String getApplicationName() {
-		if (applicationName != null) return applicationName;
+		if (contextPath != null) return contextPath;
 		String name = super.getApplicationName();
 		name = Str.removeSuffix(name, "Web");
-		applicationName = name;
-		return applicationName;
+		return name;
 	}
 
 	private static final String WEB_SESSION_SESSION_ATTRIBUTE = "_webSession";
@@ -150,6 +153,11 @@ public abstract class AWebApplication extends AApplication {
 
 	protected ReflectionJsonApiFactory createRestApiFactory() {
 		return new ReflectionJsonApiFactory(this);
+	}
+
+	@Override
+	protected String getProductionModeApplicationDataDir() {
+		return Sys.getUsersHomePath() + "/" + getApplicationName() + "-data";
 	}
 
 	public static AWebApplication get() {

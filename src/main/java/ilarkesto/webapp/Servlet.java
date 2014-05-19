@@ -16,6 +16,7 @@ package ilarkesto.webapp;
 
 import ilarkesto.base.Net;
 import ilarkesto.base.Str;
+import ilarkesto.base.Sys;
 import ilarkesto.base.Tm;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
@@ -180,6 +181,7 @@ public abstract class Servlet {
 		path = path.trim();
 		if (path.length() == 0) return null;
 		if (path.equals("ROOT")) return null;
+		if (Sys.isDevelopmentMode() && path.equals("war")) return null;
 		return path;
 	}
 
