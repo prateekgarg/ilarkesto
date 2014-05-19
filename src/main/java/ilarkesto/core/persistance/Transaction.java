@@ -141,15 +141,12 @@ public class Transaction {
 	public synchronized String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
-		// if (!entitiesToSave.isEmpty()) {
-		// sb.append("\n    SAVE: ").append(toString(entitiesToSave));
-		// }
-		// if (!entitiesRegistered.isEmpty()) {
-		// sb.append("\n    REGISTERED: ").append(toString(entitiesRegistered));
-		// }
-		// if (!entitiesToDelete.isEmpty()) {
-		// sb.append("\n    DELETE: ").append(toString(entitiesToDelete));
-		// }
+		if (!modified.isEmpty()) {
+			sb.append("\n    Modified: ").append(Str.format(modified.getAllIds()));
+		}
+		if (!deleted.isEmpty()) {
+			sb.append("\n    Deleted: ").append(Str.format(deleted));
+		}
 		return sb.toString();
 	}
 
