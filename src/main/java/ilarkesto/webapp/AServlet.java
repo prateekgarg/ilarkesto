@@ -43,7 +43,17 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 		req.sendErrorNoContent();
 	}
 
-	protected String getAuthorizationUrl(RequestWrapper<S> req) {
+	protected String getAuthorizationUrl() {
+		return getUrlForPath(getAuthorizationPath());
+	}
+
+	public String getUrlForPath(String path) {
+		if (path == null) return null;
+		if (!path.startsWith("/")) path = "/" + path;
+		return "/" + AWebApplication.get().getApplicationName() + path;
+	}
+
+	protected String getAuthorizationPath() {
 		return null;
 	}
 
@@ -82,7 +92,7 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 	}
 
 	protected void onNotAuthorized(RequestWrapper<S> req) {
-		String url = getAuthorizationUrl(req);
+		String url = getAuthorizationUrl();
 		if (url == null) {
 			req.sendErrorForbidden();
 			return;
