@@ -50,7 +50,9 @@ public abstract class AServlet<A extends AWebApplication, S extends AWebSession>
 	public String getUrlForPath(String path) {
 		if (path == null) return null;
 		if (!path.startsWith("/")) path = "/" + path;
-		return "/" + AWebApplication.get().getApplicationName() + path;
+		String contextPath = AWebApplication.get().getContextPath();
+		if (contextPath == null) contextPath = AWebApplication.get().getApplicationName();
+		return "/" + contextPath + path;
 	}
 
 	protected String getAuthorizationPath() {
