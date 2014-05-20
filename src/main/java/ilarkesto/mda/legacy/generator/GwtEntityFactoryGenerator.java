@@ -42,6 +42,15 @@ public class GwtEntityFactoryGenerator extends AClassGenerator {
 		}
 		ln("        throw new IllegalStateException(\"Unsupported entity: \" + type);");
 		ln("    }");
+
+		ln();
+		annotationOverride();
+		ln("    public Class<? extends", AEntity.class.getName() + ">", "getType(String type) {");
+		for (EntityModel entity : entities) {
+			ln("        if (type.equals(\"" + entity.getName() + "\")) return ", entity.getBeanClass() + ".class;");
+		}
+		ln("        throw new IllegalStateException(\"Unsupported entity: \" + type);");
+		ln("    }");
 	}
 
 	@Override

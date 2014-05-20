@@ -124,6 +124,10 @@ public class AEntity implements Serializable, TransferableEntity {
 		return getId().equals(((AEntity) obj).getId());
 	}
 
+	public static boolean exists(String id) {
+		return AEntityDatabase.get().getTransaction().contains(id);
+	}
+
 	public static AEntity getById(String id) {
 		return AEntityDatabase.get().getTransaction().get(id);
 	}
