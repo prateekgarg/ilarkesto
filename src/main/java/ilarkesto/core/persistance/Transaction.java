@@ -33,6 +33,7 @@ public class Transaction {
 	private String name;
 	private boolean autoCommit;
 	private AEntityDatabase backend;
+	private boolean ignoreModifications;
 
 	private EntityCache modified = new EntityCache();
 	private Map<String, Map<String, Object>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
@@ -85,6 +86,10 @@ public class Transaction {
 	}
 
 	public void modified(AEntity entity, String field, Object value) {
+		if (ignoreModifications) return;
+		// log.debug("modified:", field, "=", value, "@", Str.getSimpleName(entity.getClass()) + ":" +
+		// entity.getId(),
+		// entity);
 		if (!contains(entity.getId())) return;
 		if (autoCommit) {
 			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value));
@@ -136,6 +141,10 @@ public class Transaction {
 			if (!ret.contains(entity)) ret.add(entity);
 		}
 		return ret;
+	}
+
+	public void setIgnoreModifications(boolean disabled) {
+		this.ignoreModifications = disabled;
 	}
 
 	@Override
