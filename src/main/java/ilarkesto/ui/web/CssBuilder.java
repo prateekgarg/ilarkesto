@@ -298,6 +298,10 @@ public class CssBuilder {
 			return whiteSpace("normal");
 		}
 
+		public Style whiteSpacePre() {
+			return whiteSpace("pre");
+		}
+
 		public Style whiteSpace(String value) {
 			return attr("white-space", value);
 		}
