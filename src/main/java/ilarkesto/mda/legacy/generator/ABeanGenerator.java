@@ -172,6 +172,13 @@ public abstract class ABeanGenerator<B extends BeanModel> extends AClassGenerato
 	}
 
 	@Override
+	protected Set<String> getSuperinterfaces() {
+		Set<String> ret = new LinkedHashSet<String>(super.getSuperinterfaces());
+		ret.addAll(bean.getSuperinterfaces());
+		return ret;
+	}
+
+	@Override
 	protected Set<String> getImports() {
 		Set<String> result = new LinkedHashSet<String>();
 		result.addAll(super.getImports());

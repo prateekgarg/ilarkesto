@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -16,10 +16,8 @@ package ilarkesto.mda.legacy.model;
 
 import ilarkesto.base.Str;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 public abstract class BeanModel extends AModel {
@@ -28,7 +26,8 @@ public abstract class BeanModel extends AModel {
 	private Set<DependencyModel> dependencies = new LinkedHashSet<DependencyModel>();
 	private Set<CompositeModel> composites = new LinkedHashSet<CompositeModel>();
 	private Set<EventModel> events = new LinkedHashSet<EventModel>();
-	private List<PredicateModel> predicates = new ArrayList<PredicateModel>();
+	private Set<PredicateModel> predicates = new LinkedHashSet<PredicateModel>();
+	private Set<String> superinterfaces = new LinkedHashSet<String>();
 	private boolean _abstract;
 
 	private BeanModel superbean;
@@ -45,7 +44,7 @@ public abstract class BeanModel extends AModel {
 		return predicate;
 	}
 
-	public List<PredicateModel> getPredicates() {
+	public Set<PredicateModel> getPredicates() {
 		return predicates;
 	}
 
@@ -135,6 +134,15 @@ public abstract class BeanModel extends AModel {
 		DependencyModel dependencyModel = new DependencyModel(type, name);
 		addDependency(dependencyModel);
 		return dependencyModel;
+	}
+
+	public final BeanModel addSuperinterface(String interfaceClassName) {
+		superinterfaces.add(interfaceClassName);
+		return this;
+	}
+
+	public final Set<String> getSuperinterfaces() {
+		return superinterfaces;
 	}
 
 	public boolean isAbstract() {
