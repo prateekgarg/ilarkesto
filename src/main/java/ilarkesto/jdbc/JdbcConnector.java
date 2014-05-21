@@ -49,6 +49,23 @@ public class JdbcConnector {
 		this.password = password;
 	}
 
+	public Long getValueAsLong(String table, final String column, String condition, Object... params)
+			throws SQLException {
+		final List<Long> ret = new ArrayList<Long>();
+		String sql = "SELECT " + column + " FROM " + table;
+		if (condition != null) sql += " WHERE " + condition;
+		executeQuery(new RecordHandler() {
+
+			@Override
+			public void onRecord(ResultSet rs) throws SQLException {
+				ret.add(rs.getLong(column));
+			}
+		}, sql, params);
+		if (ret.isEmpty()) return null;
+		if (ret.size() > 1) throw new IllegalStateException("Multiple results for: " + sql);
+		return ret.get(0);
+	}
+
 	public List<Long> listColumnValuesAsLong(String table, final String column, String condition, Object... params)
 			throws SQLException {
 		final List<Long> ret = new ArrayList<Long>();
