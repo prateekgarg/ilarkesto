@@ -302,10 +302,9 @@ public abstract class AClassGenerator {
 	}
 
 	protected File getSourceFile() {
-		File srcMain = new File("src/main");
-		if (!srcMain.exists()) return new File("src");
-		return new File("src/" + (isOverwrite() ? "generated" : "main") + "/java");
-		// return "src/main/java";
+		if (new File("src/main").exists()) return new File("src/" + (isOverwrite() ? "generated" : "main") + "/java");
+		return new File(isOverwrite() ? "generated" : "src");
+
 	}
 
 }
