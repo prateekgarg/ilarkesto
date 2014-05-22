@@ -23,7 +23,9 @@ import ilarkesto.core.time.Tm;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 public abstract class AServiceCall<D extends ADataTransferObject> implements ServiceCall {
 
@@ -40,6 +42,11 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 	private long runtime = -1;
 
 	protected abstract void onExecute(int conversationNumber, AsyncCallback<D> callback);
+
+	protected void initializeService(Object service, String contextName) {
+		ServiceDefTarget serviceDefTarget = (ServiceDefTarget) service;
+		serviceDefTarget.setServiceEntryPoint(GWT.getModuleBaseURL() + contextName);
+	}
 
 	@Override
 	public final void execute() {
