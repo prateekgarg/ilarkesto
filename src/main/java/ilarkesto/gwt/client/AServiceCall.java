@@ -90,13 +90,11 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 		return activeServiceCalls;
 	}
 
-	private void onServiceCallReturned() {}
-
 	private void serviceCallReturned() {
 		activeServiceCalls.remove(this);
 		runtime = Tm.getCurrentTimeMillis() - startTime;
-		onServiceCallReturned();
 		if (listener != null) listener.run();
+		AGwtApplication.get().onServiceCallProcessed(this);
 	}
 
 	protected void onCallbackError(List<ErrorWrapper> errors) {}
@@ -125,7 +123,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 		@Override
 		public void onFailure(Throwable ex) {
-			onServiceCallReturned();
+			serviceCallReturned();
 			callbackError(Utl.toList(new ErrorWrapper(ex)));
 		}
 
