@@ -41,7 +41,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 	private Runnable returnHandler;
 	private RuntimeTracker rtCall;
 	private long runtimeData = -1;
-	private long runtimeReturnHandler;
+	private long runtimeReturnHandler = -1;
 
 	protected abstract void onExecute(int conversationNumber, AsyncCallback<D> callback);
 

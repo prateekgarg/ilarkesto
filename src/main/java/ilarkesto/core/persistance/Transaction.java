@@ -151,12 +151,16 @@ public class Transaction {
 	public synchronized String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
+		boolean empty = true;
 		if (!modified.isEmpty()) {
 			sb.append("\n    Modified: ").append(Str.format(modified.getAllIds()));
+			empty = false;
 		}
 		if (!deleted.isEmpty()) {
 			sb.append("\n    Deleted: ").append(Str.format(deleted));
+			empty = false;
 		}
+		if (empty) sb.append("Empty");
 		return sb.toString();
 	}
 
