@@ -46,6 +46,7 @@ public class Jdbc {
 		sb.append(host == null ? "localhost" : host);
 		if (port != null) sb.append(":").append(port);
 		if (database != null) sb.append("/").append(database);
+		sb.append("?useUnicode=true&characterEncoding=UTF-8");
 		return sb.toString();
 	}
 
