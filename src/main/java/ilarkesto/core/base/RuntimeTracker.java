@@ -10,7 +10,7 @@ public class RuntimeTracker {
 
 	public String getRuntimeFormated() {
 		long runtime = getRuntime();
-		if (runtime < 2000) return runtime + " msec";
+		if (runtime < 10000) return runtime + " msec";
 		runtime = runtime / 1000;
 		if (runtime < 120) return runtime + " sec";
 		runtime = runtime / 60;

@@ -19,6 +19,7 @@ import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -65,7 +66,8 @@ public class GwtSuperDevMode {
 	}
 
 	private Options createOptions() {
-		String base = Sys.getWorkDir().getAbsolutePath();
+		String base = Sys.getWorkDir().getAbsolutePath().replace('\n', '/');
+		if (!new File(base).exists()) throw new IllegalStateException("Path does not exist: " + base);
 
 		List<String> args = new ArrayList<String>();
 
@@ -75,12 +77,18 @@ public class GwtSuperDevMode {
 
 		// workdir
 		args.add("-workDir");
-		args.add(base + "/runtimedata/gwt-code-server-output");
+		String workDir = base + "/runtimedata/gwt-code-server-output";
+		File workdirFile = new File(workDir);
+		workdirFile.mkdirs();
+		if (!workdirFile.exists()) throw new IllegalStateException("Path does not exist: " + workDir);
+		args.add(workDir);
 
 		// sources
 		for (String source : sources) {
 			args.add("-src");
 			if (!source.startsWith("/")) source = base + "/" + source;
+			File sourceFile = new File(source);
+			if (!sourceFile.exists()) throw new IllegalStateException("Path does not exist: " + source);
 			args.add(source);
 		}
 
