@@ -108,6 +108,14 @@ public class Transaction {
 		modified.remove(entityId);
 	}
 
+	public boolean isDeleted(String id) {
+		return deleted.contains(id);
+	}
+
+	public boolean isDeleted(AEntity entity) {
+		return isDeleted(entity.getId());
+	}
+
 	public boolean contains(String id) {
 		if (deleted.contains(id)) return false;
 		return modified.contains(id) || backend.contains(id);

@@ -18,6 +18,8 @@ import ilarkesto.base.PermissionDeniedException;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.AEntityDatabase;
+import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
@@ -28,6 +30,7 @@ import ilarkesto.webapp.AWebSession;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -105,10 +108,30 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 			return;
 		}
 
+		if (AEntityDatabase.instance != null && Transaction.get().isDeleted(entity.getId())) {
+			getNextData().addDeletedEntity(entity.getId());
+			return;
+		}
+
 		if (!isEntityVisible(entity)) throw new PermissionDeniedException(entity + " is not visible");
 
-		sendToClient((Set<E>) entity.getSlaves());
+		Set<TransferableEntity> all = new HashSet<TransferableEntity>();
+		resolveSlaves(entity, all);
 
+		for (TransferableEntity e : all) {
+			addToNextData((E) e);
+		}
+	}
+
+	private void resolveSlaves(TransferableEntity entity, Set<TransferableEntity> all) {
+		if (!all.add(entity)) return;
+		for (TransferableEntity slave : entity.getSlaves()) {
+			if (slave == null) continue;
+			resolveSlaves(slave, all);
+		}
+	}
+
+	private void addToNextData(E entity) {
 		DateAndTime timeRemote = remoteEntityModificationTimes.get(entity);
 		DateAndTime timeLocal = entity.getLastModified();
 
