@@ -29,7 +29,12 @@ public final class Sys {
 	private static long startupTime;
 	private static File workDir;
 
-	private static final boolean developmentMode = new File("src").exists() || new File("../src").exists();
+	private static boolean developmentMode = true;
+
+	static {
+		if (Sys.class.getResource("devmode.txt") == null) developmentMode = false;
+		startupTime = Tm.getCurrentTimeMillis();
+	}
 
 	public static boolean isDevelopmentMode() {
 		return developmentMode;
@@ -49,13 +54,7 @@ public final class Sys {
 		return availableMemory;
 	}
 
-	public static void storeStartupTime() {
-		startupTime = Tm.getCurrentTimeMillis();
-	}
-
 	public static long getStartupTime() {
-		if (startupTime == 0)
-			throw new RuntimeException("Startup unknown. Sys.storeStartupTime() needs to be called.");
 		return startupTime;
 	}
 

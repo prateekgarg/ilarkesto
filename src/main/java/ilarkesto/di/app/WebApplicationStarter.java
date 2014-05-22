@@ -14,6 +14,7 @@
  */
 package ilarkesto.di.app;
 
+import ilarkesto.base.Sys;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.BeanContainer;
 import ilarkesto.webapp.AWebApplication;
@@ -23,6 +24,7 @@ public class WebApplicationStarter extends ApplicationStarter {
 	private static final Log LOG = Log.get(WebApplicationStarter.class);
 
 	public static AWebApplication startWebApplication(String applicationClassName, String contextPath) {
+		checkWorkDir();
 		AWebApplication result;
 		BeanContainer beanProvider = new BeanContainer();
 		if (contextPath != null) {
@@ -43,6 +45,14 @@ public class WebApplicationStarter extends ApplicationStarter {
 		}
 
 		return result;
+	}
+
+	private static void checkWorkDir() {
+		if (Sys.isDevelopmentMode()) {
+			if (Sys.getWorkDir().equals(Sys.getUsersHomeDir()))
+				throw new IllegalStateException(
+						"Work directory is home directory.\n\n  In development mode the work directory must be the project directory. You probably have to set the working directory of your web application server launch configuration.\n");
+		}
 	}
 
 }

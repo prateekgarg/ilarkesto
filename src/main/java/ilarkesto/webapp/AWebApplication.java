@@ -16,7 +16,6 @@ package ilarkesto.webapp;
 
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
-import ilarkesto.core.logging.Log;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
 import ilarkesto.logging.DefaultLogRecordHandler;
@@ -31,8 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 public abstract class AWebApplication extends AApplication {
-
-	private static final Log LOG = Log.get(AWebApplication.class);
 
 	protected abstract void onStartWebApplication();
 
@@ -50,14 +47,26 @@ public abstract class AWebApplication extends AApplication {
 	protected void onStart() {
 		if (!isDevelopmentMode()) Sys.setHeadless(true);
 		DefaultLogRecordHandler.setLogFile(new File(getApplicationDataDir() + "/error.log"));
-		LOG.info("Initializing web application");
+		log.info("Initializing web application");
 		onStartWebApplication();
 	}
 
 	@Override
 	protected void onShutdown() {
+		if (gwtSuperDevMode != null) gwtSuperDevMode.stopCodeServer();
 		onShutdownWebApplication();
 	}
+
+	// --- components ---
+
+	private GwtSuperDevMode gwtSuperDevMode;
+
+	public GwtSuperDevMode getGwtSuperDevMode() {
+		if (gwtSuperDevMode == null) gwtSuperDevMode = new GwtSuperDevMode();
+		return gwtSuperDevMode;
+	}
+
+	// --- ---
 
 	public final AWebApplication getWebApplication() {
 		return this;
@@ -101,7 +110,7 @@ public abstract class AWebApplication extends AApplication {
 	public final void destroyTimeoutedSessions() {
 		for (AWebSession session : getWebSessions()) {
 			if (session.isTimeouted() || session.isSessionInvalidated()) {
-				LOG.info("Destroying invalid/timeouted session:", session);
+				log.info("Destroying invalid/timeouted session:", session);
 				destroyWebSession(session, null);
 			}
 		}
@@ -111,7 +120,7 @@ public abstract class AWebApplication extends AApplication {
 		for (AGwtConversation conversation : getGwtConversations()) {
 			if (conversation.isTimeouted()) {
 				AWebSession session = conversation.getSession();
-				LOG.info("Destroying invalid/timeouted GwtConversation:", conversation);
+				log.info("Destroying invalid/timeouted GwtConversation:", conversation);
 				session.destroyGwtConversation(conversation);
 			}
 		}

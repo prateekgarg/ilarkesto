@@ -165,15 +165,7 @@ public abstract class Servlet {
 	}
 
 	public static final String getContextPath(ServletContext servletContext) {
-		String realPath = servletContext.getRealPath("dummy");
-		log.info("servletContextName:", servletContext.getServletContextName());
-		log.info("!!! dummy real path:", realPath);
-		File file = new File(realPath);
-		String path = file.getParentFile().getName();
-
-		// TODO String path = servletContext.getContextPaht() when servlet-2.5
-		// servletContext.getContextPath()
-
+		String path = servletContext.getContextPath();
 		if (path == null) return null;
 		path = path.trim();
 		if (path.startsWith("/")) path = path.substring(1);

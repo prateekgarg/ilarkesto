@@ -1,0 +1,2 @@
+this file indicates development mode
+delete it during your build for production

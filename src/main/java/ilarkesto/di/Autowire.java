@@ -139,8 +139,10 @@ public class Autowire {
 		try {
 			method.invoke(bean, createWriteMethodArguments(method, value, objectStringMapper));
 		} catch (Throwable ex) {
+			String valueType = value == null ? "<null>" : value.getClass().getName();
 			throw new RuntimeException("Invoking setter '" + method.getDeclaringClass().getSimpleName() + "."
-					+ method.getName() + "' on '" + bean + "' with '" + value + "' failed.", ex);
+					+ method.getName() + "' on '" + bean + "' with '" + value + "' of type " + valueType + " failed.",
+					ex);
 		}
 	}
 

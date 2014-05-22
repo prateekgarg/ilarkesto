@@ -24,7 +24,6 @@ import ilarkesto.core.base.AFileStorage;
 import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
-import ilarkesto.core.time.Time;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.di.Context;
 import ilarkesto.integration.xstream.XStreamSerializer;
@@ -43,7 +42,6 @@ import ilarkesto.properties.FilePropertiesStore;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -53,12 +51,14 @@ import java.util.Set;
  */
 public abstract class AApplication {
 
-	private static Log log = Log.get(AApplication.class);
+	protected Log log = Log.get(getClass());
 
 	private ExclusiveFileLock exclusiveFileLock;
 	private boolean startupFailed;
 	private boolean shuttingDown;
 	private boolean shutdown;
+
+	private BuildProperties buildProperties;
 
 	protected abstract void onStart();
 
@@ -295,7 +295,6 @@ public abstract class AApplication {
 		if (applicationDataDir == null) {
 			if (isDevelopmentMode()) {
 				String path = "runtimedata";
-				if (!new File("src").exists() && new File("../src").exists()) path = "../" + path;
 				applicationDataDir = new File(path).getAbsolutePath();
 			} else {
 				applicationDataDir = getProductionModeApplicationDataDir();
@@ -326,34 +325,8 @@ public abstract class AApplication {
 		return applicationConfig;
 	}
 
-	private String releaseLabel;
-
-	public String getReleaseLabel() {
-		if (releaseLabel == null) {
-			releaseLabel = getBuildProperties().getProperty("release.label");
-			if (releaseLabel == null || releaseLabel.equals("@release-label@"))
-				releaseLabel = "dev[" + getBuild() + "]";
-		}
-		return releaseLabel;
-	}
-
-	public String getBuild() {
-		String date = getBuildProperties().getProperty("date");
-		if (date == null || "@build-date@".equals(date)) date = Time.now().toString();
-		return date;
-	}
-
-	protected Properties buildProperties;
-
-	public final Properties getBuildProperties() {
-		if (buildProperties == null) {
-			try {
-				buildProperties = IO.loadProperties(IO.getResource(getClass(), "build.properties"), IO.UTF_8);
-			} catch (Throwable t) {
-				log.error(t);
-				buildProperties = new Properties();
-			}
-		}
+	public BuildProperties getBuildProperties() {
+		if (buildProperties == null) buildProperties = new BuildProperties(getClass());
 		return buildProperties;
 	}
 
@@ -391,28 +364,32 @@ public abstract class AApplication {
 		return taskManager;
 	}
 
-	private FileEntityStore entityStore;
+	private EntityStore entityStore;
 
 	public final EntityStore getEntityStore() {
-		if (entityStore == null) {
-			entityStore = new FileEntityStore();
-			entityStore.setDir(getApplicationDataDir() + "/entities");
-			File backupDir = new File(getApplicationDataDir() + "/entities-rescue");
-
-			File backupDirOld = new File(getApplicationDataDir() + "/backup/entities");
-			if (backupDirOld.exists()) {
-				backupDirOld.renameTo(backupDir);
-				backupDirOld.delete();
-				backupDirOld.getParentFile().delete();
-			}
-
-			entityStore.setBackupDir(backupDir.getPath());
-			entityStore.setVersion(getDataVersion());
-			Context.get().autowire(entityStore);
-
-			entityStore.deleteOldBackups();
-		}
+		if (entityStore == null) entityStore = createEntityStore();
 		return entityStore;
+	}
+
+	protected EntityStore createEntityStore() {
+		FileEntityStore store = new FileEntityStore();
+		store.setDir(getApplicationDataDir() + "/entities");
+		File backupDir = new File(getApplicationDataDir() + "/entities-rescue");
+
+		File backupDirOld = new File(getApplicationDataDir() + "/backup/entities");
+		if (backupDirOld.exists()) {
+			backupDirOld.renameTo(backupDir);
+			backupDirOld.delete();
+			backupDirOld.getParentFile().delete();
+		}
+
+		store.setBackupDir(backupDir.getPath());
+		store.setVersion(getDataVersion());
+		Context.get().autowire(store);
+
+		store.deleteOldBackups();
+
+		return store;
 	}
 
 	protected int getDataVersion() {

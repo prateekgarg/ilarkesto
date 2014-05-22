@@ -37,9 +37,8 @@ public class ApplicationStarter {
 	public static <A extends AApplication> A startApplication(Class<A> applicationClass, BeanProvider beanProvider,
 			String... arguments) {
 
-		Sys.storeStartupTime();
-		DefaultLogRecordHandler.activate();
 		Log.setDebugEnabled(Sys.isDevelopmentMode());
+		DefaultLogRecordHandler.activate();
 		Utl.language = Locale.getDefault().getLanguage();
 		LOG.info("********************************************************************************");
 		LOG.info("Starting application:", applicationClass.getName());
@@ -56,7 +55,8 @@ public class ApplicationStarter {
 			} catch (Throwable ex) {}
 			application.setArguments(arguments);
 			application.start();
-			LOG.info("Application started:", application.getApplicationName() + " " + application.getReleaseLabel());
+			LOG.info("Application started:", application.getApplicationName() + " "
+					+ application.getBuildProperties().getReleaseLabel());
 			LOG.info("********************************************************************************\n");
 			return application;
 		} catch (Throwable ex) {
