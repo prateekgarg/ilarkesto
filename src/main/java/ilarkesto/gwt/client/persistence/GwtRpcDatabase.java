@@ -31,8 +31,6 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 	private Transaction transaction;
 	private AGwtEntityFactory factory;
 
-	private boolean updatingFromRemote;
-
 	public GwtRpcDatabase(AGwtEntityFactory factory) {
 		super();
 		this.factory = factory;
@@ -41,7 +39,6 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 	@Override
 	protected void onUpdate(Collection<AEntity> modified, Collection<String> deleted,
 			Map<String, Map<String, Object>> modifiedProperties) {
-		if (updatingFromRemote) return;
 		AGwtApplication.get().sendChangesToServer(modified, deleted, modifiedProperties);
 	}
 
@@ -57,7 +54,8 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 	}
 
 	public void onEntitiesReceived(Collection<Map<String, Serializable>> entityDatas) {
-		updatingFromRemote = true;
+		Transaction t = getTransaction();
+		t.setIgnoreModifications(true);
 		try {
 			for (Map<String, Serializable> data : entityDatas) {
 				String id = (String) data.get("id");
@@ -72,7 +70,7 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 				entity.updateProperties(data);
 			}
 		} finally {
-			updatingFromRemote = false;
+			t.setIgnoreModifications(false);
 		}
 	}
 

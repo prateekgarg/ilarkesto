@@ -16,6 +16,7 @@ package ilarkesto.mda.legacy.generator;
 
 import ilarkesto.base.Reflect;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.mda.legacy.model.BeanModel;
 import ilarkesto.mda.legacy.model.CompositeModel;
@@ -171,9 +172,17 @@ public abstract class ABeanGenerator<B extends BeanModel> extends AClassGenerato
 	}
 
 	@Override
+	protected Set<String> getSuperinterfaces() {
+		Set<String> ret = new LinkedHashSet<String>(super.getSuperinterfaces());
+		ret.addAll(bean.getSuperinterfaces());
+		return ret;
+	}
+
+	@Override
 	protected Set<String> getImports() {
 		Set<String> result = new LinkedHashSet<String>();
 		result.addAll(super.getImports());
+		result.add(Utl.class.getName());
 		// result.add("ilarkesto.persistence.*");
 		result.add(Log.class.getName());
 		// result.add("ilarkesto.base.*");

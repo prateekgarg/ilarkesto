@@ -294,7 +294,9 @@ public abstract class AApplication {
 	public String getApplicationDataDir() {
 		if (applicationDataDir == null) {
 			if (isDevelopmentMode()) {
-				applicationDataDir = new File("runtimedata").getAbsolutePath();
+				String path = "runtimedata";
+				if (!new File("src").exists() && new File("../src").exists()) path = "../" + path;
+				applicationDataDir = new File(path).getAbsolutePath();
 			} else {
 				applicationDataDir = getProductionModeApplicationDataDir();
 			}

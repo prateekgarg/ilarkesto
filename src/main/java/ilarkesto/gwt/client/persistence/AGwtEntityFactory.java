@@ -20,4 +20,6 @@ public abstract class AGwtEntityFactory {
 
 	public abstract AEntity createEntity(String type, String id);
 
+	public abstract Class<? extends AEntity> getType(String type);
+
 }

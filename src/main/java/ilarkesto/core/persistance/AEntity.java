@@ -20,10 +20,12 @@ import ilarkesto.core.base.Uuid;
 import ilarkesto.core.time.DateAndTime;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -124,12 +126,23 @@ public class AEntity implements Serializable, TransferableEntity {
 		return getId().equals(((AEntity) obj).getId());
 	}
 
+	public static boolean exists(String id) {
+		return AEntityDatabase.get().getTransaction().contains(id);
+	}
+
 	public static AEntity getById(String id) {
 		return AEntityDatabase.get().getTransaction().get(id);
 	}
 
 	protected static Set<String> getIdsAsSet(Collection<? extends AEntity> entities) {
 		Set<String> result = new HashSet<String>(entities.size());
+		for (AEntity entity : entities)
+			result.add(entity.getId());
+		return result;
+	}
+
+	protected static List<String> getIdsAsList(Collection<? extends AEntity> entities) {
+		List<String> result = new ArrayList<String>();
 		for (AEntity entity : entities)
 			result.add(entity.getId());
 		return result;
