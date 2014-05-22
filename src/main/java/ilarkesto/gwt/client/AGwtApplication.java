@@ -75,7 +75,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 		onServerDataReceived(data);
 	}
 
-	protected void onServiceCallProcessed(AServiceCall<D> serviceCall) {}
+	protected void onServiceCallSuccessfullyProcessed(AServiceCall<D> serviceCall) {}
 
 	protected void onEntitiesReceived(Collection<Map<String, Serializable>> entities) {}
 

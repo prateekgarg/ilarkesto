@@ -14,6 +14,7 @@
  */
 package ilarkesto.gwt.client;
 
+import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
@@ -38,8 +39,9 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 	protected final Log log = Log.get(getClass());
 
 	private Runnable returnHandler;
-	private long startTime = -1;
-	private long runtime = -1;
+	private RuntimeTracker rtCall;
+	private long runtimeData = -1;
+	private long runtimeReturnHandler;
 
 	protected abstract void onExecute(int conversationNumber, AsyncCallback<D> callback);
 
@@ -55,11 +57,11 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 	@Override
 	public final void execute(Runnable returnHandler) {
-		if (startTime >= 0) throw new IllegalStateException(getName() + " already executed");
+		if (rtCall != null) throw new IllegalStateException(getName() + " already executed");
 		this.returnHandler = returnHandler;
 
 		activeServiceCalls.add(this);
-		startTime = Tm.getCurrentTimeMillis();
+		rtCall = new RuntimeTracker();
 		onExecute(AGwtApplication.get().getConversationNumber(), new ServiceCallback());
 		if (listener != null) listener.run();
 	}
@@ -79,7 +81,15 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 	}
 
 	public final long getRuntime() {
-		return runtime;
+		return rtCall.getRuntime();
+	}
+
+	public final long getRuntimeData() {
+		return runtimeData;
+	}
+
+	public final long getRuntimeReturnHandler() {
+		return runtimeReturnHandler;
 	}
 
 	public final String getName() {
@@ -91,10 +101,9 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 	}
 
 	private void serviceCallReturned() {
+		rtCall.stop();
 		activeServiceCalls.remove(this);
-		runtime = Tm.getCurrentTimeMillis() - startTime;
 		if (listener != null) listener.run();
-		AGwtApplication.get().onServiceCallProcessed(this);
 	}
 
 	protected void onCallbackError(List<ErrorWrapper> errors) {}
@@ -110,13 +119,23 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 		AGwtApplication.get().handleServiceCallError(getName(), errors);
 	}
 
-	protected void onCallbackSuccess(D data) {}
+	protected void onCallbackSuccess(D data) {
+		// required for Kunagi legacy code
+	}
 
 	private void callbackSuccess(D data) {
 		lastSuccessfullServiceCallTime = Tm.getCurrentTimeMillis();
+		RuntimeTracker rtData = new RuntimeTracker();
 		AGwtApplication.get().serverDataReceived(data);
 		onCallbackSuccess(data);
-		if (returnHandler != null) returnHandler.run();
+		runtimeData = rtData.getRuntime();
+
+		if (returnHandler != null) {
+			RuntimeTracker rtHandler = new RuntimeTracker();
+			returnHandler.run();
+			runtimeReturnHandler = rtHandler.getRuntime();
+		}
+		AGwtApplication.get().onServiceCallSuccessfullyProcessed(this);
 	}
 
 	protected class ServiceCallback implements AsyncCallback<D> {
