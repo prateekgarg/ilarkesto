@@ -160,7 +160,7 @@ public class Transaction {
 			sb.append("\n    Deleted: ").append(Str.format(deleted));
 			empty = false;
 		}
-		if (empty) sb.append("Empty");
+		if (empty) sb.append(" Empty");
 		return sb.toString();
 	}
 
