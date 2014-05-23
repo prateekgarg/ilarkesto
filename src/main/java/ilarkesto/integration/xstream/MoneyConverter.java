@@ -14,7 +14,7 @@
  */
 package ilarkesto.integration.xstream;
 
-import ilarkesto.base.Money;
+import ilarkesto.core.money.Money;
 
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 
