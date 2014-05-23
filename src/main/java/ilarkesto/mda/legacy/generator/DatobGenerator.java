@@ -363,7 +363,10 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 	private void writeFireModified(PropertyModel p) {
 		if (p.isFireModified()) {
 			String fieldName = getFieldName(p);
-			ln("        fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", " + fieldName + ");");
+			String value = fieldName;
+			if (!p.isPrimitive() && !p.getType().equals(String.class.getName()))
+				value = fieldName + " == null ? null : " + fieldName + ".toString()";
+			ln("        fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", " + value + ");");
 		}
 	}
 
