@@ -24,6 +24,7 @@ import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.gwt.client.ADataTransferObject;
+import ilarkesto.gwt.client.ClientDataTransporter;
 import ilarkesto.persistence.TransactionService;
 import ilarkesto.webapp.AWebSession;
 
@@ -37,7 +38,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public abstract class AGwtConversation<S extends AWebSession, E extends TransferableEntity> implements
-		Comparable<AGwtConversation> {
+		ClientDataTransporter<E>, Comparable<AGwtConversation> {
 
 	private static final Log LOG = Log.get(AGwtConversation.class);
 	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(2);
