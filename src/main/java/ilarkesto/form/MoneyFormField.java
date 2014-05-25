@@ -14,7 +14,7 @@
  */
 package ilarkesto.form;
 
-import ilarkesto.base.Money;
+import ilarkesto.core.money.Money;
 
 import java.util.Collection;
 import java.util.Map;

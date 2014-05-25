@@ -227,25 +227,6 @@ public class Str extends ilarkesto.core.base.Str {
 		return s;
 	}
 
-	public static String formatWithThousandsSeparator(long value, String separator) {
-		return formatWithThousandsSeparator(String.valueOf(value), separator);
-	}
-
-	public static String formatWithThousandsSeparator(String s, String separator) {
-		if (s == null) return null;
-		if (separator == null || s.length() <= 3) return s;
-		boolean negative = false;
-		if (s.startsWith("-")) {
-			negative = true;
-			s = s.substring(1);
-		}
-		if (s.length() > 3) s = s.substring(0, s.length() - 3) + separator + s.substring(s.length() - 3);
-		if (s.length() > 7) s = s.substring(0, s.length() - 7) + separator + s.substring(s.length() - 7);
-		if (s.length() > 11) s = s.substring(0, s.length() - 11) + separator + s.substring(s.length() - 11);
-		if (negative) s = '-' + s;
-		return s;
-	}
-
 	public static String substringTo(String s, String to) {
 		return substringTo(s, to, 0);
 	}

@@ -6,6 +6,10 @@ public class TmLocalizer {
 		return year + "-" + prefixZeros(month, 2) + "-" + prefixZeros(day, 2);
 	}
 
+	public String monthDay(int month, int day) {
+		return prefixZeros(month, 2) + "-" + prefixZeros(day, 2);
+	}
+
 	String prefixZeros(int value, int requiredDigits) {
 		String ret = String.valueOf(value);
 		int zerosToAdd = requiredDigits - ret.length();

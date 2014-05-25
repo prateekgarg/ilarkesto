@@ -131,6 +131,7 @@ public class AEntity implements Serializable, TransferableEntity {
 	}
 
 	public static AEntity getById(String id) {
+		if (id == null) return null;
 		return AEntityDatabase.get().getTransaction().get(id);
 	}
 

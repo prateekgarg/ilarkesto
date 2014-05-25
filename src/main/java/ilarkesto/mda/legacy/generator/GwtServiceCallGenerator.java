@@ -66,8 +66,11 @@ public class GwtServiceCallGenerator extends AClassGenerator {
 		annotationOverride();
 		ln("    protected synchronized void onExecute(int conversationNumber,", AsyncCallback.class.getName(),
 			"callback) {");
-		ln("        if (service==null) service = (" + getServiceClassName() + "Async) " + GWT.class.getName()
-				+ ".create(" + getServiceClassName() + ".class);");
+		ln("        if (service==null) {");
+		ln("            service = (" + getServiceClassName() + "Async) " + GWT.class.getName() + ".create("
+				+ getServiceClassName() + ".class);");
+		ln("            initializeService(service, \"" + Str.lowercaseFirstLetter(service.getName()) + "\");");
+		ln("        }");
 		s("        service." + method.getName() + "(conversationNumber");
 		for (ParameterModel param : method.getParameters()) {
 			s(",", param.getName());

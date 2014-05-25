@@ -10,6 +10,11 @@ public class TmLocalizerPl extends TmLocalizer {
 	}
 
 	@Override
+	public String monthDay(int month, int day) {
+		return prefixZeros(day, 2) + "." + prefixZeros(month, 2);
+	}
+
+	@Override
 	public String full(Weekday day) {
 		switch (day) {
 			case MONDAY:

@@ -76,6 +76,7 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 	}
 
 	public final boolean containsEntity(String entityId) {
+		if (entities == null) return false;
 		return entities.containsKey(entityId);
 	}
 
@@ -95,6 +96,7 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 	public final void addDeletedEntity(String entityId) {
 		if (deletedEntities == null) deletedEntities = new HashSet<String>();
 		deletedEntities.add(entityId);
+		entities.remove(entityId);
 	}
 
 	public final Set<String> getDeletedEntities() {

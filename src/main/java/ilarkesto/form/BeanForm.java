@@ -16,10 +16,10 @@ package ilarkesto.form;
 
 import ilarkesto.base.BeanMap;
 import ilarkesto.base.Factory;
-import ilarkesto.base.Money;
 import ilarkesto.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.money.Money;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.Time;
 import ilarkesto.core.time.TimePeriod;

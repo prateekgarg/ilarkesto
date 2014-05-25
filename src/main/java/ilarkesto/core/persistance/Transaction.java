@@ -108,12 +108,21 @@ public class Transaction {
 		modified.remove(entityId);
 	}
 
+	public boolean isDeleted(String id) {
+		return deleted.contains(id);
+	}
+
+	public boolean isDeleted(AEntity entity) {
+		return isDeleted(entity.getId());
+	}
+
 	public boolean contains(String id) {
 		if (deleted.contains(id)) return false;
 		return modified.contains(id) || backend.contains(id);
 	}
 
 	public AEntity get(String id) {
+		if (id == null) return null;
 		if (deleted.contains(id)) throw new EntityDoesNotExistException(id);
 		if (modified.contains(id)) return modified.get(id);
 		return backend.get(id);
@@ -151,12 +160,16 @@ public class Transaction {
 	public synchronized String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
+		boolean empty = true;
 		if (!modified.isEmpty()) {
 			sb.append("\n    Modified: ").append(Str.format(modified.getAllIds()));
+			empty = false;
 		}
 		if (!deleted.isEmpty()) {
 			sb.append("\n    Deleted: ").append(Str.format(deleted));
+			empty = false;
 		}
+		if (empty) sb.append(" Empty");
 		return sb.toString();
 	}
 
