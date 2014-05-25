@@ -26,8 +26,8 @@ public final class Money implements Comparable<Money>, Serializable {
 	public static final transient String EUR = "EUR";
 	public static final transient String USD = "USD";
 
-	private final long cent;
-	private final String currency;
+	private long cent;
+	private String currency;
 
 	public Money(long value, long cent, String currency) {
 		this.cent = (value * 100) + cent;
@@ -55,6 +55,10 @@ public final class Money implements Comparable<Money>, Serializable {
 		this.cent = Math.round(value * 100);
 		this.currency = currency;
 		if (this.currency == null) throw new RuntimeException("currency == null");
+	}
+
+	public Money() {
+		this(0, EUR);
 	}
 
 	public String getCurrency() {
