@@ -122,6 +122,7 @@ public class Transaction {
 	}
 
 	public AEntity get(String id) {
+		if (id == null) return null;
 		if (deleted.contains(id)) throw new EntityDoesNotExistException(id);
 		if (modified.contains(id)) return modified.get(id);
 		return backend.get(id);
