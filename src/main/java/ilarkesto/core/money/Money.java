@@ -17,7 +17,6 @@ package ilarkesto.core.money;
 import ilarkesto.core.base.Str;
 
 import java.io.Serializable;
-import java.util.Locale;
 
 /**
  * Working with money (amount + currency).
@@ -27,8 +26,8 @@ public final class Money implements Comparable<Money>, Serializable {
 	public static final transient String EUR = "EUR";
 	public static final transient String USD = "USD";
 
-	private final long cent;
-	private final String currency;
+	private long cent;
+	private String currency;
 
 	public Money(long value, long cent, String currency) {
 		this.cent = (value * 100) + cent;
@@ -56,6 +55,10 @@ public final class Money implements Comparable<Money>, Serializable {
 		this.cent = Math.round(value * 100);
 		this.currency = currency;
 		if (this.currency == null) throw new RuntimeException("currency == null");
+	}
+
+	public Money() {
+		this(0, EUR);
 	}
 
 	public String getCurrency() {
@@ -133,10 +136,10 @@ public final class Money implements Comparable<Money>, Serializable {
 		return sb.toString();
 	}
 
-	public String toString(Locale locale) {
-		if (locale != null) {
-			if (locale.equals(Locale.GERMAN) || locale.equals(Locale.GERMANY))
-				return getAmountAsString(',', ".") + ' ' + currency;
+	public String toString(String lang) {
+		if (lang != null) {
+			lang = lang.toLowerCase();
+			if (lang.equals("de")) return getAmountAsString(',', ".") + ' ' + currency;
 		}
 		return toString('.');
 	}
