@@ -210,6 +210,13 @@ public abstract class AClassGenerator {
 		return this;
 	}
 
+	public AClassGenerator javadoc(String text) {
+		ln("/**");
+		ln(" * ", text);
+		ln("**/");
+		return this;
+	}
+
 	public AClassGenerator sU(String s) {
 		return s(Str.uppercaseFirstLetter(s));
 	}
