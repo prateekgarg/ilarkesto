@@ -19,9 +19,11 @@ import ilarkesto.auth.EditProtected;
 import ilarkesto.auth.Ownable;
 import ilarkesto.auth.ViewProtected;
 import ilarkesto.base.Str;
+import ilarkesto.core.base.Uuid;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
+import ilarkesto.core.persistance.KeytableValue;
 import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
@@ -83,117 +85,12 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 
 		if (!isLegacyBean(bean)) {
-			String queryName = "A" + bean.getName() + "Query";
-
-			if (bean.isSingleton()) {
-				ln();
-				ln("    public static", bean.getName(), "get() {");
-				ln("        List<" + bean.getName() + "> ret = new " + AllByTypeQuery.class.getName() + "("
-						+ bean.getName() + ".class).list();");
-				ln("        if (ret.isEmpty()) return null;");
-				ln("        return ret.get(0);");
-				ln("    }");
-
-				ln();
-				ln("    protected", bean.getName(), "createSingleton() {");
-				ln("        return new", bean.getName() + "();");
-				ln("    }");
-			}
-
-			if (!bean.isSingleton()) {
-				ln();
-				ln("    public static List<" + bean.getName() + "> listAll() {");
-				ln("        return new " + AllByTypeQuery.class.getName() + "(" + bean.getName() + ".class).list();");
-				ln("    }");
-
-				ln();
-				ln("    public static", bean.getName(), "getById(String id) {");
-				ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(id);");
-				ln("    }");
-			}
-
-			for (PropertyModel p : bean.getProperties()) {
-				ln();
-				if (p.isUnique()) {
-					ln("    public static", bean.getName(), "getBy" + Str.uppercaseFirstLetter(p.getName()) + "(final "
-							+ p.getType() + " " + p.getName() + ") {");
-					ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(new "
-							+ queryName + "() {");
-					ln("            @Override");
-					ln("            public boolean matches(" + bean.getName() + " entity) {");
-					ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
-							+ ");");
-					ln("            }");
-					ln("        });");
-					ln("    }");
-
-				}
-				if (!p.isUnique()) {
-					ln("    public static List<", bean.getName() + ">",
-						"listBy" + Str.uppercaseFirstLetter(p.getNameSingular()) + "(final " + p.getContentType() + " "
-								+ p.getNameSingular() + ") {");
-					ln("        return new " + queryName + "() {");
-					ln("            @Override");
-					ln("            public boolean matches(" + bean.getName() + " entity) {");
-
-					if (p.isCollection()) {
-						ln("                return entity.contains" + Str.uppercaseFirstLetter(p.getNameSingular())
-								+ "(" + p.getNameSingular() + ");");
-					}
-
-					if (!p.isCollection()) {
-						ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "("
-								+ p.getName() + ");");
-					}
-					ln("            }");
-					ln("        }.list();");
-					ln("    }");
-				}
-
-			}
-
-			ln();
-			ln("    public abstract static class A" + bean.getName() + "Query extends " + AEntityQuery.class.getName()
-					+ "<" + bean.getName() + "> {");
-			ln("        public Class<" + bean.getName() + "> getType() {");
-			ln("            return " + bean.getName() + ".class;");
-			ln("        }");
-			ln("    }");
-
-			ln();
-			annotationOverride();
-			String setClass = "Set<" + ilarkesto.core.persistance.AEntity.class.getName() + ">";
-			ln("    public " + setClass + " getSlaves() {");
-			ln("        " + setClass + " ret = new HashSet<" + ilarkesto.core.persistance.AEntity.class.getName()
-					+ ">();");
-			ln("        ret.addAll(super.getSlaves());");
-			for (PropertyModel p : bean.getSlaveProperties()) {
-				if (p.isCollection()) {
-					ln("        ret.addAll(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
-				}
-				if (!p.isCollection()) {
-					ln("        ret.add(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
-				}
-			}
-			ln("        return ret;");
-			ln("    }");
-
-			for (PredicateModel p : bean.getPredicates()) {
-				ln();
-				ln("    public abstract boolean is" + Str.uppercaseFirstLetter(p.getName()) + "();");
-
-				ln();
-				ln("    public static List<" + bean.getBeanClass() + "> listByIs"
-						+ Str.uppercaseFirstLetter(p.getName()) + "() {");
-				ln("        return new " + queryName + "() {");
-				ln("            @Override");
-				ln("            public boolean matches(" + bean.getName() + " entity) {");
-				ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "();");
-				ln("            }");
-				ln("        }.list();");
-				ln("    }");
-			}
-
+			writeKeytableFactoryMethod();
+			writeListAll();
+			writeGetByListBy();
+			writePredicates();
+			writeGetSlaves();
+			writeQueryBaseclass();
 		}
 
 		ln();
@@ -260,6 +157,154 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 
 		super.writeContent();
+	}
+
+	private void writeKeytableFactoryMethod() {
+		if (!bean.getSuperinterfaces().contains(KeytableValue.class.getName())) return;
+
+		ln();
+		ln("    public static synchronized", bean.getBeanClass(), " create(String key, String label) {");
+		ln("        " + bean.getBeanClass(), " ktvalue = getByKey(key);");
+		ln("        if (ktvalue != null) return ktvalue;");
+		ln("        ktvalue = new", bean.getBeanClass() + "();");
+		ln("        ktvalue.setKey(key);");
+		ln("        ktvalue.setLabel(label);");
+		ln("        ktvalue.persist();");
+		ln("        return ktvalue;");
+		ln("    }");
+
+		ln();
+		ln("    public static synchronized", bean.getBeanClass(), " createWithUuidKey(String label) {");
+		ln("        return create(" + Uuid.class.getName() + ".create(), label);");
+		ln("    }");
+
+		ln();
+		ln("    public static synchronized", bean.getBeanClass(), " createWithUuidKey() {");
+		ln("        return create(" + Uuid.class.getName() + ".create(), \"#\"+listAll().size());");
+		ln("    }");
+	}
+
+	private void writeListAll() {
+		if (bean.isSingleton()) {
+			ln();
+			ln("    public static", bean.getName(), "get() {");
+			ln("        List<" + bean.getName() + "> ret = new " + AllByTypeQuery.class.getName() + "("
+					+ bean.getName() + ".class).list();");
+			ln("        if (ret.isEmpty()) return null;");
+			ln("        return ret.get(0);");
+			ln("    }");
+
+			ln();
+			ln("    protected", bean.getName(), "createSingleton() {");
+			ln("        return new", bean.getName() + "();");
+			ln("    }");
+		}
+
+		if (!bean.isSingleton()) {
+			ln();
+			ln("    public static List<" + bean.getName() + "> listAll() {");
+			ln("        return new " + AllByTypeQuery.class.getName() + "(" + bean.getName() + ".class).list();");
+			ln("    }");
+
+			ln();
+			ln("    public static", bean.getName(), "getById(String id) {");
+			ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(id);");
+			ln("    }");
+		}
+	}
+
+	private void writeQueryBaseclass() {
+		ln();
+		ln("    public abstract static class A" + bean.getName() + "Query extends " + AEntityQuery.class.getName()
+				+ "<" + bean.getName() + "> {");
+		ln("        public Class<" + bean.getName() + "> getType() {");
+		ln("            return " + bean.getName() + ".class;");
+		ln("        }");
+		ln("    }");
+	}
+
+	private void writePredicates() {
+		String queryName = "A" + bean.getName() + "Query";
+		for (PredicateModel p : bean.getPredicates()) {
+			ln();
+			ln("    public abstract boolean is" + Str.uppercaseFirstLetter(p.getName()) + "();");
+
+			ln();
+			ln("    public static List<" + bean.getBeanClass() + "> listByIs" + Str.uppercaseFirstLetter(p.getName())
+					+ "() {");
+			ln("        return new " + queryName + "() {");
+			ln("            @Override");
+			ln("            public boolean matches(" + bean.getName() + " entity) {");
+			ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "();");
+			ln("            }");
+			ln("        }.list();");
+			ln("    }");
+		}
+	}
+
+	private void writeGetSlaves() {
+		ln();
+		annotationOverride();
+		String setClass = "Set<" + ilarkesto.core.persistance.AEntity.class.getName() + ">";
+		ln("    public " + setClass + " getSlaves() {");
+		ln("        " + setClass + " ret = new HashSet<" + ilarkesto.core.persistance.AEntity.class.getName() + ">();");
+		ln("        ret.addAll(super.getSlaves());");
+		for (PropertyModel p : bean.getSlaveProperties()) {
+			if (p.isCollection()) {
+				ln("        ret.addAll(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
+			}
+			if (!p.isCollection()) {
+				ln("        ret.add(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
+			}
+		}
+		ln("        return ret;");
+		ln("    }");
+	}
+
+	private void writeGetByListBy() {
+		String queryName = "A" + bean.getName() + "Query";
+
+		for (PropertyModel p : bean.getProperties()) {
+			ln();
+			if (p.isUnique()) {
+				ln("    public static", bean.getName(),
+					"getBy" + Str.uppercaseFirstLetter(p.getName()) + "(final " + p.getType() + " " + p.getName()
+							+ ") {");
+				ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(new "
+						+ queryName + "() {");
+				ln("            @Override");
+				ln("            public boolean matches(" + bean.getName() + " entity) {");
+				ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
+						+ ");");
+				ln("            }");
+				ln("        });");
+				ln("    }");
+
+			}
+			if (!p.isUnique()) {
+				ln("    public static List<",
+					bean.getName() + ">",
+					"listBy" + Str.uppercaseFirstLetter(p.getNameSingular()) + "(final " + p.getContentType() + " "
+							+ p.getNameSingular() + ") {");
+				ln("        return new " + queryName + "() {");
+				ln("            @Override");
+				ln("            public boolean matches(" + bean.getName() + " entity) {");
+
+				if (p.isCollection()) {
+					ln("                return entity.contains" + Str.uppercaseFirstLetter(p.getNameSingular()) + "("
+							+ p.getNameSingular() + ");");
+				}
+
+				if (!p.isCollection()) {
+					ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
+							+ ");");
+				}
+				ln("            }");
+				ln("        }.list();");
+				ln("    }");
+			}
+
+		}
 	}
 
 	private void writeBackReference(BackReferenceModel br) {
