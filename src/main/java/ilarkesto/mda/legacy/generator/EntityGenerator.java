@@ -91,6 +91,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			writePredicates();
 			writeGetSlaves();
 			writeQueryBaseclass();
+			writeToString();
 		}
 
 		ln();
@@ -157,6 +158,17 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 
 		super.writeContent();
+	}
+
+	private void writeToString() {
+		if (bean.getSuperinterfaces().contains(KeytableValue.class.getName())) {
+			ln();
+			annotationOverride();
+			ln("    public String toString() {");
+			ln("        return getLabel();");
+			ln("    }");
+			return;
+		}
 	}
 
 	private void writeKeytableFactoryMethod() {

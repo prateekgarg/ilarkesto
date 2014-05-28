@@ -23,7 +23,9 @@ import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.persistance.UniqueFieldConstraintException;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
+import ilarkesto.core.time.TimePeriod;
 import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
@@ -34,6 +36,8 @@ import ilarkesto.persistence.AStructure;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import com.google.gdata.data.extensions.Money;
 
 public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
@@ -364,12 +368,13 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (p.isFireModified()) {
 			String fieldName = getFieldName(p);
 			String value = fieldName;
-			boolean toString = true;
-			if (p.isPrimitive()) toString = false;
-			if (p.getType().equals(String.class.getName())) toString = false;
-			if (p.getType().equals(Integer.class.getName())) toString = false;
-			if (p.getType().equals(Long.class.getName())) toString = false;
-			if (p.getType().equals(Boolean.class.getName())) toString = false;
+			boolean toString = false;
+			if (p.getType().equals(Date.class.getName())) toString = true;
+			if (p.getType().equals(Time.class.getName())) toString = true;
+			if (p.getType().equals(DateAndTime.class.getName())) toString = true;
+			if (p.getType().equals(TimePeriod.class.getName())) toString = true;
+			if (p.getType().equals(DayAndMonth.class.getName())) toString = true;
+			if (p.getType().equals(Money.class.getName())) toString = true;
 			if (toString) value = fieldName + " == null ? null : " + fieldName + ".toString()";
 			ln("        fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", " + value + ");");
 		}
