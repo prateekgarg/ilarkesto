@@ -89,7 +89,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			writeListAll();
 			writeGetByListBy();
 			writePredicates();
-			writeGetSlaves();
+			writeGetPassengers();
 			writeQueryBaseclass();
 			writeToString();
 		}
@@ -254,23 +254,24 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 	}
 
-	private void writeGetSlaves() {
-		ln();
-		annotationOverride();
-		String setClass = "Set<" + ilarkesto.core.persistance.AEntity.class.getName() + ">";
-		ln("    public " + setClass + " getSlaves() {");
-		ln("        " + setClass + " ret = new HashSet<" + ilarkesto.core.persistance.AEntity.class.getName() + ">();");
-		ln("        ret.addAll(super.getSlaves());");
-		for (PropertyModel p : bean.getSlaveProperties()) {
-			if (p.isCollection()) {
-				ln("        ret.addAll(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
-			}
-			if (!p.isCollection()) {
-				ln("        ret.add(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
-			}
-		}
-		ln("        return ret;");
-		ln("    }");
+	private void writeGetPassengers() {
+		// ln();
+		// annotationOverride();
+		// String setClass = "Set<" + ilarkesto.core.persistance.AEntity.class.getName() + ">";
+		// ln("    public " + setClass + " getPassengers() {");
+		// ln("        " + setClass + " ret = new HashSet<" +
+		// ilarkesto.core.persistance.AEntity.class.getName() + ">();");
+		// ln("        ret.addAll(super.getPassengers());");
+		// for (PropertyModel p : bean.getSlaveProperties()) {
+		// if (p.isCollection()) {
+		// ln("        ret.addAll(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
+		// }
+		// if (!p.isCollection()) {
+		// ln("        ret.add(get" + Str.uppercaseFirstLetter(p.getName()) + "());");
+		// }
+		// }
+		// ln("        return ret;");
+		// ln("    }");
 	}
 
 	private void writeGetByListBy() {

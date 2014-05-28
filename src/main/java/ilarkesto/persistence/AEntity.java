@@ -122,7 +122,7 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	}
 
 	@Override
-	public <E extends TransferableEntity> Set<E> getSlaves() {
+	public <E extends TransferableEntity> Set<E> getPassengers() {
 		return Collections.emptySet();
 	}
 

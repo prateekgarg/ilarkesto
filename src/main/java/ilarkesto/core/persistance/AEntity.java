@@ -22,7 +22,6 @@ import ilarkesto.core.time.DateAndTime;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,8 +48,8 @@ public class AEntity implements Serializable, TransferableEntity {
 	public void ensureIntegrity() {}
 
 	@Override
-	public Set<AEntity> getSlaves() {
-		return Collections.emptySet();
+	public Set<AEntity> getPassengers() {
+		return new HashSet<AEntity>();
 	}
 
 	/**

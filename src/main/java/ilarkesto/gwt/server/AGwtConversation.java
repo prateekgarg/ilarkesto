@@ -126,7 +126,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 
 	private void resolveSlaves(TransferableEntity entity, Set<TransferableEntity> all) {
 		if (!all.add(entity)) return;
-		for (TransferableEntity slave : entity.getSlaves()) {
+		for (TransferableEntity slave : entity.getPassengers()) {
 			if (slave == null) continue;
 			resolveSlaves(slave, all);
 		}

@@ -27,6 +27,9 @@ public interface TransferableEntity {
 
 	Map createPropertiesMap();
 
-	<E extends TransferableEntity> Set<E> getSlaves();
+	/**
+	 * @return other entities which need to be transported together with this entity
+	 */
+	<E extends TransferableEntity> Set<E> getPassengers();
 
 }
