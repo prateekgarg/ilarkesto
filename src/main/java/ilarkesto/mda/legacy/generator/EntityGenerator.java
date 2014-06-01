@@ -32,6 +32,7 @@ import ilarkesto.mda.legacy.model.BackReferenceModel;
 import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PredicateModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
+import ilarkesto.mda.legacy.model.ReferencePropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.search.Searchable;
@@ -86,6 +87,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 
 		if (!isLegacyBean(bean)) {
 			writeKeytableFactoryMethod();
+			writeKeytableGetLabel();
 			writeListAll();
 			writeGetByListBy();
 			writePredicates();
@@ -158,6 +160,20 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 
 		super.writeContent();
+	}
+
+	private void writeKeytableGetLabel() {
+		for (PropertyModel p : bean.getProperties()) {
+			if (!(p instanceof ReferencePropertyModel)) continue;
+			ReferencePropertyModel ref = (ReferencePropertyModel) p;
+			EntityModel referencedEntity = ref.getReferencedEntity();
+			if (!referencedEntity.getSuperinterfaces().contains(KeytableValue.class.getName())) continue;
+			ln();
+			String pNameUpper = Str.uppercaseFirstLetter(p.getName());
+			ln("    public String get" + pNameUpper + "Label() {");
+			ln("        return is" + pNameUpper + "Set() ? get" + pNameUpper + "().getLabel() : null;");
+			ln("    }");
+		}
 	}
 
 	private void writeToString() {

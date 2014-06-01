@@ -18,10 +18,12 @@ public class MultilineBuilder {
 
 	private StringBuilder sb = new StringBuilder();
 
-	public MultilineBuilder ln(String... words) {
+	public MultilineBuilder ln(Object... words) {
 		boolean added = false;
 		boolean first = true;
-		for (String word : words) {
+		for (Object o : words) {
+			if (o == null) continue;
+			String word = o.toString();
 			if (Str.isBlank(word)) continue;
 			if (first) {
 				first = false;
