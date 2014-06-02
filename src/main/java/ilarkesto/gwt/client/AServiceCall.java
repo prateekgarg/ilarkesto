@@ -63,7 +63,6 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 		activeServiceCalls.add(this);
 		rtCall = new RuntimeTracker();
 		onExecute(AGwtApplication.get().getConversationNumber(), new ServiceCallback());
-		if (listener != null) listener.run();
 	}
 
 	public static final boolean containsServiceCall(Class<? extends ServiceCall> type) {
@@ -102,6 +101,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 	private void serviceCallReturned() {
 		rtCall.stop();
+		log.info("serviceCallReturned()");
 		activeServiceCalls.remove(this);
 		if (listener != null) listener.run();
 	}
@@ -152,7 +152,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 			List<ErrorWrapper> errors = data.getErrors();
 			if (errors != null && !errors.isEmpty()) {
-				onCallbackError(errors);
+				callbackError(errors);
 				return;
 			}
 

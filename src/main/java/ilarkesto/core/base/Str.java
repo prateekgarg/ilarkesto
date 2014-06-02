@@ -310,6 +310,9 @@ public class Str {
 				case '`':
 					sb.append("%60");
 					break;
+				case '\n':
+					sb.append("%0A");
+					break;
 				default:
 					sb.append(c);
 			}
@@ -434,6 +437,10 @@ public class Str {
 	}
 
 	public static String toHtml(String s) {
+		return toHtml(s, true);
+	}
+
+	public static String toHtml(String s, boolean brForNl) {
 		if (s == null) return null;
 		s = s.replace("&", "&amp;");
 		s = s.replace(String.valueOf(ae), "&auml;");
@@ -447,7 +454,11 @@ public class Str {
 		s = s.replace("<", "&lt;");
 		s = s.replace(">", "&gt;");
 		s = s.replace("\"", "&quot;");
-		s = s.replace("\n", "<br>");
+		if (brForNl) {
+			s = s.replace("\n", "<br>");
+		} else {
+			s = s.replace("\n", "&#10;");
+		}
 		return s;
 	}
 

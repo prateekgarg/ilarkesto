@@ -466,7 +466,7 @@ public class HtmlBuilder {
 
 	private Tag INPUT(String type, String name, String value) {
 		Tag tag = startTag(INPUT, true).set("type", type).set("name", name);
-		if (value != null) tag.set("value", Str.replaceForHtml(value));
+		if (value != null) tag.set("value", Str.toHtml(value, false));
 		return tag;
 	}
 
@@ -782,6 +782,12 @@ public class HtmlBuilder {
 
 	public void endP() {
 		endTag(P);
+	}
+
+	public void P(String text) {
+		startP();
+		text(text);
+		endP();
 	}
 
 	// --- CODE ---
