@@ -47,7 +47,7 @@ public class Transaction {
 	}
 
 	public void commit() {
-		log.info("commit()", toString());
+		if (!isEmpty()) log.info("commit()", toString());
 		ensureIntegrity();
 		backend.update(modified.getAll(), deleted, modifiedPropertiesByEntityId);
 		backend.onTransactionFinished(this);
@@ -171,6 +171,10 @@ public class Transaction {
 		}
 		if (empty) sb.append(" Empty");
 		return sb.toString();
+	}
+
+	public boolean isEmpty() {
+		return modified.isEmpty() && deleted.isEmpty();
 	}
 
 	private static Map<String, Map<String, Object>> updatePropertiesMap(

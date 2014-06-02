@@ -33,7 +33,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 
-	protected static final Log log = Log.get(AGwtServiceImpl.class);
+	protected final Log log = Log.get(getClass());
 
 	protected abstract AWebApplication getWebApplication();
 
