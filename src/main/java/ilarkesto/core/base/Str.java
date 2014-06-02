@@ -393,6 +393,23 @@ public class Str {
 			} else {
 				sb.append(delimiter);
 			}
+			sb.append(format(s));
+		}
+		return sb.toString();
+	}
+
+	public static String concatNotBlank(Collection strings, String delimiter) {
+		if (strings == null) return null;
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (Object o : strings) {
+			String s = format(o);
+			if (Str.isBlank(s)) continue;
+			if (first) {
+				first = false;
+			} else {
+				sb.append(delimiter);
+			}
 			sb.append(s);
 		}
 		return sb.toString();
