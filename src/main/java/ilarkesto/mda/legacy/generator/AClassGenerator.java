@@ -28,7 +28,7 @@ import java.util.Set;
 
 public abstract class AClassGenerator {
 
-	private static final Log LOG = Log.get(AClassGenerator.class);
+	protected final Log log = Log.get(AClassGenerator.class);
 
 	protected abstract String getName();
 
@@ -122,7 +122,7 @@ public abstract class AClassGenerator {
 				return;
 			}
 		}
-		LOG.info("Writing:", file.getPath());
+		log.info("Writing:", file.getPath());
 		IO.writeFile(file, code, IO.UTF_8);
 	}
 
