@@ -60,9 +60,9 @@ public final class Money implements Comparable<Money>, Serializable {
 	}
 
 	public Money(BigDecimal value, String currency) {
+		Args.assertNotNull(currency, "currency");
 		this.cent = value.movePointRight(2).longValueExact();
-		this.currency = currency;
-		if (this.currency == null) throw new RuntimeException("currency == null");
+		this.currency = currency.toUpperCase();
 	}
 
 	public Money() {
