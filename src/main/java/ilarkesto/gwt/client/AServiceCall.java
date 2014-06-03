@@ -102,7 +102,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 	private void serviceCallReturned() {
 		rtCall.stop();
-		log.info("serviceCallReturned()");
+		if (!getName().equals("Ping")) log.info("serviceCallReturned()");
 		activeServiceCalls.remove(this);
 		if (listener != null) listener.run();
 	}
