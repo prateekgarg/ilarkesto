@@ -58,4 +58,9 @@ public abstract class ACachingEntityDatabase extends AEntityDatabase {
 		return cache.list(query);
 	}
 
+	@Override
+	protected Collection<AEntity> listAll() {
+		return cache.getAll();
+	}
+
 }

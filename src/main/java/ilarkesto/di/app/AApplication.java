@@ -23,6 +23,7 @@ import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.base.AFileStorage;
 import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.AEntityDatabase;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.di.Context;
@@ -71,8 +72,11 @@ public abstract class AApplication {
 
 	public void ensureIntegrity() {
 		log.info("Ensuring application integrity");
+
 		getDaoService().ensureIntegrity();
 		getTransactionService().commit();
+
+		if (AEntityDatabase.instance != null) AEntityDatabase.instance.ensureIntegrityForAllEntities();
 	}
 
 	protected boolean isSingleton() {

@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.persistance;
 
+import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.logging.Log;
 
 import java.util.Collection;
@@ -41,12 +42,26 @@ public abstract class AEntityDatabase {
 	public abstract void update(Collection<AEntity> modified, Collection<String> deletedIds,
 			Map<String, Map<String, Object>> modifiedPropertiesByEntityId);
 
+	protected abstract Collection<AEntity> listAll();
+
 	public boolean contains(String id) {
 		try {
 			return get(id) != null;
 		} catch (EntityDoesNotExistException ex) {
 			return false;
 		}
+	}
+
+	public void ensureIntegrityForAllEntities() {
+		log.info("Ensuring integrity for all entities");
+		RuntimeTracker rt = new RuntimeTracker();
+		Transaction transaction = getTransaction();
+		Collection<AEntity> entities = listAll();
+		for (AEntity entity : entities) {
+			entity.ensureIntegrity();
+		}
+		log.info("Integrity for all", entities.size(), "ensured in", rt.getRuntimeFormated());
+		transaction.commit();
 	}
 
 	public static AEntityDatabase get() {
