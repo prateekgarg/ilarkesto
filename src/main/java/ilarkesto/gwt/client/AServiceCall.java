@@ -27,6 +27,7 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.rpc.StatusCodeException;
 
 public abstract class AServiceCall<D extends ADataTransferObject> implements ServiceCall {
 
@@ -143,6 +144,13 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 		@Override
 		public void onFailure(Throwable ex) {
 			serviceCallReturned();
+			if (ex instanceof StatusCodeException) {
+				StatusCodeException sce = (StatusCodeException) ex;
+				if (sce.getStatusCode() == 0) {
+					callbackError(Utl.toList(new ErrorWrapper("ServerNotAvailable", "Server is not available.")));
+					return;
+				}
+			}
 			callbackError(Utl.toList(new ErrorWrapper(ex)));
 		}
 
