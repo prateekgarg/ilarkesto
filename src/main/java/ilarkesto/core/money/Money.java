@@ -17,6 +17,7 @@ package ilarkesto.core.money;
 import ilarkesto.core.base.Str;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Working with money (amount + currency).
@@ -53,6 +54,12 @@ public final class Money implements Comparable<Money>, Serializable {
 
 	public Money(double value, String currency) {
 		this.cent = Math.round(value * 100);
+		this.currency = currency;
+		if (this.currency == null) throw new RuntimeException("currency == null");
+	}
+
+	public Money(BigDecimal value, String currency) {
+		this.cent = value.movePointRight(2).longValueExact();
 		this.currency = currency;
 		if (this.currency == null) throw new RuntimeException("currency == null");
 	}
