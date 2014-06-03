@@ -184,7 +184,7 @@ public final class Money implements Comparable<Money>, Serializable {
 		return cent == other.cent && currency.equals(other.currency);
 	}
 
-	private int hashCode;
+	private transient int hashCode;
 
 	@Override
 	public int hashCode() {

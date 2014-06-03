@@ -21,12 +21,14 @@ import ilarkesto.auth.ViewProtected;
 import ilarkesto.base.Str;
 import ilarkesto.core.base.Uuid;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.money.Money;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.persistance.KeytableValue;
 import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
 import ilarkesto.mda.legacy.model.BackReferenceModel;
 import ilarkesto.mda.legacy.model.EntityModel;
@@ -113,6 +115,12 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					ln("        properties.put(\"" + propertyVar + "\", this." + propertyVar
 							+ " == null ? null : this." + propertyVar + ".toString());");
 				} else if (p.getType().equals(DateAndTime.class.getName())) {
+					ln("        properties.put(\"" + propertyVar + "\", this." + propertyVar
+							+ " == null ? null : this." + propertyVar + ".toString());");
+				} else if (p.getType().equals(DayAndMonth.class.getName())) {
+					ln("        properties.put(\"" + propertyVar + "\", this." + propertyVar
+							+ " == null ? null : this." + propertyVar + ".toString());");
+				} else if (p.getType().equals(Money.class.getName())) {
 					ln("        properties.put(\"" + propertyVar + "\", this." + propertyVar
 							+ " == null ? null : this." + propertyVar + ".toString());");
 				} else {

@@ -17,6 +17,7 @@ package ilarkesto.mda.legacy.generator;
 import ilarkesto.auth.AUser;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.money.Money;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.SearchText;
 import ilarkesto.core.persistance.Transaction;
@@ -36,8 +37,6 @@ import ilarkesto.persistence.AStructure;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import com.google.gdata.data.extensions.Money;
 
 public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
@@ -763,6 +762,10 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("        value = value == null ? null : new " + Time.class.getName() + "((String)value);");
 			} else if (type.equals(DateAndTime.class.getName())) {
 				ln("        value = value == null ? null : new " + DateAndTime.class.getName() + "((String)value);");
+			} else if (type.equals(DayAndMonth.class.getName())) {
+				ln("        value = value == null ? null : new " + DayAndMonth.class.getName() + "((String)value);");
+			} else if (type.equals(Money.class.getName())) {
+				ln("        value = value == null ? null : new " + Money.class.getName() + "((String)value);");
 			}
 			ln("        set" + pNameUpper + "((" + p.getType() + ")value);");
 		}

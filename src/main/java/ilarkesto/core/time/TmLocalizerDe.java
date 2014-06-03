@@ -11,7 +11,7 @@ public class TmLocalizerDe extends TmLocalizer {
 
 	@Override
 	public String monthDay(int month, int day) {
-		return prefixZeros(day, 2) + "." + prefixZeros(month, 2);
+		return prefixZeros(day, 2) + "." + prefixZeros(month, 2) + ".";
 	}
 
 	@Override

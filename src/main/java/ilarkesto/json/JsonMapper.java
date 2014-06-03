@@ -16,8 +16,10 @@ package ilarkesto.json;
 
 import ilarkesto.base.Reflect;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.money.Money;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonSaxParser.ContentHandler;
@@ -80,7 +82,8 @@ public class JsonMapper {
 			return;
 		}
 
-		if (object instanceof Date || object instanceof Time || object instanceof DateAndTime) {
+		if (object instanceof Date || object instanceof Time || object instanceof DateAndTime
+				|| object instanceof DayAndMonth || object instanceof Money) {
 			Json.printValue(object.toString(), out, 0);
 			return;
 		}
@@ -329,6 +332,10 @@ public class JsonMapper {
 						value = new Time(s);
 					} else if (fieldType.equals(DateAndTime.class)) {
 						value = new DateAndTime(s);
+					} else if (fieldType.equals(DayAndMonth.class)) {
+						value = new DayAndMonth(s);
+					} else if (fieldType.equals(Money.class)) {
+						value = new Money(s);
 					}
 				}
 			}

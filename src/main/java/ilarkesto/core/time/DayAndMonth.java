@@ -44,7 +44,7 @@ public class DayAndMonth implements Comparable<DayAndMonth>, Serializable {
 	}
 
 	public DayAndMonth(String s) {
-		if (s.length() != 5) throw new RuntimeException("Illegal date format: " + s);
+		if (s.length() != 5) throw new RuntimeException("Illegal day-and-month format: " + s);
 
 		int m = Integer.parseInt(s.substring(0, 2));
 		int d = Integer.parseInt(s.substring(3, 5));
