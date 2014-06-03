@@ -10,8 +10,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ErrorWrapper implements Serializable, IsSerializable {
 
+	public static final String SERVER_NOT_AVAILABLE = "ServerNotAvailable";
+
 	private String name;
 	private String message;
+
+	public static ErrorWrapper createServerNotAvailable() {
+		return new ErrorWrapper(SERVER_NOT_AVAILABLE, "Server not available.");
+	}
 
 	public ErrorWrapper(String name, String message) {
 		super();
@@ -25,6 +31,10 @@ public class ErrorWrapper implements Serializable, IsSerializable {
 
 	private ErrorWrapper() {
 		this("unknown error", null);
+	}
+
+	public boolean isServerNotAvailable() {
+		return SERVER_NOT_AVAILABLE.equals(name);
 	}
 
 	public String getName() {

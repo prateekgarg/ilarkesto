@@ -147,7 +147,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 			if (ex instanceof StatusCodeException) {
 				StatusCodeException sce = (StatusCodeException) ex;
 				if (sce.getStatusCode() == 0) {
-					callbackError(Utl.toList(new ErrorWrapper("ServerNotAvailable", "Server is not available.")));
+					callbackError(Utl.toList(ErrorWrapper.createServerNotAvailable()));
 					return;
 				}
 			}
