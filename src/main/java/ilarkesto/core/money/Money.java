@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.money;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 
 import java.io.Serializable;
@@ -30,31 +31,31 @@ public final class Money implements Comparable<Money>, Serializable {
 	private String currency;
 
 	public Money(long value, long cent, String currency) {
+		Args.assertNotNull(currency, "currency");
 		this.cent = (value * 100) + cent;
-		this.currency = currency;
-		if (this.currency == null) throw new RuntimeException("currency == null");
+		this.currency = currency.toUpperCase();
 	}
 
 	public Money(String s) {
 		int amountCurrencySeparatorIdx = s.indexOf(' ');
 		if (amountCurrencySeparatorIdx < 1) throw new IllegalArgumentException("Unsupported money format: " + s);
 
-		this.currency = s.substring(amountCurrencySeparatorIdx).trim();
+		this.currency = s.substring(amountCurrencySeparatorIdx).trim().toUpperCase();
 
 		String amount = s.substring(0, amountCurrencySeparatorIdx).trim().replace(',', '.');
 		this.cent = Math.round(Double.parseDouble(amount) * 100);
 	}
 
 	public Money(String amount, String currency) {
+		Args.assertNotNull(currency, "currency");
 		this.cent = Math.round(Double.parseDouble(amount.replace(',', '.')) * 100);
-		this.currency = currency;
-		if (this.currency == null) throw new RuntimeException("currency == null");
+		this.currency = currency.toUpperCase();
 	}
 
 	public Money(double value, String currency) {
+		Args.assertNotNull(currency, "currency");
 		this.cent = Math.round(value * 100);
-		this.currency = currency;
-		if (this.currency == null) throw new RuntimeException("currency == null");
+		this.currency = currency.toUpperCase();
 	}
 
 	public Money() {
