@@ -296,15 +296,21 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		for (PropertyModel p : bean.getProperties()) {
 			ln();
 			if (p.isUnique()) {
-				ln("    public static", bean.getName(),
-					"getBy" + Str.uppercaseFirstLetter(p.getName()) + "(final " + p.getType() + " " + p.getName()
-							+ ") {");
+				String byType = p.getType();
+				if (p.isCollection()) byType = p.getContentType();
+				ln("    public static", bean.getName(), "getBy" + Str.uppercaseFirstLetter(p.getNameSingular())
+						+ "(final " + byType + " " + p.getName() + ") {");
 				ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(new "
 						+ queryName + "() {");
 				ln("            @Override");
 				ln("            public boolean matches(" + bean.getName() + " entity) {");
-				ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
-						+ ");");
+				if (p.isCollection()) {
+					ln("                return entity.contains" + Str.uppercaseFirstLetter(p.getNameSingular()) + "("
+							+ p.getName() + ");");
+				} else {
+					ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
+							+ ");");
+				}
 				ln("            }");
 				ln("        });");
 				ln("    }");
