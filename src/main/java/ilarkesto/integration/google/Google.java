@@ -241,7 +241,7 @@ public class Google {
 			requestStream.write(photoData);
 			request.execute();
 			log.info("Contact photo uploaded:", toString(contact));
-		} catch (Throwable ex) {
+		} catch (Exception ex) {
 			throw new RuntimeException("Uploading contact photo failed: " + toString(contact), ex);
 		}
 	}
