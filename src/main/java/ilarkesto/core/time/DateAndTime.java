@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str.Formatable;
 
 import java.io.Serializable;
@@ -29,29 +30,29 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable, Forma
 		this(new Date(javaDate), new Time(javaDate));
 	}
 
-	public DateAndTime(String s) {
-		assert s != null;
-		s = s.trim();
-		int idx = s.indexOf(' ');
+	public DateAndTime(String dateAndTimeString) {
+		Args.assertNotNull(dateAndTimeString, "dateAndTimeString");
+		dateAndTimeString = dateAndTimeString.trim();
+		int idx = dateAndTimeString.indexOf(' ');
 
 		if (idx > 0) {
-			String sDate = s.substring(0, idx);
-			String sTime = s.substring(idx + 1);
+			String sDate = dateAndTimeString.substring(0, idx);
+			String sTime = dateAndTimeString.substring(idx + 1);
 			date = new Date(sDate);
 			time = new Time(sTime);
 		} else {
-			if (s.indexOf('.') > 0) {
-				date = new Date(s);
+			if (dateAndTimeString.indexOf('.') > 0) {
+				date = new Date(dateAndTimeString);
 				time = new Time("0");
 			} else {
 				date = Date.today();
-				time = new Time(s);
+				time = new Time(dateAndTimeString);
 			}
 		}
 	}
 
 	public DateAndTime(Date date, Time time) {
-		assert date != null && time != null;
+		Args.assertNotNull(date, "date", time, "time");
 		this.date = date;
 		this.time = time;
 	}

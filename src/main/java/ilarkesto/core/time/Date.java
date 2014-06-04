@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str.Formatable;
 
 import java.io.Serializable;
@@ -37,6 +38,7 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 	}
 
 	public Date(java.util.Date javaDate) {
+		Args.assertNotNull(javaDate, "date");
 		this.year = Tm.getYear(javaDate);
 		this.month = Tm.getMonth(javaDate);
 		this.day = Tm.getDay(javaDate);
@@ -48,12 +50,13 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 		this.day = day;
 	}
 
-	public Date(String date) {
-		if (date.length() != 10) throw new RuntimeException("Illegal date format: " + date);
+	public Date(String dateString) {
+		Args.assertNotNull(dateString, "dateString");
+		if (dateString.length() != 10) throw new RuntimeException("Illegal date format: " + dateString);
 
-		int y = Integer.parseInt(date.substring(0, 4));
-		int m = Integer.parseInt(date.substring(5, 7));
-		int d = Integer.parseInt(date.substring(8, 10));
+		int y = Integer.parseInt(dateString.substring(0, 4));
+		int m = Integer.parseInt(dateString.substring(5, 7));
+		int d = Integer.parseInt(dateString.substring(8, 10));
 
 		this.year = y;
 		this.month = m;

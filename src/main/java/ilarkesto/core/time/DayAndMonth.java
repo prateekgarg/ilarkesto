@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str.Formatable;
 
 import java.io.Serializable;
@@ -36,6 +37,7 @@ public class DayAndMonth implements Comparable<DayAndMonth>, Serializable, Forma
 	}
 
 	public DayAndMonth(java.util.Date javaDate) {
+		Args.assertNotNull(javaDate, "javaDate");
 		this.month = Tm.getMonth(javaDate);
 		this.day = Tm.getDay(javaDate);
 	}
@@ -45,11 +47,12 @@ public class DayAndMonth implements Comparable<DayAndMonth>, Serializable, Forma
 		this.day = day;
 	}
 
-	public DayAndMonth(String s) {
-		if (s.length() != 5) throw new RuntimeException("Illegal day-and-month format: " + s);
+	public DayAndMonth(String dayAndMonthString) {
+		Args.assertNotNull(dayAndMonthString, "dayAndMonthString");
+		if (dayAndMonthString.length() != 5) throw new RuntimeException("Illegal day-and-month format: " + dayAndMonthString);
 
-		int m = Integer.parseInt(s.substring(0, 2));
-		int d = Integer.parseInt(s.substring(3, 5));
+		int m = Integer.parseInt(dayAndMonthString.substring(0, 2));
+		int d = Integer.parseInt(dayAndMonthString.substring(3, 5));
 
 		this.month = m;
 		this.day = d;

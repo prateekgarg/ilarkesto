@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str.Formatable;
 
 import java.io.Serializable;
@@ -38,6 +39,7 @@ public class Time implements Comparable<Time>, Serializable, Formatable {
 	}
 
 	public Time(String timeString) {
+		Args.assertNotNull(timeString, "timeString");
 		int idx = timeString.indexOf(':');
 		if (idx >= 0) {
 			hour = Integer.parseInt(timeString.substring(0, idx));
