@@ -60,7 +60,7 @@ public final class Money implements Comparable<Money>, Serializable {
 	}
 
 	public Money(BigDecimal value, String currency) {
-		Args.assertNotNull(currency, "currency");
+		Args.assertNotNull(value, "value", currency, "currency");
 		this.cent = value.movePointRight(2).longValueExact();
 		this.currency = currency.toUpperCase();
 	}
