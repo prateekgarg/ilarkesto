@@ -32,6 +32,16 @@ public class CssBuilder {
 		this.out = out;
 	}
 
+	public void reset() {
+		String all = "html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video";
+		style(all).margin(0).padding(0).border("0").fontSize("100%").font("inherit");
+		style("article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section").displayBlock();
+		body().lineHeight("1");
+		style("ol, ul").listStyleNone();
+		style("blockquote, q").quotesNone();
+		table().borderCollapseCollapse().borderSpacing("0");
+	}
+
 	public void flush() {
 		endStartedStyle();
 		out.flush();
@@ -242,6 +252,14 @@ public class CssBuilder {
 			return attr("list-style", value);
 		}
 
+		public Style quotesNone() {
+			return quotes("none");
+		}
+
+		public Style quotes(String value) {
+			return attr("quotes", value);
+		}
+
 		public Style borderTop(int width, String color) {
 			return borderTop(width, "solid", color);
 		}
@@ -272,6 +290,14 @@ public class CssBuilder {
 
 		public Style borderBottom(String value) {
 			return attr("border-bottom", value);
+		}
+
+		public Style displayTable() {
+			return display("table");
+		}
+
+		public Style displayTableCell() {
+			return display("table-cell");
 		}
 
 		public Style displayNone() {
@@ -482,6 +508,10 @@ public class CssBuilder {
 			return verticalAlign("bottom");
 		}
 
+		public Style verticalAlignBaseline() {
+			return verticalAlign("baseline");
+		}
+
 		public Style verticalAlign(String value) {
 			return attr("vertical-align", value);
 		}
@@ -563,6 +593,10 @@ public class CssBuilder {
 			return attr("color", value);
 		}
 
+		public Style borderSpacing(String value) {
+			return attr("border-spacing", value);
+		}
+
 		public Style borderCollapseCollapse() {
 			return borderCollapse("collapse");
 		}
@@ -617,6 +651,10 @@ public class CssBuilder {
 
 		public Style fontSize(String value) {
 			return attr("font-size", value);
+		}
+
+		public Style font(String value) {
+			return attr("font", value);
 		}
 
 		public Style marginBottom(int value) {

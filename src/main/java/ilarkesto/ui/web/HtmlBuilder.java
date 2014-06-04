@@ -772,6 +772,22 @@ public class HtmlBuilder {
 		endH3();
 	}
 
+	private static final String H4 = "h4";
+
+	public Tag startH4() {
+		return startTag(H4);
+	}
+
+	public void endH4() {
+		endTag(H4);
+	}
+
+	public void H4(String text) {
+		startH4();
+		text(text);
+		endH4();
+	}
+
 	// --- P ---
 
 	private static final String P = "p";
