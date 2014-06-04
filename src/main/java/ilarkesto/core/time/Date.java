@@ -14,6 +14,8 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.core.base.Str.Formatable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Date implements Comparable<Date>, Serializable {
+public class Date implements Comparable<Date>, Serializable, Formatable {
 
 	protected int year;
 	protected int month;
@@ -273,6 +275,7 @@ public class Date implements Comparable<Date>, Serializable {
 		return 0;
 	}
 
+	@Override
 	public String format() {
 		return Tm.getLocalizer().date(year, month, day);
 	}

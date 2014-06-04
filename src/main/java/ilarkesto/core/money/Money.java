@@ -16,6 +16,8 @@ package ilarkesto.core.money;
 
 import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Str.Formatable;
+import ilarkesto.core.base.Utl;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -23,7 +25,7 @@ import java.math.BigDecimal;
 /**
  * Working with money (amount + currency).
  */
-public final class Money implements Comparable<Money>, Serializable {
+public final class Money implements Comparable<Money>, Serializable, Formatable {
 
 	public static final transient String EUR = "EUR";
 	public static final transient String USD = "USD";
@@ -142,6 +144,11 @@ public final class Money implements Comparable<Money>, Serializable {
 		if (rest < 10) sb.append('0');
 		sb.append(rest);
 		return sb.toString();
+	}
+
+	@Override
+	public String format() {
+		return toString(Utl.language);
 	}
 
 	public String toString(String lang) {

@@ -642,6 +642,7 @@ public class Str {
 		if (o instanceof Collection) formatCollection((Collection) o);
 		if (o instanceof Enumeration) return formatEnumeration((Enumeration) o);
 		if (o instanceof Throwable) return formatException((Throwable) o);
+		if (o instanceof Formatable) return ((Formatable) o).format();
 		return o.toString();
 	}
 
@@ -760,4 +761,11 @@ public class Str {
 	public static boolean isBlank(String s) {
 		return s == null || s.length() == 0 || s.trim().length() == 0;
 	}
+
+	public static interface Formatable {
+
+		String format();
+
+	}
+
 }

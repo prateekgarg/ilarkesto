@@ -14,9 +14,11 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.core.base.Str.Formatable;
+
 import java.io.Serializable;
 
-public class Time implements Comparable<Time>, Serializable {
+public class Time implements Comparable<Time>, Serializable, Formatable {
 
 	protected int hour;
 	protected int minute;
@@ -195,6 +197,11 @@ public class Time implements Comparable<Time>, Serializable {
 	public void formatHour(StringBuilder sb) {
 		if (hour < 10) sb.append("0");
 		sb.append(hour);
+	}
+
+	@Override
+	public String format() {
+		return formatHourMinuteSecond(true);
 	}
 
 	@Override

@@ -14,9 +14,11 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.core.base.Str.Formatable;
+
 import java.io.Serializable;
 
-public class DateAndTime implements Comparable<DateAndTime>, Serializable {
+public class DateAndTime implements Comparable<DateAndTime>, Serializable, Formatable {
 
 	protected Date date;
 	protected Time time;
@@ -146,6 +148,11 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable {
 
 	public String formatYearMonthDayHourMinute() {
 		return date.formatYearMonthDay() + " " + time.formatHourMinute();
+	}
+
+	@Override
+	public String format() {
+		return date.format() + " " + time.format();
 	}
 
 	@Override
