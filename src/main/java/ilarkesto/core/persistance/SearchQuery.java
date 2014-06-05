@@ -14,34 +14,48 @@
  */
 package ilarkesto.core.persistance;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class SearchQuery extends AEntityQuery {
 
 	private SearchText searchText;
 
-	private Class[] types;
+	private Collection<Class> types;
+	private Collection<Class> excludedTypes;
 
 	public SearchQuery(String text) {
 		super();
 		this.searchText = new SearchText(text);
 	}
 
-	public SearchQuery(String text, Class... types) {
-		super();
-		// TODOK kace
-		this.searchText = new SearchText(text);
-		this.types = types;
-	}
-
 	@Override
 	public boolean matches(AEntity entity) {
-		return entity.matches(searchText) && acceptType(entity);
+		return acceptType(entity) && entity.matches(searchText);
 	}
 
 	private boolean acceptType(AEntity entity) {
-		if (types == null || types.length == 0) { return true; }
-		return Arrays.asList(types).contains(entity.getClass());
+		if (types == null && excludedTypes == null) return true;
+		Class type = entity.getClass();
+		if (excludedTypes != null && excludedTypes.contains(type)) return false;
+		if (types == null || types.isEmpty()) return true;
+		return types.contains(type);
+	}
+
+	public SearchQuery addTypes(Class... types) {
+		for (Class type : types) {
+			if (this.types == null) this.types = new ArrayList<Class>(types.length);
+			this.types.add(type);
+		}
+		return this;
+	}
+
+	public SearchQuery addExcludedTypes(Class... types) {
+		for (Class type : types) {
+			if (this.excludedTypes == null) this.excludedTypes = new ArrayList<Class>(types.length);
+			this.excludedTypes.add(type);
+		}
+		return this;
 	}
 
 }
