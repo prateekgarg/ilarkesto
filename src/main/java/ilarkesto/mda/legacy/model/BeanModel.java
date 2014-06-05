@@ -36,6 +36,8 @@ public abstract class BeanModel extends AModel {
 	public BeanModel(String name, String packageName) {
 		super(name);
 		this.packageName = packageName;
+		if (!Character.isUpperCase(name.charAt(0)))
+			throw new IllegalArgumentException("Uppercase name expected: " + name);
 	}
 
 	public PredicateModel addPredicate(String name) {
