@@ -69,14 +69,6 @@ public class Transaction {
 	}
 
 	public void persist(AEntity entity) {
-		String id = entity.getId();
-		if (modified.contains(id))
-			throw new IllegalStateException("Persisting " + Str.getSimpleName(entity.getClass()) + " with id " + id
-					+ " failed. Entity already persisted in this transaction. Perhaps "
-					+ Str.getSimpleName(entity.getClass()) + "persist() called multiple times? -> " + entity);
-		if (backend.contains(id))
-			throw new IllegalStateException("Persisting " + Str.getSimpleName(entity.getClass()) + " with id" + id
-					+ " failed. Entity already exists: " + entity);
 		if (autoCommit) {
 			backend.update(Arrays.asList(entity), null, updatePropertiesMap(modifiedPropertiesByEntityId, entity));
 			return;
