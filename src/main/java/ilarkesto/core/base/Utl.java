@@ -206,14 +206,15 @@ public class Utl {
 		return 0;
 	}
 
-	public static int compare(Comparable a, Comparable b) {
+	public static int compare(Object a, Object b) {
 		if (a == null && b == null) return 0;
 		if (a == null && b != null) return -1;
 		if (a != null && b == null) return 1;
-		return a.compareTo(b);
+		if (a instanceof Comparable) return ((Comparable) a).compareTo(b);
+		return a.toString().compareTo(b.toString());
 	}
 
-	public static int compareReverse(Comparable a, Comparable b) {
+	public static int compareReverse(Object a, Object b) {
 		return compare(a, b) * -1;
 	}
 
