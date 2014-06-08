@@ -328,6 +328,10 @@ public class CssBuilder {
 			return whiteSpace("pre");
 		}
 
+		public Style whiteSpacePreWrap() {
+			return whiteSpace("pre-wrap");
+		}
+
 		public Style whiteSpace(String value) {
 			return attr("white-space", value);
 		}

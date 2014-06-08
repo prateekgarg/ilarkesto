@@ -211,7 +211,7 @@ public class Utl {
 		if (a == null && b != null) return -1;
 		if (a != null && b == null) return 1;
 		if (a instanceof Comparable) return ((Comparable) a).compareTo(b);
-		return a.toString().compareTo(b.toString());
+		return a.toString().toLowerCase().compareTo(b.toString().toLowerCase());
 	}
 
 	public static int compareReverse(Object a, Object b) {

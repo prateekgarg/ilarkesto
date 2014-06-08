@@ -639,13 +639,13 @@ public class Str {
 		if (o == null) return null;
 		if (o instanceof Object[]) return formatObjectArray((Object[]) o);
 		if (o instanceof Map) return formatMap((Map) o);
-		if (o instanceof Collection) formatCollection((Collection) o);
+		if (o instanceof Collection) return formatCollection((Collection) o);
 		if (o instanceof Enumeration) return formatEnumeration((Enumeration) o);
 		if (o instanceof Throwable) return formatException((Throwable) o);
 		if (o instanceof Formatable) return ((Formatable) o).format();
 		if (o instanceof Number) {
 			if ("de".equals(Utl.language)) { // TODO
-				o.toString().replace('.', ',');
+				return o.toString().replace('.', ',');
 			}
 		}
 		return o.toString();
