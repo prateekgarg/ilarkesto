@@ -51,15 +51,41 @@ public class MoneyTest extends ATest {
 		assertCents(new Money("23.42", "EUR"), 2342, "EUR");
 		assertCents(new Money("-1", "EUR"), -100, "EUR");
 		assertCents(new Money("1000000", "EUR"), 100000000, "EUR");
-		assertCents(new Money("0.001", "EUR"), 0, "EUR");
-		assertCents(new Money("0.005", "EUR"), 1, "EUR");
+		assertCents(new Money("0.001", "EUR", true), 0, "EUR");
+		assertCents(new Money("0.005", "EUR", true), 1, "EUR");
+
+		try {
+			assertCents(new Money("0.001", "EUR"), 0, "EUR");
+			fail();
+		} catch (ArithmeticException ex) {
+			// expected
+		}
+		try {
+			assertCents(new Money("0.005", "EUR"), 1, "EUR");
+			fail();
+		} catch (ArithmeticException ex) {
+			// expected
+		}
 		assertCents(new Money("1,000", "EUR"), 100, "EUR");
 
 		assertCents(new Money("23.42 EUR"), 2342, "EUR");
 		assertCents(new Money("-1 EUR"), -100, "EUR");
 		assertCents(new Money("1000000 EUR"), 100000000, "EUR");
-		assertCents(new Money("0.001 EUR"), 0, "EUR");
-		assertCents(new Money("0.005 EUR"), 1, "EUR");
+		assertCents(new Money("0.001 EUR", true), 0, "EUR");
+		assertCents(new Money("0.005 EUR", true), 1, "EUR");
+
+		try {
+			assertCents(new Money("0.001 EUR"), 0, "EUR");
+			fail();
+		} catch (ArithmeticException ex) {
+			// expected
+		}
+		try {
+			assertCents(new Money("0.005 EUR"), 1, "EUR");
+			fail();
+		} catch (ArithmeticException ex) {
+			// expected
+		}
 		assertCents(new Money("1,000 EUR"), 100, "EUR");
 
 	}

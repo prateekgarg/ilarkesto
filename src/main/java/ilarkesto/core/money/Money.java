@@ -21,6 +21,7 @@ import ilarkesto.core.base.Utl;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * Working with money (amount + currency).
@@ -40,21 +41,30 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 	}
 
 	public Money(String s) {
+		this(s, false);
+	}
+
+	public Money(String s, boolean roundHalfUp) {
 		int amountCurrencySeparatorIdx = s.indexOf(' ');
 		if (amountCurrencySeparatorIdx < 1) throw new IllegalArgumentException("Unsupported money format: " + s);
 
 		this.currency = s.substring(amountCurrencySeparatorIdx).trim().toUpperCase();
 
 		String amount = s.substring(0, amountCurrencySeparatorIdx).trim().replace(',', '.');
-		this.cent = Math.round(Double.parseDouble(amount) * 100);
+		BigDecimal bd = new BigDecimal(amount).movePointRight(2);
+		if (roundHalfUp) bd = bd.setScale(0, RoundingMode.HALF_UP);
+		this.cent = bd.longValueExact();
 	}
 
 	public Money(String amount, String currency) {
-		Args.assertNotNull(currency, "currency");
-		this.cent = Math.round(Double.parseDouble(amount.replace(',', '.')) * 100);
-		this.currency = currency.toUpperCase();
+		this(amount, currency, false);
 	}
 
+	public Money(String amount, String currency, boolean roundHalfUp) {
+		this(amount + " " + currency, roundHalfUp);
+	}
+
+	@Deprecated
 	public Money(double value, String currency) {
 		Args.assertNotNull(currency, "currency");
 		this.cent = Math.round(value * 100);
@@ -62,13 +72,15 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 	}
 
 	public Money(BigDecimal value, String currency) {
-		Args.assertNotNull(value, "value", currency, "currency");
-		this.cent = value.movePointRight(2).longValueExact();
-		this.currency = currency.toUpperCase();
+		this(value.toPlainString(), currency);
+	}
+
+	public Money(long value, String currency) {
+		this(value, 0, currency);
 	}
 
 	public Money() {
-		this(0, EUR);
+		this(0, Money.EUR);
 	}
 
 	public String getCurrency() {
@@ -79,10 +91,12 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 		return this.currency.equals(currency);
 	}
 
+	@Deprecated
 	public float getAmountAsFloat() {
 		return cent / 100f;
 	}
 
+	@Deprecated
 	public double getAmountAsDouble() {
 		return cent / 100d;
 	}
@@ -116,10 +130,12 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 		return new Money(0, cent * -1, currency);
 	}
 
+	@Deprecated
 	public Money multiplyAndRound(float factor) {
 		return new Money(0, Math.round((cent * factor)), currency);
 	}
 
+	@Deprecated
 	public Money divideAndRound(float divisor) {
 		return new Money(0, Math.round((cent / divisor)), currency);
 	}
