@@ -2,6 +2,7 @@ package ilarkesto.json;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -124,7 +125,7 @@ public class Json {
 	}
 
 	public static Number parseNumber(String s) throws NumberFormatException {
-		if (s.contains(".")) return Double.parseDouble(s);
+		if (s.contains(".")) return new BigDecimal(s);
 		return Long.parseLong(s);
 	}
 

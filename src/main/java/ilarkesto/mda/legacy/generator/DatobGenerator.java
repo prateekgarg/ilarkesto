@@ -35,6 +35,7 @@ import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.persistence.AStructure;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -725,8 +726,13 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("        return " + p.getName() + " != null && " + p.getName() + ".getId().equals("
 						+ getFieldName(p) + ");");
 			} else {
-				ln("        return " + getFieldName(p) + " != null && " + getFieldName(p) + ".equals(" + p.getName()
-						+ ");");
+				if (p.getType().equals(BigDecimal.class.getName())) {
+					ln("        return " + getFieldName(p) + " != null && " + p.getName() + " != null && "
+							+ getFieldName(p) + ".compareTo(" + p.getName() + ") == 0;");
+				} else {
+					ln("        return " + getFieldName(p) + " != null && " + getFieldName(p) + ".equals("
+							+ p.getName() + ");");
+				}
 			}
 		}
 		ln("    }");

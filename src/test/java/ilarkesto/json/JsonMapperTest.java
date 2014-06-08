@@ -20,6 +20,7 @@ import ilarkesto.json.JsonSaxParser.ParseException;
 import ilarkesto.testng.ATest;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,15 +37,17 @@ public class JsonMapperTest extends ATest {
 		assertEquals(JsonMapper.serialize(1.1), "1.1");
 		assertEquals(JsonMapper.serialize(new Date(2014, 1, 1)), "\"2014-01-01\"");
 
-		assertEquals(JsonMapper.serialize(new Dummy(23, Arrays.asList(1l, 2l), new SubDummy(), new Date(2014, 1, 1))),
-			"{\n \"a\": 23,\n \"b\": [ 1, 2 ],\n \"c\": {\n  \"at\": \"@\"\n },\n \"d\": null,\n \"date\": \"2014-01-01\"\n}");
+		assertEquals(
+			JsonMapper.serialize(new Dummy(23, Arrays.asList(1l, 2l), new SubDummy(), new Date(2014, 1, 1),
+					new BigDecimal("-1.2"))),
+			"{\n \"a\": 23,\n \"b\": [ 1, 2 ],\n \"c\": {\n  \"at\": \"@\"\n },\n \"d\": null,\n \"date\": \"2014-01-01\",\n \"dec\": -1.2\n}");
 	}
 
 	@Test
 	public void deserialize() throws IOException, ParseException {
 		Dummy dummy = JsonMapper
 				.deserialize(
-					"{\n \"a\": 23,\n \"b\": [ 1, 2 ],\n \"c\": {\n  \"at\": \"@\"\n },\n \"d\": [ {\"at\": \"@\"} ],\n \"date\": \"2014-01-01\"\n}",
+					"{\n \"a\": 23,\n \"b\": [ 1, 2 ],\n \"c\": {\n  \"at\": \"@\"\n },\n \"d\": [ {\"at\": \"@\"} ],\n \"date\": \"2014-01-01\",\n \"dec\": -1.2\n}",
 					Dummy.class, TYPE_RESOLVER);
 		assertNotNull(dummy);
 
@@ -65,6 +68,9 @@ public class JsonMapperTest extends ATest {
 
 		assertNotNull(dummy.date);
 		assertEquals(dummy.date, new Date(2014, 1, 1));
+
+		assertNotNull(dummy.dec);
+		assertEquals(dummy.dec, new BigDecimal("-1.2"));
 	}
 
 	public static class Dummy {
@@ -75,13 +81,15 @@ public class JsonMapperTest extends ATest {
 		private List<SubDummy> d;
 		public transient String transy = "transy";
 		private Date date;
+		private BigDecimal dec;
 
-		public Dummy(int a, List<Long> b, SubDummy c, Date date) {
+		public Dummy(int a, List<Long> b, SubDummy c, Date date, BigDecimal dec) {
 			super();
 			this.a = a;
 			this.b = b;
 			this.c = c;
 			this.date = date;
+			this.dec = dec;
 		}
 
 		public Dummy() {}

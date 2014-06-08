@@ -643,6 +643,11 @@ public class Str {
 		if (o instanceof Enumeration) return formatEnumeration((Enumeration) o);
 		if (o instanceof Throwable) return formatException((Throwable) o);
 		if (o instanceof Formatable) return ((Formatable) o).format();
+		if (o instanceof Number) {
+			if ("de".equals(Utl.language)) { // TODO
+				o.toString().replace('.', ',');
+			}
+		}
 		return o.toString();
 	}
 

@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -115,12 +116,20 @@ public abstract class Reflect {
 			}
 		}
 		try {
-			field.set(object, value);
+			field.set(object, convert(value, field.getType()));
 		} catch (IllegalArgumentException ex) {
 			throw new RuntimeException(ex);
 		} catch (IllegalAccessException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public static Object convert(Object value, Class targetType) {
+		if (value == null) return null;
+		if (targetType.equals(BigDecimal.class)) {
+			if (value instanceof Number) return new BigDecimal(value.toString());
+		}
+		return value;
 	}
 
 	public static void setProperties(Object o, Map<String, Object> properties) {
