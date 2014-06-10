@@ -80,6 +80,10 @@ public class GitProject extends AScmProject {
 		getTool().exec(getDir(), params.toArray(new String[params.size()]));
 	}
 
+	public void addAll() {
+		getTool().exec(getDir(), "add", ".");
+	}
+
 	public void commit(String comment) {
 		Args.assertNotNull(comment, "comment");
 		getTool().exec(getDir(), "commit", "-m", comment);
