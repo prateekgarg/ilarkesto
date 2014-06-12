@@ -20,7 +20,7 @@ import ilarkesto.core.time.Tm;
 
 public abstract class ATask {
 
-	private static final Log LOG = Log.get(ATask.class);
+	protected final Log log = Log.get(getClass());
 
 	private volatile boolean finished;
 	private long finishTime = -1;
@@ -113,7 +113,7 @@ public abstract class ATask {
 			if (rootCause instanceof InterruptedException) {
 				// all right
 			} else {
-				LOG.error("Task execution failed:", this, ex);
+				log.error("Task execution failed:", this, ex);
 				throw new RuntimeException(ex);
 			}
 		} finally {

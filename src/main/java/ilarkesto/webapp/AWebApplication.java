@@ -16,6 +16,7 @@ package ilarkesto.webapp;
 
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
+import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.gwt.server.AGwtConversation;
 import ilarkesto.logging.DefaultLogRecordHandler;
@@ -23,6 +24,7 @@ import ilarkesto.webapp.jsonapi.JsonApiFactory;
 import ilarkesto.webapp.jsonapi.ReflectionJsonApiFactory;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -167,6 +169,18 @@ public abstract class AWebApplication extends AApplication {
 	@Override
 	protected String getProductionModeApplicationDataDir() {
 		return Sys.getUsersHomePath() + "/" + getApplicationName() + "-data";
+	}
+
+	public void sendToAll(TransferableEntity... entities) {
+		for (AGwtConversation conversation : getGwtConversations()) {
+			conversation.sendToClient(entities);
+		}
+	}
+
+	public void sendToAll(Collection<TransferableEntity> entities) {
+		for (AGwtConversation conversation : getGwtConversations()) {
+			conversation.sendToClient(entities);
+		}
 	}
 
 	public static AWebApplication get() {

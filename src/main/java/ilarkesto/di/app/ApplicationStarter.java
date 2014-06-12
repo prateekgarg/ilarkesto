@@ -75,7 +75,7 @@ public class ApplicationStarter {
 		LOG.info("    temp-path:   ", IO.getTempDir());
 		LOG.info("    locale:      ", Locale.getDefault());
 		LOG.info("    encoding:    ", Sys.getFileEncoding());
-		LOG.info("    java:        ", Sys.getJavaHome());
+		LOG.info("    java:        ", Sys.getJavaHome() + " " + Sys.getJavaRuntimeVersion());
 		// LOG.info(" java version: ", Sys.getJavaRuntimeVersion());
 	}
 
