@@ -19,6 +19,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.integration.itext.PdfBuilder;
+import ilarkesto.io.IO;
 import ilarkesto.json.JsonObject;
 
 import java.io.File;
@@ -44,6 +45,8 @@ public class RequestWrapper<S extends AWebSession> {
 		super();
 		this.request = request;
 		this.response = response;
+
+		setRequestEncoding(IO.UTF_8);
 	}
 
 	// --- response helpers ---
