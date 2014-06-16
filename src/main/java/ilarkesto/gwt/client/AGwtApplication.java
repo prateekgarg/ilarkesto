@@ -32,6 +32,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 	private static AGwtApplication singleton;
 	protected int conversationNumber = -1;
+	protected GwtLogRecordHandler logRecordHandler;
 
 	public abstract void handleServiceCallError(String serviceCall, List<ErrorWrapper> errors);
 
@@ -42,7 +43,8 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 	public AGwtApplication() {
 		if (singleton != null) throw new RuntimeException("GWT application already instantiated: " + singleton);
 		singleton = this;
-		Log.setLogRecordHandler(new GwtLogRecordHandler());
+		logRecordHandler = new GwtLogRecordHandler();
+		Log.setLogRecordHandler(logRecordHandler);
 		GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
 
 			@Override
