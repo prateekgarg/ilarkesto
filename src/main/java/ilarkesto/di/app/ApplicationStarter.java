@@ -59,7 +59,7 @@ public class ApplicationStarter {
 					+ application.getBuildProperties().getReleaseLabel());
 			LOG.info("********************************************************************************\n");
 			return application;
-		} catch (Throwable ex) {
+		} catch (Exception ex) {
 			LOG.fatal("Starting application failed.", ex);
 			throw new RuntimeException(ex);
 		}
