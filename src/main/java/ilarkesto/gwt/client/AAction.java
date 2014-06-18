@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.Image;
 public abstract class AAction implements Command, ClickHandler {
 
 	protected final Log log = Log.get(getClass());
+	private Updatable updatable = RootWidgetUpdatable.INSTANCE;
 
 	public abstract String getLabel();
 
@@ -35,7 +36,7 @@ public abstract class AAction implements Command, ClickHandler {
 		if (!isExecutable()) throw new RuntimeException("Action not executable: " + this);
 		if (!isPermitted()) throw new RuntimeException("Action not permitted: " + this);
 		onExecute();
-		Gwt.update(Gwt.getRootWidget());
+		if (updatable != null) updatable.update();
 	}
 
 	public String getTargetHistoryToken() {
@@ -75,6 +76,11 @@ public abstract class AAction implements Command, ClickHandler {
 	@Override
 	public String toString() {
 		return Str.getSimpleName(getClass());
+	}
+
+	public AAction setUpdatable(Updatable updatable) {
+		this.updatable = updatable;
+		return this;
 	}
 
 }

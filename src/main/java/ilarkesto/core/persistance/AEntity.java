@@ -39,8 +39,11 @@ public class AEntity implements Serializable, TransferableEntity {
 	}
 
 	public final void delete() {
+		onDelete();
 		AEntityDatabase.get().getTransaction().delete(getId());
 	}
+
+	protected void onDelete() {}
 
 	/**
 	 * Method gets called bevore persiting and after loading
