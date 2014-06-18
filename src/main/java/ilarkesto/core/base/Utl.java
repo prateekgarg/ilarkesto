@@ -30,6 +30,13 @@ public class Utl {
 
 	public static String language = "en";
 
+	public static <T> T getFirstNotNull(T... objects) {
+		for (T object : objects) {
+			if (object != null) return object;
+		}
+		return null;
+	}
+
 	public static String getRootCauseMessage(Throwable ex) {
 		Throwable cause = getRootCause(ex);
 		String message = cause.getMessage();
