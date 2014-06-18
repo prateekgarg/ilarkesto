@@ -44,6 +44,7 @@ public class DefaultLogRecordHandler implements LogRecordHandler {
 	private File logFile;
 	private Thread sysoutThread;
 	private boolean shutdown = false;
+	private LogRecordHandler errorHandler;
 
 	private LinkedList<LogRecord> latestRecords = new LinkedList<LogRecord>();
 
@@ -109,6 +110,14 @@ public class DefaultLogRecordHandler implements LogRecordHandler {
 					if (errorRecords.size() > 256) errorRecords.remove(0);
 				}
 			}
+			if (errorHandler != null) {
+				try {
+					errorHandler.log(record);
+					errorHandler.flush();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
 
 		record.context = Thread.currentThread().getName();
@@ -141,6 +150,10 @@ public class DefaultLogRecordHandler implements LogRecordHandler {
 
 	public static File getLogFile() {
 		return INSTANCE.logFile;
+	}
+
+	public void setErrorHandler(LogRecordHandler errorHandler) {
+		this.errorHandler = errorHandler;
 	}
 
 	public static boolean setLogFileToHomeOrWorkdir(String name) {
