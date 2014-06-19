@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -21,8 +21,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ImageBundle;
+import com.google.gwt.user.client.ui.Image;
 
 public class GwtImageBundleGenerator extends AClassGenerator {
 
@@ -35,7 +34,7 @@ public class GwtImageBundleGenerator extends AClassGenerator {
 
 	@Override
 	protected void writeContent() {
-		File folder = new File("src/main/java/" + packageName.replace('.', '/'));
+		File folder = new File("src/main/webapp/img");
 		File[] files = folder.listFiles();
 		if (files == null) throw new RuntimeException("Can not read folder contents: " + folder.getAbsolutePath());
 		Arrays.sort(files, new FilenameComparator());
@@ -55,13 +54,9 @@ public class GwtImageBundleGenerator extends AClassGenerator {
 			name = name.substring(0, idx);
 		}
 		ln();
-		ln("    @Resource(value=\"" + fileName + "\")");
-		ln("    " + AbstractImagePrototype.class.getName(), name + "();");
-	}
-
-	@Override
-	protected String getSuperclass() {
-		return ImageBundle.class.getName();
+		ln("    public static " + Image.class.getName(), name + "() {");
+		ln("        return new", Image.class.getName() + "(\"img/" + fileName + "\");");
+		ln("    }");
 	}
 
 	@Override
@@ -83,7 +78,7 @@ public class GwtImageBundleGenerator extends AClassGenerator {
 
 	@Override
 	protected boolean isInterface() {
-		return true;
+		return false;
 	}
 
 	@Override

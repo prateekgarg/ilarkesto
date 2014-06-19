@@ -42,6 +42,7 @@ public class GwtSuperDevMode {
 
 	public void startCodeServer() {
 		if (webServer != null) throw new IllegalStateException("Already started");
+		log.info("Starting GWT Super Dev Mode CodeServer on port", port);
 		Sys.setProperty("gwt.codeserver.port", String.valueOf(port));
 		RuntimeTracker rt = new RuntimeTracker();
 		Options options = createOptions();
@@ -115,6 +116,12 @@ public class GwtSuperDevMode {
 			this.sources.add(source);
 		}
 		return this;
+	}
+
+	public static String getCompileHref(String moduleName) {
+		return "javascript:%7B window.__gwt_bookmarklet_params %3D %7Bserver_url%3A'http%3A%2F%2Flocalhost%3A9876%2F'%2Cmodule_name%3A'"
+				+ moduleName
+				+ "'%7D%3B var s %3D document.createElement('script')%3B s.src %3D 'http%3A%2F%2Flocalhost%3A9876%2Fdev_mode_on.js'%3B void(document.getElementsByTagName('head')%5B0%5D.appendChild(s))%3B%7D";
 	}
 
 }
