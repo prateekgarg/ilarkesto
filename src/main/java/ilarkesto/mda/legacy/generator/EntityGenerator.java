@@ -24,6 +24,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.money.Money;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
+import ilarkesto.core.persistance.EditableKeytableValue;
 import ilarkesto.core.persistance.KeytableValue;
 import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.time.Date;
@@ -175,7 +176,9 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			if (!(p instanceof ReferencePropertyModel)) continue;
 			ReferencePropertyModel ref = (ReferencePropertyModel) p;
 			EntityModel referencedEntity = ref.getReferencedEntity();
-			if (!referencedEntity.getSuperinterfaces().contains(KeytableValue.class.getName())) continue;
+			if (!referencedEntity.getSuperinterfaces().contains(KeytableValue.class.getName())
+					&& !referencedEntity.getSuperinterfaces().contains(EditableKeytableValue.class.getName()))
+				continue;
 			ln();
 			String pNameUpper = Str.uppercaseFirstLetter(p.getName());
 			ln("    public String get" + pNameUpper + "Label() {");
@@ -185,7 +188,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 	}
 
 	private void writeToString() {
-		if (bean.getSuperinterfaces().contains(KeytableValue.class.getName())) {
+		if (isKeytableValue()) {
 			ln();
 			annotationOverride();
 			ln("    public String toString() {");
@@ -195,8 +198,15 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 	}
 
+	private boolean isKeytableValue() {
+		Set<String> superinterfaces = bean.getSuperinterfaces();
+		if (superinterfaces.contains(KeytableValue.class.getName())) return true;
+		if (superinterfaces.contains(EditableKeytableValue.class.getName())) return true;
+		return false;
+	}
+
 	private void writeKeytableFactoryMethod() {
-		if (!bean.getSuperinterfaces().contains(KeytableValue.class.getName())) return;
+		if (!isKeytableValue()) return;
 
 		ln();
 		ln("    public static synchronized", bean.getBeanClass(), " create(String key, String label) {");

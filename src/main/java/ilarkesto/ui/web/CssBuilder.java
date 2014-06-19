@@ -812,11 +812,11 @@ public class CssBuilder {
 			return attr("cursor", value);
 		}
 
-		private Style attr(String name, int value) {
+		public Style attr(String name, int value) {
 			return attr(name, String.valueOf(value));
 		}
 
-		private Style attr(String name, String value) {
+		public Style attr(String name, String value) {
 			out.print(" ");
 			out.print(name);
 			out.print(": ");
