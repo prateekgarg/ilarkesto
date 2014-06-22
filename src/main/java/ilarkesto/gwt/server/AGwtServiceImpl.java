@@ -95,6 +95,10 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 		return webApplication.getWebSession(getThreadLocalRequest());
 	}
 
+	protected Object getSyncObject() {
+		return getSession();
+	}
+
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
 		super.init(servletConfig);

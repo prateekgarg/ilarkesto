@@ -58,7 +58,7 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 			ln("        log.debug(\"Handling service call: " + method.getName() + "\");");
 		}
 		ln("        WebSession session = (WebSession) getSession();");
-		ln("        synchronized (session) {");
+		ln("        synchronized (getSyncObject()) {");
 		ln("            GwtConversation conversation = null;");
 		ln("            try {");
 		ln("                conversation = (GwtConversation) session.getGwtConversation(conversationNumber);");

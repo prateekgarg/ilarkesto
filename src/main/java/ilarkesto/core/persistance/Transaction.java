@@ -69,6 +69,7 @@ public class Transaction {
 	}
 
 	public void persist(AEntity entity) {
+		log.info("persist", toString(entity));
 		if (autoCommit) {
 			backend.update(Arrays.asList(entity), null, updatePropertiesMap(modifiedPropertiesByEntityId, entity));
 			return;
@@ -79,16 +80,19 @@ public class Transaction {
 
 	public void modified(AEntity entity, String field, Object value) {
 		if (ignoreModifications) return;
-		// log.debug("modified:", field, "=", value, "@", Str.getSimpleName(entity.getClass()) + ":" +
-		// entity.getId(),
-		// entity);
 		if (!contains(entity.getId())) return;
+		log.info("modified", toString(entity), field, value);
 		if (autoCommit) {
 			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value));
 			return;
 		}
 		modified.add(entity);
 		updatePropertiesMap(modifiedPropertiesByEntityId, entity, field, value);
+	}
+
+	private String toString(AEntity entity) {
+		if (entity == null) return "<null>";
+		return Str.getSimpleName(entity.getClass()) + " " + entity.getId();
 	}
 
 	public void delete(String entityId) {

@@ -17,6 +17,7 @@ package ilarkesto.gwt.server;
 import ilarkesto.base.PermissionDeniedException;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityDatabase;
 import ilarkesto.core.persistance.Transaction;
@@ -101,6 +102,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		return remoteEntityModificationTimes.containsKey(entity);
 	}
 
+	@Override
 	public synchronized void sendToClient(E entity) {
 		if (entity == null) return;
 
@@ -137,7 +139,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		DateAndTime timeLocal = entity.getLastModified();
 
 		if (timeLocal.equals(timeRemote)) {
-			LOG.debug("Remote entity already up to date:", Utl.toStringWithType(entity), "for", this);
+			LOG.debug("Remote entity already up to date:", toString(entity), "for", this);
 			return;
 		}
 
@@ -146,9 +148,15 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 
 		getNextData().addEntity(propertiesMap);
 		remoteEntityModificationTimes.put(entity, timeLocal);
-		LOG.debug("Sending", Utl.toStringWithType(entity), "to", this);
+		LOG.debug("Sending", toString(entity), "to", this);
 	}
 
+	private String toString(E entity) {
+		if (entity == null) return "<null>";
+		return Str.getSimpleName(entity.getClass()) + " " + entity.getId() + " " + entity.toString();
+	}
+
+	@Override
 	public final void sendToClient(E... entities) {
 		if (entities == null) return;
 		for (E entity : entities) {
@@ -156,6 +164,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		}
 	}
 
+	@Override
 	public final void sendToClient(Collection<? extends E> entities) {
 		if (entities == null) return;
 		for (E entity : entities) {

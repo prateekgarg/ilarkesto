@@ -21,6 +21,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.service.ServiceCall;
 import ilarkesto.core.time.Tm;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,7 +34,8 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 	public static final long MAX_FAILURE_TIME = 30 * Tm.SECOND;
 
-	private static List<ServiceCall> activeServiceCalls = new LinkedList<ServiceCall>();
+	private static LinkedList<AServiceCall> queue = new LinkedList<AServiceCall>();
+	private static AServiceCall currentServiceCall;
 	private static long lastSuccessfullServiceCallTime;
 	public static Runnable listener;
 
@@ -58,17 +60,35 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 	@Override
 	public final void execute(Runnable returnHandler) {
-		if (rtCall != null) throw new IllegalStateException(getName() + " already executed");
+		if (queue.contains(this)) throw new IllegalStateException(getName() + " already executed");
 		this.returnHandler = returnHandler;
+		queue();
+		runNext();
+	}
 
-		activeServiceCalls.add(this);
+	private static void runNext() {
+		if (currentServiceCall != null) return;
+		if (queue.isEmpty()) return;
+		AServiceCall next = queue.getFirst();
+		queue.remove(next);
+		next.run();
+	}
+
+	private void queue() {
+		queue.add(this);
+	}
+
+	private void run() {
+		if (currentServiceCall != null)
+			throw new IllegalStateException("Another ServiceCall already running: " + currentServiceCall);
+		currentServiceCall = this;
 		rtCall = new RuntimeTracker();
 		onExecute(AGwtApplication.get().getConversationNumber(), new ServiceCallback());
 	}
 
 	public static final boolean containsServiceCall(Class<? extends ServiceCall> type) {
 		String name = Str.getSimpleName(type);
-		for (ServiceCall call : activeServiceCalls) {
+		for (ServiceCall call : queue) {
 			String callName = Str.getSimpleName(call.getClass());
 			if (callName.equals(name)) return true;
 		}
@@ -96,14 +116,19 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 		return Str.removeSuffix(Str.getSimpleName(getClass()), "ServiceCall");
 	}
 
-	public static List<ServiceCall> getActiveServiceCalls() {
-		return activeServiceCalls;
+	public static List<AServiceCall> getActiveServiceCalls() {
+		ArrayList<AServiceCall> ret = new ArrayList<AServiceCall>();
+		if (currentServiceCall != null) ret.add(currentServiceCall);
+		ret.addAll(queue);
+		return ret;
 	}
 
 	private void serviceCallReturned() {
+		if (currentServiceCall != this) throw new IllegalStateException("currentServiceCall != this");
+		currentServiceCall = null;
+		runNext();
 		rtCall.stop();
 		if (!getName().equals("Ping")) log.info("serviceCallReturned()");
-		activeServiceCalls.remove(this);
 		if (listener != null) listener.run();
 	}
 
