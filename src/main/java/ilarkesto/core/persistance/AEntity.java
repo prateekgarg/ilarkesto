@@ -70,7 +70,7 @@ public class AEntity implements Serializable, TransferableEntity {
 		Transaction.get().modified(this, field, value);
 	}
 
-	protected boolean matches(SearchText search) {
+	public boolean matches(SearchText search) {
 		return search.matches(toString());
 	}
 
