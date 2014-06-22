@@ -40,7 +40,6 @@ import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.search.Searchable;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -161,7 +160,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("    }");
 		}
 
-		Set<String> backRefs = new HashSet<String>();
+		Set<String> backRefs = new LinkedHashSet<String>();
 		for (BackReferenceModel br : bean.getBackReferences()) {
 			if (backRefs.contains(br.getName())) continue;
 			backRefs.add(br.getName());
@@ -424,7 +423,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					dependency(bean.getDaoClass(), daoName, true, false);
 				}
 			}
-			Set<String> refDaos = new HashSet<String>();
+			Set<String> refDaos = new LinkedHashSet<String>();
 			for (BackReferenceModel br : bean.getBackReferences()) {
 				EntityModel refEntity = br.getReference().getEntity();
 				String refDaoName = refEntity.getDaoName();
