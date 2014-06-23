@@ -14,7 +14,25 @@
  */
 package ilarkesto.core.persistance;
 
+import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 
 public class Persistence {
+
+	public static String toStringWithTypeAndId(AEntity entity) {
+		if (entity == null) return null;
+		String s;
+		try {
+			s = entity.toString();
+		} catch (Exception ex) {
+			s = "toString()-ERROR: " + Utl.getUserMessageStack(ex);
+		}
+		return getTypeAndId(entity) + " " + s;
+	}
+
+	public static String getTypeAndId(AEntity entity) {
+		if (entity == null) return null;
+		return Str.getSimpleName(entity.getClass()) + ":" + entity.getId();
+	}
 
 }
