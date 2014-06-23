@@ -171,7 +171,8 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 			serviceCallReturned();
 			if (ex instanceof StatusCodeException) {
 				StatusCodeException sce = (StatusCodeException) ex;
-				if (sce.getStatusCode() == 0 || sce.getMessage().contains("503 Service Unavailable")) {
+				if (sce.getStatusCode() == 0 || getName().toLowerCase().equals("ping")
+						|| sce.getMessage().contains("503 Service Unavailable")) {
 					callbackError(Utl.toList(ErrorWrapper.createServerNotAvailable()));
 					return;
 				}
