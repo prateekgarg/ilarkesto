@@ -15,6 +15,7 @@
 package ilarkesto.tools;
 
 import ilarkesto.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.jdom.JDom;
 import ilarkesto.integration.kba.btkatowi.Tatbestandskatalog;
@@ -23,6 +24,7 @@ import ilarkesto.integration.kba.btkatowi.Tatbestandskatalog.Tatbestand;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.jdom2.Document;
@@ -44,12 +46,16 @@ public class TatbestandskatalogParser {
 		System.out.println(ePages.size() + " pages");
 
 		// processPage(ePages.get(54 - 1));
-		// processPage(ePages.get(19 - 1));
+		// processPage(ePages.get(70 - 1));
 		// if (true) return;
 
 		List<Tatbestand> tatbestaende = new ArrayList<Tatbestandskatalog.Tatbestand>();
 		for (int i = 19; i <= 474; i++) {
-			tatbestaende.addAll(processPage(ePages.get(i - 1)));
+			try {
+				tatbestaende.addAll(processPage(ePages.get(i - 1)));
+			} catch (Exception ex) {
+				throw new RuntimeException("Parsing page " + i + " failed.", ex);
+			}
 		}
 
 		Tatbestandskatalog tatbestandskatalog = new Tatbestandskatalog(tatbestaende);
@@ -66,17 +72,28 @@ public class TatbestandskatalogParser {
 		if (tb2.getEuro() != 44000) throw new RuntimeException(tb2.toString());
 		if (tb2.getFv() != 2) throw new RuntimeException(tb2.toString());
 
+		assertExists(103815, tatbestandskatalog);
+		assertExists(105131, tatbestandskatalog);
+		assertExists(113102, tatbestandskatalog);
+
 		System.out.println(tatbestandskatalog.getJson().toFormatedString());
 		File outputFile = new File("runtimedata/tatbestandskatalog.json").getAbsoluteFile();
 		System.out.println(outputFile);
 		tatbestandskatalog.getJson().write(outputFile, true);
 	}
 
+	private void assertExists(int tbnr, Tatbestandskatalog tatbestandskatalog) {
+		Tatbestand tb = tatbestandskatalog.getTatbestand(tbnr);
+		if (tb == null) throw new RuntimeException("Tatbestand fehlt: " + tbnr);
+	}
+
 	private List<Tatbestand> processPage(Element ePage) {
 		String pageNumber = ePage.getAttributeValue("number");
 		if (pageNumber.equals("443")) return Collections.emptyList();
 		System.out.println("page " + pageNumber);
-		List<Element> eTexts = JDom.getChildren(ePage, "text");
+		List<Element> eTexts = new ArrayList<Element>(JDom.getChildren(ePage, "text"));
+
+		Collections.sort(eTexts, new TopComparator());
 
 		List<Tatbestand> ret = new ArrayList<Tatbestandskatalog.Tatbestand>();
 
@@ -91,17 +108,15 @@ public class TatbestandskatalogParser {
 			String text = eText.getText();
 
 			if (top < 163) continue; // header
-			if (top >= 939) continue; // footer
 
-			if (tb != null) {
-				if ((left == 156 && width == 23 && height == 11 && font == 1)
-						|| (left == 106 && width == 4 && height == 15 && font == 18)) {
-					// TB separator
-					// System.out.println("        separator: " + text);
+			if (top >= 992) continue; // footer
+			if ("TBNR".equals(eText.getChildText("b"))) {
+				if (tb != null) {
 					ret.add(tb.createTatbestand());
 					tb = null;
-					continue;
 				}
+				// System.out.println("---> footer");
+				return ret; // footer
 			}
 
 			if ((left >= 627 && left <= 638) && height == 11 && font == 1) {
@@ -127,31 +142,46 @@ public class TatbestandskatalogParser {
 				continue;
 			}
 
-			if ((left >= 106 && left <= 373) && height == 11 && font == 1) {
-				// text column
-				// System.out.println("        text: " + text);
-				if (tb == null) {
-					text = text.trim();
-					if (text.isEmpty()) continue;
-					int idx = text.indexOf(' ');
-					int tbnr = Integer.parseInt(text.substring(0, idx));
-					text = text.substring(idx);
-					tb = new TatbestandBuilder(tbnr);
-					tb.appendText(text.trim());
-					continue;
+			if (isTatbestandBeginner(text)) {
+				if (tb != null) {
+					ret.add(tb.createTatbestand());
+					tb = null;
 				}
-
+				text = text.trim();
+				int tbnr = Integer.parseInt(text.substring(0, 6));
+				text = text.substring(8);
+				tb = new TatbestandBuilder(tbnr);
 				tb.appendText(text.trim());
+				// System.out.println("   @@@ new " + tbnr);
 				continue;
 			}
 
 			if (text.trim().isEmpty()) continue;
 
-			throw new RuntimeException("Unprocessed text element -> left=" + left + " text=" + text);
+			tb.appendText(text.trim());
+
+			// throw new RuntimeException("Unprocessed text element -> left=" + left + " text=" + text);
 
 		}
 
+		if (tb != null) {
+			ret.add(tb.createTatbestand());
+			tb = null;
+		}
+
 		return ret;
+	}
+
+	private boolean isTatbestandBeginner(String text) {
+		text = text.trim();
+		if (text.length() < 11) return false;
+		if (text.indexOf("  ") != 6) return false;
+		try {
+			Integer.parseInt(text.substring(0, 6));
+			return true;
+		} catch (NumberFormatException ex) {
+			return false;
+		}
 	}
 
 	public static class TatbestandBuilder {
@@ -178,7 +208,12 @@ public class TatbestandskatalogParser {
 		}
 
 		public void appendText(String s) {
-			if (referencesText != null || s.startsWith("§")) {
+			if (s.startsWith("§")) {
+				appendReferencesText(s);
+				return;
+			}
+
+			if (referencesText != null && !s.startsWith("Tab.:")) {
 				appendReferencesText(s);
 				return;
 			}
@@ -194,7 +229,7 @@ public class TatbestandskatalogParser {
 				separator = "";
 			}
 
-			if (s.endsWith(".")) separator = "\n";
+			if (s.startsWith("Tab.:")) separator = "\n";
 
 			text += separator + s;
 		}
@@ -220,6 +255,17 @@ public class TatbestandskatalogParser {
 			Tatbestand tatbestand = new Tatbestand(nr, text, referencesText, fapPkt, euro, fv);
 			System.out.println("  " + tatbestand);
 			return tatbestand;
+		}
+
+	}
+
+	private class TopComparator implements Comparator<Element> {
+
+		@Override
+		public int compare(Element a, Element b) {
+			int iA = Integer.parseInt(a.getAttributeValue("top"));
+			int iB = Integer.parseInt(b.getAttributeValue("top"));
+			return Utl.compare(iA, iB);
 		}
 
 	}

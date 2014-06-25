@@ -89,6 +89,16 @@ public class GiiTest extends ATest {
 		assertSize(norms, 4);
 	}
 
+	// @Test
+	// public void testEgbgb() {
+	// BookRef ref = getBookIndex().getBookByCode("EGBGB");
+	// Book book = getGii().loadBook(ref);
+	// assertNotNull(book);
+	//
+	// Norm n1 = book.getNormByCodeNumber("1");
+	// assertEquals(n1.getRef().getCode(), "Art 1");
+	// }
+
 	@Test
 	public void testStgb() {
 		BookRef ref = getBookIndex().getBookByCode("StGB");
@@ -118,6 +128,7 @@ public class GiiTest extends ATest {
 
 		Norm n76 = book.getNormByCodeNumber("76");
 		assertNotNull(n76);
+		assertEquals(n76.getRef().getCode(), "Art 76");
 	}
 
 	@Test
