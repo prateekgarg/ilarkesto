@@ -260,6 +260,10 @@ public class CssBuilder {
 			return attr("quotes", value);
 		}
 
+		public Style borderTopNone() {
+			return borderTop("none");
+		}
+
 		public Style borderTop(int width, String color) {
 			return borderTop(width, "solid", color);
 		}
@@ -278,6 +282,10 @@ public class CssBuilder {
 
 		public Style borderRight(String value) {
 			return attr("border-right", value);
+		}
+
+		public Style borderBottomNone() {
+			return borderBottom("none");
 		}
 
 		public Style borderBottom(int width, String color) {
