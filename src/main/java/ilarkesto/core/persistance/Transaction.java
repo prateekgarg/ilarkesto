@@ -71,7 +71,7 @@ public class Transaction {
 	public void persist(AEntity entity) {
 		log.info("persist", toString(entity));
 		if (autoCommit) {
-			backend.update(Arrays.asList(entity), null, updatePropertiesMap(modifiedPropertiesByEntityId, entity));
+			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity));
 			return;
 		}
 		modified.add(entity);
