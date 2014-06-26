@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -51,14 +51,14 @@ public class SeleniumTestsuiteBuilder {
 		}
 		sb.append("</tbody></table></body></html>\n");
 		File file = new File(dir.getPath() + "/" + name);
-		log.info("Writing testsuite", file);
-		IO.writeFile(file, sb.toString(), IO.UTF_8);
+		boolean changed = IO.writeFileIfChanged(file, sb.toString(), IO.UTF_8);
+		if (changed) log.info("testsuite:", file);
 	}
 
 	private void write(File dir, SeleniumTestcaseBuilder testcase) {
 		File file = new File(dir.getPath() + "/" + testcase.getTitle());
-		log.info("Writing testcase", file);
-		IO.writeFile(file, testcase.toString(), IO.UTF_8);
+		boolean changed = IO.writeFileIfChanged(file, testcase.toString(), IO.UTF_8);
+		if (changed) log.info("testcase:", file);
 	}
 
 	public void add(SeleniumTestcaseBuilder... testcases) {

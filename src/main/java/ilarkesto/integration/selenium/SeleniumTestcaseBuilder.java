@@ -54,6 +54,7 @@ public class SeleniumTestcaseBuilder {
 	}
 
 	public Command type(String target, String value) {
+		if (value == null) value = "";
 		return command("type", target, value);
 	}
 
