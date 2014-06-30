@@ -82,6 +82,8 @@ public class Transaction {
 			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity));
 			return;
 		}
+		if (deleted.contains(entity))
+			throw new IllegalStateException("Entity already deleted: " + Persistence.getTypeAndId(entity));
 		modified.add(entity);
 		updatePropertiesMap(modifiedPropertiesByEntityId, entity);
 	}
