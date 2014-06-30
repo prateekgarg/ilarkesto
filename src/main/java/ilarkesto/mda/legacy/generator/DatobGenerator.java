@@ -111,9 +111,14 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 	protected void writeEnsureIntegrity() {
 		ln();
 		comment("ensure integrity");
-		ln();
+		annotationOverride();
 		s("    public void ensureIntegrity() {").ln();
 		s("        super.ensureIntegrity();").ln();
+		writeEnsureIntegrityContent();
+		s("    }").ln();
+	}
+
+	protected void writeEnsureIntegrityContent() {
 		for (PropertyModel p : bean.getProperties()) {
 			if (p.isCollection()) {
 				s("        if (").s(getFieldName(p)).s(" == null) ").s(getFieldName(p)).s(" = new ").s(getFieldImpl(p))
@@ -161,7 +166,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 			}
 		}
-		s("    }").ln();
 	}
 
 	private void writeCopyConstructor() {

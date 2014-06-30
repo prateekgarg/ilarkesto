@@ -34,6 +34,7 @@ public class Transaction {
 	private boolean autoCommit;
 	private AEntityDatabase backend;
 	private boolean ignoreModifications;
+	private boolean ensuringIntegrity;
 
 	private EntityCache modified = new EntityCache();
 	private Map<String, Map<String, Object>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
@@ -56,8 +57,15 @@ public class Transaction {
 	}
 
 	private void ensureIntegrity() {
-		for (AEntity entity : modified.getAll()) {
-			entity.ensureIntegrity();
+		ensuringIntegrity = true;
+		try {
+			for (AEntity entity : modified.getAll()) {
+				entity.ensureIntegrity();
+			}
+		} catch (EntityDeletedWhileEnsureIntegrity ex) {
+			ensureIntegrity();
+		} finally {
+			ensuringIntegrity = false;
 		}
 	}
 
@@ -92,7 +100,7 @@ public class Transaction {
 
 	private String toString(AEntity entity) {
 		if (entity == null) return "<null>";
-		return Str.getSimpleName(entity.getClass()) + " " + entity.getId();
+		return Str.getSimpleName(entity.getClass()) + ":" + entity.getId();
 	}
 
 	public void delete(String entityId) {
@@ -102,6 +110,7 @@ public class Transaction {
 		}
 		deleted.add(entityId);
 		modified.remove(entityId);
+		if (ensuringIntegrity) throw new EntityDeletedWhileEnsureIntegrity();
 	}
 
 	public boolean isDeleted(String id) {
@@ -158,15 +167,22 @@ public class Transaction {
 		sb.append(name);
 		boolean empty = true;
 		if (!modified.isEmpty()) {
-			sb.append("\n    Modified: ").append(Str.format(modified.getAllIds()));
+			sb.append("\n    Modified: ").append(formatIds(modified.getAllIds()));
 			empty = false;
 		}
 		if (!deleted.isEmpty()) {
-			sb.append("\n    Deleted: ").append(Str.format(deleted));
+			sb.append("\n    Deleted: ").append(formatIds(deleted));
 			empty = false;
 		}
 		if (empty) sb.append(" Empty");
 		return sb.toString();
+	}
+
+	private String formatIds(Collection<String> ids) {
+		if (ids.isEmpty()) return "0";
+		int size = ids.size();
+		if (size <= 7) return Str.format(ids);
+		return String.valueOf(size);
 	}
 
 	public boolean isEmpty() {

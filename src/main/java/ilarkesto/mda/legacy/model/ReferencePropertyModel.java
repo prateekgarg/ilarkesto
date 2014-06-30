@@ -47,6 +47,7 @@ public class ReferencePropertyModel extends SimplePropertyModel {
 		if (master && (!isReference() || isCollection()))
 			throw new RuntimeException("Only a simple reference property can be a master");
 		this.master = master;
+		if (getBean() instanceof EntityModel) ((EntityModel) getBean()).setSelfcontained(false);
 		setMandatory(master);
 		return this;
 	}

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -41,6 +41,7 @@ import ilarkesto.persistence.AEntity;
 import ilarkesto.search.Searchable;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 public class EntityGenerator extends DatobGenerator<EntityModel> {
@@ -168,6 +169,36 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 
 		super.writeContent();
+	}
+
+	@Override
+	protected void writeEnsureIntegrityContent() {
+		super.writeEnsureIntegrityContent();
+		if (!bean.isSelfcontained()) {
+			Set<ReferencePropertyModel> masterReferences = bean.getMasterReferences();
+			if (masterReferences.isEmpty()) {
+				List<BackReferenceModel> backReferences = bean.getBackReferences();
+				if (!backReferences.isEmpty()) {
+					boolean first = true;
+					s("        if (");
+					for (BackReferenceModel br : backReferences) {
+						if (first) {
+							first = false;
+						} else {
+							s(" && ");
+						}
+						if (br.getReference().isUnique()) {
+							s("get" + Str.uppercaseFirstLetter(br.getName()) + "()==null");
+						} else {
+							s("get" + Str.uppercaseFirstLetter(br.getName()) + "s().isEmpty()");
+						}
+					}
+					ln(") {");
+					ln("            delete();");
+					ln("        }");
+				}
+			}
+		}
 	}
 
 	private void writeKeytableGetLabel() {
