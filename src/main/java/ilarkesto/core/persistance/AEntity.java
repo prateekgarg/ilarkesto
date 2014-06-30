@@ -17,6 +17,7 @@ package ilarkesto.core.persistance;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.base.Uuid;
+import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
 
 import java.io.Serializable;
@@ -120,9 +121,18 @@ public class AEntity implements Serializable, TransferableEntity {
 		return properties;
 	}
 
-	@Override
-	public String toString() {
+	protected String asString() {
 		return Utl.getSimpleName(getClass()) + ":" + getId();
+	}
+
+	@Override
+	public final String toString() {
+		try {
+			return asString();
+		} catch (Exception ex) {
+			Log.get(getClass()).error("asString() throwed exception:", ex);
+			return Utl.getSimpleName(getClass()) + ":" + getId();
+		}
 	}
 
 	@Override
