@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -34,23 +34,25 @@ public class Transaction {
 	private boolean autoCommit;
 	private AEntityDatabase backend;
 	private boolean ignoreModifications;
+	private boolean ensureIntegrityOnCommit;
 	private boolean ensuringIntegrity;
 
 	private EntityCache modified = new EntityCache();
 	private Map<String, Map<String, Object>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
 	private Set<String> deleted = new HashSet<String>();
 
-	public Transaction(AEntityDatabase backend, String name, boolean autoCommit) {
+	public Transaction(AEntityDatabase backend, String name, boolean autoCommit, boolean ensureIntegrityOnCommit) {
 		super();
 		this.backend = backend;
 		this.name = name;
 		this.autoCommit = autoCommit;
+		this.ensureIntegrityOnCommit = ensureIntegrityOnCommit;
 	}
 
 	public void commit() {
 		if (autoCommit) throw new IllegalStateException("Transaction is autoCommit");
 		if (!isEmpty()) log.info("commit()", toString());
-		ensureIntegrityUntilUnchanged();
+		if (ensureIntegrityOnCommit) ensureIntegrityUntilUnchanged();
 		backend.update(modified.getAll(), deleted, modifiedPropertiesByEntityId);
 		backend.onTransactionFinished(this);
 		modified = null;
@@ -180,6 +182,11 @@ public class Transaction {
 
 	public void setIgnoreModifications(boolean disabled) {
 		this.ignoreModifications = disabled;
+	}
+
+	public Transaction setAutoCommit(boolean autoCommit) {
+		this.autoCommit = autoCommit;
+		return this;
 	}
 
 	@Override
