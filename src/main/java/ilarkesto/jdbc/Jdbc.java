@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -111,9 +111,12 @@ public class Jdbc {
 				if (handler != null) {
 					rs = stmt.getResultSet();
 					handler.onExecuted(rs);
+					int count = 0;
 					while (rs.next()) {
+						count++;
 						handler.onRecord(rs);
 					}
+					if (count == 0) handler.onEmpty(rs);
 				}
 			} finally {
 				closeQuiet(rs);
@@ -161,6 +164,8 @@ public class Jdbc {
 	public static abstract class RecordHandler {
 
 		public void onExecuted(ResultSet rs) throws SQLException {}
+
+		public void onEmpty(ResultSet rs) {}
 
 		public abstract void onRecord(ResultSet rs) throws SQLException;
 	}
