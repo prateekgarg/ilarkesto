@@ -38,6 +38,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 	private static AServiceCall currentServiceCall;
 	private static long lastSuccessfullServiceCallTime;
 	public static Runnable listener;
+	private static LinkedList<Runnable> runnablesAfterAllFinished = new LinkedList<Runnable>();
 
 	protected final Log log = Log.get(getClass());
 
@@ -68,10 +69,20 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 	private static void runNext() {
 		if (currentServiceCall != null) return;
-		if (queue.isEmpty()) return;
+		if (queue.isEmpty()) {
+			for (Runnable runnable : runnablesAfterAllFinished) {
+				runnable.run();
+			}
+			runnablesAfterAllFinished.clear();
+			return;
+		}
 		AServiceCall next = queue.getFirst();
 		queue.remove(next);
 		next.run();
+	}
+
+	public static void runAfterAllFinished(Runnable runnable) {
+		runnablesAfterAllFinished.add(runnable);
 	}
 
 	private void queue() {
@@ -126,10 +137,10 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 	private void serviceCallReturned() {
 		if (currentServiceCall != this) throw new IllegalStateException("currentServiceCall != this");
 		currentServiceCall = null;
-		runNext();
 		rtCall.stop();
 		if (!getName().equals("Ping")) log.info("serviceCallReturned()");
 		if (listener != null) listener.run();
+		runNext();
 	}
 
 	protected void onCallbackError(List<ErrorWrapper> errors) {}

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,7 @@ public class Transaction {
 	private boolean ignoreModifications;
 	private boolean ensureIntegrityOnCommit;
 	private boolean ensuringIntegrity;
+	private LinkedList<Runnable> runnablesAfterCommit;
 
 	private EntityCache modified = new EntityCache();
 	private Map<String, Map<String, Object>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
@@ -57,6 +59,12 @@ public class Transaction {
 		backend.onTransactionFinished(this);
 		modified = null;
 		deleted = null;
+
+		if (runnablesAfterCommit != null) {
+			for (Runnable runnable : runnablesAfterCommit) {
+				runnable.run();
+			}
+		}
 	}
 
 	private void ensureIntegrityUntilUnchanged() {
@@ -211,6 +219,15 @@ public class Transaction {
 		int size = ids.size();
 		if (size <= 7) return Str.format(ids);
 		return String.valueOf(size);
+	}
+
+	public void runAfterCommit(Runnable runnable) {
+		if (autoCommit) {
+			runnable.run();
+			return;
+		}
+		if (runnablesAfterCommit == null) runnablesAfterCommit = new LinkedList<Runnable>();
+		runnablesAfterCommit.add(runnable);
 	}
 
 	public boolean isEmpty() {
