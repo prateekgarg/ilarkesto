@@ -19,6 +19,16 @@ import ilarkesto.core.base.Utl;
 
 public class Persistence {
 
+	public static void ensureIntegrity(String entityId) {
+		if (AEntityDatabase.instance != null) {
+			AEntity entity = null;
+			try {
+				entity = Transaction.get().get(entityId);
+			} catch (EntityDoesNotExistException ex) {}
+			if (entity != null) entity.ensureIntegrity();
+		}
+	}
+
 	public static String toStringWithTypeAndId(AEntity entity) {
 		if (entity == null) return null;
 		String s;
@@ -33,6 +43,12 @@ public class Persistence {
 	public static String getTypeAndId(AEntity entity) {
 		if (entity == null) return null;
 		return Str.getSimpleName(entity.getClass()) + ":" + entity.getId();
+	}
+
+	public static void deleteAll(Iterable<? extends AEntity> entities) {
+		for (AEntity entity : entities) {
+			entity.delete();
+		}
 	}
 
 }

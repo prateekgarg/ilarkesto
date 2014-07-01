@@ -83,7 +83,11 @@ public class LogRecord {
 					textSb.append(Utl.getUserMessageStack(ex, " <- "));
 					textSb.append("\n").append(Str.getStackTrace(ex));
 				} else {
-					textSb.append(Str.format(parameter));
+					try {
+						textSb.append(Str.format(parameter));
+					} catch (Exception ex) {
+						textSb.append("[Log-ERROR: " + Utl.getUserMessageStack(ex) + "]");
+					}
 				}
 			}
 		}

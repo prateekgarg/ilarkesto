@@ -193,4 +193,8 @@ public abstract class PropertyModel {
 		return false;
 	}
 
+	public boolean isMaster() {
+		return false;
+	}
+
 }

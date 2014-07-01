@@ -48,18 +48,26 @@ public class Transaction {
 	}
 
 	public void commit() {
+		if (autoCommit) throw new IllegalStateException("Transaction is autoCommit");
 		if (!isEmpty()) log.info("commit()", toString());
-		ensureIntegrity();
+		ensureIntegrityUntilUnchanged();
 		backend.update(modified.getAll(), deleted, modifiedPropertiesByEntityId);
 		backend.onTransactionFinished(this);
 		modified = null;
 		deleted = null;
 	}
 
+	private void ensureIntegrityUntilUnchanged() {
+		String changeHash = createChangeHash();
+		ensureIntegrity();
+		if (changeHash.equals(createChangeHash())) return;
+		ensureIntegrityUntilUnchanged();
+	}
+
 	private void ensureIntegrity() {
 		ensuringIntegrity = true;
 		try {
-			for (AEntity entity : modified.getAll()) {
+			for (AEntity entity : new ArrayList<AEntity>(modified.getAll())) {
 				entity.ensureIntegrity();
 			}
 		} catch (EntityDeletedWhileEnsureIntegrity ex) {
@@ -67,6 +75,17 @@ public class Transaction {
 		} finally {
 			ensuringIntegrity = false;
 		}
+	}
+
+	private String createChangeHash() {
+		StringBuilder sb = new StringBuilder();
+		for (AEntity entity : modified.getAll()) {
+			sb.append("/").append(entity.getId());
+		}
+		for (String id : deleted) {
+			sb.append("/").append(id);
+		}
+		return sb.toString();
 	}
 
 	public void rollback() {

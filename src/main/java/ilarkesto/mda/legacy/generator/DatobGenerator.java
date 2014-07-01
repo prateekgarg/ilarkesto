@@ -19,6 +19,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.money.Money;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.SearchText;
 import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.persistance.UniqueFieldConstraintException;
@@ -30,6 +31,7 @@ import ilarkesto.core.time.TimePeriod;
 import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
+import ilarkesto.mda.legacy.model.ReferenceSetPropertyModel;
 import ilarkesto.mda.legacy.model.SetPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
@@ -112,8 +114,13 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln();
 		comment("ensure integrity");
 		annotationOverride();
-		s("    public void ensureIntegrity() {").ln();
-		s("        super.ensureIntegrity();").ln();
+		if (isLegacyBean(bean)) {
+			s("    public void ensureIntegrity() {").ln();
+			s("        super.ensureIntegrity();").ln();
+		} else {
+			s("    public void onEnsureIntegrity() {").ln();
+			s("        super.onEnsureIntegrity();").ln();
+		}
 		writeEnsureIntegrityContent();
 		s("    }").ln();
 	}
@@ -146,6 +153,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 							+ "Reference(entityId);");
 					ln("            }");
 					ln("        }");
+
 				}
 			} else {
 				if (p.isReference()) {
@@ -153,7 +161,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					if (pRef.isMaster()) {
 						ln("        if (!is" + Str.uppercaseFirstLetter(p.getNameSingular()) + "Set()) {");
 						ln("            repairMissingMaster();");
-						ln("            return;");
 						ln("        }");
 					}
 					ln("        try {");
@@ -163,6 +170,26 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					ln("            repairDead" + Str.uppercaseFirstLetter(p.getNameSingular()) + "Reference("
 							+ getFieldName(p) + ");");
 					ln("        }");
+				}
+			}
+
+			if (p instanceof ReferenceSetPropertyModel) {
+				ReferenceSetPropertyModel sp = (ReferenceSetPropertyModel) p;
+				if (!sp.getReferencedEntity().isSelfcontained()) {
+					ln("        if (isDeleted()) {");
+					ln("            for (String entityId : " + getFieldName(sp) + ") {");
+					ln("                " + Persistence.class.getName() + ".ensureIntegrity(entityId);");
+					ln("            }");
+					ln("        }");
+				}
+			}
+			if (p instanceof ReferencePropertyModel) {
+				ReferencePropertyModel rp = (ReferencePropertyModel) p;
+				if (!rp.getReferencedEntity().isSelfcontained()) {
+					ln("        try {");
+					ln("            if (isDeleted() && is" + Str.uppercaseFirstLetter(rp.getName()) + "Set()) get"
+							+ Str.uppercaseFirstLetter(p.getName()) + "().ensureIntegrity();");
+					ln("        } catch (" + EntityDoesNotExistException.class.getName() + " ex) {}");
 				}
 			}
 		}
@@ -611,8 +638,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln();
 		ln("    public final boolean remove" + pNameSingularUpper + "(" + p.getContentType() + " "
 				+ p.getNameSingular() + ") {");
-		ln("        if (" + p.getNameSingular() + " == null) throw new IllegalArgumentException(\""
-				+ p.getNameSingular() + " == null\");");
+		ln("        if (" + p.getNameSingular() + " == null) return false;");
 		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        boolean removed = " + getFieldName(p) + ".remove(" + paramExpr + ");");
 		ln("        if (removed) updateLastModified();");

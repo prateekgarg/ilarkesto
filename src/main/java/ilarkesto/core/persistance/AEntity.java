@@ -31,6 +31,8 @@ import java.util.Set;
 
 public class AEntity implements Serializable, TransferableEntity {
 
+	protected transient Log log = Log.get(getClass());
+
 	private String id;
 	private DateAndTime lastModified;
 
@@ -53,10 +55,22 @@ public class AEntity implements Serializable, TransferableEntity {
 		return AEntityDatabase.get().getTransaction().isDeleted(this);
 	}
 
+	private transient boolean ensuringIntegrity;
+
 	/**
 	 * Method gets called bevore persiting and after loading
 	 */
-	public void ensureIntegrity() {}
+	public final void ensureIntegrity() {
+		if (ensuringIntegrity) return;
+		ensuringIntegrity = true;
+		try {
+			onEnsureIntegrity();
+		} finally {
+			ensuringIntegrity = false;
+		}
+	}
+
+	protected void onEnsureIntegrity() {}
 
 	@Override
 	public Set<AEntity> getPassengers() {
@@ -67,7 +81,8 @@ public class AEntity implements Serializable, TransferableEntity {
 	 * Gets called when the master entity is deleted.
 	 */
 	protected void repairMissingMaster() {
-		throw new IllegalStateException("Master entity is missing");
+		log.info("Deleting entity as repair for missing master:", Persistence.getTypeAndId(this));
+		delete();
 	}
 
 	public final void updateLastModified() {
