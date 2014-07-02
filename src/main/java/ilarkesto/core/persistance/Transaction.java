@@ -199,6 +199,10 @@ public class Transaction {
 		return this;
 	}
 
+	public boolean isAutoCommit() {
+		return autoCommit;
+	}
+
 	@Override
 	public synchronized String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -233,7 +237,7 @@ public class Transaction {
 	}
 
 	public boolean isEmpty() {
-		return modified.isEmpty() && deleted.isEmpty();
+		return (modified == null || modified.isEmpty()) && (deleted == null || deleted.isEmpty());
 	}
 
 	public String getName() {
