@@ -45,7 +45,7 @@ public abstract class AAction implements Command, ClickHandler {
 			Transaction transaction = Transaction.get().setAutoCommit(false);
 			try {
 				onExecute();
-				Transaction.get().commit();
+				if (!transaction.isEmpty()) transaction.commit();
 			} finally {
 				transaction.setAutoCommit(true);
 			}

@@ -53,9 +53,11 @@ public class Transaction {
 
 	public void commit() {
 		// if (autoCommit) throw new IllegalStateException("Transaction is autoCommit");
-		if (!isEmpty()) log.info("commit()", toString());
-		if (ensureIntegrityOnCommit) ensureIntegrityUntilUnchanged();
-		backend.update(modified.getAll(), deleted, modifiedPropertiesByEntityId);
+		if (!isEmpty()) {
+			log.info("commit()", toString());
+			if (ensureIntegrityOnCommit) ensureIntegrityUntilUnchanged();
+			backend.update(modified.getAll(), deleted, modifiedPropertiesByEntityId);
+		}
 		backend.onTransactionFinished(this);
 		modified = null;
 		deleted = null;
@@ -120,7 +122,7 @@ public class Transaction {
 	public void modified(AEntity entity, String field, Object value) {
 		if (ignoreModifications) return;
 		if (!contains(entity.getId())) return;
-		log.info("modified", toString(entity), field, value);
+		log.info(name, "modified", toString(entity), field, value);
 		if (autoCommit) {
 			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value));
 			return;
@@ -232,6 +234,10 @@ public class Transaction {
 
 	public boolean isEmpty() {
 		return modified.isEmpty() && deleted.isEmpty();
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	private static Map<String, Map<String, Object>> updatePropertiesMap(
