@@ -23,6 +23,20 @@ import org.testng.annotations.Test;
 public class UtlTest extends ATest {
 
 	@Test
+	public void moveElementUp() {
+		assertEquals(Utl.moveElementUp(Utl.arrayList("a", "b", "c"), "b"), Utl.arrayList("b", "a", "c"));
+		assertEquals(Utl.moveElementUp(Utl.arrayList("a", "b", "c"), "a"), Utl.arrayList("a", "b", "c"));
+		assertEquals(Utl.moveElementUp(Utl.arrayList("a", "c"), "b"), Utl.arrayList("a", "b", "c"));
+	}
+
+	@Test
+	public void moveElementDown() {
+		assertEquals(Utl.moveElementDown(Utl.arrayList("a", "b", "c"), "b"), Utl.arrayList("a", "c", "b"));
+		assertEquals(Utl.moveElementDown(Utl.arrayList("a", "b", "c"), "c"), Utl.arrayList("a", "b", "c"));
+		assertEquals(Utl.moveElementDown(Utl.arrayList("a", "c"), "b"), Utl.arrayList("a", "c", "b"));
+	}
+
+	@Test
 	public void equals() {
 		Object[] a = { "hello", "equals" };
 		Object[] b = { "hello", "equals" };

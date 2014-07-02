@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -29,6 +29,47 @@ import java.util.Set;
 public class Utl {
 
 	public static String language = "en";
+
+	public static <T> ArrayList<T> arrayList(T... elements) {
+		ArrayList<T> ret = new ArrayList<T>();
+		for (T element : elements) {
+			ret.add(element);
+		}
+		return ret;
+	}
+
+	public static <T> boolean isElementFirst(List<T> list, T element) {
+		return list.indexOf(element) == 0;
+	}
+
+	public static <T> boolean isElementLast(List<T> list, T element) {
+		if (list.isEmpty()) return false;
+		return list.indexOf(element) == list.size() - 1;
+	}
+
+	/**
+	 * Moves te given element up in the list. Adds it to the list if it doesn't exist.
+	 */
+	public static <T> List<T> moveElementUp(List<T> list, T element) {
+		if (!list.contains(element)) list.add(element);
+		int idx = list.indexOf(element);
+		if (idx == 0) return list; // already at the top
+		list.remove(element);
+		list.add(idx - 1, element);
+		return list;
+	}
+
+	/**
+	 * Moves te given element down in the list. Adds it to the list if it doesn't exist.
+	 */
+	public static <T> List<T> moveElementDown(List<T> list, T element) {
+		if (!list.contains(element)) list.add(element);
+		int idx = list.indexOf(element);
+		if (idx == list.size() - 1) return list; // already at the bottom
+		list.remove(element);
+		list.add(idx + 1, element);
+		return list;
+	}
 
 	public static <T> T getFirstNotNull(T... objects) {
 		for (T object : objects) {
