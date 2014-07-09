@@ -591,6 +591,7 @@ public class Str {
 	public static boolean isEmail(String s) {
 		if (isBlank(s)) return false;
 		if (s.length() < 5) return false;
+		s = s.toLowerCase();
 		boolean at = false;
 		boolean dot = false;
 		int len = s.length();
@@ -605,7 +606,8 @@ public class Str {
 				dot = true;
 				continue;
 			}
-			if (Character.isLetterOrDigit(c) || c == '-' || c == '_' || c == '+') continue;
+			if (Character.isLetterOrDigit(c) || c == '-' || c == '_' || c == '+' || c == 'ä' || c == 'ü' || c == 'ö')
+				continue;
 			return false;
 		}
 		if (!dot || !at) return false;
