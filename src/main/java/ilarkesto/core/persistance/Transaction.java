@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -175,17 +176,21 @@ public class Transaction {
 	}
 
 	public AEntity get(AEntityQuery query) {
-		// TODO skip deleted
 		AEntity entity = modified.get(query);
-		if (entity != null) return entity;
-		return backend.get(query);
+		if (entity == null) entity = backend.get(query);
+		if (entity != null && isDeleted(entity)) return null;
+		return entity;
 	}
 
 	public List<AEntity> list(AEntityQuery query) {
-		// TODO skip deleted
 		List<AEntity> ret = backend.list(query);
 		for (AEntity entity : modified.list(query)) {
 			if (!ret.contains(entity)) ret.add(entity);
+		}
+		Iterator<AEntity> iterator = ret.iterator();
+		while (iterator.hasNext()) {
+			AEntity entity = iterator.next();
+			if (isDeleted(entity)) iterator.remove();
 		}
 		return ret;
 	}
