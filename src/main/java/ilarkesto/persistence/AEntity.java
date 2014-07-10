@@ -48,6 +48,10 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 
 	// --- ---
 
+	protected boolean isDeleted() {
+		return getDao().isDeleted(this);
+	}
+
 	@Override
 	protected final ADao getManager() {
 		return getDao();
