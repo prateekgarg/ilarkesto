@@ -17,7 +17,27 @@ package ilarkesto.core.persistance;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class Persistence {
+
+	public static Set<String> getIdsAsSet(Collection<? extends AEntity> entities) {
+		Set<String> result = new HashSet<String>(entities.size());
+		for (AEntity entity : entities)
+			result.add(entity.getId());
+		return result;
+	}
+
+	public static List<String> getIdsAsList(Collection<? extends AEntity> entities) {
+		List<String> result = new ArrayList<String>();
+		for (AEntity entity : entities)
+			result.add(entity.getId());
+		return result;
+	}
 
 	public static void ensureIntegrity(String entityId) {
 		if (AEntityDatabase.instance != null) {
