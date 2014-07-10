@@ -35,6 +35,15 @@ public class SeleniumTestcaseBuilder {
 		waitForElementPresent(waitForTarget);
 	}
 
+	public void typeAndSubmit(String target, String value) {
+		type(target, value);
+		sendKeysEnter(target);
+	}
+
+	public void sendKeysEnter(String target) {
+		sendKeys(target, "${KEY_ENTER}");
+	}
+
 	// --- basics ---
 
 	public Command select(String target, String optionTarget) {
@@ -56,6 +65,10 @@ public class SeleniumTestcaseBuilder {
 	public Command type(String target, String value) {
 		if (value == null) value = "";
 		return command("type", target, value);
+	}
+
+	public Command sendKeys(String target, String value) {
+		return command("sendKeys", target, value);
 	}
 
 	public Command open(String url) {
