@@ -116,7 +116,8 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 			return;
 		}
 
-		if (!isEntityVisible(entity)) throw new PermissionDeniedException(entity + " is not visible");
+		if (!isEntityVisible(entity))
+			throw new PermissionDeniedException(entity + " is not visible in " + getSession());
 
 		Set<TransferableEntity> all = new HashSet<TransferableEntity>();
 		resolveSlaves(entity, all);
