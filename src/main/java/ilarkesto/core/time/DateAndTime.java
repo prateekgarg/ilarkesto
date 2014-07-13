@@ -115,6 +115,10 @@ public class DateAndTime implements Comparable<DateAndTime>, Serializable, Forma
 		return compareTo(other) <= 0;
 	}
 
+	public final boolean isAfter(Date other) {
+		return getDate().compareTo(other) > 0;
+	}
+
 	public final boolean isAfter(DateAndTime other) {
 		return compareTo(other) > 0;
 	}
