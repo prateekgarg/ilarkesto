@@ -72,6 +72,9 @@ public class GwtSuperDevMode {
 
 		List<String> args = new ArrayList<String>();
 
+		args.add("-noprecompile");
+		// args.add("-XstrictResources");
+
 		// port
 		args.add("-port");
 		args.add(String.valueOf(port));
@@ -98,6 +101,7 @@ public class GwtSuperDevMode {
 			args.add(module);
 		}
 
+		log.info("Args:", args);
 		Options options = new Options();
 		boolean parsed = options.parseArgs(args.toArray(new String[args.size()]));
 		if (!parsed) throw new RuntimeException("Parsing args failed: " + Str.format(args));
