@@ -16,7 +16,14 @@ package ilarkesto.core.persistance;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
+import ilarkesto.core.money.Money;
+import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.DayAndMonth;
+import ilarkesto.core.time.Time;
+import ilarkesto.core.time.TimePeriod;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -24,6 +31,176 @@ import java.util.List;
 import java.util.Set;
 
 public class Persistence {
+
+	public static int parsePropertyint(String value) {
+		if (value == null) return 0;
+		return Integer.parseInt(value);
+	}
+
+	public static boolean parsePropertyboolean(String value) {
+		return Str.isTrue(value);
+	}
+
+	public static List<String> parsePropertyStringCollection(String value) {
+		return parseStringList(value, new ArrayList<String>());
+	}
+
+	public static Set<String> parsePropertyReferenceSet(String value) {
+		return parseStringList(value, new HashSet<String>());
+	}
+
+	public static List<String> parsePropertyReferenceList(String value) {
+		return parseStringList(value, new ArrayList<String>());
+	}
+
+	private static <T extends Collection<String>> T parseStringList(String value, T ret) {
+		if (value == null) return ret;
+		while (true) {
+			value = value.trim();
+			if (value.isEmpty()) break;
+			int idx = value.indexOf(",");
+			if (idx >= 0) {
+				String id = value.substring(0, idx);
+				ret.add(id.trim());
+				value = value.substring(idx + 1);
+			} else {
+				ret.add(value);
+				break;
+			}
+		}
+		return ret;
+	}
+
+	public static List<Date> parsePropertyDateCollection(String value) {
+		List<Date> ret = new ArrayList<Date>();
+		if (value == null) return ret;
+		while (true) {
+			value = value.trim();
+			if (value.isEmpty()) break;
+			int idx = value.indexOf(",");
+			if (idx >= 0) {
+				String s = value.substring(0, idx);
+				ret.add(new Date(s.trim()));
+				value = value.substring(idx + 1);
+			} else {
+				ret.add(new Date(value));
+				break;
+			}
+		}
+		return ret;
+	}
+
+	public static List<Integer> parsePropertyIntegerCollection(String value) {
+		List<Integer> ret = new ArrayList<Integer>();
+		if (value == null) return ret;
+		while (true) {
+			value = value.trim();
+			if (value.isEmpty()) break;
+			int idx = value.indexOf(",");
+			if (idx >= 0) {
+				String s = value.substring(0, idx);
+				ret.add(Integer.parseInt(s.trim()));
+				value = value.substring(idx + 1);
+			} else {
+				ret.add(Integer.parseInt(value));
+				break;
+			}
+		}
+		return ret;
+	}
+
+	public static Money parsePropertyMoney(String value) {
+		return value == null ? null : new Money(value);
+	}
+
+	public static BigDecimal parsePropertyBigDecimal(String value) {
+		return value == null ? null : new BigDecimal(value);
+	}
+
+	public static String parsePropertyReference(String value) {
+		return value;
+	}
+
+	public static Double parsePropertyDouble(String value) {
+		return value == null ? null : Double.parseDouble(value);
+	}
+
+	public static Float parsePropertyFloat(String value) {
+		return value == null ? null : Float.parseFloat(value);
+	}
+
+	public static Long parsePropertyLong(String value) {
+		return value == null ? null : Long.parseLong(value);
+	}
+
+	public static Integer parsePropertyInteger(String value) {
+		return value == null ? null : Integer.parseInt(value);
+	}
+
+	public static Date parsePropertyDate(String value) {
+		return value == null ? null : new Date(value);
+	}
+
+	public static Time parsePropertyTime(String value) {
+		return value == null ? null : new Time(value);
+	}
+
+	public static TimePeriod parsePropertyTimePeriod(String value) {
+		return value == null ? null : new TimePeriod(value);
+	}
+
+	public static DateAndTime parsePropertyDateAndTime(String value) {
+		return value == null ? null : new DateAndTime(value);
+	}
+
+	public static DayAndMonth parsePropertyDayAndMonth(String value) {
+		return value == null ? null : new DayAndMonth(value);
+	}
+
+	public static String parsePropertyString(String value) {
+		return value;
+	}
+
+	public static String propertyAsString(String value) {
+		return value;
+	}
+
+	public static String propertyAsString(Object value) {
+		return value == null ? null : value.toString();
+	}
+
+	public static String propertyAsString(Number value) {
+		if (value == null) return null;
+		return String.valueOf(value);
+	}
+
+	public static String propertyAsString(Date value) {
+		return value == null ? null : value.toString();
+	}
+
+	public static String propertyAsString(Time value) {
+		return value == null ? null : value.toString();
+	}
+
+	public static String propertyAsString(DateAndTime value) {
+		return value == null ? null : value.toString();
+	}
+
+	public static String propertyAsString(Money value) {
+		return value == null ? null : value.toString();
+	}
+
+	public static String propertyAsString(DayAndMonth value) {
+		return value == null ? null : value.toString();
+	}
+
+	public static String propertyAsString(Boolean value) {
+		return value == null ? null : value.toString();
+	}
+
+	public static String propertyAsString(Collection<String> value) {
+		return value == null ? null : Str.concat(value, ", ");
+	}
 
 	public static Set<String> getIdsAsSet(Collection<? extends AEntity> entities) {
 		Set<String> result = new HashSet<String>(entities.size());

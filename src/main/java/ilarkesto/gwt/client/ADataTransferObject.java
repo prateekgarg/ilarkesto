@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -37,7 +37,7 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 
 	private String userId;
 	private Set<String> deletedEntities;
-	private Map<String, Map<String, Serializable>> entities;
+	private Map<String, Map<String, String>> entities;
 
 	// dummys required for gwt-serialization
 	private int dummyI;
@@ -80,12 +80,12 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 		return entities.containsKey(entityId);
 	}
 
-	public final void addEntity(Map data) {
-		if (entities == null) entities = new HashMap<String, Map<String, Serializable>>();
-		entities.put((String) data.get("id"), data);
+	public final void addEntity(Map<String, String> data) {
+		if (entities == null) entities = new HashMap<String, Map<String, String>>();
+		entities.put(data.get("id"), data);
 	}
 
-	public final Collection<Map<String, Serializable>> getEntities() {
+	public final Collection<Map<String, String>> getEntities() {
 		return entities.values();
 	}
 

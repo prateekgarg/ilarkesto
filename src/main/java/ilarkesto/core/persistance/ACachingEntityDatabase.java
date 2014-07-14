@@ -23,11 +23,11 @@ public abstract class ACachingEntityDatabase extends AEntityDatabase {
 	protected EntityCache cache = new EntityCache();
 
 	protected abstract void onUpdate(Collection<AEntity> entities, Collection<String> entityIds,
-			Map<String, Map<String, Object>> modifiedPropertiesByEntityId);
+			Map<String, Map<String, String>> modifiedPropertiesByEntityId);
 
 	@Override
 	public synchronized void update(Collection<AEntity> modified, Collection<String> deletedIds,
-			Map<String, Map<String, Object>> modifiedPropertiesByEntityId) {
+			Map<String, Map<String, String>> modifiedPropertiesByEntityId) {
 		onUpdate(modified, deletedIds, modifiedPropertiesByEntityId);
 		cache.addAll(modified);
 		cache.removeAll(deletedIds);

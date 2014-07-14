@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -41,7 +41,7 @@ public class Transaction {
 	private LinkedList<Runnable> runnablesAfterCommit;
 
 	private EntityCache modified = new EntityCache();
-	private Map<String, Map<String, Object>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
+	private Map<String, Map<String, String>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, String>>();
 	private Set<String> deleted = new HashSet<String>();
 
 	public Transaction(AEntityDatabase backend, String name, boolean autoCommit, boolean ensureIntegrityOnCommit) {
@@ -120,7 +120,7 @@ public class Transaction {
 		updatePropertiesMap(modifiedPropertiesByEntityId, entity);
 	}
 
-	public void modified(AEntity entity, String field, Object value) {
+	public void modified(AEntity entity, String field, String value) {
 		if (ignoreModifications) return;
 		if (!contains(entity.getId())) return;
 		log.info(name, "modified", toString(entity), field, value);
@@ -249,14 +249,14 @@ public class Transaction {
 		return name;
 	}
 
-	private static Map<String, Map<String, Object>> updatePropertiesMap(
-			Map<String, Map<String, Object>> modifiedPropertiesByEntityId, AEntity entity, String field, Object value) {
+	private static Map<String, Map<String, String>> updatePropertiesMap(
+			Map<String, Map<String, String>> modifiedPropertiesByEntityId, AEntity entity, String field, String value) {
 		if (modifiedPropertiesByEntityId == null)
-			modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
+			modifiedPropertiesByEntityId = new HashMap<String, Map<String, String>>();
 		String id = entity.getId();
-		Map<String, Object> properties = modifiedPropertiesByEntityId.get(id);
+		Map<String, String> properties = modifiedPropertiesByEntityId.get(id);
 		if (properties == null) {
-			properties = new HashMap<String, Object>();
+			properties = new HashMap<String, String>();
 			properties.put("id", id);
 			modifiedPropertiesByEntityId.put(id, properties);
 		}
@@ -264,12 +264,12 @@ public class Transaction {
 		return modifiedPropertiesByEntityId;
 	}
 
-	private static Map<String, Map<String, Object>> updatePropertiesMap(
-			Map<String, Map<String, Object>> modifiedPropertiesByEntityId, AEntity entity) {
+	private static Map<String, Map<String, String>> updatePropertiesMap(
+			Map<String, Map<String, String>> modifiedPropertiesByEntityId, AEntity entity) {
 		if (modifiedPropertiesByEntityId == null)
-			modifiedPropertiesByEntityId = new HashMap<String, Map<String, Object>>();
+			modifiedPropertiesByEntityId = new HashMap<String, Map<String, String>>();
 		String id = entity.getId();
-		Map<String, Object> properties = entity.createPropertiesMap();
+		Map<String, String> properties = entity.createPropertiesMap();
 		modifiedPropertiesByEntityId.put(id, properties);
 		return modifiedPropertiesByEntityId;
 	}

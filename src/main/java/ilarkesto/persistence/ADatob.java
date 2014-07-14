@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -44,7 +44,7 @@ public abstract class ADatob implements Searchable {
 
 	protected abstract ADatobManager getManager();
 
-	public abstract void updateProperties(Map<?, ?> properties);
+	public abstract void updateProperties(Map<String, String> properties);
 
 	protected void updateLastModified() {
 		ADatobManager manager = getManager();
@@ -52,7 +52,7 @@ public abstract class ADatob implements Searchable {
 		manager.updateLastModified(this);
 	}
 
-	protected void fireModified(String field, Object value) {
+	protected void fireModified(String field, String value) {
 		ADatobManager manager = getManager();
 		if (manager == null) return;
 		manager.onDatobModified(this, field, value);
@@ -86,31 +86,7 @@ public abstract class ADatob implements Searchable {
 		return properties;
 	}
 
-	protected void storeProperties(Map properties) {}
-
-	// public final void updateProperties(Map<?, ?> properties) {
-	// for (Map.Entry entry : properties.entrySet()) {
-	// updateProperty((String) entry.getKey(), entry.getValue());
-	// }
-	// }
-	//
-	// public final void updateProperty(String property, Object value) {
-	// if ("id".equals(property)) return;
-	//
-	// Class type = Reflect.getPropertyType(this, property);
-	// if (type == null && property.endsWith("Id")) {
-	// property = Str.removeSuffix(property, "Id");
-	// type = Reflect.getPropertyType(this, property);
-	// if (type == null || !AEntity.class.isAssignableFrom(type))
-	// throw new RuntimeException("Unsupported property: " + property);
-	// value = ((AEntity) this).getDaoService().getById((String) value);
-	// }
-	//
-	// if (value != null) {
-	// if (Date.class.equals(type)) value = new Date((String) value);
-	// }
-	// Reflect.setProperty(this, property, value);
-	// }
+	protected void storeProperties(Map<String, String> properties) {}
 
 	// --- helper ---
 
@@ -162,7 +138,7 @@ public abstract class ADatob implements Searchable {
 	public class StructureManager<D extends ADatob> extends ADatobManager<D> {
 
 		@Override
-		public void onDatobModified(D datob, String field, Object value) {
+		public void onDatobModified(D datob, String field, String value) {
 			fireModified(field, value);
 		}
 

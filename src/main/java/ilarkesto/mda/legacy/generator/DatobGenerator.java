@@ -27,7 +27,7 @@ import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
-import ilarkesto.core.time.TimePeriod;
+import ilarkesto.email.EmailAddress;
 import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
@@ -87,19 +87,55 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		}
 
 		ln();
-		ln("    public void updateProperties(Map<?, ?> properties) {");
-		ln("        for (Map.Entry entry : properties.entrySet()) {");
-		ln("            String property = (String) entry.getKey();");
+		ln("    public void updateProperties(Map<String, String> properties) {");
+		ln("        for (Map.Entry<String, String> entry : properties.entrySet()) {");
+		ln("            String property = entry.getKey();");
 		ln("            if (property.equals(\"id\")) continue;");
-		ln("            Object value = entry.getValue();");
+		ln("            String value = entry.getValue();");
 		for (PropertyModel p : bean.getProperties()) {
+
+			if (p.isValueObject()) {
+				comment("TODO ValueObject");
+				continue;
+			}
+
+			if (p.getType().equals(EmailAddress.class.getName())) {
+				comment("TODO EmailAddress");
+				continue;
+			}
+
+			if (p.getName().equals("changeNotificationEmails")) {
+				comment("TODO changeNotificationEmails");
+				continue;
+			}
+
 			String propertyName = p.getName();
 			if (p.isReference()) {
 				propertyName += "Id";
 				if (p.isCollection()) propertyName += "s";
 			}
-			ln("            if (property.equals(\"" + propertyName + "\")) update"
-					+ Str.uppercaseFirstLetter(p.getName()) + "(value);");
+			String parseType;
+			if (p.isReference()) {
+				if (p.isCollection()) {
+					if (p instanceof ReferenceListPropertyModel) {
+						parseType = "ReferenceList";
+					} else {
+						parseType = "ReferenceSet";
+					}
+				} else {
+					parseType = "Reference";
+				}
+			} else {
+				if (p.isCollection()) {
+					parseType = p.getContentType() + "Collection";
+					if (parseType.contains(".")) parseType = parseType.substring(parseType.lastIndexOf('.') + 1);
+				} else {
+					parseType = p.getType().substring(p.getType().lastIndexOf('.') + 1);
+				}
+			}
+			ln("            if (property.equals(\"" + propertyName + "\")) set"
+					+ Str.uppercaseFirstLetter(propertyName) + "(" + Persistence.class.getName() + ".parseProperty"
+					+ parseType + "(value));");
 		}
 		ln("        }");
 		ln("    }");
@@ -399,16 +435,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 	private void writeFireModified(PropertyModel p) {
 		if (p.isFireModified()) {
 			String fieldName = getFieldName(p);
-			String value = fieldName;
-			boolean toString = false;
-			if (p.getType().equals(Date.class.getName())) toString = true;
-			if (p.getType().equals(Time.class.getName())) toString = true;
-			if (p.getType().equals(DateAndTime.class.getName())) toString = true;
-			if (p.getType().equals(TimePeriod.class.getName())) toString = true;
-			if (p.getType().equals(DayAndMonth.class.getName())) toString = true;
-			if (p.getType().equals(Money.class.getName())) toString = true;
-			if (toString) value = fieldName + " == null ? null : " + fieldName + ".toString()";
-			ln("        fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", " + value + ");");
+			ln("        fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", " + Persistence.class.getName()
+					+ ".propertyAsString(" + fieldName + "));");
 		}
 	}
 
@@ -697,29 +725,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			ln("    }");
 		}
 
-		// --- updateXxx(Object value) ---
-		ln();
-		ln("    protected final void update" + pNameUpper + "(Object value) {");
-		if (p.isReference()) {
-			if (isLegacyBean(bean)) {
-				ln("        " + getFieldType(p) + " ids = (" + getFieldType(p) + ") value;");
-				String daoExpr = p.getDaoName();
-				if (p.isAbstract()) {
-					daoExpr = "getDaoService()";
-				}
-				String suffix = p instanceof SetPropertyModel ? "AsSet" : "";
-				ln("        set" + Str.uppercaseFirstLetter(p.getName()) + "((" + p.getCollectionType() + ") "
-						+ daoExpr + ".getByIds" + suffix + "(ids));");
-			} else {
-				ln("        if (Utl.equals(" + getFieldName(p) + ", value)) return;");
-				ln("        " + getFieldName(p), "= (" + getFieldType(p) + ") value;");
-				ln("        updateLastModified();");
-				writeFireModified(p);
-			}
-		} else {
-			ln("        set" + Str.uppercaseFirstLetter(p.getName()) + "((" + p.getType() + ") value);");
-		}
-		ln("    }");
 	}
 
 	private void writeSimpleProperty(PropertyModel p) {

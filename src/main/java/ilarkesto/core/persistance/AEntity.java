@@ -94,7 +94,7 @@ public class AEntity implements Serializable, TransferableEntity {
 		lastModified = DateAndTime.now();
 	}
 
-	protected final void fireModified(String field, Object value) {
+	protected final void fireModified(String field, String value) {
 		Transaction.get().modified(this, field, value);
 	}
 
@@ -124,18 +124,18 @@ public class AEntity implements Serializable, TransferableEntity {
 		return getId().equals(id);
 	}
 
-	public void storeProperties(Map properties) {
+	public void storeProperties(Map<String, String> properties) {
 		properties.put("@type", Str.getSimpleName(getClass()));
 		properties.put("id", getId());
 	}
 
-	public void updateProperties(Map<?, ?> properties) {
-		if (!isId((String) properties.get("id"))) throw new IllegalArgumentException("properties from other entity");
+	public void updateProperties(Map<String, String> properties) {
+		if (!isId(properties.get("id"))) throw new IllegalArgumentException("properties from other entity");
 	}
 
 	@Override
-	public final Map createPropertiesMap() {
-		Map properties = new HashMap();
+	public final Map<String, String> createPropertiesMap() {
+		Map<String, String> properties = new HashMap<String, String>();
 		storeProperties(properties);
 		return properties;
 	}

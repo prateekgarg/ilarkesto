@@ -15,6 +15,7 @@
 package ilarkesto.mda.legacy.generator;
 
 import ilarkesto.base.Str;
+import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
@@ -500,31 +501,17 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 	private void storePropertiesMethod() {
 		ln();
 		ln("    @Override");
-		ln("    public void storeProperties(Map properties) {");
+		ln("    public void storeProperties(Map<String, String> properties) {");
 		ln("        super.storeProperties(properties);");
 		for (PropertyModel p : bean.getProperties()) {
+			String propertyVar;
 			if (p.isCollection()) {
-				String propertyVar = p.isReference() ? p.getName() + "Ids" : p.getName();
-				ln("        properties.put(\"" + propertyVar + "\", this." + propertyVar + ");");
+				propertyVar = p.isReference() ? p.getName() + "Ids" : p.getName();
 			} else {
-				String type = p.getType();
-				if (type.equals(Date.class.getName())) {
-					String propertyVar = p.getName();
-					ln("        properties.put(\"" + propertyVar + "\", this." + propertyVar
-							+ " == null ? null : this." + propertyVar + ".toString());");
-				} else if (type.equals(Time.class.getName())) {
-					String propertyVar = p.getName();
-					ln("        properties.put(\"" + propertyVar + "\", this." + propertyVar
-							+ " == null ? null : this." + propertyVar + ".toString());");
-				} else if (type.equals(DateAndTime.class.getName())) {
-					String propertyVar = p.getName();
-					ln("        properties.put(\"" + propertyVar + "\", this." + propertyVar
-							+ " == null ? null : this." + propertyVar + ".toString());");
-				} else {
-					String propertyVar = p.isReference() ? p.getName() + "Id" : p.getName();
-					ln("        properties.put(\"" + propertyVar + "\", this." + propertyVar + ");");
-				}
+				propertyVar = p.isReference() ? p.getName() + "Id" : p.getName();
 			}
+			ln("        properties.put(\"" + propertyVar + "\", " + Persistence.class.getName()
+					+ ".propertyAsString(this." + propertyVar + "));");
 		}
 		ln("    }");
 

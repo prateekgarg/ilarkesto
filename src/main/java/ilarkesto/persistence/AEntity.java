@@ -17,6 +17,7 @@ package ilarkesto.persistence;
 import ilarkesto.auth.AUser;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Utl;
+import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.id.Identifiable;
@@ -89,7 +90,7 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	public final void setLastEditor(AUser lastEditor) {
 		if (isLastEditor(lastEditor)) return;
 		this.lastEditorId = lastEditor == null ? null : lastEditor.getId();
-		fireModified("lastEditor", lastEditor);
+		fireModified("lastEditor", Persistence.propertyAsString(lastEditorId));
 	}
 
 	public final boolean isLastEditor(AUser user) {
@@ -102,7 +103,7 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	}
 
 	@Override
-	protected void fireModified(String field, Object value) {
+	protected void fireModified(String field, String value) {
 		super.fireModified(field, value);
 	}
 
@@ -118,7 +119,7 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	}
 
 	@Override
-	protected void storeProperties(Map properties) {
+	protected void storeProperties(Map<String, String> properties) {
 		properties.put("@type", getDao().getEntityName());
 		properties.put("id", getId());
 	}
