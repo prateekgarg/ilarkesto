@@ -24,6 +24,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.persistance.EditableKeytableValue;
+import ilarkesto.core.persistance.EntityDeletedWhileEnsureIntegrity;
 import ilarkesto.core.persistance.KeytableValue;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.Transaction;
@@ -32,6 +33,7 @@ import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PredicateModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
+import ilarkesto.mda.legacy.model.SetPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.search.Searchable;
@@ -132,8 +134,24 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 	private void writeOnDelete() {
 		ln();
 		annotationOverride();
-		ln("    protected void onDelete() {");
-		ln("        super.onDelete();");
+		ln("    protected void ensureIntegrityForReferencesAfterDelete() {");
+		ln("        super.ensureIntegrityForReferencesAfterDelete();");
+
+		for (PropertyModel p : bean.getProperties()) {
+			String pNameUpper = Str.uppercaseFirstLetter(p.getName());
+			if (p instanceof SetPropertyModel) {
+				ln("        for (" + p.getContentType() + " entity : get" + pNameUpper + "()) {");
+				ln("            try { entity.ensureIntegrity(); } catch ("
+						+ EntityDeletedWhileEnsureIntegrity.class.getName() + " ex)  {}");
+				ln("        }");
+			} else if (p instanceof ReferencePropertyModel) {
+				ln("        if (is" + pNameUpper + "Set()) {");
+				ln("            try { get" + pNameUpper + "().ensureIntegrity(); } catch ("
+						+ EntityDeletedWhileEnsureIntegrity.class.getName() + " ex)  {}");
+				ln("        }");
+			}
+
+		}
 
 		List<BackReferenceModel> backReferences = bean.getBackReferences();
 		if (!backReferences.isEmpty()) {
