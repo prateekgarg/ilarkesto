@@ -25,6 +25,7 @@ import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.persistance.EditableKeytableValue;
 import ilarkesto.core.persistance.EntityDeletedWhileEnsureIntegrity;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.KeytableValue;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.Transaction;
@@ -142,12 +143,14 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			if (p instanceof SetPropertyModel) {
 				ln("        for (" + p.getContentType() + " entity : get" + pNameUpper + "()) {");
 				ln("            try { entity.ensureIntegrity(); } catch ("
-						+ EntityDeletedWhileEnsureIntegrity.class.getName() + " ex)  {}");
+						+ EntityDeletedWhileEnsureIntegrity.class.getName() + " ex)  {} catch ("
+						+ EntityDoesNotExistException.class.getName() + " ex) {}");
 				ln("        }");
 			} else if (p instanceof ReferencePropertyModel) {
 				ln("        if (is" + pNameUpper + "Set()) {");
 				ln("            try { get" + pNameUpper + "().ensureIntegrity(); } catch ("
-						+ EntityDeletedWhileEnsureIntegrity.class.getName() + " ex)  {}");
+						+ EntityDeletedWhileEnsureIntegrity.class.getName() + " ex)  {} catch ("
+						+ EntityDoesNotExistException.class.getName() + " ex) {}");
 				ln("        }");
 			}
 
