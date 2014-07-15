@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -33,14 +35,8 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 	public Integer conversationNumber;
 
 	private String userId;
-	private HashSet<String> deletedEntities;
-	private HashMap<String, HashMap<String, String>> entities;
-
-	// dummys required for gwt-serialization
-	private int dummyI;
-	private Integer dummyInteger;
-	private float dummyF;
-	private Float dummyFloat;
+	private Set<String> deletedEntities;
+	private Map<String, Map<String, String>> entities;
 
 	public void clear() {
 		entities = null;
@@ -81,14 +77,14 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 		return entities.containsKey(entityId);
 	}
 
-	public final void addEntity(HashMap<String, String> data) {
+	public final void addEntity(Map<String, String> data) {
 		String id = data.get("id");
 		if (deletedEntities != null && deletedEntities.contains(id)) return;
-		if (entities == null) entities = new HashMap<String, HashMap<String, String>>();
+		if (entities == null) entities = new HashMap<String, Map<String, String>>();
 		entities.put(id, data);
 	}
 
-	public final Collection<HashMap<String, String>> getEntities() {
+	public final Collection<Map<String, String>> getEntities() {
 		return entities.values();
 	}
 
@@ -102,7 +98,7 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 		if (entities != null) entities.remove(entityId);
 	}
 
-	public final HashSet<String> getDeletedEntities() {
+	public final Set<String> getDeletedEntities() {
 		return deletedEntities;
 	}
 

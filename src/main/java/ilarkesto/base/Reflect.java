@@ -1,20 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.base;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.ToStringComparator;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -336,20 +337,22 @@ public abstract class Reflect {
 			}
 			clazz = clazz.getSuperclass();
 		}
+		Collections.sort(ret, ToStringComparator.INSTANCE);
 		return ret;
 	}
 
 	public static List<Method> getSetters(Class<?> clazz) {
-		List<Method> setters = new LinkedList<Method>();
+		List<Method> ret = new LinkedList<Method>();
 		for (Method method : clazz.getDeclaredMethods()) {
 			String name = method.getName();
 			if (name.length() < 4 || !name.startsWith("set")) continue;
 			if (method.getParameterTypes().length != 1) continue;
-			setters.add(method);
+			ret.add(method);
 		}
 		Class<?> superclass = clazz.getSuperclass();
-		if (superclass != null && superclass != Object.class) setters.addAll(getSetters(superclass));
-		return setters;
+		if (superclass != null && superclass != Object.class) ret.addAll(getSetters(superclass));
+		Collections.sort(ret, ToStringComparator.INSTANCE);
+		return ret;
 	}
 
 	public static String getPropertyNameFromSetter(Method setter) {
@@ -361,11 +364,11 @@ public abstract class Reflect {
 	}
 
 	public static List<String> getPropertyNamesByAvailableSetters(Class<?> clazz) {
-		List<String> properties = new LinkedList<String>();
+		List<String> ret = new LinkedList<String>();
 		for (Method setter : getSetters(clazz)) {
-			properties.add(getPropertyNameFromSetter(setter));
+			ret.add(getPropertyNameFromSetter(setter));
 		}
-		return properties;
+		return ret;
 	}
 
 	public static Method getSetterMethod(Class<?> clazz, String property) {

@@ -18,7 +18,6 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntity;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +64,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 			onEntityDeletionsReceived(entityIds);
 		}
 		if (data.containsEntities()) {
-			Collection<HashMap<String, String>> entities = data.getEntities();
+			Collection<Map<String, String>> entities = data.getEntities();
 			log.debug("entities received:", entities);
 			onEntitiesReceived(entities);
 		}
@@ -79,7 +78,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 	protected void onServiceCallSuccessfullyProcessed(AServiceCall<D> serviceCall) {}
 
-	protected void onEntitiesReceived(Collection<HashMap<String, String>> entities) {}
+	protected void onEntitiesReceived(Collection<Map<String, String>> entities) {}
 
 	protected void onEntityDeletionsReceived(Set<String> entityIds) {}
 

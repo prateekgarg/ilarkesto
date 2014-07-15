@@ -15,7 +15,7 @@
 package ilarkesto.ui.action;
 
 import ilarkesto.base.Iconized;
-import ilarkesto.base.ToStringComparator;
+import ilarkesto.core.base.ToStringComparator;
 import ilarkesto.di.BeanProvider;
 import ilarkesto.form.Form;
 import ilarkesto.form.MultiCheckboxFormField;
