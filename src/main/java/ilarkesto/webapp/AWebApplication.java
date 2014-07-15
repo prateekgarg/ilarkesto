@@ -183,6 +183,21 @@ public abstract class AWebApplication extends AApplication {
 		}
 	}
 
+	public void sendToAllIfTracking(Collection<TransferableEntity> entities) {
+		for (AGwtConversation conversation : getGwtConversations()) {
+			conversation.sendToClientIfTracking(entities);
+		}
+	}
+
+	public void deleteFromClients(Collection<String> entityIds) {
+		if (entityIds == null || entityIds.isEmpty()) return;
+		for (AGwtConversation conversation : getGwtConversations()) {
+			for (String id : entityIds) {
+				conversation.deleteFromClient(id);
+			}
+		}
+	}
+
 	public static AWebApplication get() {
 		return (AWebApplication) AApplication.get();
 	}

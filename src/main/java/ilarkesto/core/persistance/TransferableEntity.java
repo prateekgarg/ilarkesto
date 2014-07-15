@@ -16,7 +16,7 @@ package ilarkesto.core.persistance;
 
 import ilarkesto.core.time.DateAndTime;
 
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 
 public interface TransferableEntity {
@@ -25,7 +25,7 @@ public interface TransferableEntity {
 
 	DateAndTime getLastModified();
 
-	Map<String, String> createPropertiesMap();
+	HashMap<String, String> createPropertiesMap();
 
 	/**
 	 * @return other entities which need to be transported together with this entity

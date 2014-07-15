@@ -30,6 +30,11 @@ public class Utl {
 
 	public static String language = "en";
 
+	public static <T> boolean addIfNotNull(Collection<T> collection, T element) {
+		if (element == null) return false;
+		return collection.add(element);
+	}
+
 	public static <T> ArrayList<T> arrayList(T... elements) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T element : elements) {

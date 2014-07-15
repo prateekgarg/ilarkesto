@@ -83,8 +83,22 @@ public class Transaction {
 			for (AEntity entity : new ArrayList<AEntity>(modified.getAll())) {
 				entity.ensureIntegrity();
 			}
+			for (String id : deleted) {
+				AEntity deletedEntity;
+				try {
+					deletedEntity = backend.get(id);
+				} catch (EntityDoesNotExistException ex) {
+					continue;
+				}
+				Set<AEntity> referencedEntities = deletedEntity.getReferencedEntities();
+				log.debug("Ensuring integrity for referenced entities of deleted entity:",
+					Persistence.toStringWithTypeAndId(deletedEntity), referencedEntities);
+				for (AEntity referencedEntity : referencedEntities) {
+					referencedEntity.ensureIntegrity();
+				}
+			}
 		} catch (EntityDeletedWhileEnsureIntegrity ex) {
-			ensureIntegrity();
+			// redo (changeHash changed)
 		} finally {
 			ensuringIntegrity = false;
 		}

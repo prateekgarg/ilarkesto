@@ -42,12 +42,17 @@ public class AEntity implements Serializable, TransferableEntity {
 	}
 
 	public final void delete() {
-		AEntityDatabase.get().getTransaction().delete(getId());
-		if (Transaction.get().isAutoCommit()) return;
-		ensureIntegrityForReferencesAfterDelete();
+		Transaction transaction = AEntityDatabase.get().getTransaction();
+		if (transaction.isDeleted(this)) return;
+		transaction.delete(getId());
 	}
 
-	protected void ensureIntegrityForReferencesAfterDelete() {}
+	/**
+	 * Provides all referenced entities. Back-references included.
+	 */
+	public Set<AEntity> getReferencedEntities() {
+		return new HashSet<AEntity>();
+	}
 
 	public String getDeleteVeto() {
 		return "Objekt ist nicht löschbar";
@@ -136,8 +141,8 @@ public class AEntity implements Serializable, TransferableEntity {
 	}
 
 	@Override
-	public final Map<String, String> createPropertiesMap() {
-		Map<String, String> properties = new HashMap<String, String>();
+	public final HashMap<String, String> createPropertiesMap() {
+		HashMap<String, String> properties = new HashMap<String, String>();
 		storeProperties(properties);
 		return properties;
 	}
@@ -151,7 +156,6 @@ public class AEntity implements Serializable, TransferableEntity {
 		try {
 			return asString();
 		} catch (Exception ex) {
-			Log.get(getClass()).error("asString() throwed exception:", ex);
 			return Utl.getSimpleName(getClass()) + ":" + getId();
 		}
 	}

@@ -32,7 +32,6 @@ import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
-import ilarkesto.mda.legacy.model.ReferenceSetPropertyModel;
 import ilarkesto.mda.legacy.model.SetPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
@@ -210,25 +209,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 			}
 
-			if (p instanceof ReferenceSetPropertyModel) {
-				ReferenceSetPropertyModel sp = (ReferenceSetPropertyModel) p;
-				if (!sp.getReferencedEntity().isSelfcontained()) {
-					ln("        if (isDeleted()) {");
-					ln("            for (String entityId : " + getFieldName(sp) + ") {");
-					ln("                " + Persistence.class.getName() + ".ensureIntegrity(entityId);");
-					ln("            }");
-					ln("        }");
-				}
-			}
-			if (p instanceof ReferencePropertyModel) {
-				ReferencePropertyModel rp = (ReferencePropertyModel) p;
-				if (!rp.getReferencedEntity().isSelfcontained()) {
-					ln("        try {");
-					ln("            if (isDeleted() && is" + Str.uppercaseFirstLetter(rp.getName()) + "Set()) get"
-							+ Str.uppercaseFirstLetter(p.getName()) + "().ensureIntegrity();");
-					ln("        } catch (" + EntityDoesNotExistException.class.getName() + " ex) {}");
-				}
-			}
 		}
 	}
 
@@ -325,13 +305,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			s(" = new " + getFieldImpl(p) + "()");
 		}
 		ln(";");
-		if (p.isReference()) {
-			if (p.isCollection()) {
-
-			} else {
-				ln("    private transient " + p.getType() + " " + p.getName() + "Cache;");
-			}
-		}
 
 		// --- datob manager ---
 		String datobGetter = null;
@@ -352,23 +325,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		String getterMethodPrefix = p.isBoolean() ? "is" : "get";
 
 		if (p.isReference() && !p.isCollection()) {
-			// --- updateXxxCache ---
-			ln();
-			if (isLegacyBean(bean)) {
-				String daoExpr = p.getDaoName();
-				if (p.isAbstract()) {
-					daoExpr = "getDaoService()";
-				}
-				ln("    private void update" + pNameUpper + "Cache() {");
-				ln("        " + p.getName() + "Cache = " + getFieldName(p) + " == null ? null : (" + p.getContentType()
-						+ ")" + daoExpr + ".getById(" + getFieldName(p) + ");");
-				ln("    }");
-			} else {
-				ln("    private void update" + pNameUpper + "Cache() {");
-				ln("        " + p.getName() + "Cache = " + getFieldName(p) + " == null ? null : (" + p.getContentType()
-						+ ") " + Transaction.class.getName() + ".get().get(" + getFieldName(p) + ");");
-				ln("    }");
-			}
 
 			// --- getXxxId ---
 			ln();
@@ -409,7 +365,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("    public final void set" + pNameUpper + "Id(String id) {");
 				ln("        if (Utl.equals(" + p.getName() + "Id, id)) return;");
 				ln("        " + getFieldName(p) + " = id;");
-				ln("        " + p.getName() + "Cache = null;");
 				ln("        updateLastModified();");
 				writeFireModified(p);
 				ln("    }");
@@ -455,9 +410,17 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					ln("    return (List) " + Transaction.class.getName() + ".get().list(" + getFieldName(p) + ");");
 				}
 			} else {
-				ln("        if (" + p.getName() + "Cache == null) update" + Str.uppercaseFirstLetter(p.getName())
-						+ "Cache();");
-				ln("        return " + p.getName() + "Cache;");
+				if (isLegacyBean(bean)) {
+					String daoExpr = p.getDaoName();
+					if (p.isAbstract()) {
+						daoExpr = "getDaoService()";
+					}
+					ln("        return " + getFieldName(p) + " == null ? null : (" + p.getContentType() + ")" + daoExpr
+							+ ".getById(" + getFieldName(p) + ");");
+				} else {
+					ln("        return " + getFieldName(p) + " == null ? null : (" + p.getContentType() + ") "
+							+ Transaction.class.getName() + ".get().get(" + getFieldName(p) + ");");
+				}
 			}
 		} else {
 			if (p.isCollection()) {
@@ -482,7 +445,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			} else {
 				ln("        if (is" + pNameUpper + "(" + p.getName() + ")) return;");
 				ln("        set" + pNameUpper + "Id(" + p.getName(), "== null ? null :", p.getName() + ".getId());");
-				ln("        " + p.getName() + "Cache = " + p.getName() + ";");
 			}
 		} else {
 			if (p.isCollection()) {
@@ -790,7 +752,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			} else {
 				ln("        if (Utl.equals(" + getFieldName(p) + ", value)) return;");
 				ln("        " + getFieldName(p) + " = (String)value;");
-				ln("        " + p.getName() + "Cache = null;");
 				ln("        updateLastModified();");
 				writeFireModified(p);
 			}

@@ -24,7 +24,6 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.persistance.EditableKeytableValue;
-import ilarkesto.core.persistance.EntityDeletedWhileEnsureIntegrity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.KeytableValue;
 import ilarkesto.core.persistance.Persistence;
@@ -34,7 +33,7 @@ import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PredicateModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
-import ilarkesto.mda.legacy.model.SetPropertyModel;
+import ilarkesto.mda.legacy.model.ReferenceSetPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.search.Searchable;
@@ -95,7 +94,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			writePredicates();
 			writeGetPassengers();
 			writeQueryBaseclass();
-			writeOnDelete();
+			writeGetReferencedEntities();
 			writeToString();
 		}
 
@@ -132,72 +131,40 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		super.writeContent();
 	}
 
-	private void writeOnDelete() {
+	private void writeGetReferencedEntities() {
 		ln();
 		annotationOverride();
-		ln("    protected void ensureIntegrityForReferencesAfterDelete() {");
-		ln("        super.ensureIntegrityForReferencesAfterDelete();");
+		String setType = "Set<" + ilarkesto.core.persistance.AEntity.class.getName() + ">";
+		ln("    public", setType, "getReferencedEntities() {");
+		ln("        " + setType + " ret = super.getReferencedEntities();");
 
-		for (PropertyModel p : bean.getProperties()) {
+		Set<PropertyModel> properties = bean.getProperties();
+		if (!properties.isEmpty()) comment("references");
+		for (PropertyModel p : properties) {
 			String pNameUpper = Str.uppercaseFirstLetter(p.getName());
-			if (p instanceof SetPropertyModel) {
-				ln("        for (" + p.getContentType() + " entity : get" + pNameUpper + "()) {");
-				ln("            try { entity.ensureIntegrity(); } catch ("
-						+ EntityDeletedWhileEnsureIntegrity.class.getName() + " ex)  {} catch ("
-						+ EntityDoesNotExistException.class.getName() + " ex) {}");
-				ln("        }");
-			} else if (p instanceof ReferencePropertyModel) {
-				ln("        if (is" + pNameUpper + "Set()) {");
-				ln("            try { get" + pNameUpper + "().ensureIntegrity(); } catch ("
-						+ EntityDeletedWhileEnsureIntegrity.class.getName() + " ex)  {} catch ("
-						+ EntityDoesNotExistException.class.getName() + " ex) {}");
+			if (p instanceof ReferencePropertyModel) {
+				ln("        try { Utl.addIfNotNull(ret, get" + pNameUpper
+						+ "()); } catch(EntityDoesNotExistException ex) {}");
+			} else if (p instanceof ReferenceSetPropertyModel) {
+				ln("        for (String id : " + p.getName() + "Ids) {");
+				ln("            try { ret.add(AEntity.getById(id)); } catch(EntityDoesNotExistException ex) {}");
 				ln("        }");
 			}
-
 		}
 
 		List<BackReferenceModel> backReferences = bean.getBackReferences();
-		if (!backReferences.isEmpty()) {
-			for (BackReferenceModel br : backReferences) {
-				PropertyModel ref = br.getReference();
-				if (ref.isMaster()) {
-					if (ref.isUnique()) {
-						ln("        if (get" + Str.uppercaseFirstLetter(br.getName()) + "() != null) get"
-								+ Str.uppercaseFirstLetter(br.getName()) + "().delete();");
-					} else {
-						ln("        for (" + ref.getEntity().getBeanClass() + " entity : get"
-								+ Str.uppercaseFirstLetter(br.getName()) + "s()) {");
-						ln("            entity.delete();");
-						ln("        }");
-					}
-				} else {
-					if (ref.isCollection()) {
-						if (ref.isUnique()) {
-							ln("        if (get" + Str.uppercaseFirstLetter(br.getName()) + "() != null) get"
-									+ Str.uppercaseFirstLetter(br.getName()) + "().remove"
-									+ Str.uppercaseFirstLetter(ref.getNameSingular()) + "((" + bean.getBeanClass()
-									+ ")this);");
-						} else {
-							ln("        for (" + ref.getEntity().getBeanClass() + " entity : get"
-									+ Str.uppercaseFirstLetter(br.getName()) + "s()) entity.remove"
-									+ Str.uppercaseFirstLetter(ref.getNameSingular()) + "((" + bean.getBeanClass()
-									+ ")this);");
-						}
-					} else {
-						if (ref.isUnique()) {
-							ln("        if (get" + Str.uppercaseFirstLetter(br.getName()) + "() != null) get"
-									+ Str.uppercaseFirstLetter(br.getName()) + "().set"
-									+ Str.uppercaseFirstLetter(ref.getNameSingular()) + "(null);");
-						} else {
-							ln("        for (" + ref.getEntity().getBeanClass() + " entity : get"
-									+ Str.uppercaseFirstLetter(br.getName()) + "s()) entity.set"
-									+ Str.uppercaseFirstLetter(ref.getNameSingular()) + "(null);");
-						}
-					}
-				}
+		if (!backReferences.isEmpty()) comment("back references");
+		for (BackReferenceModel br : backReferences) {
+			String brNameUpper = Str.uppercaseFirstLetter(br.getName());
+			PropertyModel p = br.getReference();
+			if (p.isUnique()) {
+				ln("        Utl.addIfNotNull(ret, get" + brNameUpper + "());");
+			} else {
+				ln("        ret.addAll(get" + brNameUpper + "s());");
 			}
 		}
 
+		ln("        return ret;");
 		ln("    }");
 	}
 
@@ -231,25 +198,6 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			}
 		}
 
-		List<BackReferenceModel> backReferences = bean.getBackReferences();
-		if (!backReferences.isEmpty()) {
-			ln("        if (isDeleted()) {");
-			for (BackReferenceModel br : backReferences) {
-				PropertyModel ref = br.getReference();
-				if (ref.isMaster()) {
-					if (ref.isUnique()) {
-						ln("            if (get" + Str.uppercaseFirstLetter(br.getName()) + "() != null) get"
-								+ Str.uppercaseFirstLetter(br.getName()) + "().ensureIntegrity();");
-					} else {
-						ln("            for (" + ref.getEntity().getBeanClass() + " entity : get"
-								+ Str.uppercaseFirstLetter(br.getName()) + "s()) {");
-						ln("                entity.ensureIntegrity();");
-						ln("            }");
-					}
-				}
-			}
-			ln("        }");
-		}
 	}
 
 	private void writeKeytableGetLabel() {
@@ -538,6 +486,18 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("        if (owner != null) addOwner((" + p.getContentType() + ")owner);");
 			ln("    }");
 		}
+	}
+
+	@Override
+	protected Set<String> getImports() {
+		Set<String> ret = super.getImports();
+		if (isLegacyBean(bean)) {
+			ret.add(AEntity.class.getName());
+		} else {
+			ret.add(ilarkesto.core.persistance.AEntity.class.getName());
+		}
+		ret.add(EntityDoesNotExistException.class.getName());
+		return ret;
 	}
 
 	@Override

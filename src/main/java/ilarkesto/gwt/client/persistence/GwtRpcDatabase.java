@@ -22,6 +22,7 @@ import ilarkesto.core.persistance.Transaction;
 import ilarkesto.gwt.client.AGwtApplication;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,7 +58,7 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 		if (this.transaction == transaction) this.transaction = null;
 	}
 
-	public void onEntitiesReceived(Collection<Map<String, String>> entityDatas) {
+	public void onEntitiesReceived(Collection<HashMap<String, String>> entityDatas) {
 		Transaction t = getTransaction();
 		t.setIgnoreModifications(true);
 		try {

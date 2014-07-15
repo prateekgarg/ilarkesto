@@ -127,6 +127,17 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		}
 	}
 
+	public synchronized void deleteFromClient(String entityId) {
+		if (entityId == null) return;
+		getNextData().addDeletedEntity(entityId);
+	}
+
+	public void sendToClientIfTracking(E entity) {
+		if (entity == null) return;
+		if (!isAvailableOnClient(entity)) return;
+		sendToClient(entity);
+	}
+
 	private void resolveSlaves(TransferableEntity entity, Set<TransferableEntity> all) {
 		if (!all.add(entity)) return;
 		for (TransferableEntity slave : entity.getPassengers()) {
@@ -139,15 +150,18 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		DateAndTime timeRemote = remoteEntityModificationTimes.get(entity);
 		DateAndTime timeLocal = entity.getLastModified();
 
+		ADataTransferObject nd = getNextData();
+		if (nd.containsDeletedEntity(entity.getId())) return;
+
 		if (timeLocal.equals(timeRemote)) {
 			LOG.debug("Remote entity already up to date:", toString(entity), "for", this);
 			return;
 		}
 
-		Map propertiesMap = entity.createPropertiesMap();
+		HashMap<String, String> propertiesMap = entity.createPropertiesMap();
 		filterEntityProperties(entity, propertiesMap);
 
-		getNextData().addEntity(propertiesMap);
+		nd.addEntity(propertiesMap);
 		remoteEntityModificationTimes.put(entity, timeLocal);
 		LOG.debug("Sending", toString(entity), "to", this);
 	}
@@ -170,6 +184,13 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		if (entities == null) return;
 		for (E entity : entities) {
 			sendToClient(entity);
+		}
+	}
+
+	public final void sendToClientIfTracking(Collection<? extends E> entities) {
+		if (entities == null) return;
+		for (E entity : entities) {
+			sendToClientIfTracking(entity);
 		}
 	}
 
