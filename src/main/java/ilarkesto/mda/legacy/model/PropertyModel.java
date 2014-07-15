@@ -69,7 +69,7 @@ public abstract class PropertyModel {
 		return this;
 	}
 
-	public boolean isFireModified() {
+	public boolean isModified() {
 		return fireModified;
 	}
 

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -57,17 +57,11 @@ public class Transaction {
 		if (!isEmpty()) {
 			log.info("commit()", toString());
 			if (ensureIntegrityOnCommit) ensureIntegrityUntilUnchanged();
-			backend.update(modified.getAll(), deleted, modifiedPropertiesByEntityId);
+			backend.update(modified.getAll(), deleted, modifiedPropertiesByEntityId, new CommitCallback());
 		}
 		backend.onTransactionFinished(this);
 		modified = null;
 		deleted = null;
-
-		if (runnablesAfterCommit != null) {
-			for (Runnable runnable : runnablesAfterCommit) {
-				runnable.run();
-			}
-		}
 	}
 
 	private void ensureIntegrityUntilUnchanged() {
@@ -125,7 +119,7 @@ public class Transaction {
 	public void persist(AEntity entity) {
 		log.info("persist", toString(entity));
 		if (autoCommit) {
-			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity));
+			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity), new CommitCallback());
 			return;
 		}
 		if (deleted.contains(entity))
@@ -139,7 +133,8 @@ public class Transaction {
 		if (!contains(entity.getId())) return;
 		log.info(name, "modified", toString(entity), field, value);
 		if (autoCommit) {
-			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value));
+			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value),
+				new CommitCallback());
 			return;
 		}
 		modified.add(entity);
@@ -153,7 +148,7 @@ public class Transaction {
 
 	void delete(String entityId) {
 		if (autoCommit) {
-			backend.update(null, Arrays.asList(entityId), null);
+			backend.update(null, Arrays.asList(entityId), null, new CommitCallback());
 			return;
 		}
 		deleted.add(entityId);
@@ -290,6 +285,19 @@ public class Transaction {
 
 	public static Transaction get() {
 		return AEntityDatabase.get().getTransaction();
+	}
+
+	class CommitCallback implements Runnable {
+
+		@Override
+		public void run() {
+			if (runnablesAfterCommit != null) {
+				for (Runnable runnable : runnablesAfterCommit) {
+					runnable.run();
+				}
+			}
+		}
+
 	}
 
 }

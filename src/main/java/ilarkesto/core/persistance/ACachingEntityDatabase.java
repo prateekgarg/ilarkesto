@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -23,12 +23,12 @@ public abstract class ACachingEntityDatabase extends AEntityDatabase {
 	protected EntityCache cache = new EntityCache();
 
 	protected abstract void onUpdate(Collection<AEntity> entities, Collection<String> entityIds,
-			Map<String, Map<String, String>> modifiedPropertiesByEntityId);
+			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback);
 
 	@Override
 	public synchronized void update(Collection<AEntity> modified, Collection<String> deletedIds,
-			Map<String, Map<String, String>> modifiedPropertiesByEntityId) {
-		onUpdate(modified, deletedIds, modifiedPropertiesByEntityId);
+			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback) {
+		onUpdate(modified, deletedIds, modifiedPropertiesByEntityId, callback);
 		cache.addAll(modified);
 		cache.removeAll(deletedIds);
 	}

@@ -85,6 +85,17 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 		runnablesAfterAllFinished.add(runnable);
 	}
 
+	public static void runAfterAllFinished(final Updatable updatable) {
+		if (updatable == null) return;
+		runAfterAllFinished(new Runnable() {
+
+			@Override
+			public void run() {
+				updatable.update();
+			}
+		});
+	}
+
 	private void queue() {
 		queue.add(this);
 	}

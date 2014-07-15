@@ -357,16 +357,14 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("    public final void set" + pNameUpper + "Ids(" + p.getCollectionType() + "<String> ids) {");
 				ln("        if (Utl.equals(" + p.getName() + "Ids, ids)) return;");
 				ln("        " + p.getName() + "Ids = ids;");
-				ln("        updateLastModified();");
-				writeFireModified(p);
+				writeModified(p);
 				ln("    }");
 			}
 			if (!p.isCollection()) {
 				ln("    public final void set" + pNameUpper + "Id(String id) {");
 				ln("        if (Utl.equals(" + p.getName() + "Id, id)) return;");
 				ln("        " + getFieldName(p) + " = id;");
-				ln("        updateLastModified();");
-				writeFireModified(p);
+				writeModified(p);
 				ln("    }");
 			}
 		}
@@ -387,11 +385,12 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 	}
 
-	private void writeFireModified(PropertyModel p) {
-		if (p.isFireModified()) {
+	private void writeModified(PropertyModel p) {
+		ln("            updateLastModified();");
+		if (p.isModified()) {
 			String fieldName = getFieldName(p);
-			ln("        fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", " + Persistence.class.getName()
-					+ ".propertyAsString(" + fieldName + "));");
+			ln("            fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", "
+					+ Persistence.class.getName() + ".propertyAsString(" + fieldName + "));");
 		}
 	}
 
@@ -456,8 +455,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				} else {
 					ln("        " + getFieldName(p) + " = new " + getFieldImpl(p) + "(" + p.getName() + ");");
 				}
-				ln("        updateLastModified();");
-				writeFireModified(p);
+				writeModified(p);
 			} else {
 				ln("        if (is" + pNameUpper + "(" + p.getName() + ")) return;");
 				if (p.isMandatory() && !p.isPrimitive()) {
@@ -484,8 +482,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				} else {
 					ln("        " + getFieldName(p) + " = " + p.getName() + ";");
 				}
-				ln("        updateLastModified();");
-				writeFireModified(p);
+				writeModified(p);
 			}
 		}
 	}
@@ -556,7 +553,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			ln();
 			ln("    protected void repairDead" + pNameSingularUpper + "Reference(String entityId) {");
 			ln("        if (" + getFieldName(p) + ".remove(entityId)) {");
-			writeFireModified(p);
+			writeModified(p);
 			ln("        }");
 			ln("    }");
 		}
@@ -593,10 +590,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		} else {
 			ln("        boolean added = " + getFieldName(p) + ".add(" + paramExpr + ");");
 		}
-		ln("        if (added) updateLastModified();");
-		if (p.isFireModified()) {
+		if (p.isModified()) {
 			ln("        if (added) {");
-			writeFireModified(p);
+			writeModified(p);
 			ln("        }");
 		}
 		ln("        return added;");
@@ -620,9 +616,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			ln("            added = added | " + getFieldName(p) + ".add(" + paramExpr + ");");
 			ln("        }");
 		}
-		if (p.isFireModified()) {
+		if (p.isModified()) {
 			ln("        if (added) {");
-			writeFireModified(p);
+			writeModified(p);
 			ln("        }");
 		}
 		ln("        return added;");
@@ -635,10 +631,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("        if (" + p.getNameSingular() + " == null) return false;");
 		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        boolean removed = " + getFieldName(p) + ".remove(" + paramExpr + ");");
-		ln("        if (removed) updateLastModified();");
-		if (p.isFireModified()) {
+		if (p.isModified()) {
 			ln("        if (removed) {");
-			writeFireModified(p);
+			writeModified(p);
 			ln("        }");
 		}
 		ln("        return removed;");
@@ -654,9 +649,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("        for (" + p.getContentType() + " _element: " + p.getName() + ") {");
 		ln("            removed = removed | " + getFieldName(p) + ".remove(_element);");
 		ln("        }");
-		if (p.isFireModified()) {
+		if (p.isModified()) {
 			ln("        if (removed) {");
-			writeFireModified(p);
+			writeModified(p);
 			ln("        }");
 		}
 		ln("        return removed;");
@@ -667,8 +662,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("    public final boolean clear" + pNameUpper + "() {");
 		ln("        if (" + getFieldName(p) + ".isEmpty()) return false;");
 		ln("        " + getFieldName(p) + ".clear();");
-		ln("        updateLastModified();");
-		writeFireModified(p);
+		writeModified(p);
 		ln("        return true;");
 		ln("    }");
 
@@ -752,8 +746,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			} else {
 				ln("        if (Utl.equals(" + getFieldName(p) + ", value)) return;");
 				ln("        " + getFieldName(p) + " = (String)value;");
-				ln("        updateLastModified();");
-				writeFireModified(p);
+				writeModified(p);
 			}
 		} else if (p.isPrimitive()) {
 			String type = p.getType();
