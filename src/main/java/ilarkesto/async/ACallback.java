@@ -14,7 +14,7 @@
  */
 package ilarkesto.async;
 
-import ilarkesto.fp.Function;
+import ilarkesto.core.fp.Function;
 
 public abstract class ACallback<R> implements Callback<R> {
 

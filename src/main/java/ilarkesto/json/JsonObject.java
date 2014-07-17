@@ -142,6 +142,15 @@ public class JsonObject {
 		return elements.containsKey(name);
 	}
 
+	public boolean rename(String oldName, String newName) {
+		if (!contains(oldName)) return false;
+		if (contains(newName)) throw new IllegalStateException("Element already exists: " + newName);
+		Object value = get(oldName);
+		remove(oldName);
+		put(newName, value);
+		return true;
+	}
+
 	public boolean isSet(String name) {
 		if (!elements.containsKey(name)) return false;
 		return get(name) != null;

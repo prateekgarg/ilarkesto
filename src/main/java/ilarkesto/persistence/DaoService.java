@@ -14,13 +14,13 @@
  */
 package ilarkesto.persistence;
 
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
 import ilarkesto.di.Context;
-import ilarkesto.fp.Predicate;
 import ilarkesto.id.IdentifiableResolver;
 
 import java.util.ArrayList;

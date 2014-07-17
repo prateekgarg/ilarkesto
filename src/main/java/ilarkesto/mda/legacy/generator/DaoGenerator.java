@@ -18,7 +18,7 @@ import ilarkesto.auth.AUserDao;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.base.Str;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.DependencyModel;
 import ilarkesto.mda.legacy.model.EntityModel;

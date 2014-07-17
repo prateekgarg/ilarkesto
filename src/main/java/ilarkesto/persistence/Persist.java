@@ -16,7 +16,7 @@ package ilarkesto.persistence;
 
 import ilarkesto.auth.AUser;
 import ilarkesto.auth.Auth;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.id.Identifiable;
 import ilarkesto.search.Searchable;
 

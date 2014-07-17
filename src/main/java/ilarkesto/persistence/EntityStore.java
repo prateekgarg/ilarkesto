@@ -14,7 +14,7 @@
  */
 package ilarkesto.persistence;
 
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.id.IdentifiableResolver;
 
 import java.util.Collection;

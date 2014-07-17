@@ -57,6 +57,10 @@ public class JsonMapper {
 		return deserialize(s, type, TypeResolver.NONE);
 	}
 
+	public static <T> T deserialize(File file, Class<T> type) throws IOException, ParseException {
+		return deserialize(file, type, TypeResolver.NONE);
+	}
+
 	public static <T> T deserialize(String s, Class<T> type, TypeResolver typeResolver) throws ParseException {
 		JsonSaxParser parser = new JsonSaxParser();
 		ObjectMappingContentHandler<T> handler = new ObjectMappingContentHandler<T>(type, typeResolver);

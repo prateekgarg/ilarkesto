@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -785,6 +785,7 @@ public abstract class IO {
 	}
 
 	public static void delete(File f) {
+		if (f == null) return;
 		if (!f.exists()) return;
 		if (f.isDirectory()) {
 			File[] fa = f.listFiles();
@@ -1211,7 +1212,7 @@ public abstract class IO {
 	/**
 	 * Loads the contents of a properties file (which has to be in a directory that is in the classpath) into
 	 * a Properties-object and returns that.
-	 * 
+	 *
 	 * @param filename the name of the properties file (e.g. "myname.properties")
 	 * @return an object encapsulating the content of the properties file
 	 */

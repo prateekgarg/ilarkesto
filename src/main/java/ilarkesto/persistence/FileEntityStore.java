@@ -15,9 +15,9 @@
 package ilarkesto.persistence;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
-import ilarkesto.fp.Predicate;
 import ilarkesto.io.IO;
 
 import java.io.BufferedInputStream;

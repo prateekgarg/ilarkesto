@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -146,11 +146,12 @@ public class DatobModel extends BeanModel {
 		return propertyModel;
 	}
 
-	public ReferenceSetPropertyModel addListReference(String name, EntityModel type) {
-		return addListReference(name, type, true);
+	public ReferenceListPropertyModel addListReference(String name, EntityModel type, boolean duplicatesAllowed) {
+		return addListReference(name, type, true, duplicatesAllowed);
 	}
 
-	public ReferenceSetPropertyModel addListReference(String name, EntityModel type, boolean createBackReference) {
+	public ReferenceListPropertyModel addListReference(String name, EntityModel type, boolean createBackReference,
+			boolean duplicatesAllowed) {
 		String className = type.getPackageName() + "." + type.getName();
 		ReferenceListPropertyModel propertyModel = new ReferenceListPropertyModel(this, name, type);
 		propertyModel.setAbstract(type.isAbstract());
@@ -159,6 +160,7 @@ public class DatobModel extends BeanModel {
 			addDependency(type.getPackageName() + "." + type.getName() + "Dao",
 				Str.lowercaseFirstLetter((type.getName())) + "Dao");
 		if (createBackReference) propertyModel.createBackReference(Str.lowercaseFirstLetter(getName()));
+		propertyModel.setDuplicatesAllowed(duplicatesAllowed);
 		return propertyModel;
 	}
 

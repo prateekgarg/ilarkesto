@@ -174,15 +174,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					ln("        Set<String> " + p.getName() + " = new HashSet<String>(" + getFieldName(p) + ");");
 					ln("        for (String entityId : " + p.getName() + ") {");
 					ln("            try {");
-					if (p.isAbstract()) {
-						ln("                getDaoService().getById(entityId);");
-					} else {
-						if (isLegacyBean(bean)) {
-							ln("                " + p.getDaoName() + ".getById(entityId);");
-						} else {
-							ln("                " + Transaction.class.getName() + ".get().get(entityId);");
-						}
-					}
+					ln("                AEntity.getById(entityId);");
 					ln("            } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
 					ln("                LOG.info(\"Repairing dead " + p.getNameSingular() + " reference\");");
 					ln("                repairDead" + Str.uppercaseFirstLetter(p.getNameSingular())
@@ -398,12 +390,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (p.isReference()) {
 			if (p.isCollection()) {
 				if (isLegacyBean(bean)) {
-					String daoExpr = p.getDaoName();
-					if (p.isAbstract()) {
-						daoExpr = "getDaoService()";
-					}
 					String suffix = p instanceof SetPropertyModel ? "AsSet" : "";
-					ln("        return (" + p.getCollectionType() + ") " + daoExpr + ".getByIds" + suffix + "("
+					ln("        return (" + p.getCollectionType() + ") AEntity.getByIds" + suffix + "("
 							+ getFieldName(p) + ");");
 				} else {
 					ln("    return (List) " + Transaction.class.getName() + ".get().list(" + getFieldName(p) + ");");
@@ -588,6 +576,11 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			ln("        boolean added = " + getFieldName(p) + ".add((" + p.getContentType() + ")" + paramExpr
 					+ ".clone(get" + pNameUpper + "Manager()));");
 		} else {
+			if (p instanceof ReferenceListPropertyModel) {
+				if (!((ReferenceListPropertyModel) p).isDuplicatesAllowed()) {
+					ln("        if (contains" + pNameSingularUpper + "(" + p.getNameSingular() + ")) return false;");
+				}
+			}
 			ln("        boolean added = " + getFieldName(p) + ".add(" + paramExpr + ");");
 		}
 		if (p.isModified()) {
@@ -607,12 +600,19 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (p.isValueObject()) {
 			ln("        boolean added = false;");
 			ln("        for (" + p.getContentType() + " " + p.getNameSingular() + " : " + p.getName() + ") {");
+
 			ln("            added = added | " + getFieldName(p) + ".add((" + p.getContentType() + ")"
 					+ p.getNameSingular() + ".clone(get" + pNameUpper + "Manager()));");
 			ln("        }");
 		} else {
 			ln("        boolean added = false;");
 			ln("        for (" + p.getContentType() + " " + p.getNameSingular() + " : " + p.getName() + ") {");
+			if (p instanceof ReferenceListPropertyModel) {
+				if (!((ReferenceListPropertyModel) p).isDuplicatesAllowed()) {
+					ln("            if (" + getFieldName(p) + ".contains(" + p.getNameSingular()
+							+ ".getId())) continue;");
+				}
+			}
 			ln("            added = added | " + getFieldName(p) + ".add(" + paramExpr + ");");
 			ln("        }");
 		}

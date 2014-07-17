@@ -12,16 +12,10 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.fp;
+package ilarkesto.core.fp;
 
-public abstract class Procedure<T> implements Function<T, T> {
+public interface Predicate<T> {
 
-	public abstract void exec(T e);
-
-	@Override
-	public T eval(T e) {
-		exec(e);
-		return e;
-	}
+	public boolean test(T e);
 
 }
