@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.base;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +30,8 @@ import java.util.Set;
 public class Utl {
 
 	public static String language = "en";
+
+	public static final BigDecimal BD_HUNDRED = new BigDecimal(100);
 
 	public static <T> boolean addIfNotNull(Collection<T> collection, T element) {
 		if (element == null) return false;

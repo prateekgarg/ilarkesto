@@ -299,4 +299,14 @@ public abstract class Servlet {
 		return null;
 	}
 
+	public static Map<String, String> getParametersAsMap(HttpServletRequest request) {
+		Map<String, String> ret = new HashMap<String, String>();
+		Enumeration<String> names = request.getParameterNames();
+		while (names.hasMoreElements()) {
+			String name = names.nextElement();
+			ret.put(name, request.getParameter(name));
+		}
+		return ret;
+	}
+
 }

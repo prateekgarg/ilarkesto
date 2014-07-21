@@ -14,6 +14,8 @@
  */
 package ilarkesto.core.base;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +35,14 @@ public class Str {
 	public static final char sz = '\u00DF';
 
 	public static final char EUR = '\u0080';
+
+	public static String formatPercent(BigDecimal value, int scale) {
+		if (value == null) return null;
+		BigDecimal bd = value.setScale(scale, RoundingMode.HALF_UP);
+		String s = bd.toPlainString();
+		if (Utl.language.equals("de")) s = s.replace('.', ',');
+		return s + " %";
+	}
 
 	public static String formatWithThousandsSeparator(long value, String separator) {
 		return formatWithThousandsSeparator(String.valueOf(value), separator);
