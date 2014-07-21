@@ -14,6 +14,8 @@
  */
 package ilarkesto.core.base;
 
+import ilarkesto.core.persistance.EntityDoesNotExistException;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -707,6 +709,10 @@ public class Str {
 		while (ex != null) {
 			Throwable cause = ex.getCause();
 			String message = ex.getMessage();
+			if (ex instanceof EntityDoesNotExistException) {
+				String callerInfo = ((EntityDoesNotExistException) ex).getCallerInfo();
+				if (callerInfo != null) message += " @" + callerInfo;
+			}
 			if (cause != null && message != null && message.startsWith(cause.getClass().getName())) message = null;
 			while ((isWrapperException(ex) && isBlank(message) && cause != null)
 					|| getSimpleName(ex.getClass()).equals("UmbrellaException")) {

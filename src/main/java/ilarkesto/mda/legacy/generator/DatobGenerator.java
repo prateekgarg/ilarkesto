@@ -21,7 +21,6 @@ import ilarkesto.core.money.Money;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.SearchText;
-import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.persistance.UniqueFieldConstraintException;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
@@ -29,10 +28,10 @@ import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
 import ilarkesto.email.EmailAddress;
 import ilarkesto.mda.legacy.model.DatobModel;
+import ilarkesto.mda.legacy.model.ListPropertyModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
-import ilarkesto.mda.legacy.model.SetPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.persistence.AStructure;
@@ -390,24 +389,23 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (p.isReference()) {
 			if (p.isCollection()) {
 				if (isLegacyBean(bean)) {
-					String suffix = p instanceof SetPropertyModel ? "AsSet" : "";
+					String suffix = !(p instanceof ListPropertyModel) ? "AsSet" : "";
 					ln("        return (" + p.getCollectionType() + ") AEntity.getByIds" + suffix + "("
 							+ getFieldName(p) + ");");
 				} else {
-					ln("    return (List) " + Transaction.class.getName() + ".get().list(" + getFieldName(p) + ");");
+					ln("        try {");
+					ln("            return (List) AEntity.getByIds(" + getFieldName(p) + ");");
+					ln("        } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
+					ln("            throw ex.setCallerInfo(\"" + bean.getName() + "." + p.getName() + "\");");
+					ln("        }");
 				}
 			} else {
-				if (isLegacyBean(bean)) {
-					String daoExpr = p.getDaoName();
-					if (p.isAbstract()) {
-						daoExpr = "getDaoService()";
-					}
-					ln("        return " + getFieldName(p) + " == null ? null : (" + p.getContentType() + ")" + daoExpr
-							+ ".getById(" + getFieldName(p) + ");");
-				} else {
-					ln("        return " + getFieldName(p) + " == null ? null : (" + p.getContentType() + ") "
-							+ Transaction.class.getName() + ".get().get(" + getFieldName(p) + ");");
-				}
+				ln("        try {");
+				ln("            return " + getFieldName(p) + " == null ? null : (" + p.getContentType()
+						+ ") AEntity.getById(" + getFieldName(p) + ");");
+				ln("        } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
+				ln("            throw ex.setCallerInfo(\"" + bean.getName() + "." + p.getName() + "\");");
+				ln("        }");
 			}
 		} else {
 			if (p.isCollection()) {

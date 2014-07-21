@@ -17,6 +17,7 @@ package ilarkesto.core.persistance;
 public class EntityDoesNotExistException extends RuntimeException {
 
 	private String entityId;
+	private String callerInfo;
 
 	public EntityDoesNotExistException(String entityId) {
 		super("Entity does not exist: " + entityId);
@@ -25,6 +26,15 @@ public class EntityDoesNotExistException extends RuntimeException {
 
 	public String getEntityId() {
 		return entityId;
+	}
+
+	public EntityDoesNotExistException setCallerInfo(String callerInfo) {
+		this.callerInfo = callerInfo;
+		return this;
+	}
+
+	public String getCallerInfo() {
+		return callerInfo;
 	}
 
 }
