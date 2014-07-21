@@ -33,6 +33,7 @@ import java.util.Collection;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class PdfBuilder extends APdfBuilder {
@@ -83,6 +84,7 @@ public class PdfBuilder extends APdfBuilder {
 		} catch (DocumentException ex) {
 			throw new RuntimeException(ex);
 		}
+		document.setPageSize(new Rectangle(mmToPoints(pageWidth), mmToPoints(pageHeight)));
 		document.setMargins(mmToPoints(marginLeft), mmToPoints(marginRight), mmToPoints(marginTop),
 			mmToPoints(marginBottom));
 		document.open();
@@ -110,8 +112,7 @@ public class PdfBuilder extends APdfBuilder {
 
 	@Override
 	public AParagraph paragraph() {
-		Paragraph p = new Paragraph(this);
-		p.setDefaultFontStyle(defaultFontStyle);
+		Paragraph p = new Paragraph(this, fontStyle);
 		elements.add(p);
 		newPage = false;
 		return p;
@@ -119,7 +120,7 @@ public class PdfBuilder extends APdfBuilder {
 
 	@Override
 	public ATable table(float... cellWidths) {
-		Table t = new Table(this);
+		Table t = new Table(this, getFontStyle());
 		t.setCellWidths(cellWidths);
 		elements.add(t);
 		newPage = false;
@@ -128,7 +129,7 @@ public class PdfBuilder extends APdfBuilder {
 
 	@Override
 	public ATable table(int columnCount) {
-		Table t = new Table(this);
+		Table t = new Table(this, getFontStyle());
 		t.setColumnCount(columnCount);
 		elements.add(t);
 		newPage = false;

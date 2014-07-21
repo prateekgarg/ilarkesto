@@ -14,6 +14,8 @@
  */
 package ilarkesto.pdf;
 
+import ilarkesto.core.base.Args;
+
 import java.awt.Color;
 
 public abstract class ATable extends APdfElement {
@@ -23,7 +25,7 @@ public abstract class ATable extends APdfElement {
 	private int columnCount;
 
 	private Float defaultCellPadding;
-	private FontStyle defaultFontStyle;
+	private FontStyle fontStyle;
 
 	public abstract ACell cell();
 
@@ -32,6 +34,12 @@ public abstract class ATable extends APdfElement {
 	public abstract ARow row(Object... cellTexts);
 
 	public abstract ATable createCellBorders(Color color, float width);
+
+	public ATable(APdfElement parent, FontStyle fontStyle) {
+		super(parent);
+		Args.assertNotNull(fontStyle, "fontStyle");
+		this.fontStyle = fontStyle;
+	}
 
 	/**
 	 * Width in percent.
@@ -73,13 +81,14 @@ public abstract class ATable extends APdfElement {
 		return defaultCellPadding;
 	}
 
-	public ATable setDefaultFontStyle(FontStyle defaultFontStyle) {
-		this.defaultFontStyle = defaultFontStyle;
+	public ATable setFontStyle(FontStyle fontStyle) {
+		Args.assertNotNull(fontStyle, "fontStyle");
+		this.fontStyle = fontStyle;
 		return this;
 	}
 
-	public FontStyle getDefaultFontStyle() {
-		return defaultFontStyle;
+	public final FontStyle getFontStyle() {
+		return fontStyle;
 	}
 
 	// --- helper ---
@@ -94,12 +103,6 @@ public abstract class ATable extends APdfElement {
 		ACell cell = cell();
 		if (text != null) cell.paragraph().text(text, fontStyle);
 		return cell;
-	}
-
-	// --- dependencies ---
-
-	public ATable(APdfElement parent) {
-		super(parent);
 	}
 
 }

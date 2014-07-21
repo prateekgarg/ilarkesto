@@ -14,6 +14,7 @@
  */
 package ilarkesto.pdf;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.html.Html;
 
 import java.io.File;
@@ -37,8 +38,10 @@ public abstract class AParagraph extends APdfElement {
 
 	public abstract AImage image(byte[] data);
 
-	public AParagraph(APdfElement parent) {
+	public AParagraph(APdfElement parent, FontStyle defaultFontStyle) {
 		super(parent);
+		Args.assertNotNull(defaultFontStyle, "defaultFontStyle");
+		this.defaultFontStyle = defaultFontStyle;
 	}
 
 	public void setSpacingTop(float spacingTop) {
@@ -62,8 +65,9 @@ public abstract class AParagraph extends APdfElement {
 	}
 
 	public AParagraph text(Object text, FontStyle fontStyle) {
+		Args.assertNotNull(fontStyle, "fontStyle");
 		if (text == null) return this;
-		elements.add(new TextChunk(this).text(text).setFontStyle(fontStyle));
+		elements.add(new TextChunk(this, fontStyle).text(text));
 		return this;
 	}
 

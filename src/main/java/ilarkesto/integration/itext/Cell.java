@@ -20,6 +20,7 @@ import ilarkesto.pdf.AParagraph;
 import ilarkesto.pdf.APdfBuilder;
 import ilarkesto.pdf.APdfElement;
 import ilarkesto.pdf.ATable;
+import ilarkesto.pdf.FontStyle;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,14 +33,13 @@ public class Cell extends ACell implements ItextElement {
 
 	private Collection<ItextElement> elements = new ArrayList<ItextElement>();
 
-	public Cell(APdfElement parent) {
-		super(parent);
+	public Cell(APdfElement parent, FontStyle fontStyle) {
+		super(parent, fontStyle);
 	}
 
 	@Override
 	public AParagraph paragraph() {
-		Paragraph p = new Paragraph(this);
-		p.setDefaultFontStyle(getFontStyle());
+		Paragraph p = new Paragraph(this, getFontStyle());
 		elements.add(p);
 		return p;
 	}
@@ -53,7 +53,7 @@ public class Cell extends ACell implements ItextElement {
 
 	@Override
 	public ATable table(float... cellWidths) {
-		Table t = new Table(this);
+		Table t = new Table(this, getFontStyle());
 		t.setCellWidths(cellWidths);
 		elements.add(t);
 		return t;
@@ -61,7 +61,7 @@ public class Cell extends ACell implements ItextElement {
 
 	@Override
 	public ATable table(int columnCount) {
-		Table t = new Table(this);
+		Table t = new Table(this, getFontStyle());
 		t.setColumnCount(columnCount);
 		elements.add(t);
 		return t;
