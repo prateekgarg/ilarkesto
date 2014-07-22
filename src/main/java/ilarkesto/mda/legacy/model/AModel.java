@@ -40,4 +40,14 @@ public abstract class AModel implements Comparable<AModel> {
 		return name.compareTo(o.name);
 	}
 
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!getClass().equals(obj.getClass())) return false;
+		return name.equals(((AModel) obj).name);
+	}
 }

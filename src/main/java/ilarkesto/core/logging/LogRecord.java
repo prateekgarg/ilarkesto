@@ -80,13 +80,13 @@ public class LogRecord {
 				textSb.append(' ');
 				if (parameter instanceof Throwable) {
 					Throwable ex = (Throwable) parameter;
-					textSb.append(Utl.getUserMessageStack(ex, " <- "));
+					textSb.append(Str.formatException(ex));
 					textSb.append("\n").append(Str.getStackTrace(ex));
 				} else {
 					try {
 						textSb.append(Str.format(parameter));
 					} catch (Exception ex) {
-						textSb.append("[Log-ERROR: " + Utl.getUserMessageStack(ex) + "]");
+						textSb.append("[Log-ERROR: " + Str.formatException(ex) + "]");
 					}
 				}
 			}

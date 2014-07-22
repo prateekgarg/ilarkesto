@@ -15,7 +15,6 @@
 package ilarkesto.core.persistance;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.base.Utl;
 import ilarkesto.core.money.Money;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
@@ -232,7 +231,7 @@ public class Persistence {
 		try {
 			s = entity.toString();
 		} catch (Exception ex) {
-			s = "toString()-ERROR: " + Utl.getUserMessageStack(ex);
+			s = "toString()-ERROR: " + Str.formatException(ex);
 		}
 		return getTypeAndId(entity) + " " + s;
 	}

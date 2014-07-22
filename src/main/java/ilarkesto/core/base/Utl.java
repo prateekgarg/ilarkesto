@@ -103,35 +103,6 @@ public class Utl {
 		return cause == null ? ex : getRootCause(cause);
 	}
 
-	public static String getUserMessage(Throwable ex) {
-		if (ex instanceof NullPointerException && ex.getMessage() == null) return "NullPointerException";
-		if (ex.getClass().getName().equals("com.google.gwt.event.shared.UmbrellaException")) return null;
-		if (ex.getClass().equals(RuntimeException.class)) return ex.getMessage();
-		if (ex.getClass().getName().equals("java.net.UnknownHostException")) return ex.getMessage();
-		return getSimpleName(ex.getClass()) + ": " + ex.getMessage();
-	}
-
-	public static String getUserMessageStack(Throwable ex) {
-		return getUserMessageStack(ex, " -> ");
-	}
-
-	public static String getUserMessageStack(Throwable ex, String separator) {
-		StringBuilder sb = null;
-		while (ex != null) {
-			String userMessage = getUserMessage(ex);
-			if (userMessage != null) {
-				if (sb == null) {
-					sb = new StringBuilder();
-				} else {
-					sb.append(separator);
-				}
-				sb.append(userMessage);
-			}
-			ex = ex.getCause();
-		}
-		return sb == null ? null : sb.toString();
-	}
-
 	public static String[] concat(String[]... arrays) {
 		int len = 0;
 		for (String[] array : arrays) {

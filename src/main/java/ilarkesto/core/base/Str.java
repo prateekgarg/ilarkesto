@@ -705,6 +705,10 @@ public class Str {
 	}
 
 	public static String formatException(Throwable ex) {
+		return formatException(ex, "\nCaused by ");
+	}
+
+	public static String formatException(Throwable ex, String causeSeparator) {
 		StringBuilder sb = null;
 		while (ex != null) {
 			Throwable cause = ex.getCause();
@@ -724,7 +728,7 @@ public class Str {
 			if (sb == null) {
 				sb = new StringBuilder();
 			} else {
-				sb.append("\nCaused by ");
+				sb.append(causeSeparator);
 			}
 			if (!isWrapperException(ex)) {
 				sb.append(getSimpleName(ex.getClass()));
