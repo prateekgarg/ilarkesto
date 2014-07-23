@@ -669,6 +669,7 @@ public class Str {
 		if (getSimpleName(ex.getClass()).equals("RuntimeException")) return true;
 		if (getSimpleName(ex.getClass()).equals("ExecutionException")) return true;
 		if (getSimpleName(ex.getClass()).equals("UmbrellaException")) return true;
+		if (getSimpleName(ex.getClass()).equals("EntityDoesNotExistException")) return true;
 		return false;
 	}
 
