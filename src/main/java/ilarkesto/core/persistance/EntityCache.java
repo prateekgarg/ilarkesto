@@ -1,23 +1,22 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.core.persistance;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,9 +32,9 @@ public class EntityCache {
 		return entitiesById.keySet();
 	}
 
-	public List<AEntity> list(AEntityQuery query) {
+	public Set<AEntity> list(AEntityQuery query) {
 		Class queryType = query.getType();
-		List<AEntity> ret = new ArrayList<AEntity>();
+		Set<AEntity> ret = new HashSet<AEntity>();
 		for (AEntity entity : entitiesById.values()) {
 			if (queryType != null && !queryType.equals(entity.getClass())) continue;
 			if (query.matches(entity)) ret.add(entity);
@@ -85,8 +84,8 @@ public class EntityCache {
 		return entity;
 	}
 
-	public List<AEntity> list(Collection<String> ids) throws EntityDoesNotExistException {
-		List<AEntity> ret = new ArrayList<AEntity>(ids.size());
+	public Set<AEntity> list(Collection<String> ids) throws EntityDoesNotExistException {
+		Set<AEntity> ret = new HashSet<AEntity>();
 		for (String id : ids) {
 			ret.add(get(id));
 		}

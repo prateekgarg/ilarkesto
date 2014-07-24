@@ -15,8 +15,8 @@
 package ilarkesto.core.persistance;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class ACachingEntityDatabase extends AEntityDatabase {
 
@@ -44,7 +44,7 @@ public abstract class ACachingEntityDatabase extends AEntityDatabase {
 	}
 
 	@Override
-	public synchronized List<AEntity> list(Collection<String> ids) throws EntityDoesNotExistException {
+	public synchronized Set<AEntity> list(Collection<String> ids) throws EntityDoesNotExistException {
 		return cache.list(ids);
 	}
 
@@ -54,7 +54,7 @@ public abstract class ACachingEntityDatabase extends AEntityDatabase {
 	}
 
 	@Override
-	public List<AEntity> list(AEntityQuery query) {
+	public Set<AEntity> list(AEntityQuery query) {
 		return cache.list(query);
 	}
 

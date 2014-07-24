@@ -263,10 +263,10 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		if (bean.isSingleton()) {
 			ln();
 			ln("    public static", bean.getName(), "get() {");
-			ln("        List<" + bean.getName() + "> ret = new " + AllByTypeQuery.class.getName() + "("
-					+ bean.getName() + ".class).list();");
+			ln("        Set<" + bean.getName() + "> ret = new " + AllByTypeQuery.class.getName() + "(" + bean.getName()
+					+ ".class).list();");
 			ln("        if (ret.isEmpty()) return null;");
-			ln("        return ret.get(0);");
+			ln("        return ret.iterator().next();");
 			ln("    }");
 
 			ln();
@@ -277,7 +277,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 
 		if (!bean.isSingleton()) {
 			ln();
-			ln("    public static List<" + bean.getName() + "> listAll() {");
+			ln("    public static Set<" + bean.getName() + "> listAll() {");
 			ln("        return new " + AllByTypeQuery.class.getName() + "(" + bean.getName() + ".class).list();");
 			ln("    }");
 
@@ -305,7 +305,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("    public abstract boolean is" + Str.uppercaseFirstLetter(p.getName()) + "();");
 
 			ln();
-			ln("    public static List<" + bean.getBeanClass() + "> listByIs" + Str.uppercaseFirstLetter(p.getName())
+			ln("    public static Set<" + bean.getBeanClass() + "> listByIs" + Str.uppercaseFirstLetter(p.getName())
 					+ "() {");
 			ln("        return new " + queryName + "() {");
 			ln("            @Override");
@@ -364,7 +364,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 
 			}
 			if (!p.isUnique()) {
-				ln("    public static List<",
+				ln("    public static Set<",
 					bean.getName() + ">",
 					"listBy" + Str.uppercaseFirstLetter(p.getNameSingular()) + "(final " + p.getContentType() + " "
 							+ p.getNameSingular() + ") {");
@@ -413,7 +413,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 						+ "sBy" + by + "((" + bean.getName() + ")this);");
 				ln("    }");
 			} else {
-				ln("    public final List<" + refEntity.getBeanClass() + "> get"
+				ln("    public final Set<" + refEntity.getBeanClass() + "> get"
 						+ Str.uppercaseFirstLetter(br.getName()) + "s() {");
 				ln("        return " + refEntity.getBeanClass() + ".listBy" + by + "((" + bean.getName() + ")this);");
 				ln("    }");
