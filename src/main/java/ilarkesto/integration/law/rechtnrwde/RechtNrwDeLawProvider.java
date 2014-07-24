@@ -14,10 +14,10 @@
  */
 package ilarkesto.integration.law.rechtnrwde;
 
-import ilarkesto.core.base.AFileStorage;
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.html.Html;
+import ilarkesto.io.AFileStorage;
 import ilarkesto.io.IO;
 import ilarkesto.law.ALawProvider;
 import ilarkesto.law.Book;

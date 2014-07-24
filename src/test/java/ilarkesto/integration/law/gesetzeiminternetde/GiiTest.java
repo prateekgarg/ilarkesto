@@ -1,9 +1,9 @@
 package ilarkesto.integration.law.gesetzeiminternetde;
 
 import ilarkesto.base.Str;
-import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
+import ilarkesto.io.SimpleFileStorage;
 import ilarkesto.law.Book;
 import ilarkesto.law.BookCache;
 import ilarkesto.law.BookCacheCollection;

@@ -12,29 +12,22 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.core.base;
+package ilarkesto.io;
 
-public abstract class ALoopRunnable extends ARunnable {
+import java.io.File;
 
-	private boolean abort;
+public class SimpleFileStorage extends AFileStorage {
 
-	protected abstract void onIteration() throws InterruptedException;
+	private File baseDir;
 
-	protected abstract void onIterationException(Exception ex) throws InterruptedException;
-
-	@Override
-	protected final void onRun() throws InterruptedException {
-		while (!abort) {
-			try {
-				onIteration();
-			} catch (Exception ex) {
-				onIterationException(ex);
-			}
-		}
+	public SimpleFileStorage(File baseDir) {
+		super(null);
+		this.baseDir = baseDir;
 	}
 
-	protected final void abort() {
-		this.abort = true;
+	@Override
+	protected File getBaseDir() {
+		return baseDir;
 	}
 
 }

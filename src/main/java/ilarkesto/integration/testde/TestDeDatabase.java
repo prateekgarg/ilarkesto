@@ -16,19 +16,19 @@ package ilarkesto.integration.testde;
 
 import ilarkesto.core.auth.LoginData;
 import ilarkesto.core.auth.LoginDataProvider;
-import ilarkesto.core.base.AFileStorage;
 import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.Parser.ParseException;
-import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.core.base.Str;
-import ilarkesto.core.base.TextFileCache;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Tm;
 import ilarkesto.integration.testde.TestDe.Article;
 import ilarkesto.integration.testde.TestDe.ArticleRef;
 import ilarkesto.integration.testde.TestDe.ArticlesIndex;
 import ilarkesto.integration.testde.TestDe.SubArticleRef;
+import ilarkesto.io.AFileStorage;
 import ilarkesto.io.IO;
+import ilarkesto.io.SimpleFileStorage;
+import ilarkesto.io.TextFileCache;
 import ilarkesto.json.JsonMapper;
 import ilarkesto.json.JsonMapper.TypeResolver;
 

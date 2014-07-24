@@ -14,8 +14,8 @@
  */
 package ilarkesto.integration.law.rechtnrwde;
 
-import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.io.IO;
+import ilarkesto.io.SimpleFileStorage;
 import ilarkesto.law.BookCacheCollection;
 import ilarkesto.law.BookIndex;
 import ilarkesto.law.BookIndexCache;

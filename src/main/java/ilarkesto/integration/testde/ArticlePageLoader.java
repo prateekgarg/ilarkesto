@@ -15,7 +15,7 @@
 package ilarkesto.integration.testde;
 
 import ilarkesto.core.base.OperationObserver;
-import ilarkesto.core.base.TextFileCache.Loader;
+import ilarkesto.io.TextFileCache.Loader;
 
 public class ArticlePageLoader implements Loader {
 

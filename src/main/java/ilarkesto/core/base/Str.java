@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,6 +38,12 @@ public class Str {
 	public static final char sz = '\u00DF';
 
 	public static final char EUR = '\u0080';
+
+	public static boolean isWhitespace(char ch) {
+		return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f' || ch == '\u00A0' || ch == '\u2007'
+				|| ch == '\u202F' || ch == '\u000B' || ch == '\u001C' || ch == '\u001D' || ch == '\u001E'
+				|| ch == '\u001F';
+	}
 
 	public static String formatPercent(BigDecimal value, int scale) {
 		if (value == null) return null;
@@ -208,7 +215,7 @@ public class Str {
 
 	public static String uppercase(CharSequence text) {
 		if (text == null) return null;
-		return String.valueOf(text).toUpperCase();
+		return String.valueOf(text).toUpperCase(Locale.ENGLISH);
 	}
 
 	public static String fillUpLeft(String s, String filler, int minLength) {

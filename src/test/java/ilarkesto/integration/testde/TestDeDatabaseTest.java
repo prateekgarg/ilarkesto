@@ -16,10 +16,10 @@ package ilarkesto.integration.testde;
 
 import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.base.Parser.ParseException;
-import ilarkesto.core.base.SimpleFileStorage;
 import ilarkesto.core.time.Date;
 import ilarkesto.integration.testde.TestDe.ArticleRef;
 import ilarkesto.integration.testde.TestDe.ArticlesIndex;
+import ilarkesto.io.SimpleFileStorage;
 import ilarkesto.json.JsonMapper;
 import ilarkesto.testng.ATest;
 

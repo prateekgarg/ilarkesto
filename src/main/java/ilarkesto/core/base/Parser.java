@@ -81,7 +81,7 @@ public class Parser {
 
 	public void skipWhitespace() {
 		int last = data.length() - 1;
-		while (pos < last && Character.isWhitespace(data.charAt(pos))) {
+		while (pos < last && Str.isWhitespace(data.charAt(pos))) {
 			pos++;
 		}
 	}

@@ -1,8 +1,8 @@
 package ilarkesto.integration.law.gesetzeiminternetde;
 
-import ilarkesto.core.base.AFileStorage;
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Parser.ParseException;
+import ilarkesto.io.AFileStorage;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonObject;
 import ilarkesto.law.ALawProvider;
