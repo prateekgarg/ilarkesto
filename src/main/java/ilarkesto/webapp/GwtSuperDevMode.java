@@ -40,6 +40,18 @@ public class GwtSuperDevMode {
 	private Set<String> modules = new LinkedHashSet<String>();
 	private WebServer webServer;
 
+	public void startCodeServerInSeparateThread() {
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				startCodeServer();
+			}
+		});
+		thread.setName("GWT SuperDevMode Code Server");
+		thread.start();
+	}
+
 	public void startCodeServer() {
 		if (webServer != null) throw new IllegalStateException("Already started");
 		log.info("Starting GWT Super Dev Mode CodeServer on port", port);
@@ -72,7 +84,7 @@ public class GwtSuperDevMode {
 
 		List<String> args = new ArrayList<String>();
 
-		args.add("-noprecompile");
+		// args.add("-noprecompile");
 		// args.add("-XstrictResources");
 
 		// port
