@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -28,7 +28,6 @@ import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
 import ilarkesto.email.EmailAddress;
 import ilarkesto.mda.legacy.model.DatobModel;
-import ilarkesto.mda.legacy.model.ListPropertyModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
@@ -388,17 +387,13 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 	private void writeGetXxxContent(PropertyModel p) {
 		if (p.isReference()) {
 			if (p.isCollection()) {
-				if (isLegacyBean(bean)) {
-					String suffix = !(p instanceof ListPropertyModel) ? "AsSet" : "";
-					ln("        return (" + p.getCollectionType() + ") AEntity.getByIds" + suffix + "("
-							+ getFieldName(p) + ");");
-				} else {
-					ln("        try {");
-					ln("            return (List) AEntity.getByIds(" + getFieldName(p) + ");");
-					ln("        } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
-					ln("            throw ex.setCallerInfo(\"" + bean.getName() + "." + p.getName() + "\");");
-					ln("        }");
-				}
+				String suffix = (p.getCollectionType().contains("Set")) ? "AsSet" : "";
+				ln("        try {");
+				ln("            return (" + p.getCollectionType() + ") AEntity.getByIds" + suffix + "("
+						+ getFieldName(p) + ");");
+				ln("        } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
+				ln("            throw ex.setCallerInfo(\"" + bean.getName() + "." + p.getName() + "\");");
+				ln("        }");
 			} else {
 				ln("        try {");
 				ln("            return " + getFieldName(p) + " == null ? null : (" + p.getContentType()

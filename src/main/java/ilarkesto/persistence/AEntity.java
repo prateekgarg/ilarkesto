@@ -59,6 +59,10 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 		return daoService.getByIds(ids);
 	}
 
+	public static Set<AEntity> getByIdsAsSet(Collection<String> ids) {
+		return daoService.getByIdsAsSet(ids);
+	}
+
 	protected boolean isDeleted() {
 		return getDao().isDeleted(this);
 	}
