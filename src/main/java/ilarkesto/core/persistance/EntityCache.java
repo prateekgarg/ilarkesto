@@ -37,7 +37,7 @@ public class EntityCache {
 		Set<AEntity> ret = new HashSet<AEntity>();
 		for (AEntity entity : entitiesById.values()) {
 			if (queryType != null && !queryType.equals(entity.getClass())) continue;
-			if (query.matches(entity)) ret.add(entity);
+			if (query.test(entity)) ret.add(entity);
 		}
 		return ret;
 	}
@@ -46,7 +46,7 @@ public class EntityCache {
 		Class queryType = query.getType();
 		for (AEntity entity : entitiesById.values()) {
 			if (queryType != null && !queryType.equals(entity.getClass())) continue;
-			if (query.matches(entity)) return entity;
+			if (query.test(entity)) return entity;
 		}
 		return null;
 	}

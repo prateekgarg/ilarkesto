@@ -24,7 +24,7 @@ public class AllByTypeQuery<T extends AEntity> extends AEntityQuery<T> {
 	}
 
 	@Override
-	public boolean matches(T entity) {
+	public boolean test(T entity) {
 		return type.equals(entity.getClass());
 	}
 
