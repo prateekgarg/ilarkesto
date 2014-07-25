@@ -121,11 +121,11 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 		return new Money(0, cent * -1, currency);
 	}
 
-	public Money substract(Money... subtrahends) {
+	public Money substract(Money... subtrahends) throws MultipleCurrenciesException {
 		return computeDifference(this, subtrahends);
 	}
 
-	public Money add(Money summand) {
+	public Money add(Money summand) throws MultipleCurrenciesException {
 		if (summand == null) return this;
 		return computeSum(this, summand);
 	}
@@ -237,37 +237,35 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 
 	// --- ---
 
-	public static Money computeAvg(String currency, Money... moneys) {
+	public static Money computeAvg(String currency, Money... moneys) throws MultipleCurrenciesException {
 		return computeSum(currency, moneys).divideAndRound(moneys.length);
 	}
 
-	public static Money computeSum(Money... moneys) {
+	public static Money computeSum(Money... moneys) throws MultipleCurrenciesException {
 		if (moneys.length == 0) throw new IllegalArgumentException("At least one money required for computing a sum.");
 		if (moneys.length == 1) return moneys[0];
 		return computeSum(moneys[0].currency, moneys);
 	}
 
-	public static Money computeSum(String currency, Money... summands) {
+	public static Money computeSum(String currency, Money... summands) throws MultipleCurrenciesException {
 		if (summands.length == 1) return summands[0];
 		long sum = 0;
 		for (Money summand : summands) {
 			if (summand == null) continue;
-			if (!summand.isCurrency(currency))
-				throw new IllegalArgumentException("Summand needs to be in currency " + currency + ": " + summand);
+			if (!summand.isCurrency(currency)) throw new MultipleCurrenciesException(currency, summand.getCurrency());
 			sum += summand.cent;
 		}
 		return new Money(0, sum, currency);
 	}
 
-	public static Money computeDifference(Money minuend, Money... subtrahends) {
+	public static Money computeDifference(Money minuend, Money... subtrahends) throws MultipleCurrenciesException {
 		if (subtrahends == null || subtrahends.length == 0) return minuend;
 
 		long difference = minuend.cent;
 		for (Money subtrahend : subtrahends) {
 			if (subtrahend == null) continue;
 			if (!subtrahend.isCurrency(minuend.currency))
-				throw new IllegalArgumentException("Subtrahend needs to be in currency of the minuend "
-						+ minuend.currency + ": " + subtrahend);
+				throw new MultipleCurrenciesException(minuend.currency, subtrahend.currency);
 			difference -= subtrahend.cent;
 		}
 		return new Money(0, difference, minuend.currency);

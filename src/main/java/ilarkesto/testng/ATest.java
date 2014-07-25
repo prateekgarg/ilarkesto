@@ -49,6 +49,10 @@ public class ATest extends Assert {
 
 	// --- asserts ---
 
+	public void failExceptionExpected(Class<? extends Throwable> exceptionType) {
+		fail(exceptionType.getSimpleName() + " expected");
+	}
+
 	public static void assertNotEquals(Object a, Object b) {
 		assertFalse(a.equals(b), "Objects expected not to be equal: <" + a + "> and <" + b + ">");
 	}
