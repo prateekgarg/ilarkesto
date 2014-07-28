@@ -46,13 +46,15 @@ public class Image extends AImage implements ItextElement {
 				image = com.lowagie.text.Image.getInstance(file.getPath());
 			}
 			if (scaleByHeight != null) {
+				image.setWidthPercentage(0f);
 				height = APdfBuilder.mmToPoints(scaleByHeight);
 				float width = image.width() * height / image.height();
-				image.scaleAbsolute(width, height);
+				image.scaleToFit(width, height);
 			} else if (scaleByWidth != null) {
 				float width = APdfBuilder.mmToPoints(scaleByWidth);
+				image.setWidthPercentage(0f);
 				height = image.height() * width / image.width();
-				image.scaleAbsolute(width, height);
+				image.scaleToFit(width, height);
 			} else {
 				height = image.height();
 			}
