@@ -64,6 +64,7 @@ public abstract class ATable extends APdfElement {
 	}
 
 	public int getColumnCount() {
+		if (cellWidths != null) return cellWidths.length;
 		return columnCount;
 	}
 

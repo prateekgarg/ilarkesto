@@ -1209,6 +1209,15 @@ public abstract class IO {
 		}
 	}
 
+	public static byte[] loadResource(String name) {
+		InputStream is = IO.class.getClassLoader().getResourceAsStream(name);
+		try {
+			return readToByteArray(is);
+		} finally {
+			closeQuiet(is);
+		}
+	}
+
 	/**
 	 * Loads the contents of a properties file (which has to be in a directory that is in the classpath) into
 	 * a Properties-object and returns that.
