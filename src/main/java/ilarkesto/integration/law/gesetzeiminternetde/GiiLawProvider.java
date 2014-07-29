@@ -127,6 +127,7 @@ public class GiiLawProvider extends ALawProvider {
 				parser.gotoAfter("\">");
 				String code = parser.getUntil("<").trim();
 
+				// prevent duplicates
 				if (reference.equals("aeg")) {
 					code = "AEG 1951";
 				} else if (reference.equals("altfrg")) {
