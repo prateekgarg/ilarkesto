@@ -49,7 +49,7 @@ public class GwtSuperDevMode {
 		proc.setRedirectOutputToSysout(true);
 		proc.addParameters("-classpath", Str.concat(classpath, Sys.getPathSeparator()));
 		proc.addParameter("com.google.gwt.dev.codeserver.CodeServer");
-		// proc.addParameter("-noprecompile");
+		proc.addParameter("-noprecompile");
 		proc.addParameters("-port", String.valueOf(port));
 		proc.addParameters("-workDir", getWorkDir());
 
@@ -127,7 +127,7 @@ public class GwtSuperDevMode {
 	private Options createOptions() {
 		List<String> args = new ArrayList<String>();
 
-		// args.add("-noprecompile");
+		args.add("-noprecompile");
 
 		// port
 		args.add("-port");
