@@ -144,6 +144,8 @@ public class GiiLawProvider extends ALawProvider {
 					code = "WTOSa";
 				} else if (reference.equals("stvo_2013")) {
 					code = "StVO";
+				} else if (reference.equals("dtag_bertrano_2013_2")) {
+					code = "DTAGÜbertrAnO 2013";
 				}
 
 				code = code.replace("/", "");
