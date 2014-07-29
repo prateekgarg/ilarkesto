@@ -50,6 +50,8 @@ public final class Proc {
 	private String command;
 	private List<String> parameters;
 
+	private boolean redirectOutputToLog;
+
 	private long startTime;
 	private StreamGobbler outputGobbler;
 	private StreamGobbler errorGobbler;
@@ -297,6 +299,10 @@ public final class Proc {
 		return env;
 	}
 
+	public void setRedirectOutputToLog(boolean redirectOutputToLog) {
+		this.redirectOutputToLog = redirectOutputToLog;
+	}
+
 	public void setEnvironment(Map<String, String> environment) {
 		this.environment = environment;
 	}
@@ -354,6 +360,7 @@ public final class Proc {
 					synchronized (output) {
 						output.append(line).append("\n");
 					}
+					if (redirectOutputToLog) log.debug("[GWT]", line);
 				}
 			} catch (IOException ex) {
 				return;

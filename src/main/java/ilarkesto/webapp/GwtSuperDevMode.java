@@ -1,19 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.webapp;
 
+import ilarkesto.base.Proc;
 import ilarkesto.base.Sys;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
@@ -22,6 +23,7 @@ import ilarkesto.core.logging.Log;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +41,31 @@ public class GwtSuperDevMode {
 	private Set<String> sources = new LinkedHashSet<String>();
 	private Set<String> modules = new LinkedHashSet<String>();
 	private WebServer webServer;
+
+	public void startCodeServerInSeparateProcess(File workDir, Collection<String> classpath) {
+		Proc proc = new Proc("java");
+		proc.setWorkingDir(workDir);
+		proc.setRedirectOutputToLog(true);
+		proc.addParameters("-cp", Str.concat(classpath, Sys.getPathSeparator()));
+		proc.addParameter("com.google.gwt.dev.codeserver.CodeServer");
+		// proc.addParameter("-noprecompile");
+		proc.addParameters("-port", String.valueOf(port));
+		proc.addParameters("-workdir", getWorkDir());
+
+		for (String source : sources) {
+			proc.addParameter("-src");
+			if (!source.startsWith("/")) source = getBasePath() + Sys.getFileSeparator() + source;
+			File sourceFile = new File(source);
+			if (!sourceFile.exists()) throw new IllegalStateException("Path does not exist: " + source);
+			proc.addParameter(source);
+		}
+
+		for (String module : modules) {
+			proc.addParameter(module);
+		}
+
+		proc.start();
+	}
 
 	public void startCodeServerInSeparateThread() {
 		Thread thread = new Thread(new Runnable() {
@@ -78,14 +105,25 @@ public class GwtSuperDevMode {
 		}
 	}
 
-	private Options createOptions() {
-		String base = Sys.getWorkDir().getAbsolutePath().replace('\n', '/');
-		if (!new File(base).exists()) throw new IllegalStateException("Path does not exist: " + base);
+	private String getWorkDir() {
+		String base = getBasePath();
+		String workDir = base + "/runtimedata/gwt-code-server-output";
+		File workdirFile = new File(workDir);
+		workdirFile.mkdirs();
+		if (!workdirFile.exists()) throw new IllegalStateException("Path does not exist: " + workDir);
+		return workDir;
+	}
 
+	private String getBasePath() {
+		String base = Sys.getWorkDir().getAbsolutePath().replace("\n", Sys.getPathSeparator());
+		if (!new File(base).exists()) throw new IllegalStateException("Path does not exist: " + base);
+		return base;
+	}
+
+	private Options createOptions() {
 		List<String> args = new ArrayList<String>();
 
 		// args.add("-noprecompile");
-		// args.add("-XstrictResources");
 
 		// port
 		args.add("-port");
@@ -93,16 +131,12 @@ public class GwtSuperDevMode {
 
 		// workdir
 		args.add("-workDir");
-		String workDir = base + "/runtimedata/gwt-code-server-output";
-		File workdirFile = new File(workDir);
-		workdirFile.mkdirs();
-		if (!workdirFile.exists()) throw new IllegalStateException("Path does not exist: " + workDir);
-		args.add(workDir);
+		args.add(getWorkDir());
 
 		// sources
 		for (String source : sources) {
 			args.add("-src");
-			if (!source.startsWith("/")) source = base + "/" + source;
+			if (!source.startsWith("/")) source = getBasePath() + Sys.getPathSeparator() + source;
 			File sourceFile = new File(source);
 			if (!sourceFile.exists()) throw new IllegalStateException("Path does not exist: " + source);
 			args.add(source);
