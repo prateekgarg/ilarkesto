@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -51,6 +51,7 @@ public final class Proc {
 	private List<String> parameters;
 
 	private boolean redirectOutputToLog;
+	private boolean redirectOutputToSysout;
 
 	private long startTime;
 	private StreamGobbler outputGobbler;
@@ -193,9 +194,8 @@ public final class Proc {
 	}
 
 	public synchronized boolean isRunning() {
-		if (process == null) return false;
 		if (returnCode != null) return false;
-		return true;
+		return Sys.isRunning(process);
 	}
 
 	public PrintStream getInputPrintStream() {
@@ -303,6 +303,10 @@ public final class Proc {
 		this.redirectOutputToLog = redirectOutputToLog;
 	}
 
+	public void setRedirectOutputToSysout(boolean redirectOutputToSysout) {
+		this.redirectOutputToSysout = redirectOutputToSysout;
+	}
+
 	public void setEnvironment(Map<String, String> environment) {
 		this.environment = environment;
 	}
@@ -360,7 +364,8 @@ public final class Proc {
 					synchronized (output) {
 						output.append(line).append("\n");
 					}
-					if (redirectOutputToLog) log.debug("[GWT]", line);
+					if (redirectOutputToLog) log.debug(line);
+					if (redirectOutputToSysout) System.out.println(line);
 				}
 			} catch (IOException ex) {
 				return;

@@ -36,6 +36,16 @@ public final class Sys {
 		startupTime = Tm.getCurrentTimeMillis();
 	}
 
+	public static boolean isRunning(Process process) {
+		if (process == null) return false;
+		try {
+			process.exitValue();
+		} catch (IllegalThreadStateException ex) {
+			return true;
+		}
+		return false;
+	}
+
 	public static boolean isDevelopmentMode() {
 		return developmentMode;
 	}
