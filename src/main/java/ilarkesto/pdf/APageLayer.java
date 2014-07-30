@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
+ * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
@@ -9,23 +9,21 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.pdf;
 
+public abstract class APageLayer extends APdfContainerElement {
 
-public class APdfElement {
+	public abstract float getWidth();
 
-	protected APdfElement parent;
+	public abstract float getHeight();
 
-	public APdfElement(APdfElement parent) {
-		// if (!(this instanceof APdfBuilder)) Args.assertNotNull(parent, "parent");
-		this.parent = parent;
+	public abstract int getPageNumber();
+
+	public APageLayer() {
+		super(null);
 	}
 
-	protected APdfBuilder getPdf() {
-		if (parent instanceof APdfBuilder) return (APdfBuilder) parent;
-		return parent.getPdf();
-	}
 }

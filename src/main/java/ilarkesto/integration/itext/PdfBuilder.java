@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -16,6 +16,8 @@ package ilarkesto.integration.itext;
 
 import ilarkesto.base.Sys;
 import ilarkesto.pdf.AImage;
+import ilarkesto.pdf.APageExtension;
+import ilarkesto.pdf.APageLayer;
 import ilarkesto.pdf.AParagraph;
 import ilarkesto.pdf.APdfBuilder;
 import ilarkesto.pdf.ATable;
@@ -34,6 +36,9 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.ColumnText;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class PdfBuilder extends APdfBuilder {
@@ -79,11 +84,13 @@ public class PdfBuilder extends APdfBuilder {
 
 	public void write(OutputStream out) {
 		Document document = new Document();
+		PdfWriter writer;
 		try {
-			PdfWriter.getInstance(document, out);
+			writer = PdfWriter.getInstance(document, out);
 		} catch (DocumentException ex) {
 			throw new RuntimeException(ex);
 		}
+		writer.setPageEvent(new PageEventHandler());
 		document.setPageSize(new Rectangle(mmToPoints(pageWidth), mmToPoints(pageHeight)));
 		document.setMargins(mmToPoints(marginLeft), mmToPoints(marginRight), mmToPoints(marginTop),
 			mmToPoints(marginBottom));
@@ -150,6 +157,115 @@ public class PdfBuilder extends APdfBuilder {
 		elements.add(i);
 		newPage = false;
 		return i;
+	}
+
+	class PageEventHandler extends PdfPageEventHelper {
+
+		@Override
+		public void onEndPage(PdfWriter writer, Document document) {
+
+			for (APageExtension extension : pageExtensions) {
+				PageExtensionContainer container = new PageExtensionContainer(writer);
+				extension.onPage(container);
+				container.apply(extension);
+			}
+
+		}
+
+	}
+
+	class PageExtensionContainer extends APageLayer {
+
+		private PdfWriter writer;
+
+		private Collection<ItextElement> elements = new ArrayList<ItextElement>();
+
+		public PageExtensionContainer(PdfWriter writer) {
+			this.writer = writer;
+		}
+
+		public void apply(APageExtension extension) {
+			if (elements.isEmpty()) return;
+
+			PdfContentByte directContent = writer.getDirectContent();
+			ColumnText ct = new ColumnText(directContent);
+
+			Rectangle pageSize = writer.getPageSize();
+			float pageHeight = pageSize.height();
+
+			float y = mmToPoints(extension.getY(this));
+			float height = mmToPoints(extension.getHeight(this));
+
+			float x = mmToPoints(extension.getX(this));
+			float width = mmToPoints(extension.getWidth(this));
+
+			y = pageHeight - y;
+			ct.setSimpleColumn(x, y, x + width, y - height);
+
+			for (ItextElement element : elements) {
+				Element iTextElement = element.getITextElement();
+				if (iTextElement != null) ct.addElement(iTextElement);
+			}
+
+			try {
+				ct.go();
+			} catch (DocumentException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		@Override
+		public float getWidth() {
+			return pageWidth;
+		}
+
+		@Override
+		public float getHeight() {
+			return pageHeight;
+		}
+
+		@Override
+		public int getPageNumber() {
+			return writer.getPageNumber();
+		}
+
+		@Override
+		public AParagraph paragraph() {
+			Paragraph p = new Paragraph(this, getFontStyle());
+			elements.add(p);
+			return p;
+		}
+
+		@Override
+		public ATable table(float... cellWidths) {
+			Table t = new Table(this, getFontStyle());
+			t.setCellWidths(cellWidths);
+			elements.add(t);
+			return t;
+		}
+
+		@Override
+		public ATable table(int columnCount) {
+			Table t = new Table(this, getFontStyle());
+			t.setColumnCount(columnCount);
+			elements.add(t);
+			return t;
+		}
+
+		@Override
+		public AImage image(byte[] data) {
+			Image i = new Image(this, data);
+			elements.add(i);
+			return i;
+		}
+
+		@Override
+		public AImage image(File file) {
+			Image i = new Image(this, file);
+			elements.add(i);
+			return i;
+		}
+
 	}
 
 }
