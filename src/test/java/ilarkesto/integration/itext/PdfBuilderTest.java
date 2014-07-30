@@ -17,15 +17,63 @@ package ilarkesto.integration.itext;
 import ilarkesto.io.IO;
 import ilarkesto.pdf.APageExtension;
 import ilarkesto.pdf.APageLayer;
+import ilarkesto.pdf.APdfContainerElement;
 import ilarkesto.pdf.ARow;
 import ilarkesto.pdf.ATable;
 import ilarkesto.testng.ATest;
 
+import java.awt.Color;
 import java.io.File;
 
 import org.testng.annotations.Test;
 
 public class PdfBuilderTest extends ATest {
+
+	@Test
+	public void measurements() {
+		PdfBuilder pdf = new PdfBuilder();
+
+		pdf.setPageSizeToA4Landscape();
+		float margin = 20f;
+		pdf.setMargins(margin, margin, margin, margin);
+
+		table(pdf, "A4 Landscape | Margins: " + margin + " mm");
+
+		pdf.addPageExtension(new APageExtension() {
+
+			private float pos = 50f;
+
+			@Override
+			public void onPage(APageLayer page) {
+				table(page, pos + "," + pos + " | " + pos + "x" + pos);
+			}
+
+			@Override
+			public float getX(APageLayer page) {
+				return pos;
+			}
+
+			@Override
+			public float getY(APageLayer page) {
+				return pos;
+			}
+
+			@Override
+			public float getWidth(APageLayer page) {
+				return pos;
+			}
+
+			@Override
+			public float getHeight(APageLayer page) {
+				return pos;
+			}
+
+		});
+
+		File pdfFile = getTestOutputFile("measurements.pdf");
+		log.info(pdfFile.getAbsolutePath());
+		pdf.write(pdfFile);
+	}
 
 	@Test
 	public void extensions() {
@@ -81,6 +129,13 @@ public class PdfBuilderTest extends ATest {
 		File file = getTestOutputFile("test.jpg");
 		if (!file.exists()) IO.downloadUrlToFile("http://beust.com/pics/book-cover.jpg", file.getPath());
 		return file;
+	}
+
+	private void table(APdfContainerElement container, String text) {
+		ATable table = container.table(1);
+		// table.setWidth(50f);
+		table.cell(text);
+		table.createCellBorders(Color.BLUE, 0.2f);
 	}
 
 }
