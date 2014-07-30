@@ -36,6 +36,8 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 
 	public Money(long value, long cent, String currency) {
 		Args.assertNotNull(currency, "currency");
+		if (currency.length() != 3)
+			throw new IllegalArgumentException("Unsupported currency. Only USD, EUR, PLN,... allowed. -> " + currency);
 		this.cent = (value * 100) + cent;
 		this.currency = currency.toUpperCase();
 	}
@@ -49,6 +51,8 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 		if (amountCurrencySeparatorIdx < 1) throw new IllegalArgumentException("Unsupported money format: " + s);
 
 		this.currency = s.substring(amountCurrencySeparatorIdx).trim().toUpperCase();
+		if (currency.length() != 3)
+			throw new IllegalArgumentException("Unsupported currency. Only USD, EUR, PLN,... allowed. -> " + currency);
 
 		String amount = s.substring(0, amountCurrencySeparatorIdx).trim().replace(',', '.');
 		BigDecimal bd = new BigDecimal(amount).movePointRight(2);
@@ -67,6 +71,8 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 	@Deprecated
 	public Money(double value, String currency) {
 		Args.assertNotNull(currency, "currency");
+		if (currency.length() != 3)
+			throw new IllegalArgumentException("Unsupported currency. Only USD, EUR, PLN,... allowed. -> " + currency);
 		this.cent = Math.round(value * 100);
 		this.currency = currency.toUpperCase();
 	}
