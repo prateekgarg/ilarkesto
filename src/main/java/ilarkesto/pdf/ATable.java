@@ -23,6 +23,7 @@ public abstract class ATable extends APdfElement {
 	private Float width = 100f;
 	private float[] cellWidths;
 	private int columnCount;
+	protected int headerRowCount;
 
 	private Float defaultCellPadding;
 	private FontStyle fontStyle;
@@ -39,6 +40,16 @@ public abstract class ATable extends APdfElement {
 		super(parent);
 		Args.assertNotNull(fontStyle, "fontStyle");
 		this.fontStyle = fontStyle;
+	}
+
+	public ARow headerRow() {
+		headerRowCount++;
+		return row();
+	}
+
+	public ARow headerRow(Object... cellTexts) {
+		headerRowCount++;
+		return row(cellTexts);
 	}
 
 	/**

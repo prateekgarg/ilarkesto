@@ -30,6 +30,24 @@ import org.testng.annotations.Test;
 public class PdfBuilderTest extends ATest {
 
 	@Test
+	public void multiPageTable() {
+		PdfBuilder pdf = new PdfBuilder();
+
+		ATable table = pdf.table(1);
+
+		table.headerRow().cell("HEADER");
+
+		for (int i = 0; i < 100; i++) {
+			ARow row = table.row();
+			row.cell("row " + i);
+		}
+
+		File pdfFile = getTestOutputFile("multiPageTable.pdf");
+		log.info(pdfFile.getAbsolutePath());
+		pdf.write(pdfFile);
+	}
+
+	@Test
 	public void measurements() {
 		PdfBuilder pdf = new PdfBuilder();
 
