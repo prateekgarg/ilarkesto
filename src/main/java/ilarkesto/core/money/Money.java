@@ -36,10 +36,8 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 
 	public Money(long value, long cent, String currency) {
 		Args.assertNotNull(currency, "currency");
-		if (currency.length() != 3)
-			throw new IllegalArgumentException("Unsupported currency. Only USD, EUR, PLN,... allowed. -> " + currency);
 		this.cent = (value * 100) + cent;
-		this.currency = currency.toUpperCase();
+		this.currency = parseCurrency(currency);
 	}
 
 	public Money(String s) {
@@ -50,9 +48,7 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 		int amountCurrencySeparatorIdx = s.indexOf(' ');
 		if (amountCurrencySeparatorIdx < 1) throw new IllegalArgumentException("Unsupported money format: " + s);
 
-		this.currency = s.substring(amountCurrencySeparatorIdx).trim().toUpperCase();
-		if (currency.length() != 3)
-			throw new IllegalArgumentException("Unsupported currency. Only USD, EUR, PLN,... allowed. -> " + currency);
+		this.currency = parseCurrency(s.substring(amountCurrencySeparatorIdx));
 
 		String amount = s.substring(0, amountCurrencySeparatorIdx).trim().replace(',', '.');
 		BigDecimal bd = new BigDecimal(amount).movePointRight(2);
@@ -71,10 +67,19 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 	@Deprecated
 	public Money(double value, String currency) {
 		Args.assertNotNull(currency, "currency");
+		this.currency = parseCurrency(currency);
+		this.cent = Math.round(value * 100);
+	}
+
+	private static String parseCurrency(String currency) {
+		Args.assertNotNull(currency, "currency");
+		currency = currency.trim();
+		if (currency.equals("€")) currency = "EUR";
+		if (currency.equals("$")) currency = "USD";
 		if (currency.length() != 3)
 			throw new IllegalArgumentException("Unsupported currency. Only USD, EUR, PLN,... allowed. -> " + currency);
-		this.cent = Math.round(value * 100);
-		this.currency = currency.toUpperCase();
+		currency = currency.toLowerCase();
+		return currency;
 	}
 
 	public Money(BigDecimal value, String currency) {
