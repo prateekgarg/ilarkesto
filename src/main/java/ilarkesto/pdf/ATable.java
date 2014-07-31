@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -27,8 +27,6 @@ public abstract class ATable extends APdfElement {
 
 	private Float defaultCellPadding;
 	private FontStyle fontStyle;
-
-	public abstract ACell cell();
 
 	public abstract ARow row();
 
@@ -53,11 +51,13 @@ public abstract class ATable extends APdfElement {
 	}
 
 	public ARow footerRow() {
+		headerRowCount++;
 		footerRowCount++;
 		return row();
 	}
 
 	public ARow footerRow(Object... cellTexts) {
+		headerRowCount++;
 		footerRowCount++;
 		return row(cellTexts);
 	}
@@ -114,17 +114,5 @@ public abstract class ATable extends APdfElement {
 	}
 
 	// --- helper ---
-
-	public ACell cell(Object text) {
-		ACell cell = cell();
-		if (text != null) cell.paragraph().text(text);
-		return cell;
-	}
-
-	public ACell cell(Object text, FontStyle fontStyle) {
-		ACell cell = cell();
-		if (text != null) cell.paragraph().text(text, fontStyle);
-		return cell;
-	}
 
 }

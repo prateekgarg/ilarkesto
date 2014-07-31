@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -21,6 +21,7 @@ import ilarkesto.pdf.APageExtension;
 import ilarkesto.pdf.APageLayer;
 import ilarkesto.pdf.AParagraph;
 import ilarkesto.pdf.APdfBuilder;
+import ilarkesto.pdf.ARow;
 import ilarkesto.pdf.ATable;
 import ilarkesto.pdf.FontStyle;
 
@@ -56,10 +57,12 @@ public class PdfBuilder extends APdfBuilder {
 		pdf.paragraph().setHeight(1);
 		pdf.paragraph().text("--------------------------");
 		ATable table = pdf.table(50, 50);
-		table.cell().paragraph().text("1 ABC");
-		table.cell().setBorder(Color.RED, 0.5f).paragraph().text("2 ABC\u00DC\u00DC\nABCDEF");
-		table.cell().paragraph().text("3 ABC");
-		table.cell().paragraph().text("4 ABC");
+		ARow row1 = table.row();
+		row1.cell().paragraph().text("1 ABC");
+		row1.cell().setBorder(Color.RED, 0.5f).paragraph().text("2 ABC\u00DC\u00DC\nABCDEF");
+		ARow row2 = table.row();
+		row2.cell().paragraph().text("3 ABC");
+		row2.cell().paragraph().text("4 ABC");
 		String path = "/inbox/test.pdf";
 		pdf.write(new FileOutputStream(Sys.getUsersHomePath() + path));
 	}

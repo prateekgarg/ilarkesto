@@ -1,20 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.integration.itext;
 
 import ilarkesto.core.base.Color;
+import ilarkesto.core.base.Utl;
 import ilarkesto.pdf.ACell;
 import ilarkesto.pdf.APdfElement;
 import ilarkesto.pdf.ARow;
@@ -30,21 +31,10 @@ import com.itextpdf.text.pdf.PdfPTable;
 
 public class Table extends ATable implements ItextElement {
 
-	private List<Cell> cells = new ArrayList<Cell>();
+	private List<ARow> rows = new ArrayList<ARow>();
 
 	public Table(APdfElement parent, FontStyle fontStyle) {
 		super(parent, fontStyle);
-	}
-
-	@Override
-	public ACell cell() {
-		Cell c = new Cell(this, getFontStyle());
-
-		Float defaultCellPadding = getDefaultCellPadding();
-		if (defaultCellPadding != null) c.setPadding(defaultCellPadding);
-
-		cells.add(c);
-		return c;
 	}
 
 	@Override
@@ -60,20 +50,18 @@ public class Table extends ATable implements ItextElement {
 		Float width = getWidth();
 		if (width != null) t.setWidthPercentage(width);
 
-		int rowIdx = 0;
-		int columnIdx = 0;
-		for (Cell cell : cells) {
-			t.addCell((PdfPCell) cell.getITextElement());
-			columnIdx++;
-			if (columnIdx >= columnCount) {
-				rowIdx++;
-				columnIdx = 0;
+		List<Integer> rowsToKeepTogether = new ArrayList<Integer>();
+
+		int rowIdx = -1;
+		for (ARow row : rows) {
+			rowIdx++;
+			for (ACell cell : row.getCells()) {
+				t.addCell((PdfPCell) ((Cell) cell).getITextElement());
 			}
+			if (row.isKeepTogether()) rowsToKeepTogether.add(rowIdx);
 		}
 
-		if (columnIdx != 0)
-			throw new IllegalStateException("Table with " + columnCount + " columns and " + rowIdx
-					+ " rows has not enough cells to fill row");
+		if (!rowsToKeepTogether.isEmpty()) t.keepRowsTogether(Utl.toArrayOfInt(rowsToKeepTogether));
 
 		return t;
 	}
@@ -83,16 +71,18 @@ public class Table extends ATable implements ItextElement {
 		float[] cellWidths = getCellWidths();
 		int cols = cellWidths == null ? getColumnCount() : cellWidths.length;
 		int col = 0;
-		int row = 0;
-		for (Cell cell : cells) {
-			if (row == 0) cell.setBorderTop(color, width);
-			cell.setBorderRight(color, width);
-			cell.setBorderBottom(color, width);
-			if (col == 0) cell.setBorderLeft(color, width);
-			col += cell.getColspan();
-			if (col >= cols) {
-				col = 0;
-				row++;
+		int rowIdx = 0;
+		for (ARow row : rows) {
+			for (ACell cell : row.getCells()) {
+				if (rowIdx == 0) cell.setBorderTop(color, width);
+				cell.setBorderRight(color, width);
+				cell.setBorderBottom(color, width);
+				if (col == 0) cell.setBorderLeft(color, width);
+				col += cell.getColspan();
+				if (col >= cols) {
+					col = 0;
+					rowIdx++;
+				}
 			}
 		}
 		return this;
@@ -101,6 +91,7 @@ public class Table extends ATable implements ItextElement {
 	@Override
 	public ARow row() {
 		ARow row = new ARow(this);
+		rows.add(row);
 
 		FontStyle defaultFontStyle = getFontStyle();
 		if (defaultFontStyle != null) row.setDefaultFontStyle(defaultFontStyle);
