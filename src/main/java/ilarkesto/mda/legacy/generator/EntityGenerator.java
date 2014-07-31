@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -171,6 +171,12 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 	@Override
 	protected void writeEnsureIntegrityContent() {
 		super.writeEnsureIntegrityContent();
+
+		if (bean.isSingleton()) {
+			ln("        if (listAll().size() > 1) throw new IllegalStateException(\"Multiple singleton instances: "
+					+ bean.getName() + "\");");
+		}
+
 		if (!bean.isSelfcontained()) {
 			Set<ReferencePropertyModel> masterReferences = bean.getMasterReferences();
 			if (masterReferences.isEmpty()) {
@@ -275,17 +281,15 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("    }");
 		}
 
-		if (!bean.isSingleton()) {
-			ln();
-			ln("    public static Set<" + bean.getName() + "> listAll() {");
-			ln("        return new " + AllByTypeQuery.class.getName() + "(" + bean.getName() + ".class).list();");
-			ln("    }");
+		ln();
+		ln("    " + (bean.isSingleton() ? "private" : "public") + " static Set<" + bean.getName() + "> listAll() {");
+		ln("        return new " + AllByTypeQuery.class.getName() + "(" + bean.getName() + ".class).list();");
+		ln("    }");
 
-			ln();
-			ln("    public static", bean.getName(), "getById(String id) {");
-			ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(id);");
-			ln("    }");
-		}
+		ln();
+		ln("    public static", bean.getName(), "getById(String id) {");
+		ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(id);");
+		ln("    }");
 	}
 
 	private void writeQueryBaseclass() {
