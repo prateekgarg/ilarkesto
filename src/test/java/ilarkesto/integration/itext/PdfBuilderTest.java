@@ -177,4 +177,35 @@ public class PdfBuilderTest extends ATest {
 		table.createCellBorders(Color.BLUE, 0.2f);
 	}
 
+	@Test
+	private void nestedTable() {
+		PdfBuilder pdf = new PdfBuilder();
+
+		ATable table = pdf.table(3, 8, 3);
+		ARow row = table.row();
+		row.cell("1").setBackgroundColor(Color.LIGHT_GRAY);
+		row.cell("2").setBackgroundColor(Color.CYAN);
+		row.cell("3").setBackgroundColor(Color.LIGHT_GRAY);
+
+		row = table.row();
+		row.cell("4").setBackgroundColor(Color.CYAN);
+		ATable innerTable = row.cell().setBackgroundColor(Color.LIGHT_GRAY).table(2);
+		ARow innerRow = innerTable.row();
+		innerRow.cell("5A");
+		innerRow.cell("5B");
+		innerRow = innerTable.row();
+		innerRow.cell("5C");
+		innerRow.cell("5D");
+		row.cell("6").setBackgroundColor(Color.CYAN);
+
+		row = table.row();
+		row.cell("7").setBackgroundColor(Color.LIGHT_GRAY);
+		row.cell("8").setBackgroundColor(Color.CYAN);
+		row.cell("9").setBackgroundColor(Color.LIGHT_GRAY);
+
+		File pdfFile = getTestOutputFile("nestedtable.pdf");
+		log.info(pdfFile.getAbsolutePath());
+		pdf.write(pdfFile);
+	}
+
 }
