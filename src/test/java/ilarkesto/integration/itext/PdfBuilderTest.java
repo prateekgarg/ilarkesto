@@ -21,6 +21,7 @@ import ilarkesto.pdf.APageLayer;
 import ilarkesto.pdf.APdfContainerElement;
 import ilarkesto.pdf.ARow;
 import ilarkesto.pdf.ATable;
+import ilarkesto.pdf.FontStyle;
 import ilarkesto.testng.ATest;
 
 import java.io.File;
@@ -37,9 +38,11 @@ public class PdfBuilderTest extends ATest {
 
 		table.headerRow().cell("HEADER");
 
+		FontStyle red = new FontStyle().setColor(Color.RED);
+		FontStyle green = new FontStyle().setColor(Color.GREEN);
 		for (int i = 0; i < 100; i++) {
 			ARow row = table.row();
-			row.cell("row " + i);
+			row.cell().setFontStyle(i % 2 == 0 ? red : green).text("row " + i);
 		}
 
 		File pdfFile = getTestOutputFile("multiPageTable.pdf");
