@@ -14,19 +14,19 @@
  */
 package ilarkesto.integration.itext;
 
+import ilarkesto.core.base.Color;
 import ilarkesto.pdf.ACell;
 import ilarkesto.pdf.APdfElement;
 import ilarkesto.pdf.ARow;
 import ilarkesto.pdf.ATable;
 import ilarkesto.pdf.FontStyle;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lowagie.text.Element;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 
 public class Table extends ATable implements ItextElement {
 

@@ -15,8 +15,7 @@
 package ilarkesto.pdf;
 
 import ilarkesto.core.base.Args;
-
-import java.awt.Color;
+import ilarkesto.core.base.Color;
 
 public abstract class ACell extends APdfContainerElement {
 

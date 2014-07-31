@@ -14,7 +14,8 @@
  */
 package ilarkesto.pdf;
 
-import java.awt.Color;
+import ilarkesto.core.base.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 

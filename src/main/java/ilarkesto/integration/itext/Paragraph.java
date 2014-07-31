@@ -24,14 +24,14 @@ import ilarkesto.pdf.TextChunk;
 
 import java.io.File;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.FontSelector;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.FontSelector;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 
 public class Paragraph extends AParagraph implements ItextElement {
 
@@ -43,7 +43,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 
 	@Override
 	public Element getITextElement() {
-		com.lowagie.text.Paragraph p = new com.lowagie.text.Paragraph();
+		com.itextpdf.text.Paragraph p = new com.itextpdf.text.Paragraph();
 		float maxSize = 0;
 		for (AParagraphElement element : getElements()) {
 			if (element instanceof TextChunk) {
@@ -60,7 +60,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 				if (size > maxSize) maxSize = PdfBuilder.mmToPoints(size);
 			} else if (element instanceof Image) {
 				Image image = (Image) element;
-				com.lowagie.text.Image itextImage;
+				com.itextpdf.text.Image itextImage;
 				try {
 					itextImage = image.getITextElement();
 				} catch (Exception ex) {
@@ -69,7 +69,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 				}
 
 				if (image.getAlign() != null) {
-					itextImage.setAlignment(Image.convertAlign(image.getAlign()) | com.lowagie.text.Image.TEXTWRAP);
+					itextImage.setAlignment(Image.convertAlign(image.getAlign()) | com.itextpdf.text.Image.TEXTWRAP);
 					p.add(itextImage);
 				} else {
 					Chunk chunk = new Chunk(itextImage, 0, 0);
@@ -141,7 +141,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 		if (fontStyle != null) {
 			font.setStyle(createStyle(fontStyle));
 			font.setSize(PdfBuilder.mmToPoints(fontStyle.getSize()));
-			font.setColor(fontStyle.getColor());
+			font.setColor(PdfBuilder.color(fontStyle.getColor()));
 		}
 
 		return font;
@@ -164,11 +164,11 @@ public class Paragraph extends AParagraph implements ItextElement {
 	private static int convertAlign(Align align) {
 		switch (align) {
 			case LEFT:
-				return com.lowagie.text.Paragraph.ALIGN_LEFT;
+				return com.itextpdf.text.Paragraph.ALIGN_LEFT;
 			case CENTER:
-				return com.lowagie.text.Paragraph.ALIGN_CENTER;
+				return com.itextpdf.text.Paragraph.ALIGN_CENTER;
 			case RIGHT:
-				return com.lowagie.text.Paragraph.ALIGN_RIGHT;
+				return com.itextpdf.text.Paragraph.ALIGN_RIGHT;
 		}
 		throw new RuntimeException("Unsupported align: " + align);
 	}

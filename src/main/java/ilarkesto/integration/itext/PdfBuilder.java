@@ -1,20 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.integration.itext;
 
 import ilarkesto.base.Sys;
+import ilarkesto.core.base.Color;
 import ilarkesto.pdf.AImage;
 import ilarkesto.pdf.APageExtension;
 import ilarkesto.pdf.APageLayer;
@@ -23,7 +24,6 @@ import ilarkesto.pdf.APdfBuilder;
 import ilarkesto.pdf.ATable;
 import ilarkesto.pdf.FontStyle;
 
-import java.awt.Color;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,14 +32,15 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPageEventHelper;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
 
 public class PdfBuilder extends APdfBuilder {
 
@@ -159,6 +160,11 @@ public class PdfBuilder extends APdfBuilder {
 		return i;
 	}
 
+	public static BaseColor color(Color color) {
+		if (color == null) return null;
+		return new BaseColor(color.getRgb());
+	}
+
 	class PageEventHandler extends PdfPageEventHelper {
 
 		@Override
@@ -191,7 +197,7 @@ public class PdfBuilder extends APdfBuilder {
 			ColumnText ct = new ColumnText(directContent);
 
 			Rectangle pageSize = writer.getPageSize();
-			float pageHeight = pageSize.height();
+			float pageHeight = pageSize.getHeight();
 
 			float y = mmToPoints(extension.getY(this));
 			float height = mmToPoints(extension.getHeight(this));

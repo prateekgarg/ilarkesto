@@ -26,8 +26,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.lowagie.text.Element;
-import com.lowagie.text.pdf.PdfPCell;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.pdf.PdfPCell;
 
 public class Cell extends ACell implements ItextElement {
 
@@ -78,10 +78,10 @@ public class Cell extends ACell implements ItextElement {
 	public Element getITextElement() {
 		PdfPCell cell = new PdfPCell();
 
-		cell.setBorderColorTop(getBorderTopColor());
-		cell.setBorderColorBottom(getBorderBottomColor());
-		cell.setBorderColorLeft(getBorderLeftColor());
-		cell.setBorderColorRight(getBorderRightColor());
+		cell.setBorderColorTop(PdfBuilder.color(getBorderTopColor()));
+		cell.setBorderColorBottom(PdfBuilder.color(getBorderBottomColor()));
+		cell.setBorderColorLeft(PdfBuilder.color(getBorderLeftColor()));
+		cell.setBorderColorRight(PdfBuilder.color(getBorderRightColor()));
 		cell.setBorderWidthTop(APdfBuilder.mmToPoints(getBorderTopWidth()));
 		cell.setBorderWidthBottom(APdfBuilder.mmToPoints(getBorderBottomWidth()));
 		cell.setBorderWidthLeft(APdfBuilder.mmToPoints(getBorderLeftWidth()));
@@ -94,7 +94,7 @@ public class Cell extends ACell implements ItextElement {
 		cell.setPaddingLeft(APdfBuilder.mmToPoints(getPaddingLeft()));
 		cell.setPaddingRight(APdfBuilder.mmToPoints(getPaddingRight()));
 
-		cell.setBackgroundColor(getBackgroundColor());
+		cell.setBackgroundColor(PdfBuilder.color(getBackgroundColor()));
 		cell.setExtraParagraphSpace(0);
 		cell.setIndent(0);
 

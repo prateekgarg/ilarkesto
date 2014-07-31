@@ -16,7 +16,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/gdata-client-1.0.jar" sourcepath="lib/src/gdata-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/gdata-core-1.0.jar" sourcepath="lib/src/gdata-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/gdata-contacts-3.0.jar" sourcepath="lib/src/gdata-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib/itext-2.0.2.jar" sourcepath="lib/src/itext-src-2.0.2.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="lib/src/commons-fileupload-1.2.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar" sourcepath="lib/commons-io-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-collect-1.0-rc1.jar"/>
@@ -25,7 +24,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="lib/src/commons-lang-2.5-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/scribe-1.1.2.jar" sourcepath="lib/src/scribe-1.1.2-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/xstream-1.4.1.jar" sourcepath="lib/src/xstream-1.4.1-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib/iTextAsian.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-5.1.20-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdom-2.0.2.jar" sourcepath="lib/src/jdom-2.0.2-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.mail.jar"/>
@@ -49,5 +47,9 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/itext-pdfa-5.5.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itext-xtra-5.5.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itextpdf-5.5.2.jar" sourcepath="lib/src/itextpdf-5.5.2-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itext-asian-5.2.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
