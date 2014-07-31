@@ -14,10 +14,9 @@
  */
 package ilarkesto.core.base;
 
+import ilarkesto.core.localization.Localizer;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,18 +37,21 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String insert(String into, int index, String s) {
+		if (into == null) return null;
+		if (s == null) return into;
+		return into.substring(0, index) + s + into.substring(index);
+	}
+
+	public static String insert(String into, int index, char s) {
+		if (into == null) return null;
+		return into.substring(0, index) + s + into.substring(index);
+	}
+
 	public static boolean isWhitespace(char ch) {
 		return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f' || ch == '\u00A0' || ch == '\u2007'
 				|| ch == '\u202F' || ch == '\u000B' || ch == '\u001C' || ch == '\u001D' || ch == '\u001E'
 				|| ch == '\u001F';
-	}
-
-	public static String formatPercent(BigDecimal value, int scale) {
-		if (value == null) return null;
-		BigDecimal bd = value.setScale(scale, RoundingMode.HALF_UP);
-		String s = bd.toPlainString();
-		if (Utl.language.equals("de")) s = s.replace('.', ',');
-		return s + " %";
 	}
 
 	public static String formatWithThousandsSeparator(long value, String separator) {
@@ -667,11 +669,7 @@ public class Str {
 		if (o instanceof Collection) return formatCollection((Collection) o);
 		if (o instanceof Enumeration) return formatEnumeration((Enumeration) o);
 		if (o instanceof Throwable) return formatException((Throwable) o);
-		if (o instanceof Number) {
-			if ("de".equals(Utl.language)) { // TODO
-				return o.toString().replace('.', ',');
-			}
-		}
+		if (o instanceof Number) return Localizer.get().format((Number) o, false);
 		return o.toString();
 	}
 

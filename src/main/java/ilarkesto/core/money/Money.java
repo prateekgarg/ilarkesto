@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -18,6 +18,7 @@ import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Str.Formatable;
 import ilarkesto.core.base.Utl;
+import ilarkesto.core.localization.Localizer;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -116,8 +117,8 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 		return cent;
 	}
 
-	public BigDecimal getAmountAsBigDecimal() {
-		return new BigDecimal(cent).divide(Utl.BD_HUNDRED);
+	public BigDecimal getAmount() {
+		return new BigDecimal(cent).setScale(2).divide(Utl.BD_HUNDRED, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public boolean isPositive() {
@@ -146,7 +147,7 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 	}
 
 	public Money multiply(BigDecimal multiplicand) {
-		BigDecimal value = getAmountAsBigDecimal().multiply(multiplicand);
+		BigDecimal value = getAmount().multiply(multiplicand);
 		return new Money(value.setScale(2, RoundingMode.HALF_UP), currency);
 	}
 
@@ -184,20 +185,7 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 
 	@Override
 	public String format() {
-		return toString(Utl.language);
-	}
-
-	public String toString(String lang) {
-		if (lang != null) {
-			lang = lang.toLowerCase();
-			if (lang.equals("de")) return getAmountAsString(',', ".") + ' ' + formatCurrency();
-		}
-		return toString('.');
-	}
-
-	private String formatCurrency() {
-		if (EUR.equals(currency)) return "€";
-		return currency;
+		return Localizer.get().format(this);
 	}
 
 	public String toString(char decimalSeparator) {

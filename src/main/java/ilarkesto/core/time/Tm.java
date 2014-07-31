@@ -14,7 +14,7 @@
  */
 package ilarkesto.core.time;
 
-import ilarkesto.core.base.Utl;
+import ilarkesto.core.localization.Localizer;
 
 import java.util.Date;
 
@@ -105,7 +105,7 @@ public class Tm {
 	}
 
 	public static TmLocalizer getLocalizer() {
-		return getLocalizer(Utl.language);
+		return getLocalizer(Localizer.get().getLanguage());
 	}
 
 	@SuppressWarnings("deprecation")

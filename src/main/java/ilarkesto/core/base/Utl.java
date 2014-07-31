@@ -14,6 +14,8 @@
  */
 package ilarkesto.core.base;
 
+import ilarkesto.core.localization.Localizer;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,8 +31,7 @@ import java.util.Set;
 
 public class Utl {
 
-	public static String language = "en";
-
+	@Deprecated
 	public static final BigDecimal BD_HUNDRED = new BigDecimal(100);
 
 	public static <T> boolean addIfNotNull(Collection<T> collection, T element) {
@@ -151,8 +152,9 @@ public class Utl {
 		return hashCode;
 	}
 
+	@Deprecated
 	public static String getLanguage() {
-		return language;
+		return Localizer.get().getLanguage();
 	}
 
 	public static void removeDuplicates(Collection collection) {

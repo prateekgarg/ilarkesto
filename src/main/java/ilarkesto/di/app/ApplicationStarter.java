@@ -16,7 +16,7 @@ package ilarkesto.di.app;
 
 import ilarkesto.base.Sys;
 import ilarkesto.cli.ACommand;
-import ilarkesto.core.base.Utl;
+import ilarkesto.core.localization.Localizer;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.di.BeanContainer;
@@ -39,7 +39,7 @@ public class ApplicationStarter {
 
 		Log.setDebugEnabled(Sys.isDevelopmentMode());
 		DefaultLogRecordHandler.activate();
-		Utl.language = Locale.getDefault().getLanguage();
+		Localizer.setCurrent(Locale.getDefault().getLanguage(), Localizer.EN);
 		LOG.info("********************************************************************************");
 		LOG.info("Starting application:", applicationClass.getName());
 		logEnvironmentInfo();
