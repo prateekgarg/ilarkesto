@@ -36,10 +36,11 @@ public class PdfBuilderTest extends ATest {
 
 		ATable table = pdf.table(1);
 
-		for (int i = 0; i < 50; i++) {
+		for (int i = 1; i < 50; i++) {
 			ARow row = table.row();
-			if (i > 30) row.setKeepTogether(true);
-			row.cell().text("row " + i);
+			boolean keepTogether = i >= 30;
+			row.setKeepTogether(keepTogether);
+			row.cell().text("row " + i + " " + keepTogether);
 		}
 
 		File pdfFile = getTestOutputFile("tableRowKeepTogether.pdf");

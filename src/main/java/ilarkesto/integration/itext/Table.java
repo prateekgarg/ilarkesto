@@ -52,13 +52,13 @@ public class Table extends ATable implements ItextElement {
 
 		List<Integer> rowsToKeepTogether = new ArrayList<Integer>();
 
-		int rowIdx = -1;
+		int rowIdx = 0;
 		for (ARow row : rows) {
-			rowIdx++;
+			if (row.isKeepTogether() && rowIdx + 1 < rows.size()) rowsToKeepTogether.add(rowIdx + 1);
 			for (ACell cell : row.getCells()) {
 				t.addCell((PdfPCell) ((Cell) cell).getITextElement());
 			}
-			if (row.isKeepTogether()) rowsToKeepTogether.add(rowIdx);
+			rowIdx++;
 		}
 
 		if (!rowsToKeepTogether.isEmpty()) t.keepRowsTogether(Utl.toArrayOfInt(rowsToKeepTogether));
