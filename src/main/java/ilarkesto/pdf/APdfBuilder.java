@@ -103,6 +103,34 @@ public abstract class APdfBuilder extends APdfContainerElement {
 		return this;
 	}
 
+	public float getMarginBottom() {
+		return marginBottom;
+	}
+
+	public float getMarginLeft() {
+		return marginLeft;
+	}
+
+	public float getMarginRight() {
+		return marginRight;
+	}
+
+	public float getMarginTop() {
+		return marginTop;
+	}
+
+	public float getPageWidth() {
+		return pageWidth;
+	}
+
+	public float getPageHeight() {
+		return pageHeight;
+	}
+
+	public float getPageWidthWithoutMargins() {
+		return pageWidth - marginLeft - marginRight;
+	}
+
 	// --- helper ---
 
 	protected static final int dpi = 72;
