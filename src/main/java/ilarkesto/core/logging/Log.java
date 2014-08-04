@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -69,7 +69,7 @@ public class Log {
 
 	/**
 	 * Indicates if debug is enabled. If it is not, {@link #debug(Object[])} does nothing.
-	 * 
+	 *
 	 * @see #debug(Object[])
 	 */
 	public boolean isDebugEnabled() {
@@ -78,7 +78,7 @@ public class Log {
 
 	/**
 	 * Logs a debug information. Could be disabled.
-	 * 
+	 *
 	 * @see #isDebugEnabled()
 	 */
 	public void debug(Object... s) {
@@ -121,6 +121,10 @@ public class Log {
 
 	public static void setLogRecordHandler(LogRecordHandler handler) {
 		Log.logRecordHandler = handler;
+	}
+
+	public static LogRecordHandler getLogRecordHandler() {
+		return logRecordHandler;
 	}
 
 	public static enum Level {

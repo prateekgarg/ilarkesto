@@ -17,36 +17,18 @@ package ilarkesto.gwt.client;
 import ilarkesto.core.logging.LogRecord;
 import ilarkesto.core.logging.LogRecordHandler;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.google.gwt.core.client.GWT;
 
-public class GwtLogRecordHandler implements LogRecordHandler {
-
-	private LinkedList<LogRecord> latestLogs = new LinkedList<LogRecord>();
+public class GwtLogRecordHandler extends LogRecordHandler {
 
 	@Override
 	public void log(LogRecord record) {
+		super.log(record);
 		if (GWT.isScript()) {
 			logToConsole(record.toString());
 		} else {
 			System.out.println(record.toString());
 		}
-		latestLogs.add(record);
-		if (latestLogs.size() > 23) latestLogs.removeFirst();
-	}
-
-	public List<LogRecord> getLatestLogs() {
-		return latestLogs;
-	}
-
-	public String getLatestLogsAsString() {
-		StringBuilder sb = new StringBuilder();
-		for (LogRecord record : latestLogs) {
-			sb.append(record.toString()).append("\n");
-		}
-		return sb.toString();
 	}
 
 	private static native void logToConsole(String message)

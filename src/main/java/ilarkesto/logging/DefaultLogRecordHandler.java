@@ -34,7 +34,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultLogRecordHandler implements LogRecordHandler {
+public class DefaultLogRecordHandler extends LogRecordHandler {
 
 	private static final Log LOG = Log.get(DefaultLogRecordHandler.class);
 	public static final DateFormat LOG_TIME_FORMAT = new SimpleDateFormat("EEE, dd. MMMM yyyy, HH:mm");
@@ -97,6 +97,7 @@ public class DefaultLogRecordHandler implements LogRecordHandler {
 
 	@Override
 	public void log(LogRecord record) {
+		super.log(record);
 
 		synchronized (latestRecords) {
 			latestRecords.add(record);
