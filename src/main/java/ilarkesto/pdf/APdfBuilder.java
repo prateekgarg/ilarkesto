@@ -17,6 +17,7 @@ package ilarkesto.pdf;
 import ilarkesto.core.base.Args;
 import ilarkesto.core.logging.Log;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,8 @@ public abstract class APdfBuilder extends APdfContainerElement {
 	protected float pageHeight = 297f;
 
 	protected List<APageExtension> pageExtensions = new ArrayList<APageExtension>();
+
+	public abstract void write(OutputStream out);
 
 	public APdfBuilder() {
 		super(null);
