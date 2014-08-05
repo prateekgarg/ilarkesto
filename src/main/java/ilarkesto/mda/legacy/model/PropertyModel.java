@@ -46,6 +46,8 @@ public abstract class PropertyModel {
 
 	private String label;
 
+	private String suffix;
+
 	public PropertyModel setLabel(String label) {
 		this.label = label;
 		return this;
@@ -195,6 +197,15 @@ public abstract class PropertyModel {
 
 	public boolean isMaster() {
 		return false;
+	}
+
+	public PropertyModel setSuffix(String suffix) {
+		this.suffix = suffix;
+		return this;
+	}
+
+	public String getSuffix() {
+		return suffix;
 	}
 
 }
