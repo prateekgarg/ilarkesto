@@ -29,17 +29,20 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesMouseEvents;
 import com.google.gwt.user.client.ui.SubmitButton;
@@ -59,6 +62,33 @@ public class Gwt {
 	private static DateTimeFormat dtfDay;
 	private static DateTimeFormat dtfWeekdayMonthDay;
 	private static DateTimeFormat dtfHourMinute;
+
+	public static void setPopupPositionAndShow(final DialogBox dialog, final ClickEvent event) {
+		if (event == null || event.getClientX() == 0) {
+			dialog.center();
+			dialog.show();
+			return;
+		}
+		dialog.setPopupPositionAndShow(new PositionCallback() {
+
+			@Override
+			public void setPosition(int popupWidth, int popupHeight) {
+				int x = event.getClientX();
+				int y = event.getClientY();
+
+				int clientWidth = Window.getClientWidth();
+				if (x + popupWidth > clientWidth) x -= (x + popupWidth - clientWidth);
+
+				int clientHeight = Window.getClientHeight();
+				if (y + popupHeight > clientHeight) y -= (y + popupHeight - clientHeight);
+
+				y += Window.getScrollTop();
+				x += Window.getScrollLeft();
+
+				dialog.setPopupPosition(x, y);
+			}
+		});
+	}
 
 	public static boolean isWebkit() {
 		return isWebkitJs();
