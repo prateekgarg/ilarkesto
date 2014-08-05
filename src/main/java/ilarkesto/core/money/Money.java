@@ -287,4 +287,9 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 		BigDecimal multiplicant = percent.divide(Utl.BD_HUNDRED);
 		return multiply(multiplicant);
 	}
+
+	public boolean isZero() {
+		return cent == 0;
+	}
+
 }

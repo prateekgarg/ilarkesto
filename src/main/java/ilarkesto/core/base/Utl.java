@@ -299,4 +299,10 @@ public class Utl {
 		}
 	};
 
+	public static boolean isBetween(BigDecimal prozent, int from, int to) {
+		if (prozent.compareTo(new BigDecimal(from)) < 0) return false;
+		if (prozent.compareTo(new BigDecimal(to)) > 0) return false;
+		return true;
+	}
+
 }
