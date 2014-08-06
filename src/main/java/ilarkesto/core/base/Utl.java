@@ -14,6 +14,7 @@
  */
 package ilarkesto.core.base;
 
+import ilarkesto.core.localization.GermanComparator;
 import ilarkesto.core.localization.Localizer;
 
 import java.math.BigDecimal;
@@ -246,12 +247,20 @@ public class Utl {
 		return 0;
 	}
 
+	public static int compare(String a, String b) {
+		if (a == null && b == null) return 0;
+		if (a == null && b != null) return -1;
+		if (a != null && b == null) return 1;
+		return (new GermanComparator()).compare(a, b);
+	}
+
 	public static int compare(Object a, Object b) {
 		if (a == null && b == null) return 0;
 		if (a == null && b != null) return -1;
 		if (a != null && b == null) return 1;
+		if (a instanceof String && b instanceof String) return (compare((String) a, (String) b));
 		if (a instanceof Comparable) return ((Comparable) a).compareTo(b);
-		return a.toString().toLowerCase().compareTo(b.toString().toLowerCase());
+		return compare(a.toString(), b.toString());
 	}
 
 	public static int compareReverse(Object a, Object b) {

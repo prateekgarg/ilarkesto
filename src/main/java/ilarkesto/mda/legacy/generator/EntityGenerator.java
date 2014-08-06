@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -20,6 +20,7 @@ import ilarkesto.auth.Ownable;
 import ilarkesto.auth.ViewProtected;
 import ilarkesto.base.Str;
 import ilarkesto.core.base.Uuid;
+import ilarkesto.core.localization.GermanComparator;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
@@ -117,7 +118,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		if (!bean.isAbstract()) {
 			ln();
 			ln("    public int compareTo(" + bean.getName() + " other) {");
-			ln("        return toString().toLowerCase().compareTo(other.toString().toLowerCase());");
+			ln("        return (new GermanComparator()).compare(toString(), other.toString());");
 			ln("    }");
 		}
 
@@ -501,6 +502,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ret.add(ilarkesto.core.persistance.AEntity.class.getName());
 		}
 		ret.add(EntityDoesNotExistException.class.getName());
+		ret.add(GermanComparator.class.getName());
 		return ret;
 	}
 
