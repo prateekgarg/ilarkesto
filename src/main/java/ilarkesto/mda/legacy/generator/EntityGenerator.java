@@ -118,7 +118,8 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		if (!bean.isAbstract()) {
 			ln();
 			ln("    public int compareTo(" + bean.getName() + " other) {");
-			ln("        return (new GermanComparator()).compare(toString(), other.toString());");
+			ln("        return " + GermanComparator.class.getName()
+					+ ".INSTANCE.compare(toString(), other.toString());");
 			ln("    }");
 		}
 
@@ -502,7 +503,6 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ret.add(ilarkesto.core.persistance.AEntity.class.getName());
 		}
 		ret.add(EntityDoesNotExistException.class.getName());
-		ret.add(GermanComparator.class.getName());
 		return ret;
 	}
 

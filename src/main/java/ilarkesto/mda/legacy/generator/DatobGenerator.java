@@ -130,7 +130,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					parseType = p.getType().substring(p.getType().lastIndexOf('.') + 1);
 				}
 			}
-			ln("            if (property.equals(\"" + propertyName + "\")) set"
+			ln("            if (property.equals(\"" + propertyName + "\")) update"
 					+ Str.uppercaseFirstLetter(propertyName) + "(" + Persistence.class.getName() + ".parseProperty"
 					+ parseType + "(value));");
 		}
@@ -352,6 +352,32 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			}
 			if (!p.isCollection()) {
 				ln("    public final void set" + pNameUpper + "Id(String id) {");
+				ln("        if (Utl.equals(" + p.getName() + "Id, id)) return;");
+				ln("        " + getFieldName(p) + " = id;");
+				writeModified(p);
+				ln("    }");
+			}
+		}
+
+		// --- updateXxx ---
+		if (!p.isReference()) {
+			ln();
+			ln("    private final void update" + pNameUpper + "(" + type3 + " " + p.getName() + ") {");
+			writeSetXxxContent(p);
+			ln("    }");
+		}
+
+		if (p.isReference()) {
+			ln();
+			if (p.isCollection()) {
+				ln("    private final void update" + pNameUpper + "Ids(" + p.getCollectionType() + "<String> ids) {");
+				ln("        if (Utl.equals(" + p.getName() + "Ids, ids)) return;");
+				ln("        " + p.getName() + "Ids = ids;");
+				writeModified(p);
+				ln("    }");
+			}
+			if (!p.isCollection()) {
+				ln("    private final void update" + pNameUpper + "Id(String id) {");
 				ln("        if (Utl.equals(" + p.getName() + "Id, id)) return;");
 				ln("        " + getFieldName(p) + " = id;");
 				writeModified(p);
