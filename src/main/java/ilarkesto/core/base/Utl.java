@@ -251,7 +251,7 @@ public class Utl {
 		if (a == null && b == null) return 0;
 		if (a == null && b != null) return -1;
 		if (a != null && b == null) return 1;
-		return (new GermanComparator()).compare(a, b);
+		return (GermanComparator.INSTANCE).compare(a, b);
 	}
 
 	public static int compare(Object a, Object b) {
