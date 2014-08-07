@@ -428,12 +428,25 @@ public class HtmlBuilder {
 		tag.end();
 	}
 
+	public void INPUTtextWithPlaceholder(String id, String name, String value, int width, String placeholder,
+			String style) {
+		Tag tag = INPUT("text", name, value).setId(id).set("size", width).setClass("inputText")
+				.set("placeholder", placeholder).setStyle(style);
+		tag.setOnfocus("javascript:select();");
+		tag.end();
+	}
+
 	public void INPUTpassword(String name, int width, String value) {
 		INPUT("password", name, value).set("size", width).setClass("inputText").end();
 	}
 
 	public void INPUTpassword(String id, String name, int width, String value) {
 		INPUT("password", name, value).set("id", id).set("size", width).setClass("inputText").end();
+	}
+
+	public void INPUTpasswordWithPlaceholder(String id, String name, int width, String value, String placeholder) {
+		INPUT("password", name, value).set("id", id).set("size", width).set("placeholder", placeholder)
+				.setClass("inputText").end();
 	}
 
 	public void INPUTcheckbox(String id, String name, boolean checked) {
