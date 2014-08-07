@@ -41,9 +41,18 @@ public abstract class BeanModel extends AModel {
 	}
 
 	public PredicateModel addPredicate(String name) {
-		PredicateModel predicate = new PredicateModel(name);
+		PredicateModel predicate = getPredicate(name);
+		if (predicate != null) return predicate;
+		predicate = new PredicateModel(name);
 		predicates.add(predicate);
 		return predicate;
+	}
+
+	public PredicateModel getPredicate(String name) {
+		for (PredicateModel predicate : getPredicates()) {
+			if (predicate.getName().equals(name)) return predicate;
+		}
+		return null;
 	}
 
 	public Set<PredicateModel> getPredicates() {
