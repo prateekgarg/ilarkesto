@@ -98,6 +98,10 @@ public class Cell extends ACell implements ItextElement {
 		cell.setExtraParagraphSpace(0);
 		cell.setIndent(0);
 
+		if (getVerticalAlign() != null) {
+			cell.setVerticalAlignment(convertVerticalAlignment(getVerticalAlign()));
+		}
+
 		cell.setColspan(getColspan());
 		for (ItextElement element : elements) {
 			cell.addElement(element.getITextElement());

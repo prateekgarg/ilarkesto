@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -17,7 +17,13 @@ package ilarkesto.pdf;
 import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Color;
 
+import com.itextpdf.text.pdf.PdfPCell;
+
 public abstract class ACell extends APdfContainerElement {
+
+	public enum VerticalAlign {
+		BASELINE, BOTTOM, MIDDLE, TOP
+	}
 
 	private int colspan = 1;
 
@@ -37,6 +43,8 @@ public abstract class ACell extends APdfContainerElement {
 	private float paddingBottom = 1;
 	private float paddingLeft = 1;
 	private float paddingRight = 1;
+
+	private VerticalAlign verticalAlign;
 
 	private FontStyle fontStyle;
 
@@ -122,6 +130,15 @@ public abstract class ACell extends APdfContainerElement {
 		return this;
 	}
 
+	public ACell setVerticalAlign(VerticalAlign align) {
+		this.verticalAlign = align;
+		return this;
+	}
+
+	public VerticalAlign getVerticalAlign() {
+		return this.verticalAlign;
+	}
+
 	public int getColspan() {
 		return colspan;
 	}
@@ -180,6 +197,21 @@ public abstract class ACell extends APdfContainerElement {
 
 	public FontStyle getFontStyle() {
 		return fontStyle;
+	}
+
+	protected int convertVerticalAlignment(VerticalAlign align) {
+		switch (align) {
+			case BASELINE:
+				return PdfPCell.ALIGN_BASELINE;
+			case BOTTOM:
+				return PdfPCell.ALIGN_BOTTOM;
+			case MIDDLE:
+				return PdfPCell.ALIGN_MIDDLE;
+			case TOP:
+				return PdfPCell.ALIGN_TOP;
+			default:
+				throw new IllegalArgumentException("Alignment not supported");
+		}
 	}
 
 	// --- dependencies ---
