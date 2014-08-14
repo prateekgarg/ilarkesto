@@ -13,6 +13,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -98,6 +99,20 @@ public class JsonObject {
 			return null;
 		}
 		return parse(load(is));
+	}
+
+	public static JsonObject loadFromUrl(String url) {
+		InputStream is = null;
+		try {
+			is = new URL(url).openStream();
+			return parse(load(is));
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		} finally {
+			if (is != null) try {
+				is.close();
+			} catch (IOException ex) {}
+		}
 	}
 
 	public static JsonObject loadFromStream(InputStream is) {
