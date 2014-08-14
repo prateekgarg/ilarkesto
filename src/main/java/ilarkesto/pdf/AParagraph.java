@@ -15,6 +15,7 @@
 package ilarkesto.pdf;
 
 import ilarkesto.core.base.Args;
+import ilarkesto.core.base.Color;
 import ilarkesto.core.html.Html;
 
 import java.io.File;
@@ -93,6 +94,10 @@ public abstract class AParagraph extends APdfElement {
 	public AParagraph setAlign(Align align) {
 		this.align = align;
 		return this;
+	}
+
+	public AParagraph setColor(Color color) {
+		return setDefaultFontStyle(new FontStyle(getDefaultFontStyle()).setColor(color));
 	}
 
 	public AParagraph setDefaultFontStyle(FontStyle defaultFontStyle) {

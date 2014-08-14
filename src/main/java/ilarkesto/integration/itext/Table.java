@@ -33,7 +33,7 @@ public class Table extends ATable implements ItextElement {
 
 	private List<ARow> rows = new ArrayList<ARow>();
 
-	public Table(APdfElement parent, FontStyle fontStyle) {
+	Table(APdfElement parent, FontStyle fontStyle) {
 		super(parent, fontStyle);
 	}
 
@@ -90,7 +90,14 @@ public class Table extends ATable implements ItextElement {
 
 	@Override
 	public ARow row() {
-		ARow row = new ARow(this);
+		if (!rows.isEmpty()) {
+			ARow lastRow = rows.get(rows.size() - 1);
+			if (lastRow.getCellCount() != getColumnCount())
+				throw new IllegalStateException("Previous row has only " + lastRow.getCellCount()
+						+ " cells, while table needs " + getColumnCount() + " columns.");
+		}
+
+		ARow row = new Row(this);
 		rows.add(row);
 
 		FontStyle defaultFontStyle = getFontStyle();

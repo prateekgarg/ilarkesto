@@ -33,7 +33,7 @@ public class Cell extends ACell implements ItextElement {
 
 	private Collection<ItextElement> elements = new ArrayList<ItextElement>();
 
-	public Cell(APdfElement parent, FontStyle fontStyle) {
+	Cell(APdfElement parent, FontStyle fontStyle) {
 		super(parent, fontStyle);
 	}
 

@@ -15,23 +15,38 @@
 package ilarkesto.pdf;
 
 import ilarkesto.core.base.Color;
-import ilarkesto.integration.itext.Cell;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ARow {
+public abstract class ARow {
 
 	private List<ACell> cells = new ArrayList<ACell>();
 	private Color defaultBackgroundColor;
 	private FontStyle defaultFontStyle;
 	private boolean keepTogether;
+	protected ATable table;
+
+	protected abstract ACell createCell(FontStyle fontStyle);
+
+	public ARow(ATable table) {
+		this.table = table;
+	}
+
+	public int getCellCount() {
+		int count = 0;
+		for (ACell cell : cells) {
+			count += cell.getColspan();
+		}
+		return count;
+	}
 
 	public ACell cell() {
-		Cell c = new Cell(table, defaultFontStyle);
+		if (getCellCount() >= table.getColumnCount())
+			throw new RuntimeException("Row already has all " + getCellCount() + " cells.");
+		ACell c = createCell(defaultFontStyle);
 		cells.add(c);
 		c.setBackgroundColor(defaultBackgroundColor);
-		c.setFontStyle(defaultFontStyle);
 
 		Float defaultCellPadding = table.getDefaultCellPadding();
 		if (defaultCellPadding != null) c.setPadding(defaultCellPadding);
@@ -103,14 +118,6 @@ public class ARow {
 
 	public List<ACell> getCells() {
 		return cells;
-	}
-
-	// --- dependencies ---
-
-	private ATable table;
-
-	public ARow(ATable table) {
-		this.table = table;
 	}
 
 }
