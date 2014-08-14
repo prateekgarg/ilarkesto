@@ -54,7 +54,7 @@ public class Table extends ATable implements ItextElement {
 
 		int rowIdx = 0;
 		for (ARow row : rows) {
-			if (row.isKeepTogether() && rowIdx + 1 < rows.size()) rowsToKeepTogether.add(rowIdx + 1);
+			if (row.isKeepTogether() && rowIdx < rows.size()) rowsToKeepTogether.add(rowIdx);
 			for (ACell cell : row.getCells()) {
 				t.addCell((PdfPCell) ((Cell) cell).getITextElement());
 			}
