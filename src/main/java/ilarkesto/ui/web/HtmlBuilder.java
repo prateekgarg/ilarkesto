@@ -568,6 +568,10 @@ public class HtmlBuilder {
 		startTag(META, true).set("http-equiv", httpEquiv).set("content", content).end();
 	}
 
+	public void METAname(String name, String content) {
+		startTag(META, true).set("name", name).set("content", content).end();
+	}
+
 	public void METAviewport(String width, Integer initialScale) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("width=").append(width);
