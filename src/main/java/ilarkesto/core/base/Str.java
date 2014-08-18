@@ -795,7 +795,7 @@ public class Str {
 	}
 
 	public static boolean isBlank(String s) {
-		return s == null || s.length() == 0 || s.trim().length() == 0;
+		return s == null || s.isEmpty() || s.trim().isEmpty();
 	}
 
 	public static interface Formatable {
