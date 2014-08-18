@@ -67,7 +67,17 @@ public class DefaultLogRecordHandler extends LogRecordHandler {
 							}
 						}
 						LogRecord record = queue.poll(1, TimeUnit.SECONDS);
-						if (record != null) System.err.println(record.toString());
+						if (record != null) {
+							System.err.println(record.toString());
+							if (errorHandler != null) {
+								try {
+									errorHandler.log(record);
+									errorHandler.flush();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+							}
+						}
 					} catch (InterruptedException ignored) {
 						shutdown = true;
 					}
@@ -109,14 +119,6 @@ public class DefaultLogRecordHandler extends LogRecordHandler {
 				if (!errorRecords.contains(record)) {
 					errorRecords.add(record);
 					if (errorRecords.size() > 256) errorRecords.remove(0);
-				}
-			}
-			if (errorHandler != null) {
-				try {
-					errorHandler.log(record);
-					errorHandler.flush();
-				} catch (Exception ex) {
-					ex.printStackTrace();
 				}
 			}
 		}
