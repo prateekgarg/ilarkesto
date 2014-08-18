@@ -112,11 +112,15 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 
 	public Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		Transaction transaction = getCurrentTransaction(false);
+		System.out.println("TransactionService getEntities() in");
+		Set<AEntity> ret;
 		if (transaction == null) {
-			return entityStore.getEntities(typeFilter, entityFilter);
+			ret = entityStore.getEntities(typeFilter, entityFilter);
 		} else {
-			return transaction.getEntities(typeFilter, entityFilter);
+			ret = transaction.getEntities(typeFilter, entityFilter);
 		}
+		System.out.println("TransactionService getEntities() out");
+		return ret;
 	}
 
 	public int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
