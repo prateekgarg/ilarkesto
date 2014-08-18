@@ -137,7 +137,7 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
-	public synchronized AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
+	public AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : data.entrySet()) {
 			if (typeFilter != null && !typeFilter.test(daoEntry.getKey())) continue;
 			for (AEntity entity : daoEntry.getValue().values()) {
@@ -161,7 +161,7 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
-	public synchronized Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
+	public Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		Set<AEntity> result = new HashSet<AEntity>();
 		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : data.entrySet()) {
 			if (typeFilter != null && !typeFilter.test(entry.getKey())) continue;
@@ -177,7 +177,7 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
-	public synchronized int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
+	public int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		int result = 0;
 		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : data.entrySet()) {
 			if (typeFilter != null && !typeFilter.test(entry.getKey())) continue;

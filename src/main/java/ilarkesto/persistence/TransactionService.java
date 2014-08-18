@@ -93,11 +93,13 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 
 	public AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		Transaction transaction = getCurrentTransaction(false);
+		AEntity ret;
 		if (transaction == null) {
-			return entityStore.getEntity(typeFilter, entityFilter);
+			ret = entityStore.getEntity(typeFilter, entityFilter);
 		} else {
-			return transaction.getEntity(typeFilter, entityFilter);
+			ret = transaction.getEntity(typeFilter, entityFilter);
 		}
+		return ret;
 	}
 
 	@Override
@@ -113,23 +115,23 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 	public Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		Transaction transaction = getCurrentTransaction(false);
 		Set<AEntity> ret;
-		System.out.println("TransactionService getEntities() in");
 		if (transaction == null) {
 			ret = entityStore.getEntities(typeFilter, entityFilter);
 		} else {
 			ret = transaction.getEntities(typeFilter, entityFilter);
 		}
-		System.out.println("TransactionService getEntities() out");
 		return ret;
 	}
 
 	public int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		Transaction transaction = getCurrentTransaction(false);
+		int ret;
 		if (transaction == null) {
-			return entityStore.getEntitiesCount(typeFilter, entityFilter);
+			ret = entityStore.getEntitiesCount(typeFilter, entityFilter);
 		} else {
-			return transaction.getEntitiesCount(typeFilter, entityFilter);
+			ret = transaction.getEntitiesCount(typeFilter, entityFilter);
 		}
+		return ret;
 	}
 
 	public synchronized void deleteEntity(AEntity entity) {
