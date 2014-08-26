@@ -172,7 +172,7 @@ public class RequestWrapper<S extends AWebSession> {
 	}
 
 	public void preventCaching() {
-		Servlet.preventCaching(response);
+		Servlet.setHeadersForNoCaching(response);
 	}
 
 	// --- request helpers ---
