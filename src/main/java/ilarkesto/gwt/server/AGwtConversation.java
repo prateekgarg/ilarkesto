@@ -51,7 +51,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	 */
 	private ADataTransferObject nextData;
 	private Object nextDataLock = new Object();
-	private Map<E, DateAndTime> remoteEntityModificationTimes = new HashMap<E, DateAndTime>();
+	private Map<E, Long> remoteEntityModificationTimes = new HashMap<E, Long>();
 
 	private S session;
 	private int number;
@@ -147,14 +147,15 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	}
 
 	private void addToNextData(E entity) {
-		DateAndTime timeRemote = remoteEntityModificationTimes.get(entity);
-		DateAndTime timeLocal = entity.getLastModified();
+		Long timeRemote = remoteEntityModificationTimes.get(entity);
+		Long timeLocal = entity.getModificationTime();
 
 		ADataTransferObject nd = getNextData();
 		if (nd.containsDeletedEntity(entity.getId())) return;
 
 		if (timeLocal.equals(timeRemote)) {
-			LOG.debug("Remote entity already up to date:", toString(entity), "for", this);
+			LOG.debug("Remote entity already up to date:", toString(entity), "for", this, "->", timeLocal, "/",
+				timeRemote);
 			return;
 		}
 

@@ -14,8 +14,6 @@
  */
 package ilarkesto.core.persistance;
 
-import ilarkesto.core.time.DateAndTime;
-
 import java.util.HashMap;
 import java.util.Set;
 
@@ -23,7 +21,7 @@ public interface TransferableEntity {
 
 	String getId();
 
-	DateAndTime getLastModified();
+	Long getModificationTime();
 
 	HashMap<String, String> createPropertiesMap();
 

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -33,9 +33,13 @@ public class AEntity implements Serializable, TransferableEntity {
 	private static final transient Log log = Log.get(AEntity.class);
 
 	private String id;
+	private Long modificationTime;
+
+	@Deprecated
 	private DateAndTime lastModified;
 
 	public final void persist() {
+		updateLastModified();
 		AEntityDatabase.get().getTransaction().persist(this);
 	}
 
@@ -77,6 +81,13 @@ public class AEntity implements Serializable, TransferableEntity {
 		if (ensuringIntegrity) return;
 		if (isDeleted()) return;
 		ensuringIntegrity = true;
+
+		if (modificationTime == null && lastModified != null) {
+			modificationTime = lastModified.toMillis();
+			lastModified = null;
+			fireModified("modificationTime", modificationTime.toString());
+		}
+
 		try {
 			onEnsureIntegrity();
 		} finally {
@@ -100,7 +111,7 @@ public class AEntity implements Serializable, TransferableEntity {
 	}
 
 	public final void updateLastModified() {
-		lastModified = DateAndTime.now();
+		modificationTime = System.currentTimeMillis();
 	}
 
 	protected final void fireModified(String field, String value) {
@@ -112,9 +123,8 @@ public class AEntity implements Serializable, TransferableEntity {
 	}
 
 	@Override
-	public final DateAndTime getLastModified() {
-		if (lastModified == null) lastModified = DateAndTime.now();
-		return lastModified;
+	public Long getModificationTime() {
+		return modificationTime;
 	}
 
 	@Override
@@ -136,6 +146,7 @@ public class AEntity implements Serializable, TransferableEntity {
 	public void storeProperties(Map<String, String> properties) {
 		properties.put("@type", Str.getSimpleName(getClass()));
 		properties.put("id", getId());
+		properties.put("modificationTime", getModificationTime().toString());
 	}
 
 	public void updateProperties(Map<String, String> properties) {

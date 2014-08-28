@@ -25,7 +25,6 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
-import ilarkesto.core.time.DateAndTime;
 import ilarkesto.di.Context;
 import ilarkesto.id.IdentifiableResolver;
 import ilarkesto.search.SearchResultsConsumer;
@@ -210,7 +209,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		} catch (IllegalAccessException ex) {
 			throw new RuntimeException(ex);
 		}
-		entity.setLastModified(DateAndTime.now());
+		entity.updateLastModified();
 		transactionService.registerEntity(entity);
 		return entity;
 	}

@@ -34,8 +34,11 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	private static DaoService daoService;
 
 	private String id;
-	private DateAndTime lastModified;
+	private Long modificationTime;
 	private String lastEditorId;
+
+	@Deprecated
+	private DateAndTime lastModified;
 
 	public abstract ADao getDao();
 
@@ -88,12 +91,12 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	}
 
 	@Override
-	public final DateAndTime getLastModified() {
-		return lastModified;
+	public final Long getModificationTime() {
+		return modificationTime;
 	}
 
-	final void setLastModified(DateAndTime value) {
-		this.lastModified = value;
+	public DateAndTime getLastModified() {
+		return new DateAndTime(getModificationTime());
 	}
 
 	public final AUser getLastEditor() {
@@ -123,19 +126,26 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 
 	@Override
 	public void updateLastModified() {
-		setLastModified(DateAndTime.now());
+		modificationTime = System.currentTimeMillis();
 	}
 
 	@Override
 	public void ensureIntegrity() {
+		if (modificationTime == null && lastModified != null) {
+			modificationTime = lastModified.toMillis();
+			lastModified = null;
+		}
+
 		super.ensureIntegrity();
-		if (lastModified == null) fireModified("lastModified", null);
+
+		if (modificationTime == null) fireModified("lastModified", null);
 	}
 
 	@Override
 	protected void storeProperties(Map<String, String> properties) {
 		properties.put("@type", getDao().getEntityName());
 		properties.put("id", getId());
+		properties.put("modificationTime", getModificationTime().toString());
 	}
 
 	@Override
