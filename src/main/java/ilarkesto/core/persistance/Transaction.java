@@ -14,7 +14,9 @@
  */
 package ilarkesto.core.persistance;
 
+import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 
 import java.util.ArrayList;
@@ -201,6 +203,7 @@ public class Transaction {
 	}
 
 	public Set<AEntity> list(AEntityQuery query) {
+		RuntimeTracker rt = new RuntimeTracker();
 		Set<AEntity> ret = backend.list(query);
 		for (AEntity entity : modified.list(query)) {
 			if (!ret.contains(entity)) ret.add(entity);
@@ -210,6 +213,9 @@ public class Transaction {
 			AEntity entity = iterator.next();
 			if (isDeleted(entity)) iterator.remove();
 		}
+		long time = rt.getRuntime();
+		log.log(time > 1000 ? Log.Level.WARN : Log.Level.DEBUG, "Query provided", ret.size(), "elements in",
+			rt.getRuntimeFormated(), Utl.getSimpleName(query.getClass()));
 		return ret;
 	}
 
