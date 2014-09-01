@@ -90,13 +90,15 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		if (!isLegacyBean(bean)) {
 			writeKeytableFactoryMethod();
 			writeKeytableGetLabel();
-			writeListAll();
-			writeGetByListBy();
+			if (!bean.isAbstract()) {
+				writeListAll();
+				writeToString();
+				writeGetByListBy();
+			}
+			writeQueryBaseclass();
 			writePredicates();
 			writeGetPassengers();
-			writeQueryBaseclass();
 			writeGetReferencedEntities();
-			writeToString();
 		}
 
 		ln();
@@ -346,7 +348,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 	private void writeGetByListBy() {
 		String queryName = "A" + bean.getName() + "Query";
 
-		for (PropertyModel p : bean.getProperties()) {
+		for (PropertyModel p : bean.getPropertiesAndSuperbeanProperties()) {
 			ln();
 			if (p.isUnique()) {
 				String byType = p.getType();
