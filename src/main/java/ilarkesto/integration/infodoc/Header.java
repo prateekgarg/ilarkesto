@@ -30,14 +30,46 @@ public class Header extends AInfoDocElement {
 	@Override
 	public String toHtml(AHtmlContext context, AReferenceResolver referenceResolver) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("\n<h" + depth + ">").append(Str.toHtml(text, true)).append("</h" + depth + ">\n");
+		String ref = getRef();
+		sb.append("\n<p style='" + context.getElementDepthStyle(getDepth()) + " color:" + context.getColor(getDepth())
+				+ ";'>");
+		if (ref == null) {
+			sb.append(Str.toHtml(text, true));
+		} else {
+			String title = referenceResolver.getTitle(ref);
+			String href = context.getHref(ref);
+			sb.append("&nbsp;<a href='").append(href).append("' style='color:" + context.getColor(getDepth()) + ";'>")
+					.append(Str.toHtml(title, true)).append("</a>");
+		}
+		sb.append("</p>\n");
 		return sb.toString();
+	}
+
+	@Override
+	AInfoDocElement setHeader(Header parent) {
+		while (parent != null && depth < parent.depth) {
+			parent = parent.getHeader();
+		}
+		if (parent == null) return super.setHeader(parent);
+		if (depth == parent.depth) return super.setHeader(parent.getHeader());
+		return super.setHeader(parent);
+	}
+
+	public boolean isRef() {
+		return text.trim().startsWith("@");
+	}
+
+	public String getRef() {
+		String ref = text.trim();
+		if (!ref.startsWith("@")) return null;
+		return ref.substring(1);
 	}
 
 	public String getText() {
 		return text;
 	}
 
+	@Override
 	public int getDepth() {
 		return depth;
 	}

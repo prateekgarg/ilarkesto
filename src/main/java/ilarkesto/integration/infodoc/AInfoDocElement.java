@@ -16,6 +16,22 @@ package ilarkesto.integration.infodoc;
 
 public abstract class AInfoDocElement {
 
+	private Header header;
+
 	public abstract String toHtml(AHtmlContext context, AReferenceResolver referenceResolver);
+
+	AInfoDocElement setHeader(Header header) {
+		this.header = header;
+		return this;
+	}
+
+	public int getDepth() {
+		if (header == null) return 1;
+		return header.getDepth() + 1;
+	}
+
+	public Header getHeader() {
+		return header;
+	}
 
 }

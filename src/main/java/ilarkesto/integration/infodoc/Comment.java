@@ -21,14 +21,14 @@ public class Comment extends AInfoDocElement {
 	private String text;
 
 	public Comment(String text) {
-		super();
 		this.text = text;
 	}
 
 	@Override
 	public String toHtml(AHtmlContext context, AReferenceResolver referenceResolver) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("\n<p style='" + context.getCommentStyle() + "'>").append(Str.toHtml(text, true)).append("</p>\n");
+		sb.append("\n<p style='" + context.getElementDepthStyle(getDepth()) + context.getCommentStyle() + "'>")
+				.append(Str.toHtml(text, true)).append("</p>\n");
 		return sb.toString();
 	}
 

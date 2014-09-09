@@ -21,7 +21,6 @@ public class Reference extends AInfoDocElement {
 	private String ref;
 
 	public Reference(String ref) {
-		super();
 		this.ref = ref;
 	}
 
@@ -31,7 +30,10 @@ public class Reference extends AInfoDocElement {
 		if (Str.isBlank(title)) title = "@" + ref;
 		String href = context.getHref(ref);
 		StringBuilder sb = new StringBuilder();
-		sb.append("\n<p><a href='").append(href).append("'>").append(Str.toHtml(title, true)).append("</a></p>\n");
+		sb.append(
+			"\n<p style='" + context.getElementDepthStyle(getDepth()) + " color:" + context.getColor(getDepth())
+					+ "'><a href='").append(href).append("' style='color:" + context.getColor(getDepth()) + "'>")
+				.append(Str.toHtml(title, true)).append("</a></p>\n");
 		return sb.toString();
 	}
 

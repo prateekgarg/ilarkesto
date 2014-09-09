@@ -21,14 +21,15 @@ public class Paragraph extends AInfoDocElement {
 	private String text;
 
 	public Paragraph(String text) {
-		super();
 		this.text = text;
 	}
 
 	@Override
 	public String toHtml(AHtmlContext context, AReferenceResolver referenceResolver) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("\n<p>").append(Str.toHtml(text, true)).append("</p>\n");
+		sb.append(
+			"\n<p style='" + context.getElementDepthStyle(getDepth()) + " color:" + context.getColor(getDepth())
+					+ ";'>").append(Str.toHtml(text, true)).append("</p>\n");
 		return sb.toString();
 	}
 
