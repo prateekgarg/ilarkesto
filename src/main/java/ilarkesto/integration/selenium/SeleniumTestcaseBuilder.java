@@ -113,6 +113,10 @@ public class SeleniumTestcaseBuilder {
 		return title;
 	}
 
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
