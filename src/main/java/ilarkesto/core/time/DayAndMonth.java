@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -49,7 +49,8 @@ public class DayAndMonth implements Comparable<DayAndMonth>, Serializable, Forma
 
 	public DayAndMonth(String dayAndMonthString) {
 		Args.assertNotNull(dayAndMonthString, "dayAndMonthString");
-		if (dayAndMonthString.length() != 5) throw new RuntimeException("Illegal day-and-month format: " + dayAndMonthString);
+		if (dayAndMonthString.length() != 5)
+			throw new RuntimeException("Illegal day-and-month format: " + dayAndMonthString);
 
 		int m = Integer.parseInt(dayAndMonthString.substring(0, 2));
 		int d = Integer.parseInt(dayAndMonthString.substring(3, 5));
@@ -60,6 +61,12 @@ public class DayAndMonth implements Comparable<DayAndMonth>, Serializable, Forma
 
 	public DayAndMonth(long millis) {
 		this(Tm.createDate(millis));
+	}
+
+	public DayAndMonth(Date date) {
+		Args.assertNotNull(date, "date");
+		this.month = date.month;
+		this.day = date.day;
 	}
 
 	// ---

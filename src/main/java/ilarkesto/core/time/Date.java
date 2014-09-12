@@ -246,6 +246,10 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 		return year;
 	}
 
+	public final DayAndMonth getDayAndMonth() {
+		return new DayAndMonth(this);
+	}
+
 	@Override
 	public final int hashCode() {
 		if (hashCode == 0) {
