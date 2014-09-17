@@ -118,6 +118,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	@Override
 	public final void sendToClient(Collection<? extends E> entities) {
 		if (entities == null) return;
+		resolveSlavesWarningPosted = false;
 		RuntimeTracker rt = new RuntimeTracker();
 		for (E entity : entities) {
 			sendToClientInternal(entity);
@@ -126,6 +127,8 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 			log.warn("sendToClient(Collection) took", rt.getRuntimeFormated(), "->", entities.size(), entities);
 		}
 	}
+
+	boolean resolveSlavesWarningPosted;
 
 	private synchronized void sendToClientInternal(E entity) {
 		if (entity == null) return;
@@ -144,7 +147,12 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 			throw new PermissionDeniedException(entity + " is not visible in " + getSession());
 
 		Set<TransferableEntity> all = new HashSet<TransferableEntity>();
+		RuntimeTracker rt = new RuntimeTracker();
 		resolveSlaves(entity, all);
+		if (!resolveSlavesWarningPosted && rt.getRuntime() > 200) {
+			log.warn("resolveSlaves() took", rt.getRuntimeFormated(), "->", toString(entity), "->", all);
+			resolveSlavesWarningPosted = true;
+		}
 
 		for (TransferableEntity e : all) {
 			addToNextData((E) e);
