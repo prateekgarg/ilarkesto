@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -17,6 +17,7 @@ package ilarkesto.gwt.server;
 import ilarkesto.base.PermissionDeniedException;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityDatabase;
@@ -30,6 +31,7 @@ import ilarkesto.persistence.TransactionService;
 import ilarkesto.webapp.AWebSession;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -103,7 +105,29 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	}
 
 	@Override
-	public synchronized void sendToClient(E entity) {
+	public void sendToClient(E entity) {
+		if (entity == null) return;
+		RuntimeTracker rt = new RuntimeTracker();
+		sendToClientInternal(entity);
+		if (rt.getRuntime() > 1000) {
+			log.warn("sendToClient(Entity) took", rt.getRuntimeFormated(), "->", entity.getClass().getSimpleName(),
+				entity.getId(), entity.toString());
+		}
+	}
+
+	@Override
+	public final void sendToClient(Collection<? extends E> entities) {
+		if (entities == null) return;
+		RuntimeTracker rt = new RuntimeTracker();
+		for (E entity : entities) {
+			sendToClientInternal(entity);
+		}
+		if (rt.getRuntime() > 3000) {
+			log.warn("sendToClient(Collection) took", rt.getRuntimeFormated(), "->", entities.size(), entities);
+		}
+	}
+
+	private synchronized void sendToClientInternal(E entity) {
 		if (entity == null) return;
 
 		if (transactionService != null && !transactionService.isPersistent(entity.getId())) {
@@ -125,6 +149,18 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		for (TransferableEntity e : all) {
 			addToNextData((E) e);
 		}
+	}
+
+	public final void sendToClientIfTracking(Collection<? extends E> entities) {
+		if (entities == null) return;
+		for (E entity : entities) {
+			sendToClientIfTracking(entity);
+		}
+	}
+
+	@Override
+	public final void sendToClient(E... entities) {
+		sendToClient(Arrays.asList(entities));
 	}
 
 	public synchronized void deleteFromClient(String entityId) {
@@ -171,29 +207,6 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	private String toString(E entity) {
 		if (entity == null) return "<null>";
 		return Str.getSimpleName(entity.getClass()) + " " + entity.getId() + " " + entity.toString();
-	}
-
-	@Override
-	public final void sendToClient(E... entities) {
-		if (entities == null) return;
-		for (E entity : entities) {
-			sendToClient(entity);
-		}
-	}
-
-	@Override
-	public final void sendToClient(Collection<? extends E> entities) {
-		if (entities == null) return;
-		for (E entity : entities) {
-			sendToClient(entity);
-		}
-	}
-
-	public final void sendToClientIfTracking(Collection<? extends E> entities) {
-		if (entities == null) return;
-		for (E entity : entities) {
-			sendToClientIfTracking(entity);
-		}
 	}
 
 	public final ADataTransferObject popNextData() {
