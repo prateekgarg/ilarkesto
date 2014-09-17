@@ -22,6 +22,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityDatabase;
 import ilarkesto.core.persistance.Transaction;
+import ilarkesto.core.persistance.TransferBus;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
@@ -34,10 +35,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 public abstract class AGwtConversation<S extends AWebSession, E extends TransferableEntity> implements
@@ -118,7 +117,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	@Override
 	public final void sendToClient(Collection<? extends E> entities) {
 		if (entities == null) return;
-		resolveSlavesWarningPosted = false;
+		transferBusWarningPosted = false;
 		RuntimeTracker rt = new RuntimeTracker();
 		for (E entity : entities) {
 			sendToClientInternal(entity);
@@ -128,7 +127,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		}
 	}
 
-	boolean resolveSlavesWarningPosted;
+	boolean transferBusWarningPosted;
 
 	private synchronized void sendToClientInternal(E entity) {
 		if (entity == null) return;
@@ -146,15 +145,16 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		if (!isEntityVisible(entity))
 			throw new PermissionDeniedException(entity + " is not visible in " + getSession());
 
-		Set<TransferableEntity> all = new HashSet<TransferableEntity>();
+		TransferBus transferBus = new TransferBus();
 		RuntimeTracker rt = new RuntimeTracker();
-		resolveSlaves(entity, all);
-		if (!resolveSlavesWarningPosted && rt.getRuntime() > 200) {
-			log.warn("resolveSlaves() took", rt.getRuntimeFormated(), "->", toString(entity), "->", all);
-			resolveSlavesWarningPosted = true;
+		transferBus.add(entity);
+		if (!transferBusWarningPosted && rt.getRuntime() > 200) {
+			log.warn("Collecting passengers took", rt.getRuntimeFormated(), "->", toString(entity), "->",
+				transferBus.getEntities());
+			transferBusWarningPosted = true;
 		}
 
-		for (TransferableEntity e : all) {
+		for (TransferableEntity e : transferBus.getEntities()) {
 			addToNextData((E) e);
 		}
 	}
@@ -180,14 +180,6 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		if (entity == null) return;
 		if (!isAvailableOnClient(entity)) return;
 		sendToClient(entity);
-	}
-
-	private void resolveSlaves(TransferableEntity entity, Set<TransferableEntity> all) {
-		if (!all.add(entity)) return;
-		for (TransferableEntity slave : entity.getPassengers()) {
-			if (slave == null) continue;
-			resolveSlaves(slave, all);
-		}
 	}
 
 	private void addToNextData(E entity) {

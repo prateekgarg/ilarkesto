@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -18,12 +18,12 @@ import ilarkesto.auth.AUser;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Utl;
 import ilarkesto.core.persistance.Persistence;
+import ilarkesto.core.persistance.TransferBus;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.id.Identifiable;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,9 +143,7 @@ public abstract class AEntity extends ADatob implements Identifiable, Iconized, 
 	}
 
 	@Override
-	public <E extends TransferableEntity> Set<E> getPassengers() {
-		return Collections.emptySet();
-	}
+	public <E extends TransferableEntity> void collectPassengers(TransferBus bus) {}
 
 	@Override
 	public final boolean equals(Object o) {

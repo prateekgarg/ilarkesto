@@ -98,9 +98,7 @@ public class AEntity implements Serializable, TransferableEntity {
 	protected void onEnsureIntegrity() {}
 
 	@Override
-	public Set<AEntity> getPassengers() {
-		return new HashSet<AEntity>();
-	}
+	public void collectPassengers(TransferBus ret) {}
 
 	/**
 	 * Gets called when the master entity is deleted.

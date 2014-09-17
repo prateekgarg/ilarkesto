@@ -97,7 +97,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			}
 			writeQueryBaseclass();
 			writePredicates();
-			writeGetPassengers();
+			writeCollectPassengers();
 			writeGetReferencedEntities();
 		}
 
@@ -325,7 +325,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 	}
 
-	private void writeGetPassengers() {
+	private void writeCollectPassengers() {
 		// ln();
 		// annotationOverride();
 		// String setClass = "Set<" + ilarkesto.core.persistance.AEntity.class.getName() + ">";
