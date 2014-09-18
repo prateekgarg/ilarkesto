@@ -38,6 +38,10 @@ public abstract class AHtmlContext {
 		return "black";
 	}
 
+	public String getIndentationPrefix(AInfoDocElement element) {
+		return AItemCounter.get(element.getDepth()).getNumber(element.getIndexInDepth()) + " ";
+	}
+
 	public abstract String getHref(String ref);
 
 }

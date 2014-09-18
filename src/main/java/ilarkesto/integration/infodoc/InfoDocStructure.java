@@ -24,6 +24,25 @@ public class InfoDocStructure {
 	private List<AInfoDocElement> elements = new ArrayList<AInfoDocElement>();
 	private Header lastHeader;
 
+	public int getIndexInDepth(AInfoDocElement element) {
+		int i = elements.indexOf(element);
+		if (i <= 0) return 0;
+
+		int depth = element.getDepth();
+
+		int index = 0;
+		while (i > 0) {
+			i--;
+			AInfoDocElement e = elements.get(i);
+			if (e instanceof Comment) continue;
+			int eDepth = e.getDepth();
+			if (eDepth > depth) continue;
+			if (eDepth < depth) break;
+			index++;
+		}
+		return index;
+	}
+
 	private void add(AInfoDocElement element) {
 		if (element == null) return;
 		elements.add(element);
@@ -55,27 +74,27 @@ public class InfoDocStructure {
 			if (idx > 0) {
 				String element = text.substring(0, idx);
 				text = text.substring(idx + 2).trim();
-				ret.add(parseElement(element));
+				ret.add(parseElement(ret, element));
 			} else {
-				ret.add(parseElement(text));
+				ret.add(parseElement(ret, text));
 				text = "";
 			}
 		}
 
-		ret.add(parseElement(text));
+		ret.add(parseElement(ret, text));
 
 		return ret;
 	}
 
-	private static AInfoDocElement parseElement(String text) {
+	private static AInfoDocElement parseElement(InfoDocStructure strucutre, String text) {
 		if (Str.isBlank(text)) return null;
-		if (text.startsWith("# ")) return new Comment(text.substring(2).trim());
-		if (text.startsWith("@")) return new Reference(text.substring(1).trim());
-		if (text.startsWith("! ")) return new Header(text.substring(2).trim(), 1);
-		if (text.startsWith("!! ")) return new Header(text.substring(3).trim(), 2);
-		if (text.startsWith("!!! ")) return new Header(text.substring(4).trim(), 3);
-		if (text.startsWith("!!!! ")) return new Header(text.substring(5).trim(), 4);
-		return new Paragraph(text);
+		if (text.startsWith("# ")) return new Comment(strucutre, text.substring(2).trim());
+		if (text.startsWith("@")) return new Reference(strucutre, text.substring(1).trim());
+		if (text.startsWith("! ")) return new Header(strucutre, text.substring(2).trim(), 0);
+		if (text.startsWith("!! ")) return new Header(strucutre, text.substring(3).trim(), 1);
+		if (text.startsWith("!!! ")) return new Header(strucutre, text.substring(4).trim(), 2);
+		if (text.startsWith("!!!! ")) return new Header(strucutre, text.substring(5).trim(), 3);
+		return new Paragraph(strucutre, text);
 	}
 
 	public List<AInfoDocElement> getElements() {

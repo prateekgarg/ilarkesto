@@ -20,7 +20,8 @@ public class Comment extends AInfoDocElement {
 
 	private String text;
 
-	public Comment(String text) {
+	public Comment(InfoDocStructure structure, String text) {
+		super(structure);
 		this.text = text;
 	}
 

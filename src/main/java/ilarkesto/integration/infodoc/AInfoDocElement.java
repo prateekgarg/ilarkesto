@@ -16,9 +16,19 @@ package ilarkesto.integration.infodoc;
 
 public abstract class AInfoDocElement {
 
+	private InfoDocStructure structure;
 	private Header header;
 
 	public abstract String toHtml(AHtmlContext context, AReferenceResolver referenceResolver);
+
+	public AInfoDocElement(InfoDocStructure structure) {
+		super();
+		this.structure = structure;
+	}
+
+	public final int getIndexInDepth() {
+		return structure.getIndexInDepth(this);
+	}
 
 	AInfoDocElement setHeader(Header header) {
 		this.header = header;
@@ -26,8 +36,8 @@ public abstract class AInfoDocElement {
 	}
 
 	public int getDepth() {
-		if (header == null) return 1;
-		return header.getDepth() + 1;
+		if (header == null) return 0;
+		return header.getDepth();
 	}
 
 	public Header getHeader() {

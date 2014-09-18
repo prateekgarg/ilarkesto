@@ -21,8 +21,8 @@ public class Header extends AInfoDocElement {
 	private String text;
 	private int depth;
 
-	public Header(String text, int depth) {
-		super();
+	public Header(InfoDocStructure structure, String text, int depth) {
+		super(structure);
 		this.text = text;
 		this.depth = depth;
 	}
@@ -34,12 +34,12 @@ public class Header extends AInfoDocElement {
 		sb.append("\n<p style='" + context.getElementDepthStyle(getDepth()) + " color:" + context.getColor(getDepth())
 				+ ";'>");
 		if (ref == null) {
-			sb.append(Str.toHtml(text, true));
+			sb.append(Str.toHtml(context.getIndentationPrefix(this) + text, true));
 		} else {
 			String title = referenceResolver.getTitle(ref);
 			String href = context.getHref(ref);
 			sb.append("&nbsp;<a href='").append(href).append("' style='color:" + context.getColor(getDepth()) + ";'>")
-					.append(Str.toHtml(title, true)).append("</a>");
+					.append(context.getIndentationPrefix(this) + Str.toHtml(title, true)).append("</a>");
 		}
 		sb.append("</p>\n");
 		return sb.toString();

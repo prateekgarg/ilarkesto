@@ -20,7 +20,8 @@ public class Reference extends AInfoDocElement {
 
 	private String ref;
 
-	public Reference(String ref) {
+	public Reference(InfoDocStructure structure, String ref) {
+		super(structure);
 		this.ref = ref;
 	}
 
@@ -33,7 +34,7 @@ public class Reference extends AInfoDocElement {
 		sb.append(
 			"\n<p style='" + context.getElementDepthStyle(getDepth()) + " color:" + context.getColor(getDepth())
 					+ "'><a href='").append(href).append("' style='color:" + context.getColor(getDepth()) + "'>")
-				.append(Str.toHtml(title, true)).append("</a></p>\n");
+				.append(context.getIndentationPrefix(this) + Str.toHtml(title, true)).append("</a></p>\n");
 		return sb.toString();
 	}
 
