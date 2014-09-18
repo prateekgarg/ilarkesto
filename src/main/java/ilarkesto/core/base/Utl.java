@@ -35,6 +35,16 @@ public class Utl {
 	@Deprecated
 	public static final BigDecimal BD_HUNDRED = new BigDecimal(100);
 
+	public static <T> HashSet<T> mergeIntoHashSet(Collection<T>... collections) {
+		HashSet<T> ret = new HashSet<T>();
+		if (collections == null) return ret;
+		for (Collection<T> collection : collections) {
+			if (collection == null) continue;
+			ret.addAll(collection);
+		}
+		return ret;
+	}
+
 	public static <T> boolean addIfNotNull(Collection<T> collection, T element) {
 		if (element == null) return false;
 		return collection.add(element);
