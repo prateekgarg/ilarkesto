@@ -97,11 +97,37 @@ public class InfoDocStructure {
 		if (Str.isBlank(text)) return null;
 		if (text.startsWith("# ")) return new Comment(strucutre, text.substring(2).trim());
 		if (text.startsWith("@")) return new Reference(strucutre, text.substring(1).trim());
-		if (text.startsWith("! ")) return new Header(strucutre, text.substring(2).trim(), 0);
-		if (text.startsWith("!! ")) return new Header(strucutre, text.substring(3).trim(), 1);
-		if (text.startsWith("!!! ")) return new Header(strucutre, text.substring(4).trim(), 2);
-		if (text.startsWith("!!!! ")) return new Header(strucutre, text.substring(5).trim(), 3);
+
+		int headerDepth = getHeaderDepth(text);
+		if (headerDepth >= 0) return new Header(strucutre, text.substring(text.indexOf(' ')).trim(), headerDepth);
+
 		return new Paragraph(strucutre, text);
+	}
+
+	private static int getHeaderDepth(String s) {
+		s = s.trim();
+		s = Str.cutTo(s, " ");
+		if (s == null) return -1;
+
+		if (s.equals("!")) return 0;
+		if (s.equals("!!")) return 1;
+		if (s.equals("!!!")) return 2;
+		if (s.equals("!!!!")) return 3;
+
+		if (s.length() < 2) return -1;
+
+		if (s.endsWith(".")) {
+			if (Character.isDigit(s.charAt(0))) return 2;
+			return 1;
+		}
+
+		if (s.endsWith(")")) {
+			if (Character.isUpperCase(s.charAt(0))) return 0;
+
+			return (s.length() / 2) + 2;
+		}
+
+		return -1;
 	}
 
 	public List<AInfoDocElement> getElements() {

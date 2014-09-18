@@ -34,12 +34,13 @@ public class Header extends AInfoDocElement {
 		sb.append("\n<p style='" + context.getElementDepthStyle(getDepth()) + " color:" + context.getColor(getDepth())
 				+ ";'>");
 		if (ref == null) {
-			sb.append(Str.toHtml(context.getIndentationPrefix(this) + text, true));
+			sb.append(context.getIndentationPrefix(this)).append(Str.toHtml(text, true));
 		} else {
 			String title = referenceResolver.getTitle(ref);
 			String href = context.getHref(ref);
-			sb.append("&nbsp;<a href='").append(href).append("' style='color:" + context.getColor(getDepth()) + ";'>")
-					.append(context.getIndentationPrefix(this) + Str.toHtml(title, true)).append("</a>");
+			sb.append(context.getIndentationPrefix(this)).append("&nbsp;<a href='").append(href)
+					.append("' style='color:" + context.getColor(getDepth()) + ";'>").append(Str.toHtml(title, true))
+					.append("</a>");
 		}
 		sb.append("</p>\n");
 		return sb.toString();

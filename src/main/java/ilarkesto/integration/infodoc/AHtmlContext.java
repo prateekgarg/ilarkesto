@@ -40,7 +40,8 @@ public abstract class AHtmlContext {
 
 	public String getIndentationPrefix(AInfoDocElement element) {
 		if (!element.getStructure().isPrefixingRequired()) return "";
-		return AItemCounter.get(element.getDepth()).getNumber(element.getIndexInDepth()) + " ";
+		return "<span style='color:grey;'>" + AItemCounter.get(element.getDepth()).getNumber(element.getIndexInDepth())
+				+ "</span> ";
 	}
 
 	public abstract String getHref(String ref);

@@ -25,15 +25,16 @@ public class InfoDocStructureTest extends ATest {
 	@Test
 	public void parse1() {
 		InfoDocStructure doc = InfoDocStructure.parse("Absatz mit einer Zeile.\n\n" + "Absatz mit\nzwei Zeilen.\n\n"
-				+ "# Kommentar\n\n" + "! Überschrift\n\n" + "@ref\n\n");
+				+ "# Kommentar\n\n" + "! Überschrift\n\n" + "@ref\n\n" + "aaa))) x\n\n");
 		List<AInfoDocElement> elements = doc.getElements();
-		assertSize(elements, 5);
+		assertSize(elements, 6);
 
 		assertEquals(elements.get(0).toString(), "Absatz mit einer Zeile.");
 		assertEquals(elements.get(1).toString(), "Absatz mit\nzwei Zeilen.");
 		assertEquals(elements.get(2).toString(), "Kommentar");
 		assertEquals(elements.get(3).toString(), "Überschrift");
 		assertEquals(elements.get(4).toString(), "ref");
+		assertEquals(elements.get(5).toString(), "x");
 	}
 
 	@Test
@@ -44,13 +45,26 @@ public class InfoDocStructureTest extends ATest {
 	}
 
 	@Test
-	public void depth() {
-		InfoDocStructure doc = InfoDocStructure.parse("! 1\n\n" + "! 2\n\n" + "!! 2.1\n\n" + "text\n\n");
+	public void parse3() {
+		InfoDocStructure doc = InfoDocStructure.parse("A) 1\n\n" + "B) 2\n\n" + "I. 2.1\n\n" + "1. 2.1.1\n\n"
+				+ "a) 2.1.1.1\n\n" + "aa))\n\n" + "aaa))) x\n\n");
 		List<AInfoDocElement> elements = doc.getElements();
 		assertEquals(elements.get(0).getDepth(), 0);
 		assertEquals(elements.get(1).getDepth(), 0);
 		assertEquals(elements.get(2).getDepth(), 1);
 		assertEquals(elements.get(3).getDepth(), 2);
+		assertEquals(elements.get(4).getDepth(), 3);
+	}
+
+	@Test
+	public void depth() {
+		InfoDocStructure doc = InfoDocStructure.parse("! 1\n\n" + "! 2\n\n" + "!! 2.1\n\n" + "text\n\n" + "!! 2.2\n\n");
+		List<AInfoDocElement> elements = doc.getElements();
+		assertEquals(elements.get(0).getDepth(), 0);
+		assertEquals(elements.get(1).getDepth(), 0);
+		assertEquals(elements.get(2).getDepth(), 1);
+		assertEquals(elements.get(3).getDepth(), 2);
+		assertEquals(elements.get(4).getDepth(), 1);
 	}
 
 	@Test
