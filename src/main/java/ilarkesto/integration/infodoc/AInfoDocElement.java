@@ -37,11 +37,15 @@ public abstract class AInfoDocElement {
 
 	public int getDepth() {
 		if (header == null) return 0;
-		return header.getDepth();
+		return header.getDepth() + 1;
 	}
 
 	public Header getHeader() {
 		return header;
+	}
+
+	public InfoDocStructure getStructure() {
+		return structure;
 	}
 
 }

@@ -44,12 +44,23 @@ public class InfoDocStructureTest extends ATest {
 	}
 
 	@Test
+	public void depth() {
+		InfoDocStructure doc = InfoDocStructure.parse("! 1\n\n" + "! 2\n\n" + "!! 2.1\n\n" + "text\n\n");
+		List<AInfoDocElement> elements = doc.getElements();
+		assertEquals(elements.get(0).getDepth(), 0);
+		assertEquals(elements.get(1).getDepth(), 0);
+		assertEquals(elements.get(2).getDepth(), 1);
+		assertEquals(elements.get(3).getDepth(), 2);
+	}
+
+	@Test
 	public void index() {
-		InfoDocStructure doc = InfoDocStructure.parse("! 1\n\n" + "! 2\n\n" + "!! 2.1\n\n");
+		InfoDocStructure doc = InfoDocStructure.parse("! 1\n\n" + "! 2\n\n" + "!! 2.1\n\n" + "text\n\n");
 		List<AInfoDocElement> elements = doc.getElements();
 		assertEquals(elements.get(0).getIndexInDepth(), 0);
 		assertEquals(elements.get(1).getIndexInDepth(), 1);
 		assertEquals(elements.get(2).getIndexInDepth(), 0);
+		assertEquals(elements.get(3).getIndexInDepth(), 0);
 	}
 
 }
