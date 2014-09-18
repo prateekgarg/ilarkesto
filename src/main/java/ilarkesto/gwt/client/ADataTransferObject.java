@@ -17,6 +17,7 @@ package ilarkesto.gwt.client;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -85,6 +86,7 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 	}
 
 	public final Collection<Map<String, String>> getEntities() {
+		if (entities == null) return Collections.emptyList();
 		return entities.values();
 	}
 
@@ -99,6 +101,7 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 	}
 
 	public final Set<String> getDeletedEntities() {
+		if (deletedEntities == null) return Collections.emptySet();
 		return deletedEntities;
 	}
 
