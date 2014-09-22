@@ -54,10 +54,20 @@ public abstract class AAction implements Command, ClickHandler {
 			try {
 				onExecute();
 				transaction.commit();
+			} catch (Exception ex) {
+				try {
+					handleException(ex);
+				} catch (Exception ex1) {
+					throw new RuntimeException(Str.getSimpleName(getClass()) + ".onExecute() failed", ex1);
+				}
 			} finally {
 				transaction.setAutoCommit(true);
 			}
 		}
+	}
+
+	protected void handleException(Exception ex) throws Exception {
+		throw ex;
 	}
 
 	public String getTargetHistoryToken() {

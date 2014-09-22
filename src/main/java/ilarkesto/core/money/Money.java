@@ -248,7 +248,14 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 	public static Money computeSum(Money... moneys) throws MultipleCurrenciesException {
 		if (moneys.length == 0) throw new IllegalArgumentException("At least one money required for computing a sum.");
 		if (moneys.length == 1) return moneys[0];
-		return computeSum(moneys[0].currency, moneys);
+
+		String currency = null;
+		for (int i = 0; currency == null && i < moneys.length; i++) {
+			if (moneys[i] == null) continue;
+			currency = moneys[i].currency;
+		}
+		if (currency == null) return null;
+		return computeSum(currency, moneys);
 	}
 
 	public static Money computeSum(String currency, Money... summands) throws MultipleCurrenciesException {

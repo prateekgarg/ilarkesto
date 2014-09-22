@@ -81,6 +81,12 @@ public class Localizer {
 		int decimalSeparatorIdx = ret.indexOf(decimalSeparator);
 		if (decimalSeparatorIdx < 0) return ret;
 
+		boolean negative = ret.startsWith("-");
+		if (negative) {
+			ret = ret.substring(1);
+			decimalSeparatorIdx--;
+		}
+
 		if (decimalSeparatorIdx >= 4) {
 			ret = Str.insert(ret, decimalSeparatorIdx - 3, getThousandsSeparator());
 			if (decimalSeparatorIdx >= 7) {
@@ -94,8 +100,7 @@ public class Localizer {
 			}
 		}
 
-		// 1000,00
-
+		if (negative) return "-" + ret;
 		return ret;
 	}
 
