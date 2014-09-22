@@ -14,7 +14,7 @@
  */
 package ilarkesto.integration.max.state;
 
-import ilarkesto.integration.max.Max;
+import ilarkesto.integration.max.internet.Max;
 
 import java.util.Date;
 

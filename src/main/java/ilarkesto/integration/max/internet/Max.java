@@ -12,12 +12,17 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.max;
+package ilarkesto.integration.max.internet;
 
-public class LoginFailedException extends RuntimeException {
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-	public LoginFailedException(String url, String user, String cause) {
-		super("Login as " + user + " on " + url + " failed. " + cause);
+public class Max {
+
+	public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
+	public static String formatDateTime(Date date) {
+		if (date == null) return null;
+		return new SimpleDateFormat(DATE_TIME_PATTERN).format(date);
 	}
-
 }

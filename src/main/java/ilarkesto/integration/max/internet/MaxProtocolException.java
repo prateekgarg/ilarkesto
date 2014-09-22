@@ -12,12 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.max;
+package ilarkesto.integration.max.internet;
 
-public class MaxCommandFailedException extends RuntimeException {
+public class MaxProtocolException extends RuntimeException {
 
-	public MaxCommandFailedException(String message) {
-		super(message);
+	public MaxProtocolException(String message, String data) {
+		super(message + "\nDATA:\n");
 	}
 
 }

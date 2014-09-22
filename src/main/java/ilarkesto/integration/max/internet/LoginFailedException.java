@@ -12,12 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.max;
+package ilarkesto.integration.max.internet;
 
-public class MaxProtocolException extends RuntimeException {
+public class LoginFailedException extends RuntimeException {
 
-	public MaxProtocolException(String message, String data) {
-		super(message + "\nDATA:\n");
+	public LoginFailedException(String url, String user, String cause) {
+		super("Login as " + user + " on " + url + " failed. " + cause);
 	}
 
 }

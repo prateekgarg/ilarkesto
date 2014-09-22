@@ -1,6 +1,7 @@
-package ilarkesto.integration.max;
+package ilarkesto.integration.max.internet;
 
 import ilarkesto.core.time.Weekday;
+import ilarkesto.integration.max.internet.MaxSession;
 import ilarkesto.integration.max.state.MaxCubeState;
 import ilarkesto.integration.max.state.MaxDevice;
 import ilarkesto.integration.max.state.MaxHouse;

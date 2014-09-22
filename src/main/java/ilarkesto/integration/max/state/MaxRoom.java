@@ -22,6 +22,7 @@ public class MaxRoom {
 
 	private int id;
 	private String name;
+
 	private int order;
 	private int boostDuration;
 	private int boostValveAngle;
