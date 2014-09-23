@@ -16,9 +16,20 @@ package ilarkesto.core.base;
 
 import ilarkesto.testng.ATest;
 
+import java.util.List;
+
 import org.testng.annotations.Test;
 
 public class StrTest extends ATest {
+
+	@Test
+	public void parseCommaSeparatedString() {
+		List<String> ret = Str.parseCommaSeparatedString("a,b, c", true);
+		assertSize(ret, 3);
+		assertEquals(ret.get(0), "a");
+		assertEquals(ret.get(1), "b");
+		assertEquals(ret.get(2), "c");
+	}
 
 	@Test
 	public void isEmail() {
