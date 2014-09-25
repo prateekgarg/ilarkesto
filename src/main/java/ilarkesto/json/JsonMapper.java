@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -193,6 +193,21 @@ public class JsonMapper {
 			}
 		};
 
+		public Object convertStringForField(Field field, String s) {
+			Class<?> fieldType = field.getType();
+			if (fieldType.equals(Date.class)) {
+				return new Date(s);
+			} else if (fieldType.equals(Time.class)) {
+				return new Time(s);
+			} else if (fieldType.equals(DateAndTime.class)) {
+				return new DateAndTime(s);
+			} else if (fieldType.equals(DayAndMonth.class)) {
+				return new DayAndMonth(s);
+			} else if (fieldType.equals(Money.class)) { return new Money(s); }
+
+			return s;
+		}
+
 	}
 
 	private static class ObjectMappingContentHandler<T> implements ContentHandler {
@@ -331,18 +346,7 @@ public class JsonMapper {
 				String s = (String) value;
 				Field field = Reflect.getDeclaredField(object.getClass(), currentAttributeName);
 				if (field != null) {
-					Class<?> fieldType = field.getType();
-					if (fieldType.equals(Date.class)) {
-						value = new Date(s);
-					} else if (fieldType.equals(Time.class)) {
-						value = new Time(s);
-					} else if (fieldType.equals(DateAndTime.class)) {
-						value = new DateAndTime(s);
-					} else if (fieldType.equals(DayAndMonth.class)) {
-						value = new DayAndMonth(s);
-					} else if (fieldType.equals(Money.class)) {
-						value = new Money(s);
-					}
+					value = typeResolver.convertStringForField(field, (String) value);
 				}
 			}
 

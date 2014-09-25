@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -40,6 +40,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
+
+	public static String persistenceUtil = Persistence.class.getName();
 
 	public DatobGenerator(D bean) {
 		super(bean);
@@ -132,8 +134,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 			}
 			ln("            if (property.equals(\"" + propertyName + "\")) update"
-					+ Str.uppercaseFirstLetter(propertyName) + "(" + Persistence.class.getName() + ".parseProperty"
-					+ parseType + "(value));");
+					+ Str.uppercaseFirstLetter(propertyName) + "(" + persistenceUtil + ".parseProperty" + parseType
+					+ "(value));");
 		}
 		ln("        }");
 		ln("    }");
@@ -406,8 +408,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("            updateLastModified();");
 		if (p.isModified()) {
 			String fieldName = getFieldName(p);
-			ln("            fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", "
-					+ Persistence.class.getName() + ".propertyAsString(" + fieldName + "));");
+			ln("            fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", " + persistenceUtil
+					+ ".propertyAsString(" + fieldName + "));");
 		}
 	}
 
@@ -444,7 +446,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			if (p.isCollection()) {
 				ln("        if (" + p.getName() + " == null) " + p.getName() + " = Collections.emptyList();");
 				String prefix = "";
-				if (!isLegacyBean(bean)) prefix = Persistence.class.getName() + ".";
+				if (!isLegacyBean(bean)) prefix = persistenceUtil + ".";
 				String suffix = p instanceof ReferenceListPropertyModel ? "AsList" : "AsSet";
 				ln("        " + p.getCollectionType() + "<String> ids = " + prefix + "getIds" + suffix + "("
 						+ p.getName() + ");");
