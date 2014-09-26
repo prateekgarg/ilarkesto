@@ -14,10 +14,12 @@
  */
 package ilarkesto.base;
 
+import ilarkesto.core.base.Str.Formatable;
+
 /**
  * Data type for storing amount of bytes.
  */
-public class Bytes implements Comparable<Bytes> {
+public class Bytes implements Comparable<Bytes>, Formatable {
 
 	private long bytes;
 
@@ -27,6 +29,11 @@ public class Bytes implements Comparable<Bytes> {
 
 	public long toLong() {
 		return bytes;
+	}
+
+	@Override
+	public String format() {
+		return toRoundedString();
 	}
 
 	@Override

@@ -24,6 +24,8 @@ public class EntityCache {
 
 	private Map<String, AEntity> entitiesById = new HashMap<String, AEntity>();
 
+	// TODO performance optimization: entitiesByType.byId (inheritence!)
+
 	public Collection<AEntity> getAll() {
 		return entitiesById.values();
 	}
@@ -105,6 +107,21 @@ public class EntityCache {
 
 	public boolean isEmpty() {
 		return entitiesById.isEmpty();
+	}
+
+	public final Map<Class, Integer> countEntities() {
+		Map<Class, Integer> countsByType = new HashMap<Class, Integer>();
+		for (AEntity entity : getAll()) {
+			Class type = entity.getClass();
+			Integer count = countsByType.get(type);
+			if (count == null) {
+				count = 1;
+			} else {
+				count = count + 1;
+			}
+			countsByType.put(type, count);
+		}
+		return countsByType;
 	}
 
 }
