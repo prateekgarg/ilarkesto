@@ -65,10 +65,18 @@ public class Localizer {
 	}
 
 	public String format(Number value, boolean thousandsSeparator) {
+		return format(value, thousandsSeparator, null);
+	}
+
+	public String format(Number value, boolean thousandsSeparator, Integer scale) {
 		if (value == null) return null;
 		String ret;
 		if (value instanceof BigDecimal) {
-			ret = ((BigDecimal) value).toPlainString();
+			BigDecimal bd = (BigDecimal) value;
+			if (scale != null && bd.scale() != scale) {
+				bd = bd.setScale(scale);
+			}
+			ret = bd.toPlainString();
 		} else {
 			ret = value.toString();
 		}
