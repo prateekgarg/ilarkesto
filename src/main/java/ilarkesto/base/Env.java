@@ -91,7 +91,7 @@ public abstract class Env {
 
 	public static Env get() {
 		if (env == null) {
-			env = Sys.isWindows() ? new Windows() : new Linux();
+			env = Sys.isWindows() ? new Windows() : (Sys.isMac() ? new Mac() : new Linux());
 		}
 		return env;
 	}
@@ -270,6 +270,26 @@ public abstract class Env {
 				applicationsDir = f;
 			}
 			return applicationsDir;
+		}
+
+	}
+
+	static class Mac extends Linux {
+
+		@Override
+		public long getFileSize(File file) {
+			if (file.isFile()) return file.length();
+			if (file.isDirectory()) {
+				long size = 0;
+				File[] subfiles = file.listFiles();
+				if (subfiles != null) {
+					for (File f : subfiles) {
+						size += getFileSize(f);
+					}
+				}
+				return size;
+			}
+			return 0;
 		}
 
 	}
