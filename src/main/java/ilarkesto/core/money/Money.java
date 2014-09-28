@@ -151,8 +151,11 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 		return new Money(value.setScale(2, RoundingMode.HALF_UP), currency);
 	}
 
-	@Deprecated
 	public Money multiplyAndRound(float factor) {
+		return new Money(0, Math.round((cent * factor)), currency);
+	}
+
+	public Money multiplyAndRound(double factor) {
 		return new Money(0, Math.round((cent * factor)), currency);
 	}
 
