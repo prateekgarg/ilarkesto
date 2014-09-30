@@ -45,7 +45,7 @@ public class TestDe {
 	public static final String URL_BASE = "https://www.test.de";
 	public static final String URL_TEST_INDEX = URL_BASE + "/tests/";
 	public static final String URL_LOGIN = URL_BASE + "/meintest/login/default.ashx";
-	public static final String URL_LOGOUT = URL_BASE + "/?logout=true";
+	public static final String URL_LOGOUT = URL_BASE + "/service/logout/";
 
 	public static HttpDownloader http = new ApacheHttpDownloader();
 	private static final String charset = IO.UTF_8;
@@ -86,9 +86,9 @@ public class TestDe {
 			if (error.contains("<p>")) error = Str.cutFromTo(error, "<p>", "</p>");
 			throw new RuntimeException(error);
 		}
-		if (!data.contains("logout=true")) {
+		if (!data.contains("/service/logout/")) {
 			log.warn("Logged in indicator 'logout=true' missing:", data);
-			throw new RuntimeException("Login failed. Missing indicator 'logout=true'");
+			throw new RuntimeException("Login failed. Missing indicator '/service/logout/'");
 		}
 	}
 
@@ -263,17 +263,18 @@ public class TestDe {
 
 	static List<ArticleRef> downloadArticleRefs(int indexOffset, OperationObserver observer) throws ParseException {
 		if (indexOffset == 0) throw new IllegalArgumentException("page 0 does not exist");
-		String url = URL_TEST_INDEX + "?fd=" + indexOffset;
+		String url = URL_TEST_INDEX + "?seite=" + indexOffset;
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
 		String data = http.downloadText(url, charset, 0);
 
 		ArrayList<ArticleRef> ret = new ArrayList<ArticleRef>();
 		Parser parser = new Parser(data);
-		parser.gotoAfter("<ul class=\"search-result-list\">");
-		while (parser.gotoAfterIfNext("<li>")) {
+		parser.gotoAfter("id=\"primary\"");
+		parser.gotoAfter("<ul>");
+		while (parser.gotoAfterIfNext("<li")) {
 			parser.gotoAfter("<a href=\"/");
 			String pageRef = parser.getUntil("/\"");
-			parser.gotoAfter("<span class=\"date\">");
+			parser.gotoAfter("<time class=\"date\">");
 			String dateS = parser.getUntil("</span>");
 			Date date;
 			try {
@@ -284,6 +285,8 @@ public class TestDe {
 			parser.gotoAfter("<h3>");
 			String title = parser.getUntil("</h3>");
 			parser.gotoAfter("</li>");
+
+			if (title.contains("Historischer Test")) continue;
 			ArticleRef articleRef = new ArticleRef(date, title, pageRef);
 			ret.add(articleRef);
 		}
