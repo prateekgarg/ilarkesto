@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -178,7 +178,10 @@ public class ApacheHttpDownloader extends HttpDownloader {
 			if (isHttpStatusCodeRedirect(statusCode)) {
 				String location = getRedirectLocation(response);
 				if (followRedirects > 0) {
-					if (isRelativeUrl(location)) location = getUrlBase(url, true) + location;
+					if (isRelativeUrl(location)) {
+						if (!location.startsWith("/")) location = "/" + location;
+						location = getUrlBase(url) + location;
+					}
 					log.info("HTTP Redirect:", location);
 					return downloadText(location, charset, followRedirects - 1);
 				}
@@ -203,11 +206,10 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		return true;
 	}
 
-	private String getUrlBase(String url, boolean appendSlash) {
+	private String getUrlBase(String url) {
 		int offset = url.indexOf("//") + 2;
 		int idx = url.indexOf("/", offset);
 		if (idx > 0) url = url.substring(0, idx);
-		if (appendSlash && !url.endsWith("/")) url += "/";
 		return url;
 	}
 
