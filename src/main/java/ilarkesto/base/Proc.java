@@ -188,6 +188,8 @@ public final class Proc {
 	public synchronized void destroy() {
 		if (process == null) throw new RuntimeException("Process not started yet.");
 		if (!isRunning()) return;
+		if (outputGobbler != null) outputGobbler.close();
+		if (errorGobbler != null) errorGobbler.close();
 		process.destroy();
 		getReturnCode();
 		cleanup();
