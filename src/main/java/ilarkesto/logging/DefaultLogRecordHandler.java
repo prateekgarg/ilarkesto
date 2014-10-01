@@ -63,7 +63,7 @@ public class DefaultLogRecordHandler extends LogRecordHandler {
 						synchronized (Log.class) {
 							if (shutdown && queue.isEmpty()) {
 								System.err.println("Shutting down logging system");
-								break;
+								return;
 							}
 						}
 						LogRecord record = queue.poll(1, TimeUnit.SECONDS);
@@ -84,8 +84,9 @@ public class DefaultLogRecordHandler extends LogRecordHandler {
 				}
 			}
 		});
-		sysoutThread.setName(Log.class.getName());
+		sysoutThread.setName(getClass().getSimpleName() + "-sysoutThread");
 		sysoutThread.setPriority(Thread.MIN_PRIORITY);
+		sysoutThread.setDaemon(true);
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 
 			@Override
