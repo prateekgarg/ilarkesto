@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -99,6 +99,14 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 
 	public TimePeriod getPeriodToToday(boolean absolute) {
 		return getPeriodTo(today(), absolute);
+	}
+
+	public Date getFirstDateOfYear() {
+		return newDate(year, 1, 1);
+	}
+
+	public Date getLastDateOfYear() {
+		return newDate(year, 12, Tm.getDaysInMonth(year, 12));
 	}
 
 	public Date getFirstDateOfMonth() {
@@ -477,4 +485,20 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 
 	};
 
+	public static String formatFromTo(Date from, Date to) {
+
+		if (from.equals(from.getFirstDateOfYear()) && to.equals(to.getLastDateOfYear())) {
+			// erster eines Jahres bis letzter eines (evtl. anderen) Jahres
+			if (from.getYear() == to.getYear()) return from.getYear() + "";
+			return from.getYear() + " - " + to.getYear();
+		}
+
+		if (from.equals(from.getFirstDateOfMonth()) && to.equals(to.getLastDateOfMonth())) {
+			// erster eines Monats bis letzter eines (evtl. anderen) Monats
+			if (from.getMonth() == to.getMonth()) return from.formatLongMonthYear();
+			return from.formatLongMonthYear() + " - " + to.formatLongMonthYear();
+		}
+
+		return from.formatDayMonthYear() + " - " + to.formatDayMonthYear();
+	}
 }
