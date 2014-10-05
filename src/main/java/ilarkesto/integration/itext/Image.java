@@ -86,9 +86,9 @@ public class Image extends AImage implements ItextElement {
 	public static int convertAlign(Align align) {
 		switch (align) {
 			case LEFT:
-				return com.itextpdf.text.Image.ALIGN_RIGHT | com.itextpdf.text.Image.ALIGN_TOP;
+				return com.itextpdf.text.Image.ALIGN_LEFT;
 			case RIGHT:
-				return com.itextpdf.text.Image.ALIGN_RIGHT | com.itextpdf.text.Image.ALIGN_TOP;
+				return com.itextpdf.text.Image.ALIGN_RIGHT;
 		}
 		throw new RuntimeException("Unsupported align: " + align);
 	}
