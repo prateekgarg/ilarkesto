@@ -31,16 +31,19 @@ public class TonlineFuelPriceUpdaterTest extends ATest {
 
 	private void update(FuelStation station, TonlineFuelPriceUpdater updater) {
 		updater.updatePrices(station);
+
 		Price diesel = station.getLatestPriceByFuel(Fuel.DIESEL);
-		assertNotNull(diesel);
+		assertNotNull(diesel, "Missing DIESEL for " + station);
+
 		Price e5 = station.getLatestPriceByFuel(Fuel.E5);
-		assertNotNull(e5);
+		assertNotNull(e5, "Missing E5 for " + station);
+
 		Price e10 = station.getLatestPriceByFuel(Fuel.E10);
-		assertNotNull(e10);
-		Price plus = station.getLatestPriceByFuel(Fuel.PLUS);
-		assertNotNull(plus);
-		Price autogas = station.getLatestPriceByFuel(Fuel.AUTOGAS);
-		assertNotNull(plus);
+		assertNotNull(e10, "Missing E10 for " + station);
+
+		station.getLatestPriceByFuel(Fuel.PLUS);
+
+		station.getLatestPriceByFuel(Fuel.AUTOGAS);
 	}
 
 }
