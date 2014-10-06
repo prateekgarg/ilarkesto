@@ -129,7 +129,7 @@ public class DefaultLogRecordHandler extends LogRecordHandler {
 
 	@Override
 	public void flush() {
-		while (!queue.isEmpty()) {
+		while (sysoutThread != null && sysoutThread.isAlive() && !queue.isEmpty()) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException ex) {
