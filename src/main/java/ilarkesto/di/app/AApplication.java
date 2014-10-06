@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -26,9 +26,9 @@ import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.di.Context;
 import ilarkesto.integration.xstream.XStreamSerializer;
+import ilarkesto.io.AFileStorage;
 import ilarkesto.io.ExclusiveFileLock;
 import ilarkesto.io.ExclusiveFileLock.FileLockedException;
-import ilarkesto.io.AFileStorage;
 import ilarkesto.io.IO;
 import ilarkesto.io.SimpleFileStorage;
 import ilarkesto.io.Zip;
@@ -43,11 +43,12 @@ import ilarkesto.properties.FilePropertiesStore;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Base class of a custom application
- * 
+ *
  * @author Witoslaw Koczewski
  */
 public abstract class AApplication {
@@ -177,11 +178,27 @@ public abstract class AApplication {
 					if (exclusiveFileLock != null) exclusiveFileLock.release();
 					Log.flush();
 					DefaultLogRecordHandler.stopLogging();
+
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException ex) {}
+					for (Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
+						StackTraceElement[] elements = entry.getValue();
+						for (StackTraceElement element : elements) {
+							Thread t = entry.getKey();
+							if (!t.isAlive()) continue;
+							if (t.isDaemon()) continue;
+							System.out.println("Non-Daemon thread still running: -> " + t.getName() + " -> "
+									+ t.isDaemon() + "," + t.isAlive() + " > " + element.getClassName() + "."
+									+ element.getMethodName() + " > " + element.toString());
+						}
+					}
 				}
 			}
 
 		});
-		thread.setName(getApplicationName() + " shutdown");
+		thread.setDaemon(true);
+		thread.setName(getApplicationName() + "-shutdown");
 		shuttingDown = true;
 		thread.start();
 	}

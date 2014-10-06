@@ -87,13 +87,6 @@ public class DefaultLogRecordHandler extends LogRecordHandler {
 		sysoutThread.setName(getClass().getSimpleName() + "-sysoutThread");
 		sysoutThread.setPriority(Thread.MIN_PRIORITY);
 		sysoutThread.setDaemon(true);
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-
-			@Override
-			public void run() {
-				stopLogging();
-			}
-		});
 		sysoutThread.start();
 
 		Log.setLogRecordHandler(this);
