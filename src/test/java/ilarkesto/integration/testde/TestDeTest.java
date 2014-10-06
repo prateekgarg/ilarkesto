@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -158,6 +158,7 @@ public class TestDeTest extends ATest {
 		TestDe.login(loginData, observer);
 		try {
 			Article article = TestDe.downloadArticle(ref, observer);
+			assertEquals(article.getRef().getTitle(), "Katzenfutter: Drei sind sehr gut, sechs mangelhaft");
 			List<SubArticleRef> subArticles = article.getSubArticles();
 
 			SubArticleRef subArticlePdf = subArticles.get(13);
@@ -268,9 +269,11 @@ public class TestDeTest extends ATest {
 	@Test
 	public void downloadArticleRefs() throws ParseException {
 		List<ArticleRef> articles = TestDe.downloadArticleRefs(1, observer);
-		assertSize(articles, 10);
-		for (int i = 0; i < 10; i++) {
-			log.debug(articles.get(i));
+		assertNotEmpty(articles);
+		for (ArticleRef ref : articles) {
+			log.debug(ref);
+			assertContainsNot(ref.getTitle(), "<span");
+			assertContainsNot(ref.getTitle(), "&#");
 		}
 	}
 

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -274,6 +274,9 @@ public class TestDe {
 		while (parser.gotoAfterIfNext("<li")) {
 			parser.gotoAfter("<a href=\"/");
 			String pageRef = parser.getUntil("/\"");
+			parser.gotoAfter("title=\"");
+			String title = parser.getUntil("\"");
+			title = Html.convertHtmlToText(title);
 			parser.gotoAfter("<time class=\"date\">");
 			String dateS = parser.getUntil("</span>");
 			Date date;
@@ -282,8 +285,6 @@ public class TestDe {
 			} catch (java.text.ParseException ex) {
 				throw new ParseException("Unexpected date format: " + dateS);
 			}
-			parser.gotoAfter("<h3>");
-			String title = parser.getUntil("</h3>");
 			parser.gotoAfter("</li>");
 
 			if (title.contains("Historischer Test")) continue;
@@ -452,6 +453,11 @@ public class TestDe {
 		}
 
 		public ArticleRef() {}
+
+		@Deprecated
+		public void repairTitle() {
+			if (title != null && title.contains("<span")) title = Html.convertHtmlToText(title);
+		}
 
 		public String getUrl() {
 			return getArticleUrl(this);

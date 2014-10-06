@@ -91,11 +91,14 @@ public class Html {
 		html = sb.toString();
 
 		html = html.replace("&nbsp;", " ");
+		html = html.replace("&#160;", " ");
 		html = html.replace("&auml;", String.valueOf(Str.ae));
 		html = html.replace("&uuml;", String.valueOf(Str.ue));
+		html = html.replace("&#252;", String.valueOf(Str.ue));
 		html = html.replace("&ouml;", String.valueOf(Str.oe));
 		html = html.replace("&Auml;", String.valueOf(Str.AE));
 		html = html.replace("&Uuml;", String.valueOf(Str.UE));
+		html = html.replace("&#220;", String.valueOf(Str.UE));
 		html = html.replace("&Ouml;", String.valueOf(Str.OE));
 		html = html.replace("&szlig;", String.valueOf(Str.sz));
 		html = html.replace("&euro;", String.valueOf(Str.EUR));
@@ -106,6 +109,7 @@ public class Html {
 		html = html.replace("&bdquo;", "„");
 		html = html.replace("&ldquo;", "“");
 		html = html.replace("&ndash;", "–");
+		html = html.replace("&#173;", "-");
 		html = html.replace("<br>", "\n");
 
 		html = html.replace(" \n", "\n");
