@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # clone important stuff from home dir to $1
 
@@ -15,7 +15,6 @@ fi
 BACKUP_INFO_FILE=~/.backup.info
 
 rsync -crlthDzvP -e ssh --exclude-from=$HOME/.rscp-home-exclude $HOME/ $1
-if [ $? != 0 ]; then exit 1; fi
 
 /opt/ilarkesto/bin/logdate > $BACKUP_INFO_FILE
 scp -p $BACKUP_INFO_FILE $1

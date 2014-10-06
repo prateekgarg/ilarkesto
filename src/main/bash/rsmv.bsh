@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if [[ $# -lt 2 ]]
 then
@@ -11,6 +11,5 @@ then
 fi
 
 rscp $1 $2
-if [ $? != 0 ]; then exit 1; fi
 
 rm -rf $1

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 TMP_DIR=~/ilarkesto-install-tmp
 
@@ -7,12 +7,9 @@ mkdir $TMP_DIR
 cd $TMP_DIR
 
 wget https://servisto.de/projects/ilarkesto/ilarkesto.tbz
-if [ $? != 0 ]; then exit 1; fi
 
 sudo rm -rf /opt/ilarkesto
-if [ $? != 0 ]; then exit 1; fi
 
 sudo tar -xvjf ilarkesto.tbz -C /opt
-if [ $? != 0 ]; then exit 1; fi
 
 rm -rf $TMP_DIR

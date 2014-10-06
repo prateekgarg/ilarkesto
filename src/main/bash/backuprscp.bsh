@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if [[ $# -lt 2 ]]
 then
@@ -17,7 +17,6 @@ BACKUP_INFO_FILE=$SRC/.backup.info
 rm -f $BACKUP_INFO_FILE
 
 rscp $SRC $DST
-if [ $? != 0 ]; then exit 1; fi
 
 touch $BACKUP_INFO_FILE
 scp $BACKUP_INFO_FILE $DST

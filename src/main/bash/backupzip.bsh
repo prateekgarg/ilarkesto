@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 # Creates an encrypted backup-zipfile and deletes old backupfiles.
 #
@@ -23,7 +23,6 @@ DESTINATION_FILE=${DESTINATION_DIR}/${BACKUP_FILENAME}
 
 echo "Creating backup: $DESTINATION_FILE"
 zip -r9yq -P ${PASSWORD} ${DESTINATION_FILE} $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16} ${17}
-if [ $? != 0 ]; then exit 1; fi
 
 #cd ${DESTINATION_DIR}
 #ln -s ${BACKUP_FILENAME} bak_${BACKUP_NAME}_latest.zip
