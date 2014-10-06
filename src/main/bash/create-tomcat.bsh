@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+TOMCATHOME=/usr/lib/tomcat7
+
+cd
+mkdir tomcat
+cd tomcat
+mkdir temp
+mkdir work
+ln -s $TOMCATHOME/bin
+ln -s $TOMCATHOME/lib
+ln -s $TOMCATHOME/xxx
+
+
+sudo mkdir /var/log/$USER
+sudo chown $USER.$USER /var/log/$USER
