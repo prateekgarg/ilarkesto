@@ -18,6 +18,6 @@ fi
 
 for FILE in $1/*; do
     DESTFILE=$2/$(basename "$FILE")
-    rscp $FILE $DESTFILE
-    rm -rf $FILE
+    rscp "$FILE" "$DESTFILE"
+    rm -rf "$FILE"
 done
