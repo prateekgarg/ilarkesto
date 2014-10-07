@@ -10,6 +10,14 @@ then
 	exit 1
 fi
 
-rscp $1 $2
+if [ ! -d "$1" ]
+then
+  echo "$0: Not a directory: $1"
+  exit 1
+fi
 
-rm -rf $1
+for FILE in $1/*; do
+    DESTFILE=$2/$(basename "$FILE")
+    rscp $FILE $DESTFILE
+    rm -rf $FILE
+done
