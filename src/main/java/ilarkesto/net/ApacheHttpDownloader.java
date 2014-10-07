@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -24,9 +24,22 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -40,6 +53,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -229,6 +246,7 @@ public class ApacheHttpDownloader extends HttpDownloader {
 	protected HttpClient createClient() {
 		DefaultHttpClient client = new DefaultHttpClient();
 		initializeClient(client);
+		if (true) return unsecureSslClient(client);
 		return client;
 	}
 
@@ -236,6 +254,34 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		HttpParams params = client.getParams();
 		HttpClientParams.setCookiePolicy(params, CookiePolicy.BROWSER_COMPATIBILITY);
 		HttpClientParams.setRedirecting(params, false);
+	}
+
+	private HttpClient unsecureSslClient(HttpClient client) {
+		try {
+			X509TrustManager tm = new X509TrustManager() {
+
+				@Override
+				public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {}
+
+				@Override
+				public X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+			};
+			SSLContext ctx = SSLContext.getInstance("TLS");
+			ctx.init(null, new TrustManager[] { tm }, null);
+			SSLSocketFactory ssf = new UnsecureSSLSocketFactory(ctx);
+			ssf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+			ClientConnectionManager ccm = client.getConnectionManager();
+			SchemeRegistry sr = ccm.getSchemeRegistry();
+			sr.register(new Scheme("https", ssf, 443));
+			return new DefaultHttpClient(ccm, client.getParams());
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 
 	protected synchronized void close(HttpClient client) {
@@ -267,4 +313,46 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		return headers[0].getValue();
 	}
 
+	public class UnsecureSSLSocketFactory extends SSLSocketFactory {
+
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+
+		public UnsecureSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException,
+				KeyStoreException, UnrecoverableKeyException {
+			super(truststore);
+
+			TrustManager tm = new X509TrustManager() {
+
+				@Override
+				public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+
+				@Override
+				public X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+			};
+
+			sslContext.init(null, new TrustManager[] { tm }, null);
+		}
+
+		public UnsecureSSLSocketFactory(SSLContext context) throws KeyManagementException, NoSuchAlgorithmException,
+				KeyStoreException, UnrecoverableKeyException {
+			super((KeyStore) null);
+			sslContext = context;
+		}
+
+		@Override
+		public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException,
+				UnknownHostException {
+			return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
+		}
+
+		@Override
+		public Socket createSocket() throws IOException {
+			return sslContext.getSocketFactory().createSocket();
+		}
+	}
 }
