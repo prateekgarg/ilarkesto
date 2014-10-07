@@ -100,6 +100,7 @@ public class Html {
 		html = html.replace("&Uuml;", String.valueOf(Str.UE));
 		html = html.replace("&#220;", String.valueOf(Str.UE));
 		html = html.replace("&Ouml;", String.valueOf(Str.OE));
+		html = html.replace("&#246;", String.valueOf(Str.OE));
 		html = html.replace("&szlig;", String.valueOf(Str.sz));
 		html = html.replace("&euro;", String.valueOf(Str.EUR));
 		html = html.replace("&amp;", "&");
