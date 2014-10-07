@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -70,6 +70,7 @@ public class ApacheHttpDownloader extends HttpDownloader {
 
 	private HttpClient client;
 	private HttpContext context;
+	private boolean sslServerCheckingDisabled = true;
 
 	@Override
 	public String post(String url, Map<String, String> parameters, Map<String, String> requestHeaders, String charset) {
@@ -246,8 +247,12 @@ public class ApacheHttpDownloader extends HttpDownloader {
 	protected HttpClient createClient() {
 		DefaultHttpClient client = new DefaultHttpClient();
 		initializeClient(client);
-		if (true) return unsecureSslClient(client);
+		if (sslServerCheckingDisabled) return wrapClientForDisabledServerChecking(client);
 		return client;
+	}
+
+	public void setSslServerCheckingDisabled(boolean sslVerificationDisabled) {
+		this.sslServerCheckingDisabled = sslVerificationDisabled;
 	}
 
 	protected void initializeClient(HttpClient client) {
@@ -256,7 +261,7 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		HttpClientParams.setRedirecting(params, false);
 	}
 
-	private HttpClient unsecureSslClient(HttpClient client) {
+	private HttpClient wrapClientForDisabledServerChecking(HttpClient client) {
 		try {
 			X509TrustManager tm = new X509TrustManager() {
 
