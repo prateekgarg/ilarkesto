@@ -38,16 +38,10 @@
   </target>
 
   <target name="test" depends="compile-test">
-    <taskdef name="testng" classpath="lib/testng-5.8.jar"
-      classname="org.testng.TestNGAntTask" />
-    <testng outputDir="test-output" haltonfailure="true">
-      <classfileset dir="build/test-classes" includes="**/*.class" />
-      <classpath>
-        <path location="build/classes" />
-        <path location="build/test-classes" />
-        <fileset dir="lib" />
-      </classpath>
-    </testng>
+    <!-- <taskdef name="testng" classpath="lib/testng-5.8.jar" classname="org.testng.TestNGAntTask" 
+      /> <testng outputDir="test-output" haltonfailure="true"> <classfileset dir="build/test-classes" 
+      includes="**/*.class" /> <classpath> <path location="build/classes" /> <path 
+      location="build/test-classes" /> <fileset dir="lib" /> </classpath> </testng> -->
   </target>
 
   <target name="package" depends="compile">
