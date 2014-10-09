@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -19,6 +19,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.money.Money;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.DateRange;
 import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
 import ilarkesto.io.IO;
@@ -87,7 +88,7 @@ public class JsonMapper {
 		}
 
 		if (object instanceof Date || object instanceof Time || object instanceof DateAndTime
-				|| object instanceof DayAndMonth || object instanceof Money) {
+				|| object instanceof DateRange || object instanceof DayAndMonth || object instanceof Money) {
 			Json.printValue(object.toString(), out, 0);
 			return;
 		}
@@ -201,6 +202,8 @@ public class JsonMapper {
 				return new Time(s);
 			} else if (fieldType.equals(DateAndTime.class)) {
 				return new DateAndTime(s);
+			} else if (fieldType.equals(DateRange.class)) {
+				return new DateRange(s);
 			} else if (fieldType.equals(DayAndMonth.class)) {
 				return new DayAndMonth(s);
 			} else if (fieldType.equals(Money.class)) { return new Money(s); }

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -18,6 +18,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.money.Money;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.DateRange;
 import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
 import ilarkesto.core.time.TimePeriod;
@@ -152,6 +153,10 @@ public class Persistence {
 		return value == null ? null : new DateAndTime(value);
 	}
 
+	public static DateRange parsePropertyDateRange(String value) {
+		return value == null ? null : new DateRange(value);
+	}
+
 	public static DayAndMonth parsePropertyDayAndMonth(String value) {
 		return value == null ? null : new DayAndMonth(value);
 	}
@@ -182,6 +187,10 @@ public class Persistence {
 	}
 
 	public static String propertyAsString(DateAndTime value) {
+		return value == null ? null : value.toString();
+	}
+
+	public static String propertyAsString(DateRange value) {
 		return value == null ? null : value.toString();
 	}
 

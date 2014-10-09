@@ -5,6 +5,12 @@ public class TmLocalizerPl extends TmLocalizer {
 	public static final TmLocalizerPl INSTANCE = new TmLocalizerPl();
 
 	@Override
+	public String days(int dayCount) {
+		if (dayCount == 1) return "1 dzień";
+		return dayCount + " dni";
+	}
+
+	@Override
 	public String date(int year, int month, int day) {
 		return prefixZeros(day, 2) + "." + prefixZeros(month, 2) + "." + year;
 	}

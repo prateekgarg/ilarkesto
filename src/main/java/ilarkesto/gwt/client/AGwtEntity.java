@@ -16,7 +16,9 @@ package ilarkesto.gwt.client;
 
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.DateRange;
 import ilarkesto.core.time.Time;
+import ilarkesto.core.time.TimePeriod;
 import ilarkesto.core.time.Tm;
 import ilarkesto.gwt.client.editor.AEditorModel;
 import ilarkesto.gwt.client.undo.AUndoOperation;
@@ -69,6 +71,8 @@ public abstract class AGwtEntity {
 		if (value instanceof Date) value = value.toString();
 		if (value instanceof Time) value = value.toString();
 		if (value instanceof DateAndTime) value = value.toString();
+		if (value instanceof DateRange) value = value.toString();
+		if (value instanceof TimePeriod) value = value.toString();
 		getDao().entityPropertyChanged(this, property, value);
 		updateLocalModificationTime();
 	}
