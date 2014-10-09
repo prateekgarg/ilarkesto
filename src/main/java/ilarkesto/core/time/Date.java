@@ -117,6 +117,14 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 		return newDate(year, month, Tm.getDaysInMonth(year, month));
 	}
 
+	public boolean isLastDateOfMonth() {
+		return day == Tm.getDaysInMonth(year, month);
+	}
+
+	public boolean isFirstDayOfMonth() {
+		return day == 1;
+	}
+
 	public Weekday getWeekday() {
 		return Weekday.get(Tm.getWeekday(toJavaDate()));
 	}

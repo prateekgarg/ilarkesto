@@ -52,6 +52,19 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 			throw new IllegalArgumentException("Illegal date range. Start is after end: " + toString());
 	}
 
+	public boolean isWholeMonth() {
+		if (!isSameMonthAndYear()) return false;
+		return start.isFirstDayOfMonth() && end.isLastDateOfMonth();
+	}
+
+	public boolean isSameYear() {
+		return start.year == end.year;
+	}
+
+	public boolean isSameMonthAndYear() {
+		return start.month == end.month && isSameYear();
+	}
+
 	public boolean isOneDay() {
 		return start.equals(end);
 	}
@@ -76,6 +89,10 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 	public String format() {
 		if (isOneDay()) return start.format();
 		return start.format() + " - " + end.format();
+	}
+
+	public String formatStartLongMonthYear() {
+		return start.formatLongMonthYear();
 	}
 
 	@Override
