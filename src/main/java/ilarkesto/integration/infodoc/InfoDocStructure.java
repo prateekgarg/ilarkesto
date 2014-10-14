@@ -117,8 +117,10 @@ public class InfoDocStructure {
 		if (s.length() < 2) return -1;
 
 		if (s.endsWith(".")) {
-			if (Character.isDigit(s.charAt(0))) return 2;
-			return 1;
+			s = s.substring(0, s.length() - 1);
+			if (Str.isAllDigits(s)) return 2;
+			if (Str.isAllUppercase(s)) return 1;
+			return -1;
 		}
 
 		if (s.endsWith(")")) {

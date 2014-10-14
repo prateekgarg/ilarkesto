@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -167,7 +167,8 @@ public class Str {
 	}
 
 	public static String uppercaseFirstLetter(String s) {
-		if (s.isEmpty()) throw new IllegalArgumentException("empty string");
+		if (s == null) return null;
+		if (s.isEmpty()) return s;
 		StringBuilder sb = new StringBuilder();
 		sb.append(Character.toUpperCase(s.charAt(0)));
 		sb.append(s.substring(1));
@@ -823,6 +824,24 @@ public class Str {
 
 		String format();
 
+	}
+
+	public static boolean isAllDigits(String s) {
+		if (s == null || s.isEmpty()) return false;
+		int len = s.length();
+		for (int i = 0; i < len; i++) {
+			if (!Character.isDigit(s.charAt(i))) return false;
+		}
+		return true;
+	}
+
+	public static boolean isAllUppercase(String s) {
+		if (s == null || s.isEmpty()) return false;
+		int len = s.length();
+		for (int i = 0; i < len; i++) {
+			if (!Character.isUpperCase(s.charAt(i))) return false;
+		}
+		return true;
 	}
 
 }
