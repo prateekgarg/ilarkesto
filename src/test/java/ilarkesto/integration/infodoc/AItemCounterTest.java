@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -60,9 +60,17 @@ public class AItemCounterTest extends ATest {
 	@Test
 	public void level4() {
 		AItemCounter counter = AItemCounter.get(4);
-		assertEquals(counter.getNumber(0), "aa))");
-		assertEquals(counter.getNumber(1), "bb))");
-		assertEquals(counter.getNumber(2), "cc))");
+		assertEquals(counter.getNumber(0), "aa)");
+		assertEquals(counter.getNumber(1), "bb)");
+		assertEquals(counter.getNumber(2), "cc)");
+	}
+
+	@Test
+	public void level5() {
+		AItemCounter counter = AItemCounter.get(5);
+		assertEquals(counter.getNumber(0), "(1)");
+		assertEquals(counter.getNumber(1), "(2)");
+		assertEquals(counter.getNumber(2), "(3)");
 	}
 
 }
