@@ -93,6 +93,7 @@ public class Html {
 		html = html.replace("&nbsp;", " ");
 		html = html.replace("&#160;", " ");
 		html = html.replace("&auml;", String.valueOf(Str.ae));
+		html = html.replace("&#228;", String.valueOf(Str.ae));
 		html = html.replace("&uuml;", String.valueOf(Str.ue));
 		html = html.replace("&#252;", String.valueOf(Str.ue));
 		html = html.replace("&ouml;", String.valueOf(Str.oe));
