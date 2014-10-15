@@ -2,11 +2,6 @@ package ilarkesto.core.time;
 
 public class TmLocalizer {
 
-	public String days(int dayCount) {
-		if (dayCount == 1) return "1 day";
-		return dayCount + " days";
-	}
-
 	public String date(int year, int month, int day) {
 		return year + "-" + prefixZeros(month, 2) + "-" + prefixZeros(day, 2);
 	}
