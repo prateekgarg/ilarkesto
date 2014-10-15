@@ -109,10 +109,14 @@ public class InfoDocStructure {
 		s = Str.cutTo(s, " ");
 		if (s == null) return -1;
 
+		if (s.startsWith("(P)")) return -1;
+
 		if (s.equals("!")) return 0;
 		if (s.equals("!!")) return 1;
 		if (s.equals("!!!")) return 2;
 		if (s.equals("!!!!")) return 3;
+		if (s.equals("!!!!!")) return 4;
+		if (s.equals("!!!!!!")) return 5;
 
 		if (s.length() < 2) return -1;
 
@@ -124,9 +128,12 @@ public class InfoDocStructure {
 		}
 
 		if (s.endsWith(")")) {
+			if (s.startsWith("(") && Str.isAllDigits(s.substring(1, s.length() - 1))) return 5;
+
 			if (Character.isUpperCase(s.charAt(0))) return 0;
 
-			return (s.length() / 2) + 2;
+			if (s.indexOf(')') >= 2) return 4;
+			return 3;
 		}
 
 		return -1;
