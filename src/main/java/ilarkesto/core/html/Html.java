@@ -103,6 +103,7 @@ public class Html {
 		html = html.replace("&Ouml;", String.valueOf(Str.OE));
 		html = html.replace("&#246;", String.valueOf(Str.OE));
 		html = html.replace("&szlig;", String.valueOf(Str.sz));
+		html = html.replace("&#223;", String.valueOf(Str.sz));
 		html = html.replace("&euro;", String.valueOf(Str.EUR));
 		html = html.replace("&amp;", "&");
 		html = html.replace("&quot;", "\"");

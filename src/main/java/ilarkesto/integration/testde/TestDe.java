@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -210,7 +210,7 @@ public class TestDe {
 		String url = TestDe.getPageUrl(pageRef);
 		if (startOffset != null) url += "?start=" + startOffset;
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
-		return http.downloadText(url, charset, 0);
+		return http.downloadText(url, charset);
 	}
 
 	public static Integer parseNextPageStartOffset(String html) {
@@ -270,6 +270,8 @@ public class TestDe {
 		ArrayList<ArticleRef> ret = new ArrayList<ArticleRef>();
 		Parser parser = new Parser(data);
 		parser.gotoAfter("id=\"primary\"");
+		parser.gotoAfter(">");
+		if (!parser.isNext("<div class=\"themenliste-alle__list\"")) return ret;
 		parser.gotoAfter("<ul>");
 		while (parser.gotoAfterIfNext("<li")) {
 			parser.gotoAfter("<a href=\"/");

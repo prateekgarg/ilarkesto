@@ -121,6 +121,18 @@ public class TestDeTest extends ATest {
 	}
 
 	@Test
+	public void spendenorganisationen() throws ParseException {
+		ArticleRef ref = new ArticleRef(new Date(2014, 10, 14),
+				"Spenden­organisationen von Prominenten: So spenden Sie mit Herz und Verstand",
+				"Spendenorganisationen-von-Prominenten-So-spenden-Sie-mit-Herz-und-Verstand-4763391-4763411");
+		Article article = TestDe.downloadArticle(ref, observer);
+		log.info(article);
+
+		String summary = article.getSummary();
+		assertContains(summary, "Ob von Hirsch­hausen, Klins­mann oder Lahm");
+	}
+
+	@Test
 	public void kindermatratzen() throws ParseException {
 		ArticleRef ref = new ArticleRef(new Date(2014, 3, 3), "Kinder­matratzen: Ganz schön ausgeschlafen",
 				"Kindermatratzen-Ganz-schoen-ausgeschlafen-4673558-0");
