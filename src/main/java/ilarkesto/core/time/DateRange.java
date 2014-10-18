@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -97,8 +97,20 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 
 	public String formatShortest() {
 		if (isOneDay()) return start.format();
-		if (isSameMonthAndYear()) return formatStartLongMonthYear();
-		return format();
+
+		if (start.equals(start.getFirstDateOfYear()) && end.equals(end.getLastDateOfYear())) {
+			// erster eines Jahres bis letzter eines (evtl. anderen) Jahres
+			if (start.getYear() == end.getYear()) return start.getYear() + "";
+			return start.getYear() + " - " + end.getYear();
+		}
+
+		if (start.equals(start.getFirstDateOfMonth()) && end.equals(end.getLastDateOfMonth())) {
+			// erster eines Monats bis letzter eines (evtl. anderen) Monats
+			if (start.getMonth() == end.getMonth()) return start.formatLongMonthYear();
+			return start.formatLongMonthYear() + " - " + end.formatLongMonthYear();
+		}
+
+		return start.formatDayMonthYear() + " - " + end.formatDayMonthYear();
 	}
 
 	@Override
