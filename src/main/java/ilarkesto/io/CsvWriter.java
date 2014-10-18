@@ -94,8 +94,9 @@ public class CsvWriter {
 
 	private char separator = ',';
 
-	public void setSeparator(char separator) {
+	public CsvWriter setSeparator(char separator) {
 		this.separator = separator;
+		return this;
 	}
 
 	// --- ---
