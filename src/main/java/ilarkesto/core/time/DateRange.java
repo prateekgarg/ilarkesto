@@ -95,6 +95,12 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 		return start.formatLongMonthYear();
 	}
 
+	public String formatShortest() {
+		if (isOneDay()) return start.format();
+		if (isSameMonthAndYear()) return formatStartLongMonthYear();
+		return format();
+	}
+
 	@Override
 	public int compareTo(DateRange o) {
 		return start.compareTo(o.start);
