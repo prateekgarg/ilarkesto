@@ -20,6 +20,48 @@ import org.testng.annotations.Test;
 
 public class DateRangeTest extends ATest {
 
+	private static final DateRange range2014 = new DateRange("2014-01-01 - 2014-12-31");
+	private static final DateRange range10 = new DateRange("2014-01-11 - 2014-01-20");
+
+	@Test
+	public void containsAny() {
+		assertFalse(range2014.containsAny(new DateRange("2013-01-01 - 2013-12-31")));
+		assertTrue(range2014.containsAny(range2014));
+		assertTrue(range2014.containsAny(range10));
+		assertTrue(range2014.containsAny(new DateRange("2014-12-31 - 2015-12-31")));
+		assertFalse(range2014.containsAny(new DateRange("2015-01-01 - 2015-12-31")));
+	}
+
+	@Test
+	public void getOverlappingDays() {
+		assertEquals(range2014.getOverlappingDays(new DateRange("2013-01-01 - 2013-12-31")), 0);
+		assertEquals(range2014.getOverlappingDays(new DateRange("2015-01-01 - 2015-12-31")), 0);
+		assertEquals(range2014.getOverlappingDays(new DateRange("2013-01-01 - 2014-01-01")), 1);
+		assertEquals(range2014.getOverlappingDays(new DateRange("2014-12-31 - 2015-12-31")), 1);
+		assertEquals(range2014.getOverlappingDays(new DateRange("2014-12-31 - 2014-12-31")), 1);
+		assertEquals(range2014.getOverlappingDays(new DateRange("2014-06-01 - 2014-06-31")), 31);
+
+		assertEquals(range10.getOverlappingDays(range10), 10);
+	}
+
+	@Test
+	public void getOverlappingDaysAsPartial() {
+		assertEquals(range10.getOverlappingDaysAsPartial(new DateRange("2014-01-01 - 2014-01-10")), 0, 0);
+		assertEquals(range10.getOverlappingDaysAsPartial(new DateRange("2014-01-21 - 2014-01-31")), 0, 0);
+		assertEquals(range10.getOverlappingDaysAsPartial(new DateRange("2014-01-01 - 2014-01-11")), 0.1, 0);
+		assertEquals(range10.getOverlappingDaysAsPartial(new DateRange("2014-01-20 - 2014-12-31")), 0.1, 0);
+		assertEquals(range10.getOverlappingDaysAsPartial(new DateRange("2014-01-11 - 2014-01-20")), 1, 0);
+		assertEquals(range10.getOverlappingDaysAsPartial(new DateRange("2014-01-12 - 2014-01-19")), 0.8, 0);
+	}
+
+	@Test
+	public void contains() {
+		assertFalse(range2014.contains(new Date("2013-12-31")));
+		assertTrue(range2014.contains(new Date("2014-01-01")));
+		assertTrue(range2014.contains(new Date("2014-12-31")));
+		assertFalse(range2014.contains(new Date("2015-01-01")));
+	}
+
 	@Test
 	public void getDayCount() {
 		assertEquals(new DateRange("2014-01-01 - 2014-01-01").getDayCount(), 1);

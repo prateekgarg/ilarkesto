@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -21,8 +21,8 @@ import java.io.Serializable;
 
 public class DateRange implements Comparable<DateRange>, Serializable, Formatable {
 
-	protected Date start;
-	protected Date end;
+	protected final Date start;
+	protected final Date end;
 
 	private transient int hashCode;
 
@@ -139,4 +139,39 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 		if (!(obj instanceof DateRange)) return false;
 		return start.equals(((DateRange) obj).start) && end.equals(((DateRange) obj).end);
 	}
+
+	public boolean contains(Date date) {
+		if (date == null) return false;
+		return start.isBeforeOrSame(date) && end.isAfterOrSame(date);
+	}
+
+	public int getOverlappingDays(DateRange other) {
+		if (other == null) return 0;
+
+		if (start.isAfter(other.end)) return 0;
+		if (end.isBefore(other.start)) return 0;
+
+		if (start.isAfterOrSame(other.start) && end.isBeforeOrSame(other.end)) return getDayCount();
+
+		int daysBefore = Math.max(0, start.getPeriodTo(other.start).toDays());
+		int daysAfter = Math.max(0, other.end.getPeriodTo(end).toDays());
+
+		return getDayCount() - daysBefore - daysAfter;
+	}
+
+	public double getOverlappingDaysAsPartial(DateRange other) {
+		int overlappingDays = getOverlappingDays(other);
+		if (overlappingDays == 0) return 0;
+		int dayCount = getDayCount();
+		return (double) overlappingDays / (double) dayCount;
+	}
+
+	public boolean containsAny(DateRange other) {
+		if (other == null) return false;
+		if (other.isOneDay()) return contains(other.start);
+		if (other.start.isAfter(end)) return false;
+		if (other.end.isBefore(start)) return false;
+		return true;
+	}
+
 }
