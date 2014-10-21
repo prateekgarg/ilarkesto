@@ -208,4 +208,19 @@ public class PdfBuilderTest extends ATest {
 		pdf.write(pdfFile);
 	}
 
+	@Test
+	private void colspan() {
+		PdfBuilder pdf = new PdfBuilder();
+
+		ATable table = pdf.table(1, 1);
+		table.row().cell().setColspan(2).text("spanner!");
+		ARow row = table.row();
+		row.cell().text("no spanner1");
+		row.cell().text("no spanner2");
+		table.row().cell().setColspan(2).text("look! i'm spanning!");
+
+		File pdfFile = getTestOutputFile("table-colspan.pdf");
+		log.info(pdfFile.getAbsolutePath());
+		pdf.write(pdfFile);
+	}
 }
