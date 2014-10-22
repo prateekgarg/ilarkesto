@@ -65,16 +65,16 @@ public abstract class ACsvWriter<R> {
 		csv.close();
 	}
 
-	public final void write(Writer out) {
+	public final void write(Writer out, char separator) {
 		CsvWriter csv = new CsvWriter(out);
-		csv.setSeparator(';');
+		csv.setSeparator(separator);
 		write(csv);
 	}
 
-	public final void write(File file, String charset) throws IOException {
+	public final void write(File file, String charset, char separator) throws IOException {
 		log.info("Writing", file.getAbsolutePath());
 		IO.createDirectory(file.getParentFile());
-		write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset)));
+		write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset)), separator);
 	}
 
 	protected void handleExceptionOnGetValue(Exception ex) {
