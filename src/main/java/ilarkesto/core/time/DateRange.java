@@ -145,6 +145,9 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 		return start.isBeforeOrSame(date) && end.isAfterOrSame(date);
 	}
 
+	/**
+	 * @return cout of the overlapping days of this DateRange with the given DateRange
+	 */
 	public int getOverlappingDays(DateRange other) {
 		if (other == null) return 0;
 
@@ -159,6 +162,10 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 		return getDayCount() - daysBefore - daysAfter;
 	}
 
+	/**
+	 * @return partial ofthe overlapping days of this DateRange with the given DateRange. It would be 0.5 if
+	 *         half of this DateRange overlaps with the given DateRange.
+	 */
 	public double getOverlappingDaysAsPartial(DateRange other) {
 		int overlappingDays = getOverlappingDays(other);
 		if (overlappingDays == 0) return 0;
@@ -166,12 +173,41 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 		return (double) overlappingDays / (double) dayCount;
 	}
 
+	/**
+	 * @return true, if this DateRange contains at least one day of the given DateRange
+	 */
 	public boolean containsAny(DateRange other) {
 		if (other == null) return false;
 		if (other.isOneDay()) return contains(other.start);
 		if (other.start.isAfter(end)) return false;
 		if (other.end.isBefore(start)) return false;
 		return true;
+	}
+
+	/**
+	 * @return true, if tis DateRange contains all days of the given DateRange
+	 */
+	public boolean containsAll(DateRange other) {
+		if (other == null) return false;
+		if (other.isOneDay()) return contains(other.start);
+		return start.isBeforeOrSame(other.start) && end.isAfterOrSame(other.end);
+	}
+
+	/**
+	 * @return true, if this DateRange is completely contained in the given DateRange
+	 */
+	public boolean isContainedIn(DateRange other) {
+		if (other == null) return false;
+		return other.containsAll(this);
+	}
+
+	/**
+	 * @return true, if this DateRange is overlapping the given DateRange at least one day (which could be the
+	 *         start of one of them and the end of the other)
+	 */
+	public boolean isOverlapping(DateRange other) {
+		if (other == null) return false;
+		return containsAny(other);
 	}
 
 }

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -76,6 +76,9 @@ import javax.mail.internet.MimeMultipart;
  * Set of static methods for sending and receiving emails
  */
 public class Eml {
+
+	public static final int SMTP_PORT_DEFAULT = 25;
+	public static final int SMTP_PORT_TLS_DEFAULT = 587;
 
 	public static void main(String[] args) throws Throwable {
 		Log.setDebugEnabled(true);
@@ -851,10 +854,14 @@ public class Eml {
 
 	public static Attachment[] createAttachmentsFromDirContents(File dir) {
 		if (dir == null || !dir.exists()) return null;
-		return toAttachments(dir.listFiles());
+		return createAttachments(dir.listFiles());
 	}
 
-	public static Attachment[] toAttachments(File... files) {
+	public static Attachment[] createAttachments(Collection<File> files) {
+		return createAttachments(files.toArray(new File[files.size()]));
+	}
+
+	public static Attachment[] createAttachments(File... files) {
 		if (files == null) return null;
 		Attachment[] attachments = new Attachment[files.length];
 		for (int i = 0; i < files.length; i++) {

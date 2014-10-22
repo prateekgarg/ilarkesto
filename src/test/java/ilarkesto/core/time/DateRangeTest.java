@@ -24,6 +24,15 @@ public class DateRangeTest extends ATest {
 	private static final DateRange range10 = new DateRange("2014-01-11 - 2014-01-20");
 
 	@Test
+	public void containsAll() {
+		assertTrue(range2014.containsAll(range2014));
+		assertFalse(range10.containsAll(new DateRange("2014-01-10 - 2014-01-15")));
+		assertFalse(range10.containsAll(new DateRange("2014-01-11 - 2014-01-21")));
+		assertFalse(range10.containsAll(new DateRange("2014-01-01 - 2014-01-10")));
+		assertFalse(range10.containsAll(new DateRange("2014-01-21 - 2014-01-31")));
+	}
+
+	@Test
 	public void containsAny() {
 		assertFalse(range2014.containsAny(new DateRange("2013-01-01 - 2013-12-31")));
 		assertTrue(range2014.containsAny(range2014));
