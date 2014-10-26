@@ -42,6 +42,10 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 		check();
 	}
 
+	public DateRange(Date singleDay) {
+		this(singleDay, singleDay);
+	}
+
 	public DateRange(java.util.Date start, java.util.Date end) {
 		this(new Date(start), new Date(end));
 		check();
@@ -97,6 +101,8 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 
 	public String formatShortest() {
 		if (isOneDay()) return start.format();
+
+		if (isSameYear() && start.isFirstDayOfYear() && end.isLastDayOfYear()) return String.valueOf(start.getYear());
 
 		if (start.equals(start.getFirstDateOfYear()) && end.equals(end.getLastDateOfYear())) {
 			// erster eines Jahres bis letzter eines (evtl. anderen) Jahres
@@ -208,6 +214,50 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 	public boolean isOverlapping(DateRange other) {
 		if (other == null) return false;
 		return containsAny(other);
+	}
+
+	public DateRange moveToYear(int year) {
+		return new DateRange(new Date(year, start.month, start.day), new Date(year, end.month, end.day));
+	}
+
+	// --- creates ---
+
+	public static DateRange nextYear() {
+		return year(Tm.getCurrentYear() + 1);
+	}
+
+	public static DateRange currentYear() {
+		return year(Tm.getCurrentYear());
+	}
+
+	public static DateRange year(int year) {
+		return new DateRange(new Date(year, 1, 1), new Date(year, 12, 31));
+	}
+
+	public static DateRange currentMonth() {
+		return monthOf(Date.today());
+	}
+
+	public static DateRange previousMonth() {
+		return monthOf(Date.today().addMonths(-1));
+	}
+
+	public static DateRange monthOf(Date day) {
+		return new DateRange(day.getFirstDateOfMonth(), day.getLastDateOfMonth());
+	}
+
+	public static DateRange monthOf(int year, int month) {
+		return monthOf(new Date(year, month, 1));
+	}
+
+	// --- utils ---
+
+	public static Date getStart(DateRange dateRange) {
+		return dateRange == null ? null : dateRange.start;
+	}
+
+	public static Date getEnd(DateRange dateRange) {
+		return dateRange == null ? null : dateRange.end;
 	}
 
 }

@@ -125,6 +125,14 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 		return day == 1;
 	}
 
+	public boolean isFirstDayOfYear() {
+		return day == 1 && month == 1;
+	}
+
+	public boolean isLastDayOfYear() {
+		return day == 31 && month == 12;
+	}
+
 	public Weekday getWeekday() {
 		return Weekday.get(Tm.getWeekday(toJavaDate()));
 	}
@@ -509,4 +517,5 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 
 		return from.formatDayMonthYear() + " - " + to.formatDayMonthYear();
 	}
+
 }
