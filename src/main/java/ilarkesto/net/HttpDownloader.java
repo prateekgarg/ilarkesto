@@ -1,5 +1,6 @@
 package ilarkesto.net;
 
+import ilarkesto.base.Reflect;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
@@ -14,7 +15,9 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class HttpDownloader {
+public abstract class HttpDownloader {
+
+	public static Class<? extends HttpDownloader> defaultType = ApacheHttpDownloader.class;
 
 	private static final Log log = Log.get(HttpDownloader.class);
 
@@ -23,6 +26,10 @@ public class HttpDownloader {
 	private String username;
 	private String password;
 	private String baseUrl;
+
+	public static HttpDownloader create() {
+		return Reflect.newInstance(defaultType);
+	}
 
 	public boolean isInternetAvailable() {
 		return true;

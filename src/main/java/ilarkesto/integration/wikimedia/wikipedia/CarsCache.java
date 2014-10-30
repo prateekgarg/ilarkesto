@@ -33,7 +33,7 @@ import java.util.Map;
 public class CarsCache extends ARemoteJsonCache<Cars> {
 
 	public static void main(String[] args) {
-		WikiLoader loader = new WikiLoader(new HttpDownloader(), WikiLoader.BASE_URL_WIKIPEDIA_DE);
+		WikiLoader loader = new WikiLoader(HttpDownloader.create(), WikiLoader.BASE_URL_WIKIPEDIA_DE);
 		createCar(loader, new PageRef(6538315, "?"), OperationObserver.DUMMY);
 		for (int i = 0; i < 100; i++) {
 			long pageId = CAR_PAGE_IDS[Utl.randomInt(0, CAR_PAGE_IDS.length - 1)];
@@ -55,7 +55,7 @@ public class CarsCache extends ARemoteJsonCache<Cars> {
 
 	@Override
 	protected Cars onUpdate(Cars payload, boolean forced, boolean invalidated, OperationObserver observer) {
-		WikiLoader loader = new WikiLoader(new HttpDownloader(), WikiLoader.BASE_URL_WIKIPEDIA_DE);
+		WikiLoader loader = new WikiLoader(HttpDownloader.create(), WikiLoader.BASE_URL_WIKIPEDIA_DE);
 		List<PageRef> pages = loader.loadCategoryMembers(Cars.CATEGORY_PAGE_ID, observer);
 
 		System.out.println();

@@ -26,7 +26,7 @@ public class GiiLawProvider extends ALawProvider {
 
 	public GiiLawProvider(AFileStorage dataStorage) {
 		this.dataStorage = dataStorage;
-		this.downloader = new HttpDownloader().setBaseUrl(BASE_URL);
+		this.downloader = HttpDownloader.create().setBaseUrl(BASE_URL);
 	}
 
 	@Override
