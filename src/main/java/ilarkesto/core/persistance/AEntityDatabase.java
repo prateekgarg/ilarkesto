@@ -44,6 +44,10 @@ public abstract class AEntityDatabase {
 
 	protected abstract Collection<AEntity> listAll();
 
+	public boolean isPartial() {
+		return false;
+	}
+
 	public boolean contains(String id) {
 		try {
 			return get(id) != null;
