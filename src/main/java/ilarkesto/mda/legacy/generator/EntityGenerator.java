@@ -446,6 +446,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 							+ p.getNameSingular() + ") {");
 
 				if (p.isReference()) {
+					ln("        if (" + p.getNameSingular() + " == null ) return null;");
 					ln("        return", p.getName() + "BackReferencesCache.getById(" + p.getNameSingular()
 							+ ".getId());");
 				}

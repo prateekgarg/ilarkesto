@@ -28,6 +28,7 @@ import ilarkesto.core.time.DateRange;
 import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
 import ilarkesto.email.EmailAddress;
+import ilarkesto.mda.legacy.model.BeanModel;
 import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
@@ -85,6 +86,13 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		for (PropertyModel property : bean.getProperties()) {
 			writeProperty(property);
+		}
+
+		BeanModel superbean = bean.getSuperbean();
+		if (superbean != null && superbean instanceof DatobModel) {
+			for (PropertyModel property : ((DatobModel) superbean).getProperties()) {
+				writeSuperbeanProperty(property);
+			}
 		}
 
 		ln();
@@ -359,6 +367,10 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			if (p.isCollection()) {
 				ln("    public final void set" + pNameUpper + "Ids(" + p.getCollectionType() + "<String> ids) {");
 				ln("        if (Utl.equals(" + p.getName() + "Ids, ids)) return;");
+
+				ln("        clear" + Str.uppercaseFirstLetter(p.getName()) + "BackReferenceCache(ids, " + p.getName()
+						+ "Ids);");
+
 				ln("        " + p.getName() + "Ids = ids;");
 				writeModified(p);
 				ln("    }");
@@ -366,12 +378,26 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			if (!p.isCollection()) {
 				ln("    public final void set" + pNameUpper + "Id(String id) {");
 				ln("        if (Utl.equals(" + p.getName() + "Id, id)) return;");
-				if (!bean.isAbstract()) {
-					ln("        " + p.getName() + "BackReferencesCache.clear(id);");
-					ln("        " + p.getName() + "BackReferencesCache.clear(" + getFieldName(p) + ");");
-				}
+
+				ln("        clear" + Str.uppercaseFirstLetter(p.getName()) + "BackReferenceCache(id, "
+						+ getFieldName(p) + ");");
+
 				ln("        " + getFieldName(p) + " = id;");
 				writeModified(p);
+				ln("    }");
+
+			}
+
+			ln();
+			if (bean.isAbstract()) {
+				ln("    protected abstract void clear" + Str.uppercaseFirstLetter(p.getName())
+						+ "BackReferenceCache(String oldId, String newId);");
+			} else {
+				String type = p.isCollection() ? "Collection<String>" : "String";
+				ln("    private void clear" + Str.uppercaseFirstLetter(p.getName()) + "BackReferenceCache(" + type
+						+ " oldId, " + type + " newId) {");
+				ln("        " + p.getName() + "BackReferencesCache.clear(oldId);");
+				ln("        " + p.getName() + "BackReferencesCache.clear(newId);");
 				ln("    }");
 			}
 		}
@@ -414,6 +440,17 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			writeSimpleProperty(p);
 		}
 
+	}
+
+	private void writeSuperbeanProperty(PropertyModel p) {
+		if (p.isReference()) {
+			ln();
+			ln("    protected final void clear" + Str.uppercaseFirstLetter(p.getName())
+					+ "BackReferenceCache(String oldId, String newId) {");
+			ln("        " + p.getName() + "BackReferencesCache.clear(oldId);");
+			ln("        " + p.getName() + "BackReferencesCache.clear(newId);");
+			ln("    }");
+		}
 	}
 
 	private void writeModified(PropertyModel p) {
