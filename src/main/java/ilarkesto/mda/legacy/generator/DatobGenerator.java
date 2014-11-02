@@ -366,10 +366,11 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			if (!p.isCollection()) {
 				ln("    public final void set" + pNameUpper + "Id(String id) {");
 				ln("        if (Utl.equals(" + p.getName() + "Id, id)) return;");
-				ln("        " + getFieldName(p) + " = id;");
 				if (!bean.isAbstract()) {
-					ln("        " + p.getName() + "BackReferencesCache.clear(getId());");
+					ln("        " + p.getName() + "BackReferencesCache.clear(id);");
+					ln("        " + p.getName() + "BackReferencesCache.clear(" + getFieldName(p) + ");");
 				}
+				ln("        " + getFieldName(p) + " = id;");
 				writeModified(p);
 				ln("    }");
 			}
