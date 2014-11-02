@@ -195,7 +195,7 @@ public class Transaction {
 		return ret;
 	}
 
-	public AEntity get(AEntityQuery query) {
+	public AEntity getFirst(AEntityQuery query) {
 		AEntity entity = modified.get(query);
 		if (entity == null) entity = backend.get(query);
 		if (entity != null && isDeleted(entity)) return null;

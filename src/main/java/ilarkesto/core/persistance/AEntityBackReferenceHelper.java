@@ -14,25 +14,26 @@
  */
 package ilarkesto.core.persistance;
 
-import ilarkesto.core.fp.Predicate;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.Set;
+public abstract class AEntityBackReferenceHelper<E extends AEntity> {
 
-public abstract class AEntityQuery<T extends AEntity> implements Predicate<T> {
+	private Map<String, E> cachesById = new HashMap<String, E>();
 
-	public Set<T> list() {
-		return (Set<T>) AEntityDatabase.get().getTransaction().list(this);
+	protected abstract E loadById(String id);
+
+	public synchronized E getById(String id) {
+		E cache = cachesById.get(id);
+		if (cache == null) {
+			cache = loadById(id);
+			cachesById.put(id, cache);
+		}
+		return cache;
 	}
 
-	public T getFirst() {
-		return (T) AEntityDatabase.get().getTransaction().getFirst(this);
-	}
-
-	@Override
-	public abstract boolean test(T entity);
-
-	public Class<T> getType() {
-		return null;
+	public synchronized void clear(String id) {
+		cachesById.remove(id);
 	}
 
 }

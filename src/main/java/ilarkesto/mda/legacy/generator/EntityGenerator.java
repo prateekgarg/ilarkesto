@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -22,7 +22,9 @@ import ilarkesto.base.Str;
 import ilarkesto.core.base.Uuid;
 import ilarkesto.core.localization.GermanComparator;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.AEntityBackReferenceHelper;
 import ilarkesto.core.persistance.AEntityQuery;
+import ilarkesto.core.persistance.AEntitySetBackReferenceHelper;
 import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.persistance.EditableKeytableValue;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
@@ -180,10 +182,21 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					+ bean.getName() + "\");");
 		}
 
+		List<BackReferenceModel> backReferences = bean.getBackReferences();
+		for (BackReferenceModel br : backReferences) {
+			PropertyModel reference = br.getReference();
+			if (reference.isUnique()) {
+				ln("        " + br.getReference().getBean().getBeanClass(), br.getName(), "=",
+					"get" + Str.uppercaseFirstLetter(br.getName()) + "();");
+			} else {
+				ln("        Collection<" + reference.getBean().getBeanClass() + ">", br.getName(), "=",
+					"get" + Str.uppercaseFirstLetter(br.getName()) + "s();");
+			}
+		}
+
 		if (!bean.isSelfcontained()) {
 			Set<ReferencePropertyModel> masterReferences = bean.getMasterReferences();
 			if (masterReferences.isEmpty()) {
-				List<BackReferenceModel> backReferences = bean.getBackReferences();
 				if (!backReferences.isEmpty()) {
 					boolean first = true;
 					s("        if (");
@@ -193,11 +206,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 						} else {
 							s(" && ");
 						}
-						if (br.getReference().isUnique()) {
-							s("get" + Str.uppercaseFirstLetter(br.getName()) + "()==null");
-						} else {
-							s("get" + Str.uppercaseFirstLetter(br.getName()) + "s().isEmpty()");
-						}
+						s(br.getName(), "== null");
 					}
 					ln(") {");
 					ln("            log.info(\"Deleting unreferenced entity: \" + getId());");
@@ -350,46 +359,115 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		for (PropertyModel p : bean.getPropertiesAndSuperbeanProperties()) {
 			ln();
 			if (p.isUnique()) {
+
+				if (p.isReference()) {
+					ln("    private static transient",
+						AEntityBackReferenceHelper.class.getName() + "<" + bean.getName() + ">", p.getName()
+								+ "BackReferencesCache = new",
+						AEntityBackReferenceHelper.class.getName() + "<" + bean.getName() + ">() {");
+					annotationOverride();
+					ln("        protected " + bean.getName() + " loadById(final String id) {");
+					ln("        return new " + queryName + "() {");
+					ln("            @Override");
+					ln("            public boolean test(" + bean.getName() + " entity) {");
+
+					if (p.isCollection()) {
+						ln("                return entity.get" + Str.uppercaseFirstLetter(p.getName())
+								+ "Ids().contains(id);");
+					}
+
+					if (!p.isCollection()) {
+						ln("                return id.equals(entity.get" + Str.uppercaseFirstLetter(p.getName())
+								+ "Id());");
+					}
+					ln("            }");
+					ln("        }.getFirst();");
+					ln("        }");
+					ln("    };");
+					ln();
+				}
 				String byType = p.getType();
 				if (p.isCollection()) byType = p.getContentType();
 				ln("    public static", bean.getName(), "getBy" + Str.uppercaseFirstLetter(p.getNameSingular())
 						+ "(final " + byType + " " + p.getName() + ") {");
-				ln("        return (" + bean.getName() + ") " + Transaction.class.getName() + ".get().get(new "
-						+ queryName + "() {");
-				ln("            @Override");
-				ln("            public boolean test(" + bean.getName() + " entity) {");
-				if (p.isCollection()) {
-					ln("                return entity.contains" + Str.uppercaseFirstLetter(p.getNameSingular()) + "("
-							+ p.getName() + ");");
+				if (p.isReference()) {
+					ln("        if (" + p.getName() + " == null ) return null;");
+					ln("        return", p.getName() + "BackReferencesCache.getById(" + p.getName() + ".getId());");
 				} else {
-					ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
-							+ ");");
+					ln("        return (" + bean.getName() + ") " + Transaction.class.getName()
+							+ ".get().getFirst(new " + queryName + "() {");
+					ln("            @Override");
+					ln("            public boolean test(" + bean.getName() + " entity) {");
+					if (p.isCollection()) {
+						ln("                return entity.contains" + Str.uppercaseFirstLetter(p.getNameSingular())
+								+ "(" + p.getName() + ");");
+					} else {
+						ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "("
+								+ p.getName() + ");");
+					}
+					ln("            }");
+					ln("        });");
 				}
-				ln("            }");
-				ln("        });");
 				ln("    }");
 
 			}
+
 			if (!p.isUnique()) {
+				if (p.isReference()) {
+					ln("    private static transient",
+						AEntitySetBackReferenceHelper.class.getName() + "<" + bean.getName() + ">", p.getName()
+								+ "BackReferencesCache = new", AEntitySetBackReferenceHelper.class.getName() + "<"
+								+ bean.getName() + ">() {");
+					annotationOverride();
+					ln("        protected Set<" + bean.getName() + "> loadById(final String id) {");
+					ln("        return new " + queryName + "() {");
+					ln("            @Override");
+					ln("            public boolean test(" + bean.getName() + " entity) {");
+
+					if (p.isCollection()) {
+						ln("                return entity.get" + Str.uppercaseFirstLetter(p.getName())
+								+ "Ids().contains(id);");
+					}
+
+					if (!p.isCollection()) {
+						ln("                return id.equals(entity.get" + Str.uppercaseFirstLetter(p.getName())
+								+ "Id());");
+					}
+					ln("            }");
+					ln("        }.list();");
+					ln("        }");
+					ln("    };");
+					ln();
+				}
+
 				ln("    public static Set<",
 					bean.getName() + ">",
 					"listBy" + Str.uppercaseFirstLetter(p.getNameSingular()) + "(final " + p.getContentType() + " "
 							+ p.getNameSingular() + ") {");
-				ln("        return new " + queryName + "() {");
-				ln("            @Override");
-				ln("            public boolean test(" + bean.getName() + " entity) {");
 
-				if (p.isCollection()) {
-					ln("                return entity.contains" + Str.uppercaseFirstLetter(p.getNameSingular()) + "("
-							+ p.getNameSingular() + ");");
+				if (p.isReference()) {
+					ln("        return", p.getName() + "BackReferencesCache.getById(" + p.getNameSingular()
+							+ ".getId());");
 				}
 
-				if (!p.isCollection()) {
-					ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "(" + p.getName()
-							+ ");");
+				if (!p.isReference()) {
+					ln("        return new " + queryName + "() {");
+					ln("            @Override");
+					ln("            public boolean test(" + bean.getName() + " entity) {");
+
+					if (p.isCollection()) {
+						ln("                return entity.contains" + Str.uppercaseFirstLetter(p.getNameSingular())
+								+ "(" + p.getNameSingular() + ");");
+					}
+
+					if (!p.isCollection()) {
+						ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "("
+								+ p.getName() + ");");
+					}
+					ln("            }");
+					ln("        }.list();");
 				}
-				ln("            }");
-				ln("        }.list();");
+
 				ln("    }");
 			}
 

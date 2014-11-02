@@ -37,6 +37,7 @@ import ilarkesto.persistence.AEntity;
 import ilarkesto.persistence.AStructure;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -318,13 +319,21 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		String getterMethodPrefix = p.isBoolean() ? "is" : "get";
 
-		if (p.isReference() && !p.isCollection()) {
+		if (p.isReference()) {
 
-			// --- getXxxId ---
-			ln();
-			ln("    public final String " + getterMethodPrefix + pNameUpper + "Id() {");
-			ln("        return " + getFieldName(p) + ";");
-			ln("    }");
+			if (p.isCollection()) {
+				// --- getXxxIds ---
+				ln();
+				ln("    public final Collection<String> " + getterMethodPrefix + pNameUpper + "Ids() {");
+				ln("        return", Collections.class.getName(), ".unmodifiableCollection(" + getFieldName(p) + ");");
+				ln("    }");
+			} else {
+				// --- getXxxId ---
+				ln();
+				ln("    public final String " + getterMethodPrefix + pNameUpper + "Id() {");
+				ln("        return " + getFieldName(p) + ";");
+				ln("    }");
+			}
 
 		}
 
@@ -358,6 +367,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("    public final void set" + pNameUpper + "Id(String id) {");
 				ln("        if (Utl.equals(" + p.getName() + "Id, id)) return;");
 				ln("        " + getFieldName(p) + " = id;");
+				if (!bean.isAbstract()) {
+					ln("        " + p.getName() + "BackReferencesCache.clear(getId());");
+				}
 				writeModified(p);
 				ln("    }");
 			}
@@ -382,9 +394,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			}
 			if (!p.isCollection()) {
 				ln("    private final void update" + pNameUpper + "Id(String id) {");
-				ln("        if (Utl.equals(" + p.getName() + "Id, id)) return;");
-				ln("        " + getFieldName(p) + " = id;");
-				writeModified(p);
+				ln("        set" + pNameUpper + "Id(id);");
 				ln("    }");
 			}
 		}
@@ -757,43 +767,45 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		// --- updateXxx(Object value) ---
 		ln();
-		ln("    protected final void update" + pNameUpper + "(Object value) {");
-		if (p.isReference()) {
-			if (isLegacyBean(bean)) {
-				String daoExpr = p.getDaoName();
-				if (p.isAbstract()) {
-					daoExpr = "getDaoService()";
+		if (!p.isReference() || isLegacyBean(bean)) {
+			ln("    protected final void update" + pNameUpper + "(Object value) {");
+			if (p.isReference()) {
+				if (isLegacyBean(bean)) {
+					String daoExpr = p.getDaoName();
+					if (p.isAbstract()) {
+						daoExpr = "getDaoService()";
+					}
+					ln("        set" + pNameUpper + "(value == null ? null : (" + p.getType() + ")" + daoExpr
+							+ ".getById((String)value));");
+				} else {
+					ln("        if (xxxUtl.equals(" + getFieldName(p) + ", value)) return;");
+					ln("        " + getFieldName(p) + " = (String)value;");
+					writeModified(p);
 				}
-				ln("        set" + pNameUpper + "(value == null ? null : (" + p.getType() + ")" + daoExpr
-						+ ".getById((String)value));");
+			} else if (p.isPrimitive()) {
+				String type = p.getType();
+				if (type.equals("int")) type = Integer.class.getSimpleName();
+				if (type.equals("boolean")) type = Boolean.class.getSimpleName();
+				ln("        set" + pNameUpper + "((" + type + ")value);");
 			} else {
-				ln("        if (Utl.equals(" + getFieldName(p) + ", value)) return;");
-				ln("        " + getFieldName(p) + " = (String)value;");
-				writeModified(p);
+				String type = p.getType();
+				if (type.equals(Date.class.getName())) {
+					ln("        value = value == null ? null : new " + Date.class.getName() + "((String)value);");
+				} else if (type.equals(Time.class.getName())) {
+					ln("        value = value == null ? null : new " + Time.class.getName() + "((String)value);");
+				} else if (type.equals(DateAndTime.class.getName())) {
+					ln("        value = value == null ? null : new " + DateAndTime.class.getName() + "((String)value);");
+				} else if (type.equals(DateRange.class.getName())) {
+					ln("        value = value == null ? null : new " + DateRange.class.getName() + "((String)value);");
+				} else if (type.equals(DayAndMonth.class.getName())) {
+					ln("        value = value == null ? null : new " + DayAndMonth.class.getName() + "((String)value);");
+				} else if (type.equals(Money.class.getName())) {
+					ln("        value = value == null ? null : new " + Money.class.getName() + "((String)value);");
+				}
+				ln("        set" + pNameUpper + "((" + p.getType() + ")value);");
 			}
-		} else if (p.isPrimitive()) {
-			String type = p.getType();
-			if (type.equals("int")) type = Integer.class.getSimpleName();
-			if (type.equals("boolean")) type = Boolean.class.getSimpleName();
-			ln("        set" + pNameUpper + "((" + type + ")value);");
-		} else {
-			String type = p.getType();
-			if (type.equals(Date.class.getName())) {
-				ln("        value = value == null ? null : new " + Date.class.getName() + "((String)value);");
-			} else if (type.equals(Time.class.getName())) {
-				ln("        value = value == null ? null : new " + Time.class.getName() + "((String)value);");
-			} else if (type.equals(DateAndTime.class.getName())) {
-				ln("        value = value == null ? null : new " + DateAndTime.class.getName() + "((String)value);");
-			} else if (type.equals(DateRange.class.getName())) {
-				ln("        value = value == null ? null : new " + DateRange.class.getName() + "((String)value);");
-			} else if (type.equals(DayAndMonth.class.getName())) {
-				ln("        value = value == null ? null : new " + DayAndMonth.class.getName() + "((String)value);");
-			} else if (type.equals(Money.class.getName())) {
-				ln("        value = value == null ? null : new " + Money.class.getName() + "((String)value);");
-			}
-			ln("        set" + pNameUpper + "((" + p.getType() + ")value);");
+			ln("    }");
 		}
-		ln("    }");
 	}
 
 	@Override
