@@ -16,32 +16,28 @@ package ilarkesto.core.persistance;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 public abstract class AEntitySetBackReferenceHelper<E extends AEntity> {
 
-	private Map<String, Set<E>> cachesById = new HashMap<String, Set<E>>();
+	private Map<String, Set<String>> cachesById = new HashMap<String, Set<String>>();
 
 	protected abstract Set<E> loadById(String id);
 
 	public synchronized Set<E> getById(String id) {
 		if (AEntityDatabase.instance.isPartial()) return loadById(id);
-		Set<E> cache = cachesById.get(id);
-		if (cache == null) {
-			cache = loadById(id);
-			cachesById.put(id, cache);
-		}
-		if (!cache.isEmpty()) removeDeleted(cache);
-		return cache;
-	}
+		Set<String> cache = cachesById.get(id);
 
-	private void removeDeleted(Set<E> cache) {
-		Iterator<E> iterator = cache.iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next().isDeleted()) iterator.remove();
+		if (cache != null) {
+			try {
+				return (Set<E>) AEntity.getByIdsAsSet(cache);
+			} catch (EntityDoesNotExistException ex) {}
 		}
+
+		Set<E> entities = loadById(id);
+		cachesById.put(id, Persistence.getIdsAsSet(entities));
+		return entities;
 	}
 
 	public synchronized void clear(String id) {
