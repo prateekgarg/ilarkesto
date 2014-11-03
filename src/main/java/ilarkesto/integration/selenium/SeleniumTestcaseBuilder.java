@@ -85,6 +85,14 @@ public class SeleniumTestcaseBuilder {
 		return command("open", url);
 	}
 
+	public Command storeEval(String script, String variableName) {
+		return command("storeEval", script, variableName);
+	}
+
+	public Command storeEvalWindowLocationHash(String hash) {
+		return storeEval("window.location.hash='" + hash + "'", null);
+	}
+
 	public Command command(String command, String target, String value) {
 		return command(command, target).setValue(value);
 	}
