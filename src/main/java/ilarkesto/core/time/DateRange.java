@@ -102,18 +102,20 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 	public String formatShortest() {
 		if (isOneDay()) return start.format();
 
-		if (isSameYear() && start.isFirstDayOfYear() && end.isLastDayOfYear()) return String.valueOf(start.getYear());
+		if (isSameYear()) {
+			if (start.isFirstDayOfYear() && end.isLastDayOfYear()) return String.valueOf(start.getYear());
+
+			if (start.equals(start.getFirstDateOfMonth()) && end.equals(end.getLastDateOfMonth())) {
+				// erster eines Monats bis letzter eines (evtl. anderen) Monats
+				if (start.getMonth() == end.getMonth()) return start.formatLongMonthYear();
+				return start.formatLongMonthYear() + " - " + end.formatLongMonthYear();
+			}
+		}
 
 		if (start.equals(start.getFirstDateOfYear()) && end.equals(end.getLastDateOfYear())) {
 			// erster eines Jahres bis letzter eines (evtl. anderen) Jahres
-			if (start.getYear() == end.getYear()) return start.getYear() + "";
+			if (isSameYear()) return start.getYear() + "";
 			return start.getYear() + " - " + end.getYear();
-		}
-
-		if (start.equals(start.getFirstDateOfMonth()) && end.equals(end.getLastDateOfMonth())) {
-			// erster eines Monats bis letzter eines (evtl. anderen) Monats
-			if (start.getMonth() == end.getMonth()) return start.formatLongMonthYear();
-			return start.formatLongMonthYear() + " - " + end.formatLongMonthYear();
 		}
 
 		return start.formatDayMonthYear() + " - " + end.formatDayMonthYear();
