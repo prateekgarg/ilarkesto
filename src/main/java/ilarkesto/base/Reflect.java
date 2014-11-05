@@ -302,6 +302,14 @@ public abstract class Reflect {
 		return m;
 	}
 
+	public static Method getDeclaredMethodIgnoreParameters(Class<?> clazz, String name) {
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (method.getName().equals(name)) return method;
+		}
+		if (clazz == Object.class) return null;
+		return getDeclaredMethodIgnoreParameters(clazz.getSuperclass(), name);
+	}
+
 	public static boolean isTransient(Field field) {
 		return Modifier.isTransient(field.getModifiers());
 	}
