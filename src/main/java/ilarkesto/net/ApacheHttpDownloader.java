@@ -74,6 +74,7 @@ public class ApacheHttpDownloader extends HttpDownloader {
 
 	@Override
 	public String post(String url, Map<String, String> parameters, Map<String, String> requestHeaders, String charset) {
+		url = getFullUrl(url);
 		HttpResponse response;
 		try {
 			response = doPost(url, parameters, requestHeaders, charset);
@@ -89,6 +90,7 @@ public class ApacheHttpDownloader extends HttpDownloader {
 
 	private synchronized HttpResponse doPost(String url, Map<String, String> parameters,
 			Map<String, String> requestHeaders, String charset) throws HttpRedirectException {
+		url = getFullUrl(url);
 		HttpPost request = new HttpPost(url);
 		if (requestHeaders != null) {
 			for (Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
@@ -144,6 +146,7 @@ public class ApacheHttpDownloader extends HttpDownloader {
 
 	@Override
 	public synchronized void downloadUrlToFile(String url, File file, int followRedirects) {
+		url = getFullUrl(url);
 		file.getParentFile().mkdirs();
 		BufferedOutputStream out = null;
 		HttpClient client = getClient();
@@ -188,6 +191,7 @@ public class ApacheHttpDownloader extends HttpDownloader {
 
 	@Override
 	public synchronized String downloadText(String url, String charset, int followRedirects) {
+		url = getFullUrl(url);
 		HttpClient client = getClient();
 		try {
 			HttpResponse response = client.execute(new HttpGet(url), getContext());

@@ -1,6 +1,7 @@
 package ilarkesto.net;
 
 import ilarkesto.base.Reflect;
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
@@ -96,8 +97,9 @@ public abstract class HttpDownloader {
 		return IO.downloadUrlToString(url, charset, username, password);
 	}
 
-	private String getFullUrl(String url) {
+	public final String getFullUrl(String url) {
 		if (baseUrl == null) return url;
+		if (Str.isLink(url)) return url;
 		return baseUrl + url;
 	}
 
