@@ -14,24 +14,33 @@
  */
 package ilarkesto.core.base;
 
+import ilarkesto.core.base.Str.Formatable;
+import ilarkesto.core.localization.Localizer;
+
 import java.math.BigDecimal;
 
-public class BigDecimalSumBuilder {
+public class BigDecimalSumBuilder implements Formatable {
 
 	private BigDecimal sum;
 
-	public BigDecimalSumBuilder add(BigDecimal value) {
+	public BigDecimalSumBuilder add(Number value) {
 		if (value == null) return this;
+		BigDecimal bdValue = ((value instanceof BigDecimal) ? (BigDecimal) value : new BigDecimal(value.toString()));
 		if (sum == null) {
-			sum = value;
+			sum = bdValue;
 			return this;
 		}
-		sum = sum.add(value);
+		sum = sum.add(bdValue);
 		return this;
 	}
 
 	public BigDecimal getSum() {
 		return sum;
+	}
+
+	@Override
+	public String format() {
+		return sum == null ? null : Localizer.get().format(sum, true, 2);
 	}
 
 }
