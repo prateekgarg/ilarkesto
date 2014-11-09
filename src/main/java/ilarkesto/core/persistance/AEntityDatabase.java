@@ -42,7 +42,7 @@ public abstract class AEntityDatabase {
 	public abstract void update(Collection<AEntity> modified, Collection<String> deletedIds,
 			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback);
 
-	protected abstract Collection<AEntity> listAll();
+	public abstract Collection<AEntity> listAll();
 
 	public boolean isPartial() {
 		return false;
