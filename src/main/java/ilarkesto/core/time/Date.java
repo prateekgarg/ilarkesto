@@ -85,6 +85,18 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 		return Tm.getWeek(toJavaDate());
 	}
 
+	public TimePeriod getPeriodFromToday() {
+		return getPeriodFrom(today(), false);
+	}
+
+	public TimePeriod getPeriodFrom(Date other) {
+		return getPeriodFrom(other, false);
+	}
+
+	public TimePeriod getPeriodFrom(Date other, boolean absolute) {
+		return new TimePeriod(Tm.DAY * Tm.getDaysBetweenDates(other.toJavaDate(), toJavaDate()), absolute);
+	}
+
 	public TimePeriod getPeriodTo(Date other) {
 		return getPeriodTo(other, false);
 	}
