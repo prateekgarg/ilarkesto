@@ -23,6 +23,14 @@ import org.testng.annotations.Test;
 public class MoneyTest extends ATest {
 
 	@Test
+	public void percentageOf() {
+		assertEquals(new Money("1 EUR").getPercentageOf(new Money("5 EUR")), new BigDecimal("20"));
+		assertEquals(new Money("5 EUR").getPercentageOf(new Money("100 EUR")), new BigDecimal("5"));
+		assertEquals(new Money("23 EUR").getPercentageOf(new Money("23 EUR")), new BigDecimal("100"));
+		assertEquals(new Money("2 EUR").getPercentageOf(new Money("1 EUR")), new BigDecimal("200"));
+	}
+
+	@Test
 	public void percent() {
 		assertEquals(new Money("1 EUR").percent(new BigDecimal(1)), new Money("0.01 EUR"));
 		assertEquals(new Money("1 EUR").percent(new BigDecimal("1.5")), new Money("0.02 EUR"));

@@ -251,6 +251,11 @@ public final class Money implements Comparable<Money>, Serializable, Formatable 
 		return 0;
 	}
 
+	public BigDecimal getPercentageOf(Money total) {
+		if (total == null) return null;
+		return new BigDecimal(cent).divide(total.getAmount(), BigDecimal.ROUND_HALF_UP);
+	}
+
 	// --- ---
 
 	public static Money computeAvg(String currency, Money... moneys) throws MultipleCurrenciesException {
