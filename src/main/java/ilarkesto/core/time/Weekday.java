@@ -14,9 +14,10 @@
  */
 package ilarkesto.core.time;
 
+import ilarkesto.core.base.Str.Formatable;
 import ilarkesto.core.base.Utl;
 
-public enum Weekday {
+public enum Weekday implements Formatable {
 
 	MONDAY(2), TUESDAY(3), WEDNESDAY(4), THURSDAY(5), FRIDAY(6), SATURDAY(7), SUNDAY(1);
 
@@ -82,6 +83,11 @@ public enum Weekday {
 	@Override
 	public String toString() {
 		return toString("en");
+	}
+
+	@Override
+	public String format() {
+		return Tm.getLocalizer().full(this);
 	}
 
 }

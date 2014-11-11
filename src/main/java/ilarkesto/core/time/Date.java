@@ -141,6 +141,14 @@ public class Date implements Comparable<Date>, Serializable, Formatable {
 		return newDate(Tm.addDays(toJavaDate(), days));
 	}
 
+	public Date addDaysAndForwardToWorkday(int days) {
+		Date ret = addDays(days);
+		while (!ret.getWeekday().isWorkday()) {
+			ret = ret.addDays(1);
+		}
+		return ret;
+	}
+
 	public Date addMonths(int months) {
 		int years = months / 12;
 		months = months - (years * 12);
