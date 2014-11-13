@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -21,6 +21,14 @@ import java.math.BigDecimal;
 import org.testng.annotations.Test;
 
 public class MoneyTest extends ATest {
+
+	@Test
+	public void getPercentage() {
+		assertEquals(new Money("100 EUR").getPercentage(new BigDecimal("100")), new Money("100 EUR"));
+		assertEquals(new Money("100 EUR").getPercentage(new BigDecimal("0")), new Money("0 EUR"));
+		assertEquals(new Money("23.23 EUR").getPercentage(new BigDecimal("200")), new Money("46.46 EUR"));
+		assertEquals(new Money("100 EUR").getPercentage(new BigDecimal("0.009")), new Money("0.01 EUR"));
+	}
 
 	@Test
 	public void percentageOf() {
