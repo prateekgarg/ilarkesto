@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -17,15 +17,68 @@ package ilarkesto.jdbc;
 import ilarkesto.core.logging.Log;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Jdbc {
 
 	private static Log log = Log.get(Jdbc.class);
+
+	public static String createDbDescriptionText(Connection connection) {
+		StringBuilder sb = new StringBuilder();
+		List<String> tables = listTables(connection);
+		for (String table : tables) {
+			sb.append("TABLE ").append(table).append("\n");
+			List<String> columns = listColumns(connection, table);
+			for (String column : columns) {
+				sb.append("  COLUMN ").append(column).append("\n");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	public static List<String> listColumns(Connection connection, String table) {
+		List<String> ret = new ArrayList<String>();
+		ResultSet rs = null;
+		try {
+			DatabaseMetaData metaData = connection.getMetaData();
+			rs = metaData.getColumns(null, null, "%", "%");
+			while (rs.next()) {
+				String columnName = rs.getString("COLUMN_NAME");
+				ret.add(columnName);
+			}
+		} catch (SQLException ex) {
+			throw new RuntimeException("Listing tables failed", ex);
+		} finally {
+			closeQuiet(rs);
+		}
+		return ret;
+	}
+
+	public static List<String> listTables(Connection connection) {
+		List<String> ret = new ArrayList<String>();
+		ResultSet rs = null;
+		try {
+			DatabaseMetaData metaData = connection.getMetaData();
+			rs = metaData.getTables(null, null, "%", null);
+			while (rs.next()) {
+				String tableName = rs.getString("TABLE_NAME");
+				ret.add(tableName);
+			}
+		} catch (SQLException ex) {
+			throw new RuntimeException("Listing tables failed", ex);
+		} finally {
+			closeQuiet(rs);
+		}
+		return ret;
+	}
 
 	public static Connection createConnection(String driver, String protocol, String host, String port,
 			String database, String login, String password) {
