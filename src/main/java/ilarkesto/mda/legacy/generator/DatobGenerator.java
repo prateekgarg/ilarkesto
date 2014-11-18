@@ -447,13 +447,15 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 	}
 
 	private void writeSuperbeanProperty(PropertyModel p) {
-		if (p.isReference()) {
-			ln();
-			ln("    protected final void clear" + Str.uppercaseFirstLetter(p.getName())
-					+ "BackReferenceCache(String oldId, String newId) {");
-			ln("        " + p.getName() + "BackReferencesCache.clear(oldId);");
-			ln("        " + p.getName() + "BackReferencesCache.clear(newId);");
-			ln("    }");
+		if (!isLegacyBean(bean)) {
+			if (p.isReference()) {
+				ln();
+				ln("    protected final void clear" + Str.uppercaseFirstLetter(p.getName())
+						+ "BackReferenceCache(String oldId, String newId) {");
+				ln("        " + p.getName() + "BackReferencesCache.clear(oldId);");
+				ln("        " + p.getName() + "BackReferencesCache.clear(newId);");
+				ln("    }");
+			}
 		}
 	}
 
@@ -615,6 +617,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (p.isReference()) {
 			ln();
 			ln("    protected void repairDead" + pNameSingularUpper + "Reference(String entityId) {");
+			ln("        if (" + getFieldName(p) + " == null ) return;");
 			ln("        if (" + getFieldName(p) + ".remove(entityId)) {");
 			writeModified(p);
 			ln("        }");
@@ -626,18 +629,21 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("    public final boolean contains" + pNameSingularUpper + "(" + p.getContentType() + " "
 				+ p.getNameSingular() + ") {");
 		ln("        if (" + p.getNameSingular() + " == null) return false;");
+		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        return " + getFieldName(p) + ".contains(" + paramExpr + ");");
 		ln("    }");
 
 		// --- getXxxCount ---
 		ln();
 		ln("    public final int get" + pNameUpper + "Count() {");
+		ln("        if (" + getFieldName(p) + " == null) return 0;");
 		ln("        return " + getFieldName(p) + ".size();");
 		ln("    }");
 
 		// --- isXxxEmpty ---
 		ln();
 		ln("    public final boolean is" + pNameUpper + "Empty() {");
+		ln("        if (" + getFieldName(p) + " == null) return true;");
 		ln("        return " + getFieldName(p) + ".isEmpty();");
 		ln("    }");
 
@@ -647,6 +653,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				+ ") {");
 		ln("        if (" + p.getNameSingular() + " == null) throw new IllegalArgumentException(\""
 				+ p.getNameSingular() + " == null\");");
+		ln("        if (" + getFieldName(p) + " == null) " + getFieldName(p) + " = new " + getFieldImpl(p) + "();");
 		if (p.isValueObject()) {
 			ln("        boolean added = " + getFieldName(p) + ".add((" + p.getContentType() + ")" + paramExpr
 					+ ".clone(get" + pNameUpper + "Manager()));");
@@ -672,6 +679,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				+ p.getName() + ") {");
 		ln("        if (" + p.getName() + " == null) throw new IllegalArgumentException(\"" + p.getName()
 				+ " == null\");");
+		ln("        if (" + getFieldName(p) + " == null) " + getFieldName(p) + " = new " + getFieldImpl(p) + "();");
 		if (p.isValueObject()) {
 			ln("        boolean added = false;");
 			ln("        for (" + p.getContentType() + " " + p.getNameSingular() + " : " + p.getName() + ") {");
@@ -720,6 +728,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				+ p.getName() + ") {");
 		ln("        if (" + p.getName() + " == null) return false;");
 		ln("        if (" + p.getName() + ".isEmpty()) return false;");
+		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        boolean removed = false;");
 		ln("        for (" + p.getContentType() + " _element: " + p.getName() + ") {");
 		ln("            removed = removed | " + getFieldName(p) + ".remove(_element);");
@@ -735,6 +744,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		// --- clearXxx ---
 		ln();
 		ln("    public final boolean clear" + pNameUpper + "() {");
+		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        if (" + getFieldName(p) + ".isEmpty()) return false;");
 		ln("        " + getFieldName(p) + ".clear();");
 		writeModified(p);
@@ -745,6 +755,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			// --- getXxxAsCommaSeperatedString
 			ln();
 			ln("    public final String get" + pNameUpper + "AsCommaSeparatedString() {");
+			ln("        if (" + getFieldName(p) + " == null) return null;");
 			ln("        if (" + getFieldName(p) + ".isEmpty()) return null;");
 			ln("        return Str.concat(" + getFieldName(p) + ",\", \");");
 			ln("    }");

@@ -185,6 +185,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		List<BackReferenceModel> backReferences = bean.getBackReferences();
 		for (BackReferenceModel br : backReferences) {
 			PropertyModel reference = br.getReference();
+			if (isLegacyBean(bean) && reference.getBean().isAbstract()) continue;
 			if (reference.isUnique()) {
 				ln("        " + br.getReference().getBean().getBeanClass(), br.getName(), "=",
 					"get" + Str.uppercaseFirstLetter(br.getName()) + "();");
