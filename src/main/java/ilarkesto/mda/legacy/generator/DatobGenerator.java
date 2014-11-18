@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -368,8 +368,10 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("    public final void set" + pNameUpper + "Ids(" + p.getCollectionType() + "<String> ids) {");
 				ln("        if (Utl.equals(" + p.getName() + "Ids, ids)) return;");
 
-				ln("        clear" + Str.uppercaseFirstLetter(p.getName()) + "BackReferenceCache(ids, " + p.getName()
-						+ "Ids);");
+				if (!isLegacyBean(bean)) {
+					ln("        clear" + Str.uppercaseFirstLetter(p.getName()) + "BackReferenceCache(ids, "
+							+ p.getName() + "Ids);");
+				}
 
 				ln("        " + p.getName() + "Ids = ids;");
 				writeModified(p);
@@ -379,8 +381,10 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("    public final void set" + pNameUpper + "Id(String id) {");
 				ln("        if (Utl.equals(" + p.getName() + "Id, id)) return;");
 
-				ln("        clear" + Str.uppercaseFirstLetter(p.getName()) + "BackReferenceCache(id, "
-						+ getFieldName(p) + ");");
+				if (!isLegacyBean(bean)) {
+					ln("        clear" + Str.uppercaseFirstLetter(p.getName()) + "BackReferenceCache(id, "
+							+ getFieldName(p) + ");");
+				}
 
 				ln("        " + getFieldName(p) + " = id;");
 				writeModified(p);
@@ -388,17 +392,19 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 			}
 
-			ln();
-			if (bean.isAbstract()) {
-				ln("    protected abstract void clear" + Str.uppercaseFirstLetter(p.getName())
-						+ "BackReferenceCache(String oldId, String newId);");
-			} else {
-				String type = p.isCollection() ? "Collection<String>" : "String";
-				ln("    private void clear" + Str.uppercaseFirstLetter(p.getName()) + "BackReferenceCache(" + type
-						+ " oldId, " + type + " newId) {");
-				ln("        " + p.getName() + "BackReferencesCache.clear(oldId);");
-				ln("        " + p.getName() + "BackReferencesCache.clear(newId);");
-				ln("    }");
+			if (!isLegacyBean(bean)) {
+				ln();
+				if (bean.isAbstract()) {
+					ln("    protected abstract void clear" + Str.uppercaseFirstLetter(p.getName())
+							+ "BackReferenceCache(String oldId, String newId);");
+				} else {
+					String type = p.isCollection() ? "Collection<String>" : "String";
+					ln("    private void clear" + Str.uppercaseFirstLetter(p.getName()) + "BackReferenceCache(" + type
+							+ " oldId, " + type + " newId) {");
+					ln("        " + p.getName() + "BackReferencesCache.clear(oldId);");
+					ln("        " + p.getName() + "BackReferencesCache.clear(newId);");
+					ln("    }");
+				}
 			}
 		}
 

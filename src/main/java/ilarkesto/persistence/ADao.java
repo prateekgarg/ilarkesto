@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class ADao<E extends AEntity> extends ADatobManager<E> implements IdentifiableResolver<E>, Searcher,
-		DaoListener, Iconized {
+		DaoListener, Iconized, Comparable<ADao> {
 
 	private static final Log LOG = Log.get(ADao.class);
 
@@ -49,6 +49,10 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	private String icon;
 
 	// --- ---
+
+	protected int getOrderIndex() {
+		return 0;
+	}
 
 	@Override
 	public void onDatobModified(E entity, String field, String value) {
@@ -343,6 +347,11 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 
 	public final void setUserDao(AUserDao userDao) {
 		this.userDao = userDao;
+	}
+
+	@Override
+	public int compareTo(ADao other) {
+		return ilarkesto.core.base.Utl.compare(getOrderIndex(), other.getOrderIndex());
 	}
 
 }

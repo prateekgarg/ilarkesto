@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -41,6 +41,7 @@ public class GwtSuperDevMode {
 	private int port = 9876;
 	private Set<String> sources = new LinkedHashSet<String>();
 	private Set<String> modules = new LinkedHashSet<String>();
+	private boolean precompile = true;
 	private WebServer webServer;
 	private Proc proc;
 
@@ -50,7 +51,7 @@ public class GwtSuperDevMode {
 		proc.setRedirectOutputToSysout(true);
 		proc.addParameters("-classpath", Str.concat(classpath, Sys.getPathSeparator()));
 		proc.addParameter("com.google.gwt.dev.codeserver.CodeServer");
-		proc.addParameter("-noprecompile");
+		if (!precompile) proc.addParameter("-noprecompile");
 		proc.addParameters("-port", String.valueOf(port));
 		proc.addParameters("-workDir", getWorkDir());
 
@@ -132,7 +133,7 @@ public class GwtSuperDevMode {
 	private Options createOptions() {
 		List<String> args = new ArrayList<String>();
 
-		args.add("-noprecompile");
+		if (!precompile) args.add("-noprecompile");
 
 		// port
 		args.add("-port");
@@ -174,6 +175,11 @@ public class GwtSuperDevMode {
 		for (String source : sources) {
 			this.sources.add(source);
 		}
+		return this;
+	}
+
+	public GwtSuperDevMode setPrecompile(boolean precompile) {
+		this.precompile = precompile;
 		return this;
 	}
 
