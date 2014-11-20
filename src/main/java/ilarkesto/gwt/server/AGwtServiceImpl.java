@@ -37,6 +37,10 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 
 	protected abstract AWebApplication getWebApplication();
 
+	protected long getMaxServiceCallExecutionTime(String methodName) {
+		return 500;
+	}
+
 	@Override
 	protected void onBeforeRequestDeserialized(String serializedRequest) {
 		getSession().getContext().createSubContext("gwt-srv");
