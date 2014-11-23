@@ -32,11 +32,15 @@ public abstract class AEntitySetBackReferenceHelper<E extends AEntity> {
 		if (cache != null) {
 			try {
 				return (Set<E>) AEntity.getByIdsAsSet(cache);
-			} catch (EntityDoesNotExistException ex) {}
+			} catch (EntityDoesNotExistException ex) {
+				cachesById.remove(id);
+			}
 		}
 
 		Set<E> entities = loadById(id);
-		cachesById.put(id, Persistence.getIdsAsSet(entities));
+		if (!AEntityDatabase.instance.isTransactionWithChangesOpen()) {
+			cachesById.put(id, Persistence.getIdsAsSet(entities));
+		}
 		return entities;
 	}
 

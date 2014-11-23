@@ -52,6 +52,12 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 	}
 
 	@Override
+	public boolean isTransactionWithChangesOpen() {
+		if (transaction == null) return false;
+		return !transaction.isEmpty();
+	}
+
+	@Override
 	public void onTransactionFinished(Transaction transaction) {
 		log.debug("Transaction finished:", transaction.getName());
 		if (this.transaction == transaction) this.transaction = null;

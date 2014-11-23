@@ -36,7 +36,9 @@ public abstract class AEntityBackReferenceHelper<E extends AEntity> {
 
 		E entity = loadById(id);
 		if (entity == null) return null;
-		cachesById.put(id, entity.getId());
+		if (!AEntityDatabase.instance.isTransactionWithChangesOpen()) {
+			cachesById.put(id, entity.getId());
+		}
 		return entity;
 	}
 

@@ -39,6 +39,8 @@ public abstract class AEntityDatabase {
 
 	public abstract Set<AEntity> list(AEntityQuery query);
 
+	public abstract boolean isTransactionWithChangesOpen();
+
 	public abstract void update(Collection<AEntity> modified, Collection<String> deletedIds,
 			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback);
 
