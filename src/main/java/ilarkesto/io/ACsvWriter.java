@@ -44,7 +44,7 @@ public abstract class ACsvWriter<R> {
 		for (AColumn column : columns) {
 			headers.add(column.getName());
 		}
-		csv.writeHeaders(headers);
+		if (isHeadersEnabled()) csv.writeHeaders(headers);
 
 		Iterable<R> records = getRecords();
 		for (R record : records) {
@@ -63,6 +63,10 @@ public abstract class ACsvWriter<R> {
 		}
 
 		csv.close();
+	}
+
+	protected boolean isHeadersEnabled() {
+		return false;
 	}
 
 	public final void write(Writer out, char separator) {
