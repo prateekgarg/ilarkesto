@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -156,7 +156,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 	protected void onCallbackError(List<ErrorWrapper> errors) {}
 
 	private void callbackError(List<ErrorWrapper> errors) {
-		log.error("Service call", getName(), "failed:", errors);
+		log.error("callbackError()", errors);
 		onCallbackError(errors);
 		long timeFromLastSuccess = Tm.getCurrentTimeMillis() - lastSuccessfullServiceCallTime;
 		if (isDispensable() && timeFromLastSuccess < AServiceCall.MAX_FAILURE_TIME) {
@@ -192,6 +192,7 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 
 		@Override
 		public void onFailure(Throwable ex) {
+			log.info("onFailure()", ex);
 			serviceCallReturned();
 			if (ex instanceof StatusCodeException) {
 				StatusCodeException sce = (StatusCodeException) ex;

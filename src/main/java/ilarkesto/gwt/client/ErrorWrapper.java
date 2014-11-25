@@ -38,6 +38,10 @@ public class ErrorWrapper implements Serializable, IsSerializable {
 		this("unknown error", null);
 	}
 
+	public boolean isLoginRequired() {
+		return message.contains("Login required");
+	}
+
 	public boolean isServerNotAvailable() {
 		return SERVER_NOT_AVAILABLE.equals(name);
 	}
