@@ -36,8 +36,14 @@ public abstract class ACsvWriter<R> {
 
 	protected abstract Iterable<R> getRecords();
 
-	public void write(CsvWriter csv) {
+	public final void write(CsvWriter csv) {
+		onWrite(csv);
+		onWriteCompleted();
+	}
 
+	protected void onWriteCompleted() {}
+
+	protected void onWrite(CsvWriter csv) {
 		columns = new ArrayList<AColumn>();
 		createColumns();
 		List<String> headers = new ArrayList<String>();
