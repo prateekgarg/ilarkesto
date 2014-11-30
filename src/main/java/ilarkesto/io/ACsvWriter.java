@@ -49,15 +49,15 @@ public abstract class ACsvWriter<R> {
 		Iterable<R> records = getRecords();
 		for (R record : records) {
 			for (AColumn column : columns) {
-				Object value;
+				String value;
 				try {
-					value = column.getValue(record);
+					value = column.getCsvValue(record);
 				} catch (Exception ex) {
 					handleExceptionOnGetValue(ex);
 					csv.writeField("");
 					continue;
 				}
-				csv.writeField(Str.format(value));
+				csv.writeField(value);
 			}
 			csv.closeRecord();
 		}
@@ -106,6 +106,10 @@ public abstract class ACsvWriter<R> {
 		public abstract String getName();
 
 		public abstract Object getValue(R record);
+
+		public String getCsvValue(R record) {
+			return Str.format(getValue(record));
+		}
 
 	}
 
