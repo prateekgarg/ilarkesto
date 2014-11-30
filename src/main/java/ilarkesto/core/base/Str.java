@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -37,6 +37,11 @@ public class Str {
 	public static final char sz = '\u00DF';
 
 	public static final char EUR = '\u0080';
+
+	public static boolean isLongerThan(String text, int maxLength) {
+		if (text == null) return false;
+		return text.length() > maxLength;
+	}
 
 	public static String insert(String into, int index, String s) {
 		if (into == null) return null;
