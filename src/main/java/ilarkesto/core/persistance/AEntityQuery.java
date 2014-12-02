@@ -16,6 +16,9 @@ package ilarkesto.core.persistance;
 
 import ilarkesto.core.fp.Predicate;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 public abstract class AEntityQuery<T extends AEntity> implements Predicate<T> {
@@ -33,6 +36,14 @@ public abstract class AEntityQuery<T extends AEntity> implements Predicate<T> {
 
 	public Class<T> getType() {
 		return null;
+	}
+
+	public List<T> filter(Collection<T> entities) {
+		ArrayList<T> ret = new ArrayList<T>();
+		for (T entity : entities) {
+			if (test(entity)) ret.add(entity);
+		}
+		return ret;
 	}
 
 }
