@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -84,10 +84,10 @@ public class Eml {
 		Log.setDebugEnabled(true);
 		Sys.setFileEncoding(IO.UTF_8);
 
-		// Session session = createSmtpSession("mail.servisto.de", null, false,
-		// LoginPanel.showDialog(null, "Servisto SMTP", new File("runtimedata/servisto-smtp.properties")));
-		Session session = createSmtpSession("smtp.gmail.com", 587, true,
-			LoginPanel.showDialog(null, "GMail SMTP", new File("runtimedata/gmail-smtp.properties")));
+		Session session = createSmtpSession("mail.servisto.de", null, false,
+			LoginPanel.showDialog(null, "Servisto SMTP", new File("runtimedata/servisto-smtp.properties")));
+		// Session session = createSmtpSession("smtp.gmail.com", 587, true,
+		// LoginPanel.showDialog(null, "GMail SMTP", new File("runtimedata/gmail-smtp.properties")));
 		sendSmtpMessage(session, createTextMessage(session, "test 1", "test 1", "wi@koczewski.de", "wi@koczewski.de"));
 
 		// Message msg = createTextMessage(createDummySession(), "aaa" + Str.UE + "aaa", "aaa" + Str.UE +
