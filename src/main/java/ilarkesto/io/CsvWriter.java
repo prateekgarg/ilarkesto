@@ -14,8 +14,6 @@
  */
 package ilarkesto.io;
 
-import ilarkesto.base.Str;
-
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Collection;
@@ -82,7 +80,8 @@ public class CsvWriter {
 	}
 
 	public static String escape(String value) {
-		value = Str.escapeEscapeSequences(value);
+		if (value == null) return null;
+		value = value.replace("\"", "\"\"");
 		return value;
 	}
 
