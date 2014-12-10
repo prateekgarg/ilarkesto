@@ -12,9 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.max.internet;
+package ilarkesto.integration.max;
+
+import ilarkesto.integration.max.state.MaxDevice;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 public class Max {
@@ -24,5 +27,20 @@ public class Max {
 	public static String formatDateTime(Date date) {
 		if (date == null) return null;
 		return new SimpleDateFormat(DATE_TIME_PATTERN).format(date);
+	}
+
+	public static String getNamesWithRoomNames(Collection<MaxDevice> devices) {
+		if (devices == null || devices.isEmpty()) return null;
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (MaxDevice device : devices) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append(device.getNameWithRoomName());
+		}
+		return sb.toString();
 	}
 }
