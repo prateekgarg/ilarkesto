@@ -85,12 +85,16 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 		ln("                handleServiceMethodException(conversationNumber, \"" + method.getName() + "\", ex);");
 		ln("            }");
 		if (!ping) {
+			String paramsString = "";
+			for (ParameterModel param : method.getParameters()) {
+				paramsString += ", " + param.getName();
+			}
 			ln("            if (rt.getRuntime() > getMaxServiceCallExecutionTime(\"" + method.getName() + "\")) {");
 			ln("                log.warn(\"ServiceCall " + method.getName()
 					+ "() served in\", rt.getRuntimeFormated());");
 			ln("            } else {");
-			ln("                log.info(\"ServiceCall " + method.getName()
-					+ "() served in\", rt.getRuntimeFormated());");
+			ln("                log.info(\"ServiceCall served in\", rt.getRuntimeFormated(),\"" + method.getName()
+					+ "\"" + paramsString + ");");
 			ln("            }");
 		}
 		ln("            return (" + service.getDtoClassName() + ") conversation.popNextData();");
