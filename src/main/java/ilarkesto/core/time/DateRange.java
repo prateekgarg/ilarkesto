@@ -77,6 +77,14 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 		return Tm.getDaysBetweenDates(start.toJavaDate(), end.toJavaDate()) + 1;
 	}
 
+	public boolean isExactMonths() {
+		return start.isFirstDayOfMonth() && end.isLastDateOfMonth();
+	}
+
+	public int getMonthCount() {
+		return (end.getMonth() + end.getYear()) - (start.getMonth() + start.getYear());
+	}
+
 	public TimePeriod getTimePeriodBetweenStartAndEnd() {
 		return start.getPeriodTo(end);
 	}
