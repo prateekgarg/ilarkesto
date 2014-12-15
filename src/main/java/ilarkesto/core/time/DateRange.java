@@ -82,7 +82,7 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 	}
 
 	public int getMonthCount() {
-		return (end.getMonth() + end.getYear()) - (start.getMonth() + start.getYear());
+		return (end.getMonth() + end.getYear() + 1) - (start.getMonth() + start.getYear());
 	}
 
 	public TimePeriod getTimePeriodBetweenStartAndEnd() {
