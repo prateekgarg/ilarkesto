@@ -90,8 +90,8 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 				paramsString += ", " + param.getName();
 			}
 			ln("            if (rt.getRuntime() > getMaxServiceCallExecutionTime(\"" + method.getName() + "\")) {");
-			ln("                log.warn(\"ServiceCall " + method.getName()
-					+ "() served in\", rt.getRuntimeFormated());");
+			ln("                log.warn(\"ServiceCall served in\", rt.getRuntimeFormated(),\"" + method.getName()
+					+ "\"" + paramsString + ");");
 			ln("            } else {");
 			ln("                log.info(\"ServiceCall served in\", rt.getRuntimeFormated(),\"" + method.getName()
 					+ "\"" + paramsString + ");");
