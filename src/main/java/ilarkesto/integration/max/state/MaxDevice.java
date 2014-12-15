@@ -74,6 +74,10 @@ public class MaxDevice {
 		return deviceType;
 	}
 
+	public boolean isDeviceTypePushButton() {
+		return "PushButton".equals(getDeviceType());
+	}
+
 	public boolean isDeviceTypeShutterContact() {
 		return "ShutterContact".equals(getDeviceType());
 	}

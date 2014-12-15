@@ -64,18 +64,18 @@ public class MaxCubeState {
 		return lastPingAge < maxMillis;
 	}
 
-	public List<MaxDevice> getAllDevicesWithDeviceStateInvalidError() {
+	public List<MaxDevice> getAllDevicesWithDeviceStateInvalidError(boolean ignorePushButton) {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
-		ret.addAll(getHouse().getDevicesWithDeviceStateInvalidError());
+		ret.addAll(getHouse().getDevicesWithDeviceStateInvalidError(ignorePushButton));
 		for (MaxRoom room : getRooms()) {
 			ret.addAll(room.getDevicesWithDeviceStateInvalidError());
 		}
 		return ret;
 	}
 
-	public List<MaxDevice> getAllDevicesWithTransmitError() {
+	public List<MaxDevice> getAllDevicesWithTransmitError(boolean ignorePushButton) {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
-		ret.addAll(getHouse().getDevicesWithError());
+		ret.addAll(getHouse().getDevicesWithError(ignorePushButton));
 		for (MaxRoom room : getRooms()) {
 			ret.addAll(room.getDevicesWithError());
 		}

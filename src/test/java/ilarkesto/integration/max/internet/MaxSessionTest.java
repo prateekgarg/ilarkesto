@@ -1,7 +1,6 @@
 package ilarkesto.integration.max.internet;
 
 import ilarkesto.core.time.Weekday;
-import ilarkesto.integration.max.internet.MaxSession;
 import ilarkesto.integration.max.state.MaxCubeState;
 import ilarkesto.integration.max.state.MaxDevice;
 import ilarkesto.integration.max.state.MaxHouse;
@@ -77,6 +76,13 @@ public class MaxSessionTest extends ATest {
 		System.out.println(state.toString());
 		MaxHouse house = state.getHouse();
 		assertNotNull(house);
+
+		List<MaxDevice> houseDevices = house.getDevices();
+		assertNotEmpty(houseDevices);
+		for (MaxDevice device : houseDevices) {
+			System.out.println("  " + device);
+		}
+
 		List<MaxRoom> rooms = state.getRooms();
 		assertSize(rooms, 8);
 		for (MaxRoom room : rooms) {

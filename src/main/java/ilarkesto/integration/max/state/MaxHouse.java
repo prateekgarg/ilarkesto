@@ -38,17 +38,19 @@ public class MaxHouse {
 		return ret;
 	}
 
-	public List<MaxDevice> getDevicesWithError() {
+	public List<MaxDevice> getDevicesWithError(boolean ignorePushButon) {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
 		for (MaxDevice device : getDevices()) {
+			if (ignorePushButon && device.isDeviceTypePushButton()) continue;
 			if (!device.isRadioOk() || !device.isStateInfoValid()) ret.add(device);
 		}
 		return ret;
 	}
 
-	public List<MaxDevice> getDevicesWithDeviceStateInvalidError() {
+	public List<MaxDevice> getDevicesWithDeviceStateInvalidError(boolean ignorePushButon) {
 		List<MaxDevice> ret = new ArrayList<MaxDevice>();
 		for (MaxDevice device : getDevices()) {
+			if (ignorePushButon && device.isDeviceTypePushButton()) continue;
 			if (!device.isStateInfoValid()) ret.add(device);
 		}
 		return ret;
