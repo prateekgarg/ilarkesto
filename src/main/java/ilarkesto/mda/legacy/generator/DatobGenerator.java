@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -664,6 +664,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 			}
 			ln("        boolean added = " + getFieldName(p) + ".add(" + paramExpr + ");");
+			if (!isLegacyBean(bean) && p.isReference()) {
+				ln("        if (added) " + p.getName() + "BackReferencesCache.clear(" + paramExpr + ");");
+			}
 		}
 		if (p.isModified()) {
 			ln("        if (added) {");
@@ -699,6 +702,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			ln("            added = added | " + getFieldName(p) + ".add(" + paramExpr + ");");
 			ln("        }");
 		}
+		if (!isLegacyBean(bean) && p.isReference()) {
+			ln("        if (added) " + p.getName() + "BackReferencesCache.clear(" + getFieldName(p) + ");");
+		}
 		if (p.isModified()) {
 			ln("        if (added) {");
 			writeModified(p);
@@ -714,6 +720,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("        if (" + p.getNameSingular() + " == null) return false;");
 		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        boolean removed = " + getFieldName(p) + ".remove(" + paramExpr + ");");
+		if (!isLegacyBean(bean) && p.isReference()) {
+			ln("        if (removed) " + p.getName() + "BackReferencesCache.clear(" + paramExpr + ");");
+		}
 		if (p.isModified()) {
 			ln("        if (removed) {");
 			writeModified(p);
@@ -733,6 +742,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("        for (" + p.getContentType() + " _element: " + p.getName() + ") {");
 		ln("            removed = removed | " + getFieldName(p) + ".remove(_element);");
 		ln("        }");
+		if (!isLegacyBean(bean) && p.isReference()) {
+			ln("        if (removed) " + p.getName() + "BackReferencesCache.clear(" + getFieldName(p) + ");");
+		}
 		if (p.isModified()) {
 			ln("        if (removed) {");
 			writeModified(p);
@@ -746,6 +758,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("    public final boolean clear" + pNameUpper + "() {");
 		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        if (" + getFieldName(p) + ".isEmpty()) return false;");
+		if (!isLegacyBean(bean) && p.isReference()) {
+			ln("        " + p.getName() + "BackReferencesCache.clear(" + getFieldName(p) + ");");
+		}
 		ln("        " + getFieldName(p) + ".clear();");
 		writeModified(p);
 		ln("        return true;");
