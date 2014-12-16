@@ -84,6 +84,10 @@ public class ATest extends Assert {
 		assertTrue(collection.contains(element), "Collection expected to contain <" + element + ">");
 	}
 
+	public static <T> void assertContainsNot(Collection<T> collection, T element) {
+		assertFalse(collection.contains(element), "Collection expected not to contain <" + element + ">");
+	}
+
 	public static void assertNotEmpty(Collection collection) {
 		assertFalse(collection.isEmpty(), "Collection expected to be not empty, but it is");
 	}
