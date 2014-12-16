@@ -100,6 +100,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			writePredicates();
 			writeCollectPassengers();
 			writeGetReferencedEntities();
+			writeOnAfterPersist();
 		}
 
 		ln();
@@ -134,6 +135,22 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 
 		super.writeContent();
+	}
+
+	private void writeOnAfterPersist() {
+		ln();
+		annotationOverride();
+		ln("    protected void onAfterPersist() {");
+		ln("        super.onAfterPersist();");
+		if (!bean.isAbstract()) {
+			for (PropertyModel p : bean.getPropertiesAndSuperbeanProperties()) {
+				if (!p.isReference()) continue;
+				String suffix = p.isCollection() ? "s" : "";
+				ln("        " + p.getName() + "BackReferencesCache.clear(get" + Str.uppercaseFirstLetter(p.getName())
+						+ "Id" + suffix + "());");
+			}
+		}
+		ln("    }");
 	}
 
 	private void writeGetReferencedEntities() {

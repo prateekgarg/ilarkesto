@@ -41,7 +41,10 @@ public class AEntity implements Serializable, TransferableEntity {
 	public final void persist() {
 		updateLastModified();
 		AEntityDatabase.get().getTransaction().persist(this);
+		onAfterPersist();
 	}
+
+	protected void onAfterPersist() {}
 
 	public final boolean isPersisted() {
 		return AEntityDatabase.get().getTransaction().contains(getId());
