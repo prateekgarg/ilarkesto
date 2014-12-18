@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -19,6 +19,7 @@ import ilarkesto.base.Env;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.persistance.ACachingEntityDatabase;
 import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.Transaction;
 import ilarkesto.di.Context;
 import ilarkesto.di.app.AApplication;
@@ -144,7 +145,12 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 		int deleteCount = 0;
 		if (deleted != null) {
 			for (String id : deleted) {
-				AEntity entity = cache.get(id);
+				AEntity entity;
+				try {
+					entity = cache.get(id);
+				} catch (EntityDoesNotExistException ex) {
+					continue;
+				}
 				File file = getFile(entity);
 				files.add(file);
 				log.debug("Deleting entity", entity.getClass().getSimpleName(), file);

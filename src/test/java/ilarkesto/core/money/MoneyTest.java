@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -36,6 +36,9 @@ public class MoneyTest extends ATest {
 		assertEquals(new Money("5 EUR").getPercentageOf(new Money("100 EUR")), new BigDecimal("5"));
 		assertEquals(new Money("23 EUR").getPercentageOf(new Money("23 EUR")), new BigDecimal("100"));
 		assertEquals(new Money("2 EUR").getPercentageOf(new Money("1 EUR")), new BigDecimal("200"));
+
+		assertEquals(new Money("0.01 EUR").getPercentageOf(new Money("10 EUR")), new BigDecimal("0"));
+		assertEquals(new Money("1234567890 EUR").getPercentageOf(new Money("1234567890 EUR")), new BigDecimal("100"));
 	}
 
 	@Test
