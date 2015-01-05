@@ -32,6 +32,7 @@ public class DwrParser extends Parser {
 
 	public DwrParser(String data) {
 		super(data);
+		log.debug(data);
 	}
 
 	public Object parseCallbackObject() {
@@ -75,6 +76,7 @@ public class DwrParser extends Parser {
 
 		Object valueObject = parseAssignementValue(value, objects);
 
+		// Log.TEST("--->", object.getClass().getSimpleName(), property, valueObject);
 		try {
 			Reflect.setFieldValue(object, property, valueObject);
 		} catch (Exception ex) {

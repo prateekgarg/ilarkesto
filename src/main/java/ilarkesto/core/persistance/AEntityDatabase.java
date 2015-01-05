@@ -1,23 +1,25 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.core.persistance;
 
 import ilarkesto.core.base.RuntimeTracker;
+import ilarkesto.core.fp.FP;
 import ilarkesto.core.logging.Log;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,16 +61,26 @@ public abstract class AEntityDatabase {
 	}
 
 	public void ensureIntegrityForAllEntities() {
-		log.info("Ensuring integrity for all entities");
+		Collection<AEntity> entities = listAll();
+		int count = entities.size();
+		log.info("Ensuring integrity for all", count, "entities");
 		RuntimeTracker rt = new RuntimeTracker();
 		Transaction transaction = getTransaction();
-		ensureIntegrity();
-		log.info("Integrity for all entities ensured in", rt.getRuntimeFormated());
+
+		Map<Class<? extends AEntity>, List<AEntity>> entitiesByType = FP.group(entities,
+			new EntitiesByTypeGroupFunctionn());
+		for (Map.Entry<Class<? extends AEntity>, List<AEntity>> entry : entitiesByType.entrySet()) {
+			Class<? extends AEntity> type = entry.getKey();
+			List<AEntity> entitiesOfType = entry.getValue();
+			log.info("   ", type.getSimpleName(), entitiesOfType.size());
+			ensureIntegrity(entitiesOfType);
+		}
+
+		log.info("Integrity for all", count, "entities ensured in", rt.getRuntimeFormated());
 		transaction.commit();
 	}
 
-	private void ensureIntegrity() {
-		Collection<AEntity> entities = listAll();
+	private void ensureIntegrity(Collection<AEntity> entities) {
 		for (AEntity entity : entities) {
 			try {
 				entity.ensureIntegrity();
