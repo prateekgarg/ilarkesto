@@ -30,7 +30,8 @@ public class Paragraph extends AInfoDocElement {
 		StringBuilder sb = new StringBuilder();
 		sb.append(
 			"\n<p style='" + context.getElementDepthStyle(getDepth()) + " color:" + context.getColor(getDepth())
-					+ ";'>").append(Str.toHtml(text, true)).append("</p>\n");
+					+ ";'>").append(context.getIndentationPrefix(this))
+				.append(context.getIndentationPrefix(this) + Str.toHtml(text, true)).append("</p>\n");
 		return sb.toString();
 	}
 
