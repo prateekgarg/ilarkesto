@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -31,14 +31,20 @@ public class InfoDocStructureTest extends ATest {
 
 		assertEquals(elements.get(0).toString(), "Absatz mit einer Zeile.");
 		assertFalse(elements.get(0).isPrefixed());
+		assertEquals(elements.get(0).getIndexInDepth(), 0);
+
 		assertEquals(elements.get(1).toString(), "Absatz mit\nzwei Zeilen.");
 		assertFalse(elements.get(1).isPrefixed());
+
 		assertEquals(elements.get(2).toString(), "Kommentar");
 		assertFalse(elements.get(2).isPrefixed());
+
 		assertEquals(elements.get(3).toString(), "Überschrift");
 		assertTrue(elements.get(3).isPrefixed());
+
 		assertEquals(elements.get(4).toString(), "ref");
 		assertFalse(elements.get(4).isPrefixed());
+
 		assertEquals(elements.get(5).toString(), "x");
 		assertTrue(elements.get(5).isPrefixed());
 	}
@@ -66,7 +72,9 @@ public class InfoDocStructureTest extends ATest {
 	public void parse4() {
 		InfoDocStructure doc = InfoDocStructure.parse("A) 1\n\nsub");
 		List<AInfoDocElement> elements = doc.getElements();
+
 		assertEquals(elements.get(0).getDepth(), 0);
+
 		Paragraph sub = (Paragraph) elements.get(1);
 		assertEquals(sub.getDepth(), 1);
 		assertEquals(sub.getText(), "sub");
@@ -94,12 +102,13 @@ public class InfoDocStructureTest extends ATest {
 
 	@Test
 	public void index() {
-		InfoDocStructure doc = InfoDocStructure.parse("! 1\n\n" + "! 2\n\n" + "!! 2.1\n\n" + "text\n\n");
+		InfoDocStructure doc = InfoDocStructure.parse("! 1\n\n" + "! 2\n\n" + "!! 2.1\n\n" + "text\n\n" + "text2\n\n");
 		List<AInfoDocElement> elements = doc.getElements();
 		assertEquals(elements.get(0).getIndexInDepth(), 0);
 		assertEquals(elements.get(1).getIndexInDepth(), 1);
 		assertEquals(elements.get(2).getIndexInDepth(), 0);
 		assertEquals(elements.get(3).getIndexInDepth(), 0);
+		assertEquals(elements.get(4).getIndexInDepth(), 0);
 	}
 
 }
