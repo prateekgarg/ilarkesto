@@ -28,6 +28,11 @@ public class Header extends AInfoDocElement {
 	}
 
 	@Override
+	public boolean isPrefixed() {
+		return true;
+	}
+
+	@Override
 	public String toHtml(AHtmlContext context, AReferenceResolver referenceResolver) {
 		StringBuilder sb = new StringBuilder();
 		String ref = getRef();

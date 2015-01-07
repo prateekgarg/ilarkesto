@@ -30,11 +30,17 @@ public class InfoDocStructureTest extends ATest {
 		assertSize(elements, 6);
 
 		assertEquals(elements.get(0).toString(), "Absatz mit einer Zeile.");
+		assertFalse(elements.get(0).isPrefixed());
 		assertEquals(elements.get(1).toString(), "Absatz mit\nzwei Zeilen.");
+		assertFalse(elements.get(1).isPrefixed());
 		assertEquals(elements.get(2).toString(), "Kommentar");
+		assertFalse(elements.get(2).isPrefixed());
 		assertEquals(elements.get(3).toString(), "Überschrift");
+		assertTrue(elements.get(3).isPrefixed());
 		assertEquals(elements.get(4).toString(), "ref");
+		assertFalse(elements.get(4).isPrefixed());
 		assertEquals(elements.get(5).toString(), "x");
+		assertTrue(elements.get(5).isPrefixed());
 	}
 
 	@Test
@@ -54,6 +60,16 @@ public class InfoDocStructureTest extends ATest {
 		assertEquals(elements.get(2).getDepth(), 1);
 		assertEquals(elements.get(3).getDepth(), 2);
 		assertEquals(elements.get(4).getDepth(), 3);
+	}
+
+	@Test
+	public void parse4() {
+		InfoDocStructure doc = InfoDocStructure.parse("A) 1\n\nsub");
+		List<AInfoDocElement> elements = doc.getElements();
+		assertEquals(elements.get(0).getDepth(), 0);
+		Paragraph sub = (Paragraph) elements.get(1);
+		assertEquals(sub.getDepth(), 1);
+		assertEquals(sub.getText(), "sub");
 	}
 
 	@Test

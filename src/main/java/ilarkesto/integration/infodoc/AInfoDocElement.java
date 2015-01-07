@@ -26,6 +26,10 @@ public abstract class AInfoDocElement {
 		this.structure = structure;
 	}
 
+	public boolean isPrefixed() {
+		return false;
+	}
+
 	public final int getIndexInDepth() {
 		return structure.getIndexInDepth(this);
 	}
