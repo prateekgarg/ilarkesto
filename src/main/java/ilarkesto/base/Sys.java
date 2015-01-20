@@ -18,6 +18,8 @@ import ilarkesto.io.IO;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -249,5 +251,21 @@ public final class Sys {
 	}
 
 	private Sys() {}
+
+	public static String getLocalHostIp() {
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException ex) {
+			return null;
+		}
+	}
+
+	public static String getLocalHostName() {
+		try {
+			return InetAddress.getLocalHost().getCanonicalHostName();
+		} catch (UnknownHostException ex) {
+			return null;
+		}
+	}
 
 }
