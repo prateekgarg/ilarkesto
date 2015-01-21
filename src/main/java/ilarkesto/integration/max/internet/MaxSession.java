@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -71,7 +71,7 @@ public class MaxSession {
 		Map<String, String> extra = new LinkedHashMap<String, String>();
 		extra.put("c0-e2", "string:" + room.getId());
 		extra.put("c0-e1", "Object_MaxSetRoomAutoMode:{roomId:reference:c0-e2}");
-		executeApiMethod("setClientCommands", extra, "Array:[reference:c0-e1]");
+		executeApiMethod(true, "setClientCommands", extra, "Array:[reference:c0-e1]");
 		log.info("Command transmitted:", "SetRoomAutoMode", room.getName());
 	}
 
@@ -88,7 +88,7 @@ public class MaxSession {
 		extra.put("c0-e2", "string:" + room.getId());
 		extra.put("c0-e3", "number:" + temperature);
 		extra.put("c0-e1", "Object_MaxSetRoomPermanentMode:{roomId:reference:c0-e2, temperature:reference:c0-e3}");
-		executeApiMethod("setClientCommands", extra, "Array:[reference:c0-e1]");
+		executeApiMethod(true, "setClientCommands", extra, "Array:[reference:c0-e1]");
 		log.info("Command transmitted:", "SetRoomPermanentMode", temperature, room.getName());
 	}
 
@@ -117,12 +117,12 @@ public class MaxSession {
 		extra.put("c0-e4", "number:" + temperature);
 		extra.put("c0-e1",
 			"Object_MaxSetRoomTemporaryMode:{roomId:reference:c0-e2, date:reference:c0-e3, temperature:reference:c0-e4}");
-		executeApiMethod("setClientCommands", extra, "Array:[reference:c0-e1]");
+		executeApiMethod(true, "setClientCommands", extra, "Array:[reference:c0-e1]");
 		log.info("Command transmitted:", "SetRoomTemporaryMode", temperature, until, room.getName());
 	}
 
 	public MaxCubeState getMaxCubeState() {
-		String result = executeApiMethod("getMaxCubeState", null);
+		String result = executeApiMethod(true, "getMaxCubeState", null);
 
 		DwrParser parser = new DwrParser(result);
 
@@ -142,7 +142,7 @@ public class MaxSession {
 	public void login(String user, String password) throws LoginFailedException {
 		initialize();
 
-		String result = executeApiMethod("login", null, "string:" + user, "string:" + password);
+		String result = executeApiMethod(false, "login", null, "string:" + user, "string:" + password);
 
 		DwrParser parser = new DwrParser(result);
 		if (parser.isError()) throw new LoginFailedException(baseUrl, user, parser.getErrorMessage());
@@ -154,7 +154,8 @@ public class MaxSession {
 		this.password = password;
 	}
 
-	synchronized String executeApiMethod(String name, Map<String, String> extraParams, String... arguments) {
+	synchronized String executeApiMethod(boolean reloginOnFailure, String name, Map<String, String> extraParams,
+			String... arguments) {
 		batchId++;
 
 		Map<String, String> parameters = new LinkedHashMap<String, String>();
@@ -177,7 +178,7 @@ public class MaxSession {
 		if (result.contains("message=\"Subject is not authenticated\"")) {
 			if (user == null || password == null) throw new RuntimeException("Login required");
 			relogin();
-			return executeApiMethod(name, extraParams, arguments);
+			return executeApiMethod(false, name, extraParams, arguments);
 		}
 
 		httpSessionId = requestExecutor.getSessionId();
@@ -189,12 +190,23 @@ public class MaxSession {
 				messageIdx += 9;
 				message += " -> " + Json.parseString(result.substring(messageIdx, result.indexOf("\"", messageIdx)));
 			}
-			throw new MaxCommandFailedException(message);
+			if (reloginOnFailure) {
+				relogin();
+				return executeApiMethod(false, name, extraParams, arguments);
+			} else {
+				throw new MaxCommandFailedException(message);
+			}
 		}
 
-		if (!result.contains("dwr.engine._remoteHandleCallback('" + batchId + "'"))
-			throw new MaxCommandFailedException("Command execution failed: " + name + ". Unexpected result: " + result);
-
+		if (!result.contains("dwr.engine._remoteHandleCallback('" + batchId + "'")) {
+			if (reloginOnFailure) {
+				relogin();
+				return executeApiMethod(false, name, extraParams, arguments);
+			} else {
+				throw new MaxCommandFailedException("Command execution failed: " + name + ". Unexpected result: "
+						+ result);
+			}
+		}
 		return result;
 	}
 
