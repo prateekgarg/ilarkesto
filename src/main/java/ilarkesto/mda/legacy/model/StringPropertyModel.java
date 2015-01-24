@@ -17,6 +17,7 @@ package ilarkesto.mda.legacy.model;
 public class StringPropertyModel extends SimplePropertyModel {
 
 	private boolean richtext;
+	private boolean multiline;
 	private Integer maxLenght;
 	private boolean templateAvailable;
 	private boolean masked;
@@ -35,17 +36,23 @@ public class StringPropertyModel extends SimplePropertyModel {
 		return masked;
 	}
 
-	public StringPropertyModel setRichtext(boolean multiline) {
-		this.richtext = multiline;
+	public StringPropertyModel setRichtext(boolean richtext) {
+		this.richtext = richtext;
+		if (richtext) setMultiline(true);
 		return this;
 	}
 
 	public StringPropertyModel setMultiline(boolean multiline) {
-		return setRichtext(multiline);
+		this.multiline = multiline;
+		return this;
 	}
 
 	public boolean isRichtext() {
 		return richtext;
+	}
+
+	public boolean isMultiline() {
+		return multiline;
 	}
 
 	public StringPropertyModel setMaxLenght(Integer maxLenght) {
