@@ -17,6 +17,7 @@ package ilarkesto.integration.itext;
 import ilarkesto.pdf.APageBreak;
 import ilarkesto.pdf.APdfElement;
 
+import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 
 public class PageBreak extends APageBreak implements ItextElement {
@@ -26,7 +27,7 @@ public class PageBreak extends APageBreak implements ItextElement {
 	}
 
 	@Override
-	public Element getITextElement() {
+	public Element[] createITextElements(Document document) {
 		throw new IllegalStateException();
 	}
 

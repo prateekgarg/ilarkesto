@@ -41,8 +41,16 @@ public abstract class APdfBuilder extends APdfContainerElement {
 
 	public abstract void write(OutputStream out);
 
+	public abstract AHtml html();
+
 	public APdfBuilder() {
 		super(null);
+	}
+
+	public final AHtml html(String code) {
+		AHtml html = html();
+		html.code(code);
+		return html;
 	}
 
 	@Override

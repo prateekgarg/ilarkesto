@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.pdf.PdfPCell;
 
@@ -75,7 +76,7 @@ public class Cell extends ACell implements ItextElement {
 	}
 
 	@Override
-	public Element getITextElement() {
+	public Element[] createITextElements(Document document) {
 		PdfPCell cell = new PdfPCell();
 
 		cell.setBorderColorTop(PdfBuilder.color(getBorderTopColor()));
@@ -104,11 +105,11 @@ public class Cell extends ACell implements ItextElement {
 
 		cell.setColspan(getColspan());
 		for (ItextElement element : elements) {
-			cell.addElement(element.getITextElement());
+			for (Element e : element.createITextElements(document)) {
+				cell.addElement(e);
+			}
 		}
-		return cell;
+		return new Element[] { cell };
 	}
-
-	// --- dependencies ---
 
 }

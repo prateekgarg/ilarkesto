@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -25,6 +25,7 @@ import ilarkesto.pdf.FontStyle;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -38,7 +39,7 @@ public class Table extends ATable implements ItextElement {
 	}
 
 	@Override
-	public Element getITextElement() {
+	public Element[] createITextElements(Document document) {
 		float[] cellWidths = getCellWidths();
 		int columnCount = getColumnCount();
 		PdfPTable t = cellWidths == null ? new PdfPTable(columnCount) : new PdfPTable(cellWidths);
@@ -56,14 +57,14 @@ public class Table extends ATable implements ItextElement {
 		for (ARow row : rows) {
 			if (row.isKeepTogether() && rowIdx < rows.size()) rowsToKeepTogether.add(rowIdx);
 			for (ACell cell : row.getCells()) {
-				t.addCell((PdfPCell) ((Cell) cell).getITextElement());
+				t.addCell((PdfPCell) ((Cell) cell).createITextElements(document)[0]);
 			}
 			rowIdx++;
 		}
 
 		if (!rowsToKeepTogether.isEmpty()) t.keepRowsTogether(Utl.toArrayOfInt(rowsToKeepTogether));
 
-		return t;
+		return new Element[] { t };
 	}
 
 	@Override

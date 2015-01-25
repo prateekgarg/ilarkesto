@@ -12,13 +12,24 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.itext;
+package ilarkesto.pdf;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
+public abstract class AHtml extends APdfElement {
 
-interface ItextElement {
+	protected String code;
 
-	Element[] createITextElements(Document document);
+	public AHtml(APdfElement parent) {
+		super(parent);
+	}
+
+	public AHtml code(String code) {
+		if (code == null) return this;
+		if (this.code == null) {
+			this.code = code;
+		} else {
+			this.code += code;
+		}
+		return this;
+	}
 
 }

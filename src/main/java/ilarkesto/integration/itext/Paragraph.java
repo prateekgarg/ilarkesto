@@ -25,6 +25,7 @@ import ilarkesto.pdf.TextChunk;
 import java.io.File;
 
 import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Phrase;
@@ -42,7 +43,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 	}
 
 	@Override
-	public Element getITextElement() {
+	public Element[] createITextElements(Document document) {
 		com.itextpdf.text.Paragraph p = new com.itextpdf.text.Paragraph();
 		float maxSize = 0;
 		for (AParagraphElement element : getElements()) {
@@ -62,7 +63,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 				Image image = (Image) element;
 				com.itextpdf.text.Image itextImage;
 				try {
-					itextImage = image.getITextElement();
+					itextImage = (com.itextpdf.text.Image) image.createITextElements(document)[0];
 				} catch (Exception ex) {
 					log.warn("Including image failed:", image, ex);
 					continue;
@@ -74,7 +75,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 				} else {
 					Chunk chunk = new Chunk(itextImage, 0, 0);
 					p.add(chunk);
-					float size = image.getHeight() + 3;
+					float size = image.getHeight(document) + 3;
 					if (size > maxSize) maxSize = size;
 				}
 
@@ -86,7 +87,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 		p.setSpacingBefore(PdfBuilder.mmToPoints(spacingTop));
 		p.setSpacingAfter(PdfBuilder.mmToPoints(spacingBottom));
 		if (align != null) p.setAlignment(convertAlign(align));
-		if (height <= 0) return p;
+		if (height <= 0) return new Element[] { p };
 
 		// wrap in table
 		PdfPCell cell = new PdfPCell();
@@ -96,7 +97,7 @@ public class Paragraph extends AParagraph implements ItextElement {
 		PdfPTable table = new PdfPTable(1);
 		table.setWidthPercentage(100);
 		table.addCell(cell);
-		return table;
+		return new Element[] { table };
 	}
 
 	private int createStyle(FontStyle fontStyle) {

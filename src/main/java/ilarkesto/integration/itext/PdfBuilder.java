@@ -16,6 +16,7 @@ package ilarkesto.integration.itext;
 
 import ilarkesto.base.Sys;
 import ilarkesto.core.base.Color;
+import ilarkesto.pdf.AHtml;
 import ilarkesto.pdf.AImage;
 import ilarkesto.pdf.APageExtension;
 import ilarkesto.pdf.APageLayer;
@@ -70,6 +71,8 @@ public class PdfBuilder extends APdfBuilder {
 	private Collection<ItextElement> elements = new ArrayList<ItextElement>();
 	private boolean newPage = true;
 
+	private Document document;
+
 	@Override
 	public boolean isNewPage() {
 		return newPage;
@@ -88,7 +91,7 @@ public class PdfBuilder extends APdfBuilder {
 
 	@Override
 	public void write(OutputStream out) {
-		Document document = new Document();
+		document = new Document();
 		PdfWriter writer;
 		try {
 			writer = PdfWriter.getInstance(document, out);
@@ -105,8 +108,9 @@ public class PdfBuilder extends APdfBuilder {
 				if (element instanceof PageBreak) {
 					document.newPage();
 				} else {
-					Element iTextElement = element.getITextElement();
-					if (iTextElement != null) document.add(iTextElement);
+					for (Element iTextElement : element.createITextElements(document)) {
+						if (iTextElement != null) document.add(iTextElement);
+					}
 				}
 			} catch (DocumentException ex) {
 				throw new RuntimeException(ex);
@@ -128,6 +132,13 @@ public class PdfBuilder extends APdfBuilder {
 		elements.add(p);
 		newPage = false;
 		return p;
+	}
+
+	@Override
+	public AHtml html() {
+		Html html = new Html(this);
+		elements.add(html);
+		return html;
 	}
 
 	@Override
@@ -213,8 +224,9 @@ public class PdfBuilder extends APdfBuilder {
 			ct.setSimpleColumn(x, y, x + width, y - height);
 
 			for (ItextElement element : elements) {
-				Element iTextElement = element.getITextElement();
-				if (iTextElement != null) ct.addElement(iTextElement);
+				for (Element iTextElement : element.createITextElements(document)) {
+					if (iTextElement != null) ct.addElement(iTextElement);
+				}
 			}
 
 			try {

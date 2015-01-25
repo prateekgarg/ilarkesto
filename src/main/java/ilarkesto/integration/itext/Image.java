@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
 
 public class Image extends AImage implements ItextElement {
 
@@ -37,7 +39,7 @@ public class Image extends AImage implements ItextElement {
 	}
 
 	@Override
-	public com.itextpdf.text.Image getITextElement() {
+	public Element[] createITextElements(Document document) {
 		com.itextpdf.text.Image image;
 		try {
 			if (data != null) {
@@ -73,12 +75,12 @@ public class Image extends AImage implements ItextElement {
 
 		if (align != null) image.setAlignment(convertAlign(align));
 
-		return image;
+		return new Element[] { image };
 	}
 
-	public float getHeight() {
+	public float getHeight(Document document) {
 		if (height == null) {
-			height = getITextElement().getHeight();
+			height = ((Image) createITextElements(document)[0]).getHeight(document);
 		}
 		return height;
 	}
