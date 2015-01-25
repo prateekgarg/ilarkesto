@@ -33,7 +33,7 @@ public class PdfBuilderTest extends ATest {
 	@Test
 	public void html() {
 		PdfBuilder pdf = new PdfBuilder();
-
+		pdf.setFontStyle(new FontStyle().setSize(5).setFont("Times"));
 		pdf.html("<b>bold</b><div><i>italic</i></div><div><u>unterline</u></div><div><strike>strike</strike></div><div><font color=\"#ff0000\">red</font></div><div>normal</div><div><table><tr><td>a</td><td>b</td></tr></table></div>");
 
 		File pdfFile = getTestOutputFile("html.pdf");

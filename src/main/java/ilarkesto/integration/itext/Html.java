@@ -16,7 +16,9 @@ package ilarkesto.integration.itext;
 
 import ilarkesto.core.base.Utl;
 import ilarkesto.pdf.AHtml;
+import ilarkesto.pdf.APdfBuilder;
 import ilarkesto.pdf.APdfElement;
+import ilarkesto.pdf.FontStyle;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -29,21 +31,31 @@ import com.itextpdf.text.html.simpleparser.StyleSheet;
 
 public class Html extends AHtml implements ItextElement {
 
-	Html(APdfElement parent) {
-		super(parent);
+	public Html(APdfElement parent, FontStyle fontStyle) {
+		super(parent, fontStyle);
 	}
 
 	@Override
 	public Element[] createITextElements(Document document) {
-		HTMLWorker worker = new HTMLWorker(document);
+
+		String cssClassName = "itextpdfelement";
+		code = "<div class='" + cssClassName + "'>" + code + "</div>";
+		StyleSheet css = new StyleSheet();
+		css.loadStyle(cssClassName, "font-family", fontStyle.getFont());
+		css.loadStyle(cssClassName, "color", fontStyle.getColor().toString());
+		css.loadStyle(cssClassName, "font-size", APdfBuilder.mmToPoints(fontStyle.getSize()) + "pt");
+		css.loadStyle(cssClassName, "size", APdfBuilder.mmToPoints(fontStyle.getSize()) + "pt");
+		css.loadStyle(cssClassName, "line-height", "100em");
+
 		StringReader reader = new StringReader(code);
 		List<Element> elements;
-		StyleSheet style = new StyleSheet();
+		HTMLWorker worker = new HTMLWorker(document);
 		try {
-			elements = worker.parseToList(reader, style);
+			elements = worker.parseToList(reader, css);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+
 		return Utl.toArray(elements, new Element[elements.size()]);
 	}
 }
