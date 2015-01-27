@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
@@ -546,4 +548,14 @@ public class Gwt {
 
 	}
 
+	public static boolean targetContains(ClickEvent event, String string) {
+		NativeEvent nativeEvent = event.getNativeEvent();
+		if (nativeEvent == null) return false;
+		EventTarget eventTarget = nativeEvent.getEventTarget();
+		if (eventTarget == null) return false;
+		String source = eventTarget.toSource();
+		if (source == null) source = eventTarget.toString();
+		if (source == null) return false;
+		return source.contains(string);
+	}
 }
