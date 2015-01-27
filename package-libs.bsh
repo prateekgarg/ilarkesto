@@ -3,5 +3,5 @@
 echo "Packaging libs..."
 rm -v ilarkesto-lib.zip
 zip -r9 ilarkesto-lib.zip lib
-scp ilarkesto-lib.zip witek@r1.servisto.de:/var/www/servisto.de/projects/ilarkesto/ilarkesto-lib.zip
+scp ilarkesto-lib.zip witek@r2.servisto.de:/var/www/servisto.de/projects/ilarkesto/ilarkesto-lib.zip
 

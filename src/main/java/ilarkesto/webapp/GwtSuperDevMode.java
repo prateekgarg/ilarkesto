@@ -20,6 +20,7 @@ import ilarkesto.base.Utl;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.io.IO;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,20 +43,24 @@ public class GwtSuperDevMode {
 	private Set<String> sources = new LinkedHashSet<String>();
 	private Set<String> modules = new LinkedHashSet<String>();
 	private boolean precompile = true;
-	private boolean incremental = false;
+	private boolean incremental = true;
 	private WebServer webServer;
 	private Proc proc;
 
 	public void startCodeServerInSeparateProcess(File workDir, Collection<String> classpath) {
+		IO.delete(getWorkDir());
+
+		log.info("Starting GWT Super Dev Mode CodeServer on port", port, "from", workDir.getAbsolutePath());
+
 		Proc proc = new Proc("java");
 		proc.setWorkingDir(workDir);
 		proc.setRedirectOutputToSysout(true);
 		proc.addParameters("-classpath", Str.concat(classpath, Sys.getPathSeparator()));
 		proc.addParameter("com.google.gwt.dev.codeserver.CodeServer");
 		if (!precompile) proc.addParameter("-noprecompile");
+		if (!incremental) proc.addParameter("-noincremental");
 		proc.addParameters("-port", String.valueOf(port));
 		proc.addParameters("-workDir", getWorkDir());
-		// if (!incremental) proc.addParameter("-noincremental");
 
 		for (String source : sources) {
 			proc.addParameter("-src");
@@ -89,6 +94,8 @@ public class GwtSuperDevMode {
 
 	public void startCodeServer() {
 		if (webServer != null) throw new IllegalStateException("Already started");
+		IO.delete(getWorkDir());
+
 		log.info("Starting GWT Super Dev Mode CodeServer on port", port);
 		Sys.setProperty("gwt.codeserver.port", String.valueOf(port));
 		RuntimeTracker rt = new RuntimeTracker();
@@ -136,7 +143,7 @@ public class GwtSuperDevMode {
 		List<String> args = new ArrayList<String>();
 
 		if (!precompile) args.add("-noprecompile");
-		// if (!incremental) args.add("-noincremental");
+		if (!incremental) args.add("-noincremental");
 
 		// port
 		args.add("-port");
