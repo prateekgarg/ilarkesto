@@ -16,7 +16,6 @@ package ilarkesto.core.persistance;
 
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
-import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 
 import java.util.ArrayList;
@@ -220,7 +219,7 @@ public class Transaction {
 		long time = rt.getRuntime();
 		if (time > 100) {
 			log.log(time > 1000 ? Log.Level.WARN : Log.Level.DEBUG, "Query provided", ret.size(), "elements in",
-				rt.getRuntimeFormated(), Utl.getSimpleName(query.getClass()));
+				rt.getRuntimeFormated(), query);
 		}
 		return ret;
 	}

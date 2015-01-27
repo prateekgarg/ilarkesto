@@ -346,6 +346,10 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("            public boolean test(" + bean.getName() + " entity) {");
 			ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "();");
 			ln("            }");
+			ln("            @Override");
+			ln("            public String toString() {");
+			ln("                return \"byIs" + Str.uppercaseFirstLetter(p.getName()) + "\";");
+			ln("            }");
 			ln("        }.list();");
 			ln("    }");
 		}
@@ -403,7 +407,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					ln("            }");
 					ln("            @Override");
 					ln("            public String toString() {");
-					ln("                return \"loadById\";");
+					ln("                return \"by" + Str.uppercaseFirstLetter(p.getName()) + "\";");
 					ln("            }");
 					ln("    };");
 					ln();
@@ -427,6 +431,10 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 						ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "("
 								+ p.getName() + ");");
 					}
+					ln("            }");
+					ln("            @Override");
+					ln("            public String toString() {");
+					ln("                return \"by" + Str.uppercaseFirstLetter(p.getName()) + "\";");
 					ln("            }");
 					ln("        });");
 				}
@@ -455,13 +463,14 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 						ln("                return id.equals(entity.get" + Str.uppercaseFirstLetter(p.getName())
 								+ "Id());");
 					}
+
+					ln("            }");
+					ln("            @Override");
+					ln("            public String toString() {");
+					ln("                return \"by" + Str.uppercaseFirstLetter(p.getName()) + "\";");
 					ln("            }");
 					ln("        }.list();");
 					ln("        }");
-					ln("            @Override");
-					ln("            public String toString() {");
-					ln("                return \"" + p.getName() + "ById\";");
-					ln("            }");
 					ln("    };");
 					ln();
 				}
@@ -491,10 +500,11 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 						ln("                return entity.is" + Str.uppercaseFirstLetter(p.getName()) + "("
 								+ p.getName() + ");");
 					}
+
 					ln("            }");
 					ln("            @Override");
 					ln("            public String toString() {");
-					ln("                return \"listBy" + Str.uppercaseFirstLetter(p.getName()) + "\";");
+					ln("                return \"by" + Str.uppercaseFirstLetter(p.getName()) + "\";");
 					ln("            }");
 					ln("        }.list();");
 				}
