@@ -71,6 +71,12 @@ public class DayAndMonth implements Comparable<DayAndMonth>, Serializable, Forma
 
 	// ---
 
+	public Date toNextDate() {
+		Date today = Date.today();
+		if (isAfterOrSame(today.getDayAndMonth())) return toDate(today.getYear());
+		return toDate(today.getYear() + 1);
+	}
+
 	public Date toDate(int year) {
 		return new Date(year, month, day);
 	}
