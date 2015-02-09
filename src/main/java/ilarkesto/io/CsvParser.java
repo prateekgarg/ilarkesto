@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -235,8 +236,12 @@ public final class CsvParser {
 		}
 	}
 
-	public void skipLine() {
-		skipLines(1);
+	public String skipLine() {
+		try {
+			return in.readLine();
+		} catch (IOException ex) {
+			throw new ParseException("Skipping Line failed", ex);
+		}
 	}
 
 	public void skipLines(int count) {
@@ -276,13 +281,19 @@ public final class CsvParser {
 
 	public CsvParser(File file, String encoding, boolean quoted) throws FileNotFoundException,
 			UnsupportedEncodingException {
-		this(new InputStreamReader(new FileInputStream(file), encoding), quoted);
+		this(new FileInputStream(file), encoding, quoted);
+	}
+
+	public CsvParser(InputStream in, String encoding, boolean quoted) throws FileNotFoundException,
+			UnsupportedEncodingException {
+		this(new InputStreamReader(in, encoding), quoted);
 	}
 
 	private char separator = ',';
 
-	public void setSeparator(char separator) {
+	public CsvParser setSeparator(char separator) {
 		this.separator = separator;
+		return this;
 	}
 
 }
