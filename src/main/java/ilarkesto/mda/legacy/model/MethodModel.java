@@ -21,6 +21,7 @@ public class MethodModel extends AModel {
 
 	private List<ParameterModel> parameters = new ArrayList<ParameterModel>();
 	private String packageName = "base";
+	private boolean sync = true;
 
 	public MethodModel(String name) {
 		super(name);
@@ -43,6 +44,15 @@ public class MethodModel extends AModel {
 
 	public String getPackageName() {
 		return packageName;
+	}
+
+	public MethodModel setSync(boolean sync) {
+		this.sync = sync;
+		return this;
+	}
+
+	public boolean isSync() {
+		return sync;
 	}
 
 	// --- helper ---
