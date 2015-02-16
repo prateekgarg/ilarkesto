@@ -56,4 +56,18 @@ public class GoogleClient extends OAuth2 {
 		return Str.concat(scopes, "+");
 	}
 
+	public static class GoogleEntity {
+
+		private String googleId;
+
+		public final String getGoogleId() {
+			return googleId;
+		}
+
+		public final void setGoogleId(String googleId) {
+			this.googleId = googleId;
+		}
+
+	}
+
 }
