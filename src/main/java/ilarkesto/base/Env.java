@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -49,7 +49,7 @@ public abstract class Env {
 
 	/**
 	 * Creates an application starter (icon).
-	 * 
+	 *
 	 * @param file Starter file.
 	 * @param targetPath Command which the starter starts.
 	 * @param arguments Arguments for the command.
@@ -62,7 +62,7 @@ public abstract class Env {
 
 	/**
 	 * Executes a VisualBasic script.
-	 * 
+	 *
 	 * @param script The script itself. Not a path to the script.
 	 */
 	public abstract void executeVbScript(String script);
@@ -381,7 +381,13 @@ public abstract class Env {
 
 		@Override
 		public void executeFile(File file, boolean block) {
-			throw new RuntimeException("Not implemented yet.");
+			Proc proc = new Proc("gnome-open");
+			proc.addParameter(file.getAbsolutePath());
+			proc.start();
+			if (block) {
+				int returnCode = proc.getReturnCode();
+				if (returnCode != 0) throw new RuntimeException("ReturnCode: " + returnCode);
+			}
 		}
 
 		@Override

@@ -12,30 +12,31 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.svg;
+package ilarkesto.tools.cad;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.math.BigDecimal;
 
-public abstract class ASvgContainer extends ASvgElement {
+public class Size {
 
-	private List<ASvgElement> children = new ArrayList<ASvgElement>();
-	private Point bottomRight = new Point(0, 0);
+	private String name;
+	private BigDecimal value;
 
-	public ASvgContainer add(ASvgElement element) {
-		children.add(element);
-		bottomRight = bottomRight.max(element.bottomRight());
-		return this;
+	public Size(String name, BigDecimal value) {
+		super();
+		this.name = name;
+		this.value = value;
 	}
 
-	public final Collection<ASvgElement> getChildren() {
-		return children;
+	public Size(String name, long value) {
+		this(name, new BigDecimal(value));
 	}
 
-	@Override
-	protected Point bottomRight() {
-		return bottomRight;
+	public BigDecimal getValue() {
+		return value;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }

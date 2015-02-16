@@ -1,41 +1,38 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.integration.svg;
+package ilarkesto.tools.cad;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import ilarkesto.integration.svg.Rect;
 
-public abstract class ASvgContainer extends ASvgElement {
+public class Artefact {
 
-	private List<ASvgElement> children = new ArrayList<ASvgElement>();
-	private Point bottomRight = new Point(0, 0);
+	private String name;
+	private Rect svgElement;
 
-	public ASvgContainer add(ASvgElement element) {
-		children.add(element);
-		bottomRight = bottomRight.max(element.bottomRight());
-		return this;
+	public Artefact(String name, Rect svgElement) {
+		super();
+		this.name = name;
+		this.svgElement = svgElement;
 	}
 
-	public final Collection<ASvgElement> getChildren() {
-		return children;
+	public String getName() {
+		return name;
 	}
 
-	@Override
-	protected Point bottomRight() {
-		return bottomRight;
+	public Rect getSvgElement() {
+		return svgElement;
 	}
 
 }

@@ -53,4 +53,32 @@ public class Point {
 		return x.equals(other.x) && y.equals(other.y);
 	}
 
+	public Point right(BigDecimal offset) {
+		return new Point(x.add(offset), y);
+	}
+
+	public Point left(BigDecimal offset) {
+		return new Point(x.subtract(offset), y);
+	}
+
+	public Point move(BigDecimal x, BigDecimal y) {
+		return new Point(this.x.add(x), this.y.add(y));
+	}
+
+	public Point move(Dimension size) {
+		return move(size.getW(), size.getH());
+	}
+
+	public Point max(Point other) {
+		return new Point(x.max(other.x), y.max(other.y));
+	}
+
+	public Point down(BigDecimal offset) {
+		return new Point(x, y.add(offset));
+	}
+
+	public Point up(BigDecimal offset) {
+		return new Point(x, y.subtract(offset));
+	}
+
 }
