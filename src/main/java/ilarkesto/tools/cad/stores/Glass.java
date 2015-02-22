@@ -30,7 +30,8 @@ public class Glass {
 	private BigDecimal height;
 
 	public Glass() {
-		style = new Style().setFill("#009999").setFillOpacity("0.1").setStroke("blue").setStrokeWidth("0");
+		style = new Style().setFill("#009999").setFillOpacity("0.05").setStroke("blue").setStrokeWidth("1")
+				.setStrokeOpacity("0.1");
 	}
 
 	public Artefact create(String name, Point position) {

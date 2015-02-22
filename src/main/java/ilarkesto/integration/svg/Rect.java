@@ -76,4 +76,12 @@ public class Rect extends ASvgElement {
 		return new Point(position.getX().add(xOff), position.getY().add(size.getH()));
 	}
 
+	public Point right(BigDecimal yOff) {
+		return new Point(position.getX().add(size.getW()), position.getY().add(yOff));
+	}
+
+	public Point right() {
+		return right(BigDecimal.ZERO);
+	}
+
 }

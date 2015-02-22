@@ -116,6 +116,18 @@ public class OAuth2 {
 		return refreshToken;
 	}
 
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public String getClientId() {
+		return clientId;
+	}
+
+	public String getClientSecret() {
+		return clientSecret;
+	}
+
 	public String getScope() {
 		return scope;
 	}

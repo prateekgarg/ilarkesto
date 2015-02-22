@@ -33,24 +33,33 @@ public class Gartenhaus extends ADesign {
 
 	Size fensterBreite;
 	Size fensterVorneHoehe;
+	Size fensterHintenObenHoehe;
 
 	Size glasKlemmbreite;
 	Size glasBreite;
 	Size glasVorneHoehe;
+	Size glasHintenObenHoehe;
 
 	Size fensterbankHoehe;
 
-	int fensterVorneAnzahl;
-	int fensterSeiteAnzahl;
+	transient int fensterVorneAnzahl;
+	transient int fensterSeiteAnzahl;
+
+	Size pfostenVorneHoehe;
+	Size pfostenHintenHoehe;
 
 	Size breite;
 	Size tiefe;
-	Size pfostenVorneHoehe;
 
-	private Front front;
+	transient WoodBeam beam;
+	transient Glass glass;
+
+	private Vorne vorne;
+	private Hinten hinten;
+	private Rechts rechts;
 
 	public Gartenhaus() {
-		super("Gartenhaus");
+		super("Gewächshaus");
 
 		balkenStaerke = new Size("Balken Stärke", 10);
 
@@ -69,26 +78,169 @@ public class Gartenhaus extends ADesign {
 				.add(balkenStaerke.getValue().multiply(new BigDecimal(fensterVorneAnzahl + 1))));
 		tiefe = new Size("Tiefe", fensterBreite.getValue().multiply(new BigDecimal(fensterSeiteAnzahl))
 				.add(balkenStaerke.getValue().multiply(new BigDecimal(fensterSeiteAnzahl + 1))));
-		pfostenVorneHoehe = new Size("Pfosten vorne Höhe", 200);
 
-		fensterbankHoehe = new Size("Fensterbank Höhe", pfostenVorneHoehe.getValue().subtract(
-			fensterVorneHoehe.getValue()));
+		fensterbankHoehe = new Size("Fensterbank Höhe", 50);
+		pfostenVorneHoehe = new Size("Pfosten vorne Höhe", fensterbankHoehe.getValue()
+				.add(fensterVorneHoehe.getValue()));
 
-		front = new Front();
+		pfostenHintenHoehe = new Size("Pfosten hinten Höhe", 250);
+
+		fensterHintenObenHoehe = new Size("Fenster hinten oben Höhe", pfostenHintenHoehe.getValue().subtract(
+			fensterbankHoehe.getValue().add(fensterVorneHoehe.getValue()).add(balkenStaerke.getValue())));
+		glasHintenObenHoehe = new Size("Glas hinten oben Höhe", fensterHintenObenHoehe.getValue().add(
+			glasKlemmbreite.getValue().multiply(new BigDecimal(2))));
+
+		beam = new WoodBeam().setSize(balkenStaerke.getValue());
+		glass = new Glass().setWidth(glasBreite.getValue());
+
+		vorne = new Vorne();
+		hinten = new Hinten();
+		rechts = new Rechts();
 	}
 
-	class Front extends ADesign {
+	class Rechts extends ADesign {
+
+		Artefact pfostenVorne;
+		Artefact pfostenMitte;
+		Artefact pfostenHinten;
+
+		Artefact traegerVorne;
+		Artefact traegerHinten;
+
+		Artefact traegerOben;
+
+		List<Artefact> untenTraegers;
+		List<Artefact> untenFensters;
+
+		public Rechts() {
+			super("Rechts");
+
+			Point cursor = new Point(0, 0);
+			beam.setVertical().setLength(breite.getValue());
+
+			beam.setLength(pfostenHintenHoehe.getValue());
+			cursor = cursor.right(tiefe.getValue()).left(balkenStaerke.getValue()).down(balkenStaerke.getValue());
+			pfostenHinten = beam.create("Pfosten hinten", cursor);
+
+			beam.setLength(pfostenVorneHoehe.getValue());
+			cursor = cursor.left(fensterBreite.getValue()).left(balkenStaerke.getValue())
+					.down(fensterHintenObenHoehe.getValue()).down(balkenStaerke.getValue());
+			pfostenMitte = beam.create("Pfosten mitte", cursor);
+
+			beam.setLength(pfostenVorneHoehe.getValue());
+			cursor = cursor.left(fensterBreite.getValue()).left(balkenStaerke.getValue());
+			pfostenVorne = beam.create("Pfosten vorne", cursor);
+
+			beam.setLength(balkenStaerke.getValue());
+			cursor = pfostenVorne.getSvgElement().getPosition().up(balkenStaerke.getValue());
+			traegerVorne = beam.create("Träger vorne", cursor);
+
+			beam.setLength(balkenStaerke.getValue());
+			cursor = pfostenHinten.getSvgElement().getPosition().up(balkenStaerke.getValue());
+			traegerHinten = beam.create("Träger hinten", cursor);
+
+			beam.setHorizontal().setLength(
+				fensterBreite.getValue().multiply(new BigDecimal(fensterSeiteAnzahl)).add(balkenStaerke.getValue()));
+			cursor = traegerVorne.getSvgElement().right();
+			traegerOben = beam.create("Träger oben", cursor);
+
+			untenTraegers = new ArrayList<Artefact>();
+			beam.setHorizontal().setLength(fensterBreite.getValue());
+			cursor = traegerOben.getSvgElement().below().down(fensterVorneHoehe.getValue());
+			for (int i = 0; i < fensterSeiteAnzahl; i++) {
+				Artefact traeger = beam.create("Träger unten " + (i + 1), cursor);
+				untenTraegers.add(traeger);
+				cursor = cursor.right(balkenStaerke.getValue()).right(traeger.getSvgElement().getWidth());
+			}
+
+			untenFensters = new ArrayList<Artefact>();
+			glass.setHeight(glasVorneHoehe.getValue());
+			for (int i = 0; i < fensterSeiteAnzahl; i++) {
+				cursor = untenTraegers.get(i).getSvgElement().getPosition().left(glasKlemmbreite.getValue())
+						.up(glasVorneHoehe.getValue()).down(glasKlemmbreite.getValue());
+				Artefact fenster = glass.create("Fenster unten " + (i + 1), cursor);
+				untenFensters.add(fenster);
+			}
+		}
+	}
+
+	class Hinten extends ADesign {
+
+		Artefact balkenOben;
+		List<Artefact> pfostens;
+		List<Artefact> obenTraegers;
+		List<Artefact> obenFensters;
+		List<Artefact> untenTraegers;
+		List<Artefact> untenFensters;
+
+		public Hinten() {
+			super("Hinten");
+
+			Point cursor = new Point(0, 0);
+			beam.setHorizontal().setLength(breite.getValue());
+			balkenOben = beam.create("Balken oben", cursor);
+
+			pfostens = new ArrayList<Artefact>();
+			beam.setVertical().setLength(pfostenHintenHoehe.getValue());
+			cursor = balkenOben.getSvgElement().below();
+			for (int i = 0; i <= fensterVorneAnzahl; i++) {
+				Artefact pfosten = beam.create("Pfosten " + (i + 1), cursor);
+				pfostens.add(pfosten);
+				cursor = cursor.right(balkenStaerke.getValue()).right(fensterBreite.getValue());
+			}
+
+			obenTraegers = new ArrayList<Artefact>();
+			beam.setHorizontal().setLength(fensterBreite.getValue());
+			cursor = balkenOben.getSvgElement().below().down(fensterHintenObenHoehe.getValue())
+					.right(balkenStaerke.getValue());
+			for (int i = 0; i < fensterVorneAnzahl; i++) {
+				Artefact traeger = beam.create("Träger oben " + (i + 1), cursor);
+				obenTraegers.add(traeger);
+				cursor = cursor.right(balkenStaerke.getValue()).right(traeger.getSvgElement().getWidth());
+			}
+
+			obenFensters = new ArrayList<Artefact>();
+			glass.setHeight(glasHintenObenHoehe.getValue());
+			for (int i = 0; i < fensterVorneAnzahl; i++) {
+				cursor = obenTraegers.get(i).getSvgElement().getPosition().left(glasKlemmbreite.getValue())
+						.up(glasHintenObenHoehe.getValue()).down(glasKlemmbreite.getValue());
+				Artefact fenster = glass.create("Fenster oben " + (i + 1), cursor);
+				obenFensters.add(fenster);
+			}
+
+			untenTraegers = new ArrayList<Artefact>();
+			beam.setHorizontal().setLength(fensterBreite.getValue());
+			cursor = balkenOben.getSvgElement().below().down(fensterHintenObenHoehe.getValue())
+					.down(balkenStaerke.getValue()).down(fensterVorneHoehe.getValue()).right(balkenStaerke.getValue());
+			for (int i = 0; i < fensterVorneAnzahl; i++) {
+				Artefact traeger = beam.create("Träger unten " + (i + 1), cursor);
+				untenTraegers.add(traeger);
+				cursor = cursor.right(balkenStaerke.getValue()).right(traeger.getSvgElement().getWidth());
+			}
+
+			untenFensters = new ArrayList<Artefact>();
+			glass.setHeight(glasVorneHoehe.getValue());
+			for (int i = 0; i < fensterVorneAnzahl; i++) {
+				cursor = untenTraegers.get(i).getSvgElement().getPosition().left(glasKlemmbreite.getValue())
+						.up(glasVorneHoehe.getValue()).down(glasKlemmbreite.getValue());
+				Artefact fenster = glass.create("Fenster unten " + (i + 1), cursor);
+				untenFensters.add(fenster);
+			}
+
+			untenTraegers.remove(2);
+			untenFensters.remove(2);
+		}
+	}
+
+	class Vorne extends ADesign {
 
 		Artefact balkenOben;
 		List<Artefact> pfostens;
 		List<Artefact> traegers;
 		List<Artefact> fensters;
 
-		public Front() {
-			super("Front");
-
-			WoodBeam beam = new WoodBeam().setSize(balkenStaerke.getValue());
-			Glass glass = new Glass().setWidth(glasBreite.getValue());
+		public Vorne() {
+			super("Vorne");
 
 			Point cursor = new Point(0, 0);
 			beam.setHorizontal().setLength(breite.getValue());

@@ -22,6 +22,9 @@ import ilarkesto.swing.LoginPanel;
 
 import java.io.File;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.gdata.client.authn.oauth.OAuthParameters;
+
 public class GoogleClient extends OAuth2 {
 
 	public static void main(String[] args) {
@@ -37,6 +40,8 @@ public class GoogleClient extends OAuth2 {
 				"runtimedata/google-oauth2-code.properties"));
 
 		client.exchangeAuthorizationCodeForAccessToken(authorizationCodeLogin.getPassword());
+		System.out.println("refresh-token: " + client.getRefreshToken());
+		client.getRefreshToken();
 
 		client.exchangeRefreshTokenForAccessToken();
 
@@ -50,6 +55,13 @@ public class GoogleClient extends OAuth2 {
 	public GoogleClient(String clientId, String clientSecret, String redirectUri, String refreshToken, String... scopes) {
 		super("https://accounts.google.com/o/oauth2/auth", "https://www.googleapis.com/oauth2/v3/token", clientId,
 				clientSecret, redirectUri, refreshToken, concatScope(scopes));
+	}
+
+	public GoogleCredential createCredential() {
+		GoogleCredential gc = new GoogleCredential();
+		gc.setRefreshToken(getRefreshToken());
+		gc.setAccessToken(getAccessToken());
+		return gc;
 	}
 
 	private static String concatScope(String[] scopes) {
@@ -68,6 +80,15 @@ public class GoogleClient extends OAuth2 {
 			this.googleId = googleId;
 		}
 
+	}
+
+	public OAuthParameters createOAuthParameters() {
+		OAuthParameters params = new OAuthParameters();
+		params.setOAuthConsumerKey(getClientId());
+		params.setOAuthConsumerSecret(getClientSecret());
+		params.setOAuthToken(getRefreshToken());
+		params.setOAuthTokenSecret(getAccessToken());
+		return params;
 	}
 
 }
