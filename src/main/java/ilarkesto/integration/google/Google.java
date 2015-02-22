@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -88,7 +88,8 @@ public class Google {
 		setEmail(contact, "olga@koczewski.de", "privat", EmailRel.HOME, false);
 		setPhone(contact, "12345", "Neue Nummer", null);
 		removeAddresses(contact);
-		setAddress(contact, "Teststrasse 122", "12345", "Teststadt", "DE", "Testadresse xy", AddressRel.OTHER, false);
+		setAddress(contact, "Teststrasse 122", "12345", "Teststadt", "DE", "Deutschland", "Testadresse xy",
+			AddressRel.OTHER, false);
 		setInstantMessaging(contact, "olga@koczewski.de", ImProtocol.JABBER, ImRel.HOME);
 		setWebsite(contact, "http://koczewski.de", Website.Rel.HOME_PAGE);
 		save(contact, service);
@@ -298,16 +299,17 @@ public class Google {
 	}
 
 	public static void setAddress(ContactEntry contact, String street, String postcode, String city,
-			String countryCode, String label, AddressRel rel, boolean primary) {
+			String countryCode, String countryLabel, String label, AddressRel rel, boolean primary) {
 		for (StructuredPostalAddress a : contact.getStructuredPostalAddresses()) {
 			if (equals(street, a.getStreet()) && equals(postcode, a.getPostcode()) && equals(city, a.getCity())
 					&& equals(countryCode, a.getCountry())) {
 				// address already exists
-				updateAddress(a, label, street, postcode, city, countryCode, rel, primary);
+				updateAddress(a, label, street, postcode, city, countryCode, countryLabel, rel, primary);
 				return;
 			}
 		}
-		contact.addStructuredPostalAddress(createPostalAddress(label, street, postcode, city, countryCode, rel, primary));
+		contact.addStructuredPostalAddress(createPostalAddress(label, street, postcode, city, countryCode,
+			countryLabel, rel, primary));
 	}
 
 	private static boolean equals(String countryCode, Country country) {
@@ -537,14 +539,14 @@ public class Google {
 	}
 
 	public static StructuredPostalAddress createPostalAddress(String label, String street, String postcode,
-			String city, String country, AddressRel rel, boolean primary) {
+			String city, String countryCode, String countryLabel, AddressRel rel, boolean primary) {
 		StructuredPostalAddress a = new StructuredPostalAddress();
-		updateAddress(a, label, street, postcode, city, country, rel, primary);
+		updateAddress(a, label, street, postcode, city, countryCode, countryLabel, rel, primary);
 		return a;
 	}
 
 	private static void updateAddress(StructuredPostalAddress a, String label, String street, String postcode,
-			String city, String country, AddressRel rel, boolean primary) {
+			String city, String countryCode, String countryLabel, AddressRel rel, boolean primary) {
 		if (label == null) {
 			a.setRel(rel.href);
 			a.setLabel(null);
@@ -555,7 +557,7 @@ public class Google {
 		a.setStreet(new Street(street));
 		a.setPostcode(new PostCode(postcode));
 		a.setCity(new City(city));
-		a.setCountry(new Country(country, country));
+		a.setCountry(new Country(countryCode, countryLabel == null ? countryCode : countryLabel));
 		a.setPrimary(primary);
 	}
 
