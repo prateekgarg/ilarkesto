@@ -11,8 +11,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/gwt-user.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/testng-5.8.jar" sourcepath="lib/src/testng-5.8.src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh-2.0b4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gdata-client-1.0.jar" sourcepath="lib/src/gdata-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib/gdata-core-1.0.jar" sourcepath="lib/src/gdata-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/gdata-contacts-3.0.jar" sourcepath="lib/src/gdata-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="lib/src/commons-fileupload-1.2.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar" sourcepath="lib/commons-io-1.4.jar"/>
@@ -34,7 +32,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/gwt-codeserver.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gwt-dev.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/servlet-api-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/google-oauth-client-1.19.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
 		<attributes>

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -489,6 +489,7 @@ public class Google {
 	}
 
 	public static ContactEntry createContact(Name name, ContactGroupEntry group, ContactsService service, String email) {
+		if (email == null) email = "default";
 		String title = name.getFullName().getValue();
 
 		ContactEntry contact = new ContactEntry();
@@ -631,6 +632,7 @@ public class Google {
 	}
 
 	public static List<ContactEntry> getContacts(ContactsService service, ContactGroupEntry group, String email) {
+		if (email == null) email = "default";
 		log.info("Loading contacts for", email);
 
 		ContactQuery query = new ContactQuery(getContactsFeedUrl(email));
@@ -655,6 +657,7 @@ public class Google {
 	}
 
 	public static List<ContactGroupEntry> getContactGroups(ContactsService service, String email) {
+		if (email == null) email = "default";
 		log.info("Loading contact groups for", email);
 		ContactGroupFeed resultFeed;
 		try {
@@ -680,6 +683,7 @@ public class Google {
 	}
 
 	public static URL getFeedUrl(String entity, String email, String feed) {
+		if (email == null) email = "default";
 		try {
 			return new URL("https://www.google.com/m8/feeds/" + entity + "/" + email + "/" + feed);
 		} catch (MalformedURLException ex) {

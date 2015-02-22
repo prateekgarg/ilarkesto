@@ -22,19 +22,20 @@ import ilarkesto.swing.LoginPanel;
 
 import java.io.File;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.gdata.client.authn.oauth.OAuthParameters;
+import com.google.gdata.client.contacts.ContactsService;
 
-public class GoogleClient extends OAuth2 {
+public class GoogleOAuth extends OAuth2 {
+
+	private static final Log log = Log.get(GoogleOAuth.class);
 
 	public static void main(String[] args) {
 		LoginData clientIdLogin = LoginPanel.showDialog(null, "Client ID", new File(
 				"runtimedata/google-oauth2.properties"));
 		if (clientIdLogin == null) return;
 
-		GoogleClient client = new GoogleClient(clientIdLogin.getLogin(), clientIdLogin.getPassword(), REDIRECT_OOB,
-				null, SCOPE_USERINFO_EMAIL, SCOPE_CONTACTS);
-		Log.TEST(client.createUrlForAuthenticationRequest());
+		GoogleOAuth client = new GoogleOAuth(clientIdLogin.getLogin(), clientIdLogin.getPassword(), REDIRECT_OOB, null,
+				SCOPE_USERINFO_EMAIL, SCOPE_CONTACTS);
+		log.warn(client.createUrlForAuthenticationRequest());
 
 		LoginData authorizationCodeLogin = LoginPanel.showDialog(null, "Authorization Code", new File(
 				"runtimedata/google-oauth2-code.properties"));
@@ -44,7 +45,6 @@ public class GoogleClient extends OAuth2 {
 		client.getRefreshToken();
 
 		client.exchangeRefreshTokenForAccessToken();
-
 	}
 
 	public static final String SCOPE_USERINFO_EMAIL = "https://www.googleapis.com/auth/userinfo.email";
@@ -52,43 +52,21 @@ public class GoogleClient extends OAuth2 {
 	public static final String SCOPE_CALENDAR = "https://www.googleapis.com/auth/calendar";
 	public static final String SCOPE_CONTACTS = "https://www.google.com/m8/feeds/";
 
-	public GoogleClient(String clientId, String clientSecret, String redirectUri, String refreshToken, String... scopes) {
+	public GoogleOAuth(String clientId, String clientSecret, String redirectUri, String refreshToken, String... scopes) {
 		super("https://accounts.google.com/o/oauth2/auth", "https://www.googleapis.com/oauth2/v3/token", clientId,
 				clientSecret, redirectUri, refreshToken, concatScope(scopes));
 	}
 
-	public GoogleCredential createCredential() {
-		GoogleCredential gc = new GoogleCredential();
-		gc.setRefreshToken(getRefreshToken());
-		gc.setAccessToken(getAccessToken());
-		return gc;
+	public ContactsService createContactsService() {
+		ContactsService service = new ContactsService("<var>Ilarkesto</var>");
+		service.useSsl();
+		service.setHeader("GData-Version", "3.0");
+		service.setPrivateHeader("Authorization", "Bearer " + getAccessToken(true));
+		return service;
 	}
 
 	private static String concatScope(String[] scopes) {
 		return Str.concat(scopes, "+");
-	}
-
-	public static class GoogleEntity {
-
-		private String googleId;
-
-		public final String getGoogleId() {
-			return googleId;
-		}
-
-		public final void setGoogleId(String googleId) {
-			this.googleId = googleId;
-		}
-
-	}
-
-	public OAuthParameters createOAuthParameters() {
-		OAuthParameters params = new OAuthParameters();
-		params.setOAuthConsumerKey(getClientId());
-		params.setOAuthConsumerSecret(getClientSecret());
-		params.setOAuthToken(getRefreshToken());
-		params.setOAuthTokenSecret(getAccessToken());
-		return params;
 	}
 
 }
