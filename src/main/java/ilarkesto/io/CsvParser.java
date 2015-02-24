@@ -43,25 +43,20 @@ public final class CsvParser {
 		if (c == -1) return null;
 		resetLastChar();
 		while (true) {
+			boolean fieldQuoted = false;
 			if (quoted) {
 				c = readNextChar();
 				if (isSeperator(c)) {
 					result.add(null);
 					continue;
 				}
-				resetLastChar();
-				try {
-					parseOpeningQuote();
-				} catch (EOFException ex) {
-					result.add(null);
-					break;
-				} catch (EOLException ex) {
-					result.add(null);
-					parseNl();
-					break;
+				if (c == '"') {
+					fieldQuoted = true;
+				} else {
+					resetLastChar();
 				}
 			}
-			String field = parseField();
+			String field = parseField(fieldQuoted);
 			result.add(field);
 			try {
 				parseSeperator();
@@ -75,12 +70,21 @@ public final class CsvParser {
 		return result;
 	}
 
-	private String parseField() {
+	private String parseField(boolean quoted) {
 		StringBuilder sb = new StringBuilder();
 		int c;
-		for (int i = 0; true; i++) {
+		while (true) {
 			c = readNextChar();
-			if (quoted && c == '"') return sb.toString();
+			if (quoted && c == '"') {
+				int cNext = readNextChar();
+				if (cNext == '"') {
+					sb.append('"');
+					continue;
+				} else {
+					resetLastChar();
+					return sb.toString();
+				}
+			}
 			if (isEOL(c)) {
 				if (quoted) {
 					if (c == -1) throw new ParseException("Unexpected OEF in field");
@@ -129,17 +133,6 @@ public final class CsvParser {
 		}
 		if (isSeperator(c)) return;
 		throw new ParseException("Field seperator expected, but is: '" + (char) c + "' (" + c + ")");
-	}
-
-	private void parseOpeningQuote() throws EOFException, EOLException {
-		int c = readNextChar();
-		if (c == -1) throw new EOFException();
-		if (isEOL(c)) {
-			resetLastChar();
-			throw new EOLException();
-		}
-		if (c == '"') return;
-		throw new ParseException("Quote '\"' expected, but is: '" + (char) c + "' (" + c + ")");
 	}
 
 	private void parseNl() {
@@ -221,9 +214,13 @@ public final class CsvParser {
 	}
 
 	private int readNextChar() {
+		return readNextChar(true);
+	}
+
+	private int readNextChar(boolean mark) {
 		if (in == null) return -1;
 		try {
-			in.mark(1);
+			if (mark) in.mark(1);
 			int c = in.read();
 			// lastReadChar = (char) c;
 			if (c == -1) {
