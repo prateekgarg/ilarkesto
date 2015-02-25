@@ -14,7 +14,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/gdata-contacts-3.0.jar" sourcepath="lib/src/gdata-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="lib/src/commons-fileupload-1.2.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar" sourcepath="lib/commons-io-1.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/google-collect-1.0-rc1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/velocity-1.6.4.jar" sourcepath="lib/src/velocity-1-6.4.src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar" sourcepath="lib/src/commons-collections-3.2.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="lib/src/commons-lang-2.5-sources.jar"/>
@@ -49,6 +48,12 @@
 	<classpathentry exported="true" kind="lib" path="lib/itext-asian-5.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.23.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jfreechart-1.0.19.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/guava-jdk5-13.0.jar" sourcepath="lib/src/guava-jdk5-13.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gdata-core-1.47.1.jar" sourcepath="lib/src/gdata-core-1.47.1.srouces.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="https://developers.google.com/gdata/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/google-api-client-1.19.1.jar" sourcepath="lib/src/google-api-client-1.19.1-sources.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

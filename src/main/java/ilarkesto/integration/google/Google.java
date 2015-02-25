@@ -46,6 +46,7 @@ import com.google.gdata.data.contacts.ContactGroupEntry;
 import com.google.gdata.data.contacts.ContactGroupFeed;
 import com.google.gdata.data.contacts.GroupMembershipInfo;
 import com.google.gdata.data.contacts.Nickname;
+import com.google.gdata.data.contacts.UserDefinedField;
 import com.google.gdata.data.contacts.Website;
 import com.google.gdata.data.contacts.Website.Rel;
 import com.google.gdata.data.extensions.City;
@@ -57,6 +58,9 @@ import com.google.gdata.data.extensions.FullName;
 import com.google.gdata.data.extensions.GivenName;
 import com.google.gdata.data.extensions.Im;
 import com.google.gdata.data.extensions.Name;
+import com.google.gdata.data.extensions.OrgName;
+import com.google.gdata.data.extensions.OrgTitle;
+import com.google.gdata.data.extensions.Organization;
 import com.google.gdata.data.extensions.PhoneNumber;
 import com.google.gdata.data.extensions.PostCode;
 import com.google.gdata.data.extensions.Street;
@@ -257,6 +261,22 @@ public class Google {
 		return sb.toString();
 	}
 
+	public static void removeOrganizations(ContactEntry contact) {
+		List<Organization> all = new ArrayList<Organization>(contact.getOrganizations());
+		for (Organization item : all) {
+			contact.removeExtension(item);
+			contact.removeRepeatingExtension(item);
+		}
+	}
+
+	public static void removeUserDefinedFields(ContactEntry contact) {
+		List<UserDefinedField> all = new ArrayList<UserDefinedField>(contact.getUserDefinedFields());
+		for (UserDefinedField item : all) {
+			contact.removeExtension(item);
+			contact.removeRepeatingExtension(item);
+		}
+	}
+
 	public static void removeEmails(ContactEntry contact) {
 		List<Email> all = new ArrayList<Email>(contact.getEmailAddresses());
 		for (Email item : all) {
@@ -296,6 +316,25 @@ public class Google {
 			contact.removeExtension(item);
 			contact.removeRepeatingExtension(item);
 		}
+	}
+
+	public static void setField(ContactEntry contact, String name, String value) {
+		if (Str.isBlank(name)) return;
+		if (value != null) {
+			value = value.replace('\n', ' ');
+			value = value.replace("\r", "");
+			value = value.trim();
+			if (Str.isBlank(value)) value = null;
+		}
+		if (value != null) {}
+		for (UserDefinedField field : contact.getUserDefinedFields()) {
+			if (name.equals(field.getKey())) {
+				field.setValue(value);
+				return;
+			}
+		}
+		if (value == null) return;
+		contact.addUserDefinedField(createUserDefinedField(name, value));
 	}
 
 	public static void setAddress(ContactEntry contact, String street, String postcode, String city,
@@ -519,6 +558,22 @@ public class Google {
 		fullName.setValue(organizationName);
 		name.setFullName(fullName);
 		return name;
+	}
+
+	public static Organization createOrganization(String name, String jobTitle) {
+		if (name == null) return null;
+		Organization org = new Organization();
+		org.setLabel(name);
+		org.setOrgName(new OrgName(name, null));
+		if (!Str.isBlank(jobTitle)) org.setOrgTitle(new OrgTitle(jobTitle));
+		return org;
+	}
+
+	public static UserDefinedField createUserDefinedField(String name, String value) {
+		if (Str.isBlank(name) || Str.isBlank(value)) return null;
+		value = value.replace('\n', ' ');
+		value = value.replace("\r", "");
+		return new UserDefinedField(name, value);
 	}
 
 	public static Name createPersonName(String givenName, String familyName) {

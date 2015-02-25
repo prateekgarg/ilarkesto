@@ -46,8 +46,8 @@ public class GoogleContactsSynchronizer {
 				GoogleOAuth.SCOPE_CONTACTS);
 
 		GoogleContactsSynchronizer synchronizer = new GoogleContactsSynchronizer(client.createContactsService(),
-				"ilarkestoId", "ilarkestoTimestammp", "ilarkestoVersion", "1", "Ilarkesto-Test",
-				new LocalContactManager<String>() {
+				"ilarkestoId", "ilarkestoTimestammp", "ilarkestoVersion", String.valueOf(System.currentTimeMillis()),
+				"Ilarkesto-Test", new LocalContactManager<String>() {
 
 					@Override
 					public void onUpdateGoogleContactFailed(String contact, ContactEntry gContact, Exception ex) {
@@ -62,6 +62,8 @@ public class GoogleContactsSynchronizer {
 					@Override
 					public void updateGoogleContactFields(String contact, ContactEntry gContact) {
 						Google.setEmail(gContact, "test@test.com", null, Google.EmailRel.HOME, true);
+						gContact.addOrganization(Google.createOrganization("Test GmbH", "Badass"));
+						gContact.addUserDefinedField(Google.createUserDefinedField("Ilarkesto Test", "Ein\nZweizeiler"));
 					}
 
 					@Override
@@ -163,6 +165,8 @@ public class GoogleContactsSynchronizer {
 		Google.removeAddresses(gContact);
 		Google.removeInstantMessages(gContact);
 		Google.removeWebsites(gContact);
+		Google.removeOrganizations(gContact);
+		Google.removeUserDefinedFields(gContact);
 
 		localContactManager.updateGoogleContactFields(oContact, gContact);
 
