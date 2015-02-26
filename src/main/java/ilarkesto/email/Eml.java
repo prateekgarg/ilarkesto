@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -88,11 +88,19 @@ public class Eml {
 			LoginPanel.showDialog(null, "Servisto SMTP", new File("runtimedata/servisto-smtp.properties")));
 		// Session session = createSmtpSession("smtp.gmail.com", 587, true,
 		// LoginPanel.showDialog(null, "GMail SMTP", new File("runtimedata/gmail-smtp.properties")));
-		sendSmtpMessage(
-			session,
-			createHtmlMessage(session, "test " + DateAndTime.now(),
-				"<h1>Überschrift</h1><p>paragraph <strong>strong</strong></p>", "wi@koczewski.de",
-				"wi@koczewski.de, witoslaw.koczewski@gmail.com"));
+
+		String html = "<h1>Überschrift</h1><p>paragraph <strong>strong</strong></p>";
+		String subject = "test html " + DateAndTime.now();
+		String from = "wi@koczewski.de";
+		String to = "wi@koczewski.de, witoslaw.koczewski@gmail.com";
+		Attachment[] attachments = createAttachments(new File("/home/witek/inbox/Fehler.png"));
+		MimeMessage message = createMessage(session, subject, html, null, from, to, attachments);
+		sendSmtpMessage(session, message);
+
+		// sendSmtpMessage(
+		// session,
+		// createMessage(session, "test plain " + DateAndTime.now(), null, "plain", "wi@koczewski.de",
+		// "wi@koczewski.de, witoslaw.koczewski@gmail.com"));
 
 		// Message msg = createTextMessage(createDummySession(), "aaa" + Str.UE + "aaa", "aaa" + Str.UE +
 		// "aaa",
@@ -472,61 +480,23 @@ public class Eml {
 		}
 	}
 
-	public static MimeMessage createTextMessage(Session session, String subject, String text, String from, String to) {
+	public static MimeMessage createPlainMessage(Session session, String subject, String text, String from, String to) {
 		try {
-			return createTextMessage(session, subject, text, InternetAddress.parse(from)[0],
+			return createPlainMessage(session, subject, text, InternetAddress.parse(from)[0],
 				InternetAddress.parse(to.replace(';', ',')));
 		} catch (AddressException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	public static MimeMessage createTextMessage(Session session, String subject, String text, Address from, Address[] to) {
+	public static MimeMessage createPlainMessage(Session session, String subject, String text, Address from,
+			Address[] to) {
 		MimeMessage msg = createEmptyMimeMessage(session);
 		try {
 			msg.setSubject(subject, charset);
 			msg.setText(text, charset);
 			msg.setFrom(from);
 			msg.setRecipients(Message.RecipientType.TO, to);
-		} catch (MessagingException ex) {
-			throw new RuntimeException(ex);
-		}
-		return msg;
-	}
-
-	public static MimeMessage createHtmlMessage(Session session, String subject, String html, String from, String to) {
-		try {
-			return createHtmlMessage(session, subject, html, InternetAddress.parse(from)[0],
-				InternetAddress.parse(to.replace(';', ',')));
-		} catch (AddressException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-
-	public static MimeMessage createHtmlMessage(Session session, String subject, String html, Address from, Address[] to) {
-		return createHtmlMessage(session, subject, html, Html.convertHtmlToText(html), from, to);
-	}
-
-	public static MimeMessage createHtmlMessage(Session session, String subject, String html, String text,
-			Address from, Address[] to) {
-		MimeMessage msg = createEmptyMimeMessage(session);
-		try {
-			msg.setSubject(subject, charset);
-			msg.setFrom(from);
-			msg.setRecipients(Message.RecipientType.TO, to);
-
-			Multipart multipart = new MimeMultipart();
-
-			MimeBodyPart textBodyPart = new MimeBodyPart();
-			textBodyPart.setText(text, charset);
-			multipart.addBodyPart(textBodyPart);
-
-			MimeBodyPart htmlBodyPart = new MimeBodyPart();
-			htmlBodyPart.setText(html, charset, "html");
-			multipart.addBodyPart(htmlBodyPart);
-
-			msg.setContent(multipart);
-
 		} catch (MessagingException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -547,29 +517,48 @@ public class Eml {
 		return ret;
 	}
 
-	public static MimeMessage createTextMessageWithAttachments(Session session, String subject, String text,
-			String from, Collection<String> tos, Attachment... attachments) {
+	public static MimeMessage createMessage(Session session, String subject, String html, String text, String from,
+			String to, Attachment... attachments) {
 		try {
-			return createTextMessageWithAttachments(session, subject, text, InternetAddress.parse(from)[0],
-				parseAddresses(tos), attachments);
+			return createMessage(session, subject, html, text, InternetAddress.parse(from)[0],
+				InternetAddress.parse(to.replace(';', ',')), attachments);
 		} catch (AddressException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	public static MimeMessage createTextMessageWithAttachments(Session session, String subject, String text,
-			Address from, Address[] to, Attachment... attachments) {
+	public static MimeMessage createMessage(Session session, String subject, String html, String text, String from,
+			Collection<String> tos, Attachment... attachments) {
+		try {
+			return createMessage(session, subject, html, text, InternetAddress.parse(from)[0], parseAddresses(tos),
+				attachments);
+		} catch (AddressException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public static MimeMessage createMessage(Session session, String subject, String html, String text, Address from,
+			Address[] to, Attachment... attachments) {
+
+		if (text == null) text = Html.convertHtmlToText(html);
+
 		MimeMessage msg = createEmptyMimeMessage(session);
 		try {
 			msg.setSubject(subject, charset);
 			msg.setFrom(from);
 			msg.setRecipients(Message.RecipientType.TO, to);
 
-			Multipart multipart = new MimeMultipart();
+			Multipart multipart = new MimeMultipart("alternative");
 
 			MimeBodyPart textBodyPart = new MimeBodyPart();
 			textBodyPart.setText(text, charset);
 			multipart.addBodyPart(textBodyPart);
+
+			if (!Str.isBlank(html)) {
+				MimeBodyPart htmlBodyPart = new MimeBodyPart();
+				htmlBodyPart.setText(html, charset, "html");
+				multipart.addBodyPart(htmlBodyPart);
+			}
 
 			if (attachments != null) {
 				for (Attachment attachment : attachments) {
