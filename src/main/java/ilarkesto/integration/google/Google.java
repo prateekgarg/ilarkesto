@@ -577,13 +577,15 @@ public class Google {
 	}
 
 	public static Name createPersonName(String givenName, String familyName) {
+		if (Str.isBlank(givenName) && Str.isBlank(familyName)) familyName = "???";
+
 		Name name = new Name();
 		StringBuilder full = new StringBuilder();
-		if (givenName != null) {
+		if (!Str.isBlank(givenName)) {
 			name.setGivenName(new GivenName(givenName, null));
 			full.append(givenName);
 		}
-		if (familyName != null) {
+		if (!Str.isBlank(familyName)) {
 			name.setFamilyName(new FamilyName(familyName, null));
 			if (full.length() > 0) full.append(" ");
 			full.append(familyName);
