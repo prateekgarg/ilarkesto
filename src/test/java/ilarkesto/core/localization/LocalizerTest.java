@@ -28,10 +28,13 @@ public class LocalizerTest extends ATest {
 
 		assertEquals(l.format(new BigDecimal("1000.123"), false), "1000.123");
 		assertEquals(l.format(new BigDecimal("1000.123"), true), "1,000.123");
+		assertEquals(l.format(new BigDecimal("1000"), false), "1000");
+		assertEquals(l.format(new BigDecimal("1000"), true), "1,000");
 		assertEquals(l.format(new BigDecimal("2111000.123"), true), "2,111,000.123");
 		assertEquals(l.format(new BigDecimal("3222111000.123"), true), "3,222,111,000.123");
 		assertEquals(l.format(new BigDecimal("-500"), true), "-500");
 		assertEquals(l.format(new BigDecimal("-1000.123"), true), "-1,000.123");
+		assertEquals(l.format(new BigDecimal("-1000"), true), "-1,000");
 	}
 
 }
