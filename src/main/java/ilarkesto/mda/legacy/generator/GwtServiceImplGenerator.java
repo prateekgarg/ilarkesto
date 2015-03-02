@@ -1,19 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.mda.legacy.generator;
 
+import ilarkesto.base.Utl;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.gwt.server.AGwtServiceImpl;
@@ -62,7 +63,12 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 		}
 		ln("        WebSession session = (WebSession) getSession();");
 		if (method.isSync()) {
+			ln("        String threads = " + Utl.class.getName() + ".getAllThreadStackTracesAsString();");
 			ln("        synchronized (getSyncObject()) {");
+			ln("            if (rt.getRuntime() > 1000) log.warn(\"ServiceCall "
+					+ method.getName()
+					+ " waited for sync\", rt.getRuntimeFormated(), \">>> Threads before:\\n\", threads, \"Threads after:\\n\", "
+					+ Utl.class.getName() + ".getAllThreadStackTracesAsString());");
 		}
 		ln("            GwtConversation conversation = null;");
 		ln("            try {");
@@ -93,7 +99,8 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 			}
 			ln("            if (rt.getRuntime() > getMaxServiceCallExecutionTime(\"" + method.getName() + "\")) {");
 			ln("                log.warn(\"ServiceCall served in\", rt.getRuntimeFormated(),\"" + method.getName()
-					+ "\"" + paramsString + ");");
+					+ "\"" + paramsString + ", \"Threads:\\n\", " + Utl.class.getName()
+					+ ".getAllThreadStackTracesAsString());");
 			ln("            } else {");
 			ln("                log.info(\"ServiceCall served in\", rt.getRuntimeFormated(),\"" + method.getName()
 					+ "\"" + paramsString + ");");

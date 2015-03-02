@@ -35,9 +35,7 @@ import java.util.Set;
 public class Utl extends ilarkesto.core.base.Utl {
 
 	public static void main(String[] args) {
-		for (int i = 0; i < 100; i++) {
-			System.out.println(randomInt(3, 5));
-		}
+		System.out.println(getAllThreadStackTracesAsString());
 	}
 
 	public static <T> List<T> shuffle(Collection<T> collection) {
@@ -91,6 +89,14 @@ public class Utl extends ilarkesto.core.base.Utl {
 
 	public static Set<Thread> getAllThreads() {
 		return Thread.getAllStackTraces().keySet();
+	}
+
+	public static String getAllThreadStackTracesAsString() {
+		StringBuilder sb = new StringBuilder();
+		for (Thread thread : getAllThreads()) {
+			sb.append(Str.formatThreadWithStrackTrace(thread)).append("\n");
+		}
+		return sb.toString();
 	}
 
 	public static File getFirstExistingFile(String... paths) {
