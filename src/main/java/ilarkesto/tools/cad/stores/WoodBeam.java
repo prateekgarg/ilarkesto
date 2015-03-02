@@ -14,6 +14,7 @@
  */
 package ilarkesto.tools.cad.stores;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.integration.svg.Dimension;
 import ilarkesto.integration.svg.Point;
 import ilarkesto.integration.svg.Rect;
@@ -35,7 +36,7 @@ public class WoodBeam {
 	}
 
 	public Artefact create(String name, Point position) {
-		return new Artefact(name, createRect(position));
+		return new Artefact(name, createRect(position), Str.format(size) + " x " + Str.format(length));
 	}
 
 	public WoodBeam setSize(BigDecimal size) {

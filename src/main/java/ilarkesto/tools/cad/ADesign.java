@@ -95,6 +95,10 @@ public abstract class ADesign {
 		if (value instanceof Artefact) {
 			Artefact artefact = (Artefact) value;
 			buildHtml(html, designName, fieldName, artefact.getSvgElement());
+			html.startDIV();
+			html.SPAN("fieldLabel", artefact.getName() + ": ");
+			html.SPAN("fieldValue", Str.format(artefact.getHtml()));
+			html.endDIV();
 			return;
 		}
 
