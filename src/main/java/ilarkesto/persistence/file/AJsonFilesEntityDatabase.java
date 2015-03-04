@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	private GitProject git;
 
 	private ThreadLocal<Transaction> tlTransaction = new ThreadLocal<Transaction>();
-	private Collection<Transaction> transactions = Collections.synchronizedCollection(new ArrayList<Transaction>());
+	private Collection<Transaction> transactions = new ArrayList<Transaction>();
 	private int transactionNumberCounter = 0;
 
 	protected abstract AEntityJsonFileUpgrades createUpgrader();
@@ -119,7 +118,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	}
 
 	@Override
-	protected synchronized void onUpdate(Collection<AEntity> modified, Collection<String> deleted,
+	protected void onUpdate(Collection<AEntity> modified, Collection<String> deleted,
 			Map<String, Map<String, String>> modifiedPropertiesByEntityIds, Runnable callback) {
 		if ((modified == null || modified.isEmpty()) && (deleted == null || deleted.isEmpty())) return;
 		List<File> files = new ArrayList<File>();
@@ -190,7 +189,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	}
 
 	@Override
-	public void onTransactionFinished(Transaction transaction) {
+	public synchronized void onTransactionFinished(Transaction transaction) {
 		Transaction current = tlTransaction.get();
 		if (current == null) {
 			if (transaction == null) return;
@@ -203,7 +202,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	}
 
 	@Override
-	public boolean isTransactionWithChangesOpen() {
+	public synchronized boolean isTransactionWithChangesOpen() {
 		for (Transaction transaction : transactions) {
 			if (!transaction.isEmpty()) return true;
 		}
