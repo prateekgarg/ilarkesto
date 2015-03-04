@@ -274,4 +274,11 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 		return dateRange == null ? null : dateRange.end;
 	}
 
+	public DateRange expand(Date date) {
+		if (date == null) return this;
+		if (date.isBefore(start)) return new DateRange(date, end);
+		if (date.isAfter(end)) return new DateRange(start, date);
+		return this;
+	}
+
 }
