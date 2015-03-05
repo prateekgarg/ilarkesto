@@ -1,5 +1,6 @@
 package ilarkesto.json;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.logging.Log;
@@ -30,6 +31,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	private JsonObject wrapper;
 
 	public ARemoteJsonCache(Class<P> payloadType, File file) {
+		Args.assertNotNull(payloadType, "payloadType", file, "file");
 		this.payloadType = payloadType;
 		this.file = file;
 	}
@@ -171,7 +173,6 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	}
 
 	public void invalidatePayload() {
-		if (file == null) throw new IllegalStateException("file == null");
 		file.setLastModified(0);
 		IO.writeFile(getInvalidMarkerFile(), "invalid", IO.UTF_8);
 		log.info("Invalidated:", this);
@@ -179,7 +180,6 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 
 	private File getInvalidMarkerFile() {
 		if (invalidMarkerFile == null) {
-			if (file == null) return null;
 			invalidMarkerFile = new File(file.getPath() + ".invalid");
 		}
 		return invalidMarkerFile;
@@ -190,6 +190,7 @@ public abstract class ARemoteJsonCache<P extends AJsonWrapper> {
 	}
 
 	public boolean isInvalidated() {
+		if (file == null) return false;
 		return getInvalidMarkerFile().exists();
 	}
 
