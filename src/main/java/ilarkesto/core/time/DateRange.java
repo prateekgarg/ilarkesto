@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -242,6 +242,11 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 
 	public static DateRange currentYear() {
 		return year(Tm.getCurrentYear());
+	}
+
+	public static DateRange currentAndNextYear() {
+		final int year = Tm.getCurrentYear();
+		return new DateRange(new Date(year, 1, 1), new Date(year + 1, 12, 31));
 	}
 
 	public static DateRange year(int year) {
