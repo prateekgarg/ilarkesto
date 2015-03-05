@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -76,7 +76,7 @@ public class RintelnDeTest extends ATest {
 	@Test
 	public void downloadBranchenbuchEntriesVerbaende() throws ParseException {
 		List<Entry> verbaende = RintelnDe.downloadBranchenbuchEntries(28, observer);
-		assertSize(verbaende, 11);
+		assertSize(verbaende, 12);
 		Entry volkshochschule = verbaende.get(10);
 		assertEquals(volkshochschule.getLabel(), "Ver.di Ortsverein Rinteln");
 	}
