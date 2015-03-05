@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -484,24 +484,6 @@ public class Str extends ilarkesto.core.base.Str {
 		for (int i = ignoreFirst ? 1 : 0; i < sa.length; i++) {
 			sb.append(Character.toUpperCase(sa[i].charAt(0)));
 			sb.append(sa[i].substring(1));
-		}
-		return sb.toString();
-	}
-
-	public static String formatThreadWithStrackTrace(Thread thread) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(thread.getName());
-		sb.append(" ").append(thread.getState());
-		sb.append(":").append(thread.getPriority());
-		StackTraceElement[] stackTrace = thread.getStackTrace();
-		if (stackTrace != null) {
-			for (StackTraceElement element : stackTrace) {
-				String className = element.getClassName();
-				int idx = className.lastIndexOf('.');
-				if (idx > 0) className = className.substring(idx + 1);
-				sb.append(" @ ").append(className).append(".").append(element.getMethodName() + "():")
-						.append(element.getLineNumber());
-			}
 		}
 		return sb.toString();
 	}
