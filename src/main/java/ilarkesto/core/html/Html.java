@@ -97,11 +97,12 @@ public class Html {
 		html = html.replace("&uuml;", String.valueOf(Str.ue));
 		html = html.replace("&#252;", String.valueOf(Str.ue));
 		html = html.replace("&ouml;", String.valueOf(Str.oe));
+		html = html.replace("&#246;", String.valueOf(Str.oe));
 		html = html.replace("&Auml;", String.valueOf(Str.AE));
 		html = html.replace("&Uuml;", String.valueOf(Str.UE));
 		html = html.replace("&#220;", String.valueOf(Str.UE));
 		html = html.replace("&Ouml;", String.valueOf(Str.OE));
-		html = html.replace("&#246;", String.valueOf(Str.OE));
+		html = html.replace("&#214;", String.valueOf(Str.OE));
 		html = html.replace("&szlig;", String.valueOf(Str.sz));
 		html = html.replace("&#223;", String.valueOf(Str.sz));
 		html = html.replace("&euro;", String.valueOf(Str.EUR));
