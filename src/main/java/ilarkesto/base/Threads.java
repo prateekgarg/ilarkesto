@@ -34,7 +34,7 @@ public class Threads {
 			sb.append(separator);
 			Thread thread = entry.getKey();
 			StackTraceElement[] stackTrace = entry.getValue();
-			Object identification = identifyStackTrace(stackTrace);
+			Object identification = identifyStackTrace(thread, stackTrace);
 			if (identification == null) identification = "?";
 			sb.append("[").append(identification).append("]").append(" ");
 			sb.append(formatThread(thread)).append(" ").append(formatStackTrace(stackTrace));
@@ -43,7 +43,8 @@ public class Threads {
 		return sb.toString();
 	}
 
-	private static Object identifyStackTrace(StackTraceElement[] stackTrace) {
+	private static Object identifyStackTrace(Thread thread, StackTraceElement[] stackTrace) {
+		if (Thread.currentThread() == thread) return "THIS";
 		return stackTraceIdentificator.identify(stackTrace);
 	}
 

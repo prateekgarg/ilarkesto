@@ -55,7 +55,8 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 		super.doUnexpectedFailure(t);
 	}
 
-	protected final void handleServiceMethodException(int conversationNumber, String method, Throwable t) {
+	protected final void handleServiceMethodException(int conversationNumber, String method, Throwable t,
+			Context context) {
 		log.info("Service method failed:", method, "->", t);
 
 		// reset modified entities
@@ -70,6 +71,8 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 			log.info(ex);
 			return;
 		}
+
+		if (context != null) context.destroy();
 	}
 
 	protected final void onServiceMethodExecuted(Context context) {
