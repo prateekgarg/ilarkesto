@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	private GitProject git;
 
 	private ThreadLocal<Transaction> tlTransaction = new ThreadLocal<Transaction>();
-	private Collection<Transaction> transactions = new ArrayList<Transaction>();
+	private Collection<Transaction> transactions = Collections.synchronizedList(new ArrayList<Transaction>());
 	private int transactionNumberCounter = 0;
 
 	protected abstract AEntityJsonFileUpgrades createUpgrader();
@@ -177,7 +178,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	}
 
 	@Override
-	public synchronized Transaction getTransaction() {
+	public Transaction getTransaction() {
 		Transaction transaction = tlTransaction.get();
 		if (transaction == null) {
 			int no = ++transactionNumberCounter;
@@ -189,7 +190,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	}
 
 	@Override
-	public synchronized void onTransactionFinished(Transaction transaction) {
+	public void onTransactionFinished(Transaction transaction) {
 		Transaction current = tlTransaction.get();
 		if (current == null) {
 			if (transaction == null) return;
@@ -202,8 +203,8 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	}
 
 	@Override
-	public synchronized boolean isTransactionWithChangesOpen() {
-		for (Transaction transaction : transactions) {
+	public boolean isTransactionWithChangesOpen() {
+		for (Transaction transaction : new ArrayList<Transaction>(transactions)) {
 			if (!transaction.isEmpty()) return true;
 		}
 		return false;

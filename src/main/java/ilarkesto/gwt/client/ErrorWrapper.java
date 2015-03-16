@@ -12,9 +12,14 @@ public class ErrorWrapper implements Serializable, IsSerializable {
 
 	public static final String SERVER_NOT_AVAILABLE = "ServerNotAvailable";
 	public static final String USER_INPUT = "UserInput";
+	public static final String NO_PERMISSION = "NoPermission";
 
 	private String name;
 	private String message;
+
+	public static ErrorWrapper createNoPermission() {
+		return new ErrorWrapper(NO_PERMISSION, "No permission.");
+	}
 
 	public static ErrorWrapper createServerNotAvailable() {
 		return new ErrorWrapper(SERVER_NOT_AVAILABLE, "Server not available.");
