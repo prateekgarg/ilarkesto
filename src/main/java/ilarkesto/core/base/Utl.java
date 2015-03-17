@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -117,6 +117,24 @@ public class Utl {
 		if (idx == list.size() - 1) return list; // already at the bottom
 		list.remove(element);
 		list.add(idx + 1, element);
+		return list;
+	}
+
+	/**
+	 * Moves the given element to the top of the list. Adds it to the list if it doesn't exist.
+	 */
+	public static <T> List<T> moveElementTop(List<T> list, T element) {
+		list.remove(element);
+		list.add(0, element);
+		return list;
+	}
+
+	/**
+	 * Moves the given element to the top of the list. Adds it to the list if it doesn't exist.
+	 */
+	public static <T> List<T> moveElementBottom(List<T> list, T element) {
+		list.remove(element);
+		list.add(element);
 		return list;
 	}
 
