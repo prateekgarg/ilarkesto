@@ -38,7 +38,7 @@ public class EntityCache {
 		Class queryType = query.getType();
 		Set<AEntity> ret = new HashSet<AEntity>();
 		for (AEntity entity : entitiesById.values()) {
-			if (queryType != null && !isInstanceOf(entity, queryType)) continue;
+			if (queryType != null && !isInstanceOf(entity.getClass(), queryType)) continue;
 			if (query.test(entity)) ret.add(entity);
 		}
 		return ret;
@@ -47,17 +47,17 @@ public class EntityCache {
 	public AEntity get(AEntityQuery query) {
 		Class queryType = query.getType();
 		for (AEntity entity : entitiesById.values()) {
-			if (queryType != null && !isInstanceOf(entity, queryType)) continue;
+			if (queryType != null && !isInstanceOf(entity.getClass(), queryType)) continue;
 			if (query.test(entity)) return entity;
 		}
 		return null;
 	}
 
-	private boolean isInstanceOf(AEntity entity, Class queryType) {
-		if (queryType.equals(entity.getClass())) return true;
-		Class superType = queryType.getSuperclass();
+	boolean isInstanceOf(Class givenType, Class requiredType) {
+		if (requiredType.equals(givenType)) return true;
+		Class superType = givenType.getSuperclass();
 		if (superType.equals(Object.class)) return false;
-		return isInstanceOf(entity, superType);
+		return isInstanceOf(superType, requiredType);
 	}
 
 	public void add(AEntity entity) {
