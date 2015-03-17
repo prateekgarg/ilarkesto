@@ -17,7 +17,10 @@ package ilarkesto.integration.onlinestreet;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
+import ilarkesto.net.ApacheHttpDownloader;
+import ilarkesto.net.HttpDownloader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,9 @@ public class Onlinestreet {
 		System.exit(0);
 	}
 
+	private static final Log log = Log.get(Onlinestreet.class);
+
+	public static HttpDownloader downloader = new ApacheHttpDownloader();
 	public static String PLZ_URL_TEMPLATE = "http://onlinestreet.de/plz/${*}.html";
 
 	public static String getCityByPlz(Integer plz) {
@@ -72,7 +78,7 @@ public class Onlinestreet {
 	public static String getHtmlByPlz(Integer plz) {
 		if (plz == null) return null;
 		String url = getUrlByPlz(plz);
-		return IO.downloadUrlToString(url, "windows-1252");
+		return downloader.downloadText(url, IO.UTF_8);
 	}
 
 	public static String getUrlByPlz(Integer plz) {
