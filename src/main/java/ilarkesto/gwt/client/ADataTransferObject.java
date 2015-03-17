@@ -39,12 +39,12 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 	private Set<String> deletedEntities;
 	private Map<String, Map<String, String>> entities;
 
-	public void clear() {
+	public synchronized void clear() {
 		entities = null;
 		deletedEntities = null;
 	}
 
-	public void addError(ErrorWrapper error) {
+	public synchronized void addError(ErrorWrapper error) {
 		if (errors == null) errors = new ArrayList<ErrorWrapper>(1);
 		errors.add(error);
 	}
@@ -65,42 +65,42 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 		return userId != null;
 	}
 
-	public boolean containsDeletedEntity(String id) {
+	public synchronized boolean containsDeletedEntity(String id) {
 		return deletedEntities != null && deletedEntities.contains(id);
 	}
 
-	public final boolean containsEntities() {
+	public synchronized final boolean containsEntities() {
 		return entities != null && !entities.isEmpty();
 	}
 
-	public final boolean containsEntity(String entityId) {
+	public synchronized final boolean containsEntity(String entityId) {
 		if (entities == null) return false;
 		return entities.containsKey(entityId);
 	}
 
-	public final void addEntity(Map<String, String> data) {
+	public synchronized final void addEntity(Map<String, String> data) {
 		String id = data.get("id");
 		if (deletedEntities != null && deletedEntities.contains(id)) return;
 		if (entities == null) entities = new HashMap<String, Map<String, String>>();
 		entities.put(id, data);
 	}
 
-	public final Collection<Map<String, String>> getEntities() {
+	public synchronized final Collection<Map<String, String>> getEntities() {
 		if (entities == null) return Collections.emptyList();
 		return entities.values();
 	}
 
-	public final boolean containsDeletedEntities() {
+	public synchronized final boolean containsDeletedEntities() {
 		return deletedEntities != null && !deletedEntities.isEmpty();
 	}
 
-	public final void addDeletedEntity(String entityId) {
+	public synchronized final void addDeletedEntity(String entityId) {
 		if (deletedEntities == null) deletedEntities = new HashSet<String>();
 		deletedEntities.add(entityId);
 		if (entities != null) entities.remove(entityId);
 	}
 
-	public final Set<String> getDeletedEntities() {
+	public synchronized final Set<String> getDeletedEntities() {
 		if (deletedEntities == null) return Collections.emptySet();
 		return deletedEntities;
 	}

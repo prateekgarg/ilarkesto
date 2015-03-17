@@ -34,6 +34,7 @@ import ilarkesto.webapp.AWebSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	 */
 	private ADataTransferObject nextData;
 	private Object nextDataLock = new Object();
-	private Map<E, Long> remoteEntityModificationTimes = new HashMap<E, Long>();
+	private Map<E, Long> remoteEntityModificationTimes = Collections.synchronizedMap(new HashMap<E, Long>());
 
 	private S session;
 	private int number;
@@ -99,7 +100,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 
 	protected void filterEntityProperties(E entity, Map propertiesMap) {}
 
-	public synchronized boolean isAvailableOnClient(E entity) {
+	public boolean isAvailableOnClient(E entity) {
 		return remoteEntityModificationTimes.containsKey(entity);
 	}
 
@@ -129,7 +130,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 
 	boolean transferBusWarningPosted;
 
-	private synchronized void sendToClientInternal(E entity) {
+	private void sendToClientInternal(E entity) {
 		if (entity == null) return;
 
 		if (transactionService != null && !transactionService.isPersistent(entity.getId())) {
@@ -171,7 +172,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		sendToClient(Arrays.asList(entities));
 	}
 
-	public synchronized void deleteFromClient(String entityId) {
+	public void deleteFromClient(String entityId) {
 		if (entityId == null) return;
 		getNextData().addDeletedEntity(entityId);
 	}
