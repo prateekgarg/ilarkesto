@@ -45,7 +45,7 @@ public class Threads {
 
 	private static String identifyStackTrace(Thread thread, StackTraceElement[] stackTrace) {
 		if (Thread.currentThread() == thread) return "THIS";
-		if (thread.getThreadGroup().getName().equals("system")) return "SYS";
+		if (thread.getThreadGroup().getName().equals("system")) return "JVM";
 		String ret = stackTraceIdentificator.identify(stackTrace);
 		return ret;
 	}
@@ -91,21 +91,27 @@ public class Threads {
 		}
 
 		protected String identify(StackTraceElement element, String call) {
+
+			// JVM
 			if (call.contains("Reference$ReferenceHandler.run()")) return "JVM";
 			if (call.contains("Threads.main()")) return "JVM";
 			if (call.contains("Finalizer$FinalizerThread.run()")) return "JVM";
-			if (call.contains("DefaultLogRecordHandler$1.run()")) return "LOG";
+			if (call.contains("sun.java2d.Disposer.run()")) return "JVM";
+
+			// SYS
 			if (call.contains("UNIXProcess.waitForProcessExit()")) return "SYS";
 			if (call.contains("GC$Daemon.run()")) return "JVM";
 
+			// TOMCAT
 			if (call.contains("org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run()"))
 				return "TOMCAT";
 			if (call.contains("org.apache.tomcat.util.net.JIoEndpoint$Acceptor.run()")) return "TOMCAT";
 			if (call.contains("org.apache.catalina.core.StandardServer.await()")) return "TOMCAT";
-
-			if (call.contains("ilarkesto.base.Proc$StreamGobbler.run()")) return "PROC";
-
 			if (call.contains("javax.servlet.http.HttpServlet.service()")) return "HTTP";
+
+			// ILARKESTO
+			if (call.contains("DefaultLogRecordHandler$1.run()")) return "LOG";
+			if (call.contains("ilarkesto.base.Proc$StreamGobbler.run()")) return "PROC";
 
 			return null;
 		}
