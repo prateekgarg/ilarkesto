@@ -1,55 +1,79 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.core.persistance;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class EntityCache {
 
-	private Map<String, AEntity> entitiesById = new HashMap<String, AEntity>();
-
-	// TODO performance optimization: entitiesByType.byId (inheritence!)
+	private Map<Class, Map<String, AEntity>> entitiesByTypeById = new HashMap<Class, Map<String, AEntity>>();
 
 	public Collection<AEntity> getAll() {
-		return entitiesById.values();
+		ArrayList<AEntity> ret = new ArrayList<AEntity>();
+		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+			ret.addAll(entitiesById.values());
+		}
+		return ret;
 	}
 
 	public Set<String> getAllIds() {
-		return entitiesById.keySet();
+		Set<String> ret = new HashSet<String>();
+		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+			ret.addAll(entitiesById.keySet());
+		}
+		return ret;
 	}
 
 	public Set<AEntity> list(AEntityQuery query) {
 		Class queryType = query.getType();
+
 		Set<AEntity> ret = new HashSet<AEntity>();
-		for (AEntity entity : entitiesById.values()) {
-			if (queryType != null && !isInstanceOf(entity.getClass(), queryType)) continue;
-			if (query.test(entity)) ret.add(entity);
+		for (Entry<Class, Map<String, AEntity>> entry : entitiesByTypeById.entrySet()) {
+			if (queryType != null) {
+				Class type = entry.getKey();
+				if (!isInstanceOf(type, queryType)) continue;
+			}
+			Map<String, AEntity> entitiesById = entry.getValue();
+			for (AEntity entity : entitiesById.values()) {
+				if (query.test(entity)) ret.add(entity);
+			}
 		}
+
 		return ret;
 	}
 
 	public AEntity get(AEntityQuery query) {
 		Class queryType = query.getType();
-		for (AEntity entity : entitiesById.values()) {
-			if (queryType != null && !isInstanceOf(entity.getClass(), queryType)) continue;
-			if (query.test(entity)) return entity;
+
+		for (Entry<Class, Map<String, AEntity>> entry : entitiesByTypeById.entrySet()) {
+			if (queryType != null) {
+				Class type = entry.getKey();
+				if (!isInstanceOf(type, queryType)) continue;
+			}
+			Map<String, AEntity> entitiesById = entry.getValue();
+			for (AEntity entity : entitiesById.values()) {
+				if (query.test(entity)) return entity;
+			}
 		}
+
 		return null;
 	}
 
@@ -61,6 +85,12 @@ public class EntityCache {
 	}
 
 	public void add(AEntity entity) {
+		Class type = entity.getClass();
+		Map<String, AEntity> entitiesById = entitiesByTypeById.get(type);
+		if (entitiesById == null) {
+			entitiesById = new HashMap<String, AEntity>();
+			entitiesByTypeById.put(type, entitiesById);
+		}
 		entitiesById.put(entity.getId(), entity);
 	}
 
@@ -71,9 +101,13 @@ public class EntityCache {
 		}
 	}
 
-	public void remove(String entityId) {
-		if (entityId == null) return;
-		entitiesById.remove(entityId);
+	public AEntity remove(String entityId) {
+		if (entityId == null) return null;
+		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+			AEntity removed = entitiesById.remove(entityId);
+			if (removed != null) return removed;
+		}
+		return null;
 	}
 
 	public void removeAll(Collection<String> ids) {
@@ -84,11 +118,18 @@ public class EntityCache {
 	}
 
 	public boolean contains(String id) {
-		return entitiesById.containsKey(id);
+		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+			if (entitiesById.containsKey(id)) return true;
+		}
+		return false;
 	}
 
 	public AEntity get(String id) throws EntityDoesNotExistException {
-		AEntity entity = entitiesById.get(id);
+		AEntity entity = null;
+		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+			entity = entitiesById.get(id);
+			if (entity != null) break;
+		}
 		if (entity == null) throw new EntityDoesNotExistException(id);
 		return entity;
 	}
@@ -102,25 +143,27 @@ public class EntityCache {
 	}
 
 	public int size() {
-		return entitiesById.size();
+		int sum = 0;
+		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+			sum += entitiesById.size();
+		}
+		return sum;
 	}
 
 	public boolean isEmpty() {
-		return entitiesById.isEmpty();
+		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+			if (!entitiesById.isEmpty()) return false;
+		}
+		return true;
 	}
 
 	public final Map<Class, Integer> countEntities() {
 		Map<Class, Integer> countsByType = new HashMap<Class, Integer>();
-		for (AEntity entity : getAll()) {
-			Class type = entity.getClass();
-			Integer count = countsByType.get(type);
-			if (count == null) {
-				count = 1;
-			} else {
-				count = count + 1;
-			}
-			countsByType.put(type, count);
+
+		for (Entry<Class, Map<String, AEntity>> entry : entitiesByTypeById.entrySet()) {
+			countsByType.put(entry.getKey(), entry.getValue().size());
 		}
+
 		return countsByType;
 	}
 
