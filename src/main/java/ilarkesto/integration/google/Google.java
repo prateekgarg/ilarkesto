@@ -716,6 +716,13 @@ public class Google {
 		return ret;
 	}
 
+	public static ContactGroupEntry getContactGroupMyContacts(ContactsService service, String email) {
+		for (ContactGroupEntry group : getContactGroups(service, email)) {
+			if ("System Group: My Contacts".equals(group.getTitle().getPlainText())) return group;
+		}
+		return null;
+	}
+
 	public static List<ContactGroupEntry> getContactGroups(ContactsService service, String email) {
 		if (email == null) email = "default";
 		log.info("Loading contact groups for", email);
