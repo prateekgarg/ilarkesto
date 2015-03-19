@@ -47,7 +47,7 @@ public class MultilineBuilder {
 	}
 
 	public boolean isEmpty() {
-		return sb.length() == 0;
+		return Str.isBlank(sb.toString());
 	}
 
 	@Override
