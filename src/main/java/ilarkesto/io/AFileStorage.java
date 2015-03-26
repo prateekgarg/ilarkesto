@@ -52,7 +52,15 @@ public abstract class AFileStorage {
 		String sub = "";
 		if (!Str.isBlank(path)) sub += "/" + path;
 		if (!Str.isBlank(relativePath)) sub += "/" + relativePath;
+		sub = securePath(sub);
 		return new File(baseDir.getPath() + sub);
+	}
+
+	private String securePath(String path) {
+		if (path.equals("..")) return "__";
+		path = path.replace("../", "__/");
+		path = path.replace("/..", "/__");
+		return path;
 	}
 
 	public final boolean isAvailable() {
@@ -60,6 +68,7 @@ public abstract class AFileStorage {
 	}
 
 	public final AFileStorage getSubStorage(String path) {
+		path = securePath(path);
 		return new SubStorage(path);
 	}
 
