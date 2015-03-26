@@ -49,4 +49,24 @@ public class MapBuilder<K, V> {
 		return Str.format(map);
 	}
 
+	public String asUrlParams(boolean includeQuestionMark) {
+		StringBuilder sb = new StringBuilder();
+		if (includeQuestionMark) sb.append("?");
+		boolean first = true;
+		for (Map.Entry entry : map.entrySet()) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append('&');
+			}
+			sb.append(Str.encodeUrlParameter(entry.getKey().toString()));
+			Object value = entry.getValue();
+			if (value != null) {
+				sb.append('=');
+				sb.append(Str.encodeUrlParameter(value.toString()));
+			}
+		}
+		return sb.toString();
+	}
+
 }
