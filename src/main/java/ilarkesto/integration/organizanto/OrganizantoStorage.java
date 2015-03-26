@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -43,9 +43,10 @@ public class OrganizantoStorage {
 	}
 
 	public String get(String key) {
-		String url = Organizanto.URL_SERVICES + "storage.put";
+		String url = Organizanto.URL_SERVICES + "storage.get";
 		log.info("get()", volume, key);
-		return http.downloadText(url + createParams().put("key", key).asUrlParams(true), CHARSET);
+		String data = http.downloadText(url + createParams().put("key", key).asUrlParams(true), CHARSET);
+		return data;
 	}
 
 	private MapBuilder<String, String> createParams() {
