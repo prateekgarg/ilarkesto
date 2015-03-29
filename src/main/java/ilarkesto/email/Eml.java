@@ -548,29 +548,56 @@ public class Eml {
 			msg.setFrom(from);
 			msg.setRecipients(Message.RecipientType.TO, to);
 
-			Multipart multipart = new MimeMultipart("alternative");
+			if ((attachments == null || attachments.length == 0)) {
+				// no attachments
 
-			MimeBodyPart textBodyPart = new MimeBodyPart();
-			textBodyPart.setText(text, charset);
-			multipart.addBodyPart(textBodyPart);
-
-			if (!Str.isBlank(html)) {
-				MimeBodyPart htmlBodyPart = new MimeBodyPart();
-				htmlBodyPart.setText(html, charset, "html");
-				multipart.addBodyPart(htmlBodyPart);
-			}
-
-			if (attachments != null) {
-				for (Attachment attachment : attachments) {
-					appendAttachment(multipart, attachment);
+				if (Str.isBlank(html)) {
+					// no html
+					msg.setText(text, charset);
+					return msg;
 				}
+
+				msg.setContent(createMultipartAlternative(text, html));
+				return msg;
 			}
 
-			msg.setContent(multipart);
+			MimeMultipart multipartMixed = new MimeMultipart("related");
+
+			if (Str.isBlank(html)) {
+				// no html
+				MimeBodyPart textBodyPart = new MimeBodyPart();
+				textBodyPart.setText(text, charset);
+				multipartMixed.addBodyPart(textBodyPart);
+			} else {
+				// html
+				MimeBodyPart wrapAlternative = new MimeBodyPart();
+				wrapAlternative.setContent(createMultipartAlternative(text, html));
+				multipartMixed.addBodyPart(wrapAlternative);
+			}
+
+			for (Attachment attachment : attachments) {
+				appendAttachment(multipartMixed, attachment);
+			}
+
+			msg.setContent(multipartMixed);
+			return msg;
+
 		} catch (MessagingException ex) {
 			throw new RuntimeException(ex);
 		}
-		return msg;
+	}
+
+	private static MimeMultipart createMultipartAlternative(String text, String html) throws MessagingException {
+		MimeBodyPart textBodyPart = new MimeBodyPart();
+		textBodyPart.setText(text, charset);
+
+		MimeBodyPart htmlBodyPart = new MimeBodyPart();
+		htmlBodyPart.setText(html, charset, "html");
+
+		MimeMultipart multipartAlternative = new MimeMultipart("alternative");
+		multipartAlternative.addBodyPart(textBodyPart);
+		multipartAlternative.addBodyPart(htmlBodyPart);
+		return multipartAlternative;
 	}
 
 	private static void appendAttachment(Multipart multipart, Attachment attachment) throws MessagingException {
