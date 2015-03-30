@@ -2,6 +2,7 @@ package ilarkesto.integration.law.gesetzeiminternetde;
 
 import ilarkesto.core.base.Parser;
 import ilarkesto.core.base.Parser.ParseException;
+import ilarkesto.core.html.Html;
 import ilarkesto.io.AFileStorage;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonObject;
@@ -126,6 +127,7 @@ public class GiiLawProvider extends ALawProvider {
 				String title = parser.getUntil("\"");
 				parser.gotoAfter("\">");
 				String code = parser.getUntil("<").trim();
+				code = Html.convertHtmlToText(code);
 
 				// prevent duplicates
 				if (reference.equals("aeg")) {

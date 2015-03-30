@@ -80,6 +80,15 @@ public class GiiTest extends ATest {
 	}
 
 	@Test
+	public void testRfbv() {
+		BookRef ref = getBookIndex().getBookByCode("rfbv");
+		Book book = getGii().loadBook(ref);
+		assertEquals(book.getRef().getCode(), "rfbv");
+		assertEquals(book.getRef().getTitle(),
+			"Verordnung über den kollektiven Teil der Rückstellung für Beitragsrückerstattung");
+	}
+
+	@Test
 	public void testSgb10Kap12() {
 		BookRef ref = getBookIndex().getBookByCode("SGB10Kap12");
 		Book book = getGii().loadBook(ref);
