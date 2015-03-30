@@ -18,18 +18,24 @@ import ilarkesto.base.Sys;
 import ilarkesto.core.logging.Log;
 import ilarkesto.di.BeanContainer;
 import ilarkesto.webapp.AWebApplication;
+import ilarkesto.webapp.Servlet;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 public class WebApplicationStarter extends ApplicationStarter {
 
 	private static final Log LOG = Log.get(WebApplicationStarter.class);
 
-	public static AWebApplication startWebApplication(String applicationClassName, String contextPath) {
+	public static AWebApplication startWebApplication(String applicationClassName, ServletConfig servletConfig) {
 		checkWorkDir();
 		AWebApplication result;
 		BeanContainer beanProvider = new BeanContainer();
-		if (contextPath != null) {
-			beanProvider.put("contextPath", contextPath);
-		}
+		beanProvider.put("contextPath", Servlet.getContextPath(servletConfig));
+		ServletContext servletContext = servletConfig.getServletContext();
+		beanProvider.put("serverInfo", servletContext.getServerInfo());
+		beanProvider.put("servletContextName", servletContext.getServletContextName());
+		beanProvider.put("servletContextRealPath", servletContext.getRealPath("/"));
 		try {
 			result = startApplication((Class<? extends AWebApplication>) Class.forName(applicationClassName),
 				beanProvider);

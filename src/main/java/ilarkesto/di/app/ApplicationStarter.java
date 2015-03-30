@@ -29,6 +29,7 @@ import ilarkesto.logging.Log4jLogging;
 
 import java.io.File;
 import java.util.Locale;
+import java.util.Map.Entry;
 
 public class ApplicationStarter {
 
@@ -44,6 +45,9 @@ public class ApplicationStarter {
 		LOG.info("Starting application:", applicationClass.getName());
 		logEnvironmentInfo();
 		LOG.info("    arguments:   ", arguments);
+		for (Entry<String, Object> entry : beanProvider.getAllBeans().entrySet()) {
+			LOG.info("    " + entry.getKey() + ":", entry.getValue());
+		}
 
 		try {
 			A application = applicationClass.newInstance();
