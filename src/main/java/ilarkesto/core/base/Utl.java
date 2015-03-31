@@ -225,6 +225,7 @@ public class Utl {
 	}
 
 	public static <T> T getFirstElement(Collection<T> collection) {
+		if (collection == null) return null;
 		if (collection.isEmpty()) return null;
 		return collection.iterator().next();
 	}
