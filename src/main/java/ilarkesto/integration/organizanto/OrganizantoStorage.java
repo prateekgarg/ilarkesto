@@ -18,7 +18,8 @@ import ilarkesto.core.base.MapBuilder;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 import ilarkesto.net.ApacheHttpDownloader;
-import ilarkesto.net.HttpDownloader;
+
+import java.io.File;
 
 public class OrganizantoStorage {
 
@@ -28,12 +29,18 @@ public class OrganizantoStorage {
 	private String volume;
 	private String accessKey;
 
-	private HttpDownloader http = new ApacheHttpDownloader();
+	private ApacheHttpDownloader http = new ApacheHttpDownloader();
 
 	public OrganizantoStorage(String volume, String accessKey) {
 		super();
 		this.volume = volume;
 		this.accessKey = accessKey;
+	}
+
+	public void putFile(String key, File file) {
+		String url = Organizanto.URL_SERVICES + "storage.put";
+		log.info("putFile()", volume, key, file.getAbsolutePath());
+		http.upload(url, file, createParams().put("key", key).getMap(), null, CHARSET);
 	}
 
 	public void put(String key, String data) {
@@ -47,6 +54,12 @@ public class OrganizantoStorage {
 		log.info("get()", volume, key);
 		String data = http.downloadText(url + createParams().put("key", key).asUrlParams(true), CHARSET);
 		return data;
+	}
+
+	public void getFile(String key, File destinationFile) {
+		String url = Organizanto.URL_SERVICES + "storage.get";
+		log.info("get()", volume, key);
+		http.downloadUrlToFile(url + createParams().put("key", key).asUrlParams(true), destinationFile);
 	}
 
 	private MapBuilder<String, String> createParams() {
