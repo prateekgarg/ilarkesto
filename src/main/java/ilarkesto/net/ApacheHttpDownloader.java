@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -16,6 +16,9 @@ package ilarkesto.net;
 
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
+import ilarkesto.net.httpclientmultipart.FilePart;
+import ilarkesto.net.httpclientmultipart.MultipartEntity;
+import ilarkesto.net.httpclientmultipart.StringPart;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,6 +39,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -71,6 +75,42 @@ public class ApacheHttpDownloader extends HttpDownloader {
 	private HttpClient client;
 	private HttpContext context;
 	private boolean sslServerCheckingDisabled = true;
+
+	public String upload(String url, File file, Map<String, String> parameters, Map<String, String> requestHeaders,
+			String charset) {
+		url = getFullUrl(url);
+
+		HttpPost request = new HttpPost(url);
+
+		if (requestHeaders != null) {
+			for (Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
+				request.addHeader(requestHeader.getKey(), requestHeader.getValue());
+			}
+		}
+
+		MultipartEntity multipart = new MultipartEntity();
+		multipart.setContentEncoding(charset);
+		if (parameters != null) {
+			for (Entry<String, String> entry : parameters.entrySet()) {
+				multipart.addPart(new StringPart(entry.getKey(), entry.getValue(), charset));
+			}
+		}
+		multipart.addPart(new FilePart("file", file, null, "unknown"));
+
+		request.setEntity(multipart);
+
+		HttpResponse response;
+		try {
+			response = doPost(request);
+		} catch (HttpRedirectException ex) {
+			return downloadText(ex.getLocation(), charset);
+		}
+		try {
+			return getText(response);
+		} catch (IOException ex) {
+			throw new RuntimeException("HTTP POST failed.", ex);
+		}
+	}
 
 	@Override
 	public String post(String url, Map<String, String> parameters, Map<String, String> requestHeaders, String charset) {
@@ -108,6 +148,10 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		// }
 		// }
 
+		return doPost(request);
+	}
+
+	private HttpResponse doPost(HttpPost request) {
 		HttpClient client = getClient();
 		try {
 			HttpResponse response = client.execute(request, getContext());
