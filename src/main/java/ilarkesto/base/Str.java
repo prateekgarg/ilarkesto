@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -132,6 +132,36 @@ public class Str extends ilarkesto.core.base.Str {
 			sb.append(word);
 		}
 		return sb.toString();
+	}
+
+	public static boolean isSpeakable(String s) {
+		if (s == null) return false;
+		s = s.toLowerCase();
+
+		String vovels = "aeiouyäüö";
+
+		int vovelsInRow = 0;
+		int consonantsInRow = 0;
+
+		for (int i = 0; i < s.length(); i++) {
+			char ch = s.charAt(i);
+			String c = String.valueOf(ch);
+			if (!Character.isLetter(ch)) {
+				vovelsInRow = 0;
+				consonantsInRow = 0;
+			} else if (vovels.contains(c)) {
+				vovelsInRow++;
+				consonantsInRow = 0;
+			} else {
+				consonantsInRow++;
+				vovelsInRow = 0;
+			}
+			if (vovelsInRow >= 4 || consonantsInRow >= 5) return false;
+		}
+
+		if (s.length() == consonantsInRow) return false;
+
+		return true;
 	}
 
 	public static String generateRandomWord(int minLength, int maxLength, boolean uppercase) {
