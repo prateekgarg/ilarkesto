@@ -1239,7 +1239,14 @@ public abstract class IO {
 	 */
 	public static Properties loadPropertiesFromClasspath(String filename) {
 		Properties p = new Properties();
-		InputStream in = IO.class.getResourceAsStream("/" + filename);
+		InputStream is = IO.class.getResourceAsStream("/" + filename);
+		if (is == null) return null;
+		InputStreamReader in;
+		try {
+			in = new InputStreamReader(is, IO.UTF_8);
+		} catch (UnsupportedEncodingException ex1) {
+			throw new RuntimeException(ex1);
+		}
 		try {
 			p.load(in);
 		} catch (IOException ex) {
