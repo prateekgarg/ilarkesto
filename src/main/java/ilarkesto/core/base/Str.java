@@ -871,7 +871,7 @@ public class Str {
 		if (max == 0) return 1.0;
 		int distance = getLevenshteinDistance(a, b);
 
-		return 1.0 - (distance * 1.0) / (max * 1.0);
+		return 1.0d - distance / (double) max;
 	}
 
 	private static int getLevenshteinDistance(String s, String t) {
