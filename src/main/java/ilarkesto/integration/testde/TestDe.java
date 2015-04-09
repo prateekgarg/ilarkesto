@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -99,15 +99,15 @@ public class TestDe {
 	public static String removeSpamFromPageHtml(String html) {
 		if (Str.isBlank(html)) return null;
 
-		String beginIndicator = "<h2>";
-		String endIndicator = "<div id=\"secondary\"";
+		String beginIndicator = "<h2";
+		String endIndicator = "<div class=\"page__body__secondary\" id=\"secondary\"";
 
 		if (html.contains("<div class=\"ct-products\">")) {
 			beginIndicator = "<div class=\"ct-products\">";
 		} else if (html.contains("<div class=\"ct-wrapper\"")) {
 			beginIndicator = "<div class=\"ct-wrapper\">";
-		} else if (html.contains("<div id=\"primary\" class=\"l-primary\">")) {
-			beginIndicator = "<div id=\"primary\" class=\"l-primary\">";
+		} else if (html.contains("<div class=\"page__body__primary\" id=\"primary\">")) {
+			beginIndicator = "<div class=\"page__body__primary\" id=\"primary\">";
 		}
 
 		if (html.contains("<!--CT ProductComparisonPromoControl")) {
@@ -122,7 +122,7 @@ public class TestDe {
 
 		html = beginIndicator + Str.cutFromTo(html, beginIndicator, endIndicator);
 
-		html = Str.removeCenter(html, "<div class=\"paymentbox\"", "\n</div>");
+		html = Str.removeCenter(html, "<div class=\"paymentbox\"", "</div></div></div>");
 		html = Str.removeCenter(html, "<div class=\"articlepage-next\"", "</div>");
 		html = Str.removeCenter(html, "<div class=\"productlist-header\"", "</div>");
 		html = Str.removeCenter(html, "<div class=\"productlist-footer\"", "</div>");
@@ -139,27 +139,32 @@ public class TestDe {
 	}
 
 	public static Article parseArticle(ArticleRef ref, String html) throws ParseException {
-		String navigData = Str.cutFromTo(html, "<ol class=\"articlenav-nav\">", "</ol>");
+		String navigData = Str.cutFromTo(html, "<ol class=\"articlenavigation__nav\">", "</ol>");
 		List<SubArticleRef> subArticles = new ArrayList<TestDe.SubArticleRef>();
 		if (navigData != null) {
 			Parser parser = new Parser(navigData);
 			parser.skipWhitespace();
 			while (parser.gotoAfterIf("<li")) {
-				parser.gotoAfter("<a ");
-				parser.gotoAfter("href=\"");
-				String pageRef;
-				pageRef = parser.getUntil("\"");
-				pageRef = Str.removePrefix(pageRef, "/");
-				pageRef = Str.removePrefix(pageRef, "filestore/");
-				pageRef = Str.removeSuffix(pageRef, "/");
-				if (pageRef.contains("?")) pageRef = pageRef.substring(0, pageRef.indexOf('?'));
 				parser.gotoAfter(">");
+				parser.skipWhitespace();
+				String pageRef;
+				if (parser.isNext("<a ")) {
+					parser.gotoAfter("<a ");
+					parser.gotoAfter("href=\"");
+					pageRef = parser.getUntil("\"");
+					pageRef = Str.removePrefix(pageRef, "/");
+					pageRef = Str.removePrefix(pageRef, "filestore/");
+					pageRef = Str.removeSuffix(pageRef, "/");
+					if (pageRef.contains("?")) pageRef = pageRef.substring(0, pageRef.indexOf('?'));
+					parser.gotoAfter(">");
+				} else {
+					pageRef = "#payment";
+				}
 				if (parser.gotoAfterIfNext("<i")) {
 					parser.gotoAfter("</i>");
 				}
-				String title = parser.getUntil("<");
+				String title = parser.getUntil("</li>");
 				title = Html.convertHtmlToText(title);
-				title = title.replace("­", "");
 				parser.gotoAfter("</li>");
 
 				SubArticleRef subArticleRef = new SubArticleRef(title, pageRef);
@@ -168,7 +173,7 @@ public class TestDe {
 		}
 
 		Parser parser = new Parser(html);
-		parser.gotoAfter("<div id=\"primary\"");
+		parser.gotoAfter(" id=\"primary\"");
 		parser.gotoAfter("<p");
 		parser.gotoAfter(">");
 		String summary = parser.getUntil("</p>");

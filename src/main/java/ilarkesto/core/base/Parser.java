@@ -220,6 +220,11 @@ public class Parser {
 		return data;
 	}
 
+	@Override
+	public String toString() {
+		return pos + ": " + Str.cutRight(data.substring(pos), 100, "...");
+	}
+
 	public static class ParseException extends Exception {
 
 		private static final long serialVersionUID = 1L;

@@ -114,7 +114,7 @@ public class Html {
 		html = html.replace("&bdquo;", "„");
 		html = html.replace("&ldquo;", "“");
 		html = html.replace("&ndash;", "–");
-		html = html.replace("&#173;", "-");
+		html = html.replace("&#173;", "");
 		html = html.replace("<br>", "\n");
 
 		html = html.replace(" \n", "\n");

@@ -199,8 +199,11 @@ public class ApacheHttpDownloader extends HttpDownloader {
 			int statusCode = response.getStatusLine().getStatusCode();
 			if (isHttpStatusCodeRedirect(statusCode)) {
 				String location = getRedirectLocation(response);
+				location = getFullUrl(location, getBaseUrl(url));
 				if (followRedirects > 0) {
 					log.info("HTTP Redirect:", location);
+					IO.close(out);
+					close(client);
 					downloadUrlToFile(location, file, followRedirects - 1);
 					return;
 				}

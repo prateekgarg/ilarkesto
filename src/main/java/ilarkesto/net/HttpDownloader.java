@@ -97,7 +97,20 @@ public abstract class HttpDownloader {
 		return IO.downloadUrlToString(url, charset, username, password);
 	}
 
+	public final String getBaseUrl(String url) {
+		if (url == null) return null;
+		int offset = 0;
+		if (url.contains("//")) offset = url.indexOf("//") + 2;
+		int idx = url.indexOf("/", offset);
+		if (idx < 0) return url;
+		return url.substring(0, idx);
+	}
+
 	public final String getFullUrl(String url) {
+		return getFullUrl(url, baseUrl);
+	}
+
+	public final String getFullUrl(String url, String baseUrl) {
 		if (baseUrl == null) return url;
 		if (Str.isLink(url)) return url;
 		return baseUrl + url;

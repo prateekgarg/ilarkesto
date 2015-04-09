@@ -91,17 +91,16 @@ public class TestDeTest extends ATest {
 		String html = TestDe.downloadPageHtml("Spritpreis-Apps-im-Datenschutz-Test-Vier-sind-kritisch-4663692-4663694",
 			observer);
 		html = TestDe.removeSpamFromPageHtml(html);
-		assertContains(html,
-			"Bezieht die Daten ausschließ­lich direkt von der Markt­trans­parenz­stelle für Kraft­stoffe.");
-		assertContains(html, "Von den getesteten Sprit­preis-Apps wurde keine als sehr kritisch einge­stuft.");
-		assertContainsNot(html, "Zurück zum Artikel");
+		assertContains(html, "Bezieht die Daten");
+		assertContains(html, "wurde keine als sehr kritisch");
+		assertContainsNot(html, "zum Artikel");
 	}
 
 	@Test
 	public void removeSpamAktienfonds() throws ParseException {
 		String html = TestDe.downloadPageHtml("Aktienfonds-Welt-Fondsanlage-leicht-gemacht-4668525-0", observer);
 		html = TestDe.removeSpamFromPageHtml(html);
-		assertContains(html, "Noch nie war es so einfach, interna­tional in Aktien anzu­legen.");
+		assertContains(html, "Noch nie war es so einfach,");
 		assertContainsNot(html, "Sie benötigen den Flash-Player");
 	}
 
@@ -109,9 +108,8 @@ public class TestDeTest extends ATest {
 	public void removeSpamEbook() throws ParseException {
 		String html = TestDe.downloadPageHtml("E-Book-Reader-Duell-der-Nachfolger-4661050-0", observer);
 		html = TestDe.removeSpamFromPageHtml(html);
-		assertContains(html, "Wenn Sie den Test frei­schalten, erfahren Sie, wer am Schluss die Nase vorn hatte.");
-		assertContains(html,
-			"Eine Tabelle verrät zudem, welche guten Geräte aus älteren Tests immer noch erhältlich sind.");
+		assertContains(html, "Wenn Sie den Test frei");
+		assertContains(html, "Eine Tabelle verr");
 		assertContainsNot(html, "Themenseiten");
 		assertContainsNot(html, "Stiftung Warentest Abonnements");
 		assertContainsNot(html, "Kompletten Artikel freischalten");
@@ -129,7 +127,7 @@ public class TestDeTest extends ATest {
 		log.info(article);
 
 		String summary = article.getSummary();
-		assertContains(summary, "Ob von Hirsch­hausen, Klins­mann oder Lahm");
+		assertContains(summary, "Ob von Hirschhausen, Klinsmann oder Lahm");
 	}
 
 	@Test
@@ -140,7 +138,7 @@ public class TestDeTest extends ATest {
 		log.info(article);
 
 		String summary = article.getSummary();
-		assertContains(summary, "Alle Test­ergeb­nisse für 12 Kinder­matratzen finden Sie im");
+		assertContains(summary, "Alle Testergebnisse für 12 Kindermatratzen finden Sie im");
 	}
 
 	@Test
@@ -157,10 +155,11 @@ public class TestDeTest extends ATest {
 		}
 
 		String summary = article.getSummary();
-		assertContains(summary, "Der Abruf- oder Rahmenkredit ist ein Nischen­produkt in der Banken­land­schaft.");
+		System.out.println(summary);
+		assertContains(summary, "Der Abruf- oder Rahmenkredit ist ein Nischen");
 		assertContains(
 			summary,
-			" Eine Tabelle nennt unter anderem die Höhe des Kredit­rahmens, die Mindest­rück­zahlungs­raten und den Effektiven Jahres­zins des jeweiligen Angebots.");
+			"Eine Tabelle nennt unter anderem die Höhe des Kreditrahmens, die Mindestrückzahlungsraten und den Effektiven Jahreszins des jeweiligen Angebots.");
 	}
 
 	@Test
@@ -174,7 +173,7 @@ public class TestDeTest extends ATest {
 			List<SubArticleRef> subArticles = article.getSubArticles();
 
 			SubArticleRef subArticlePdf = subArticles.get(13);
-			assertEquals(subArticlePdf.getTitle(), "Artikel als PDF");
+			assertEquals(subArticlePdf.getTitle(), "Artikel als PDF (8 Seiten)");
 			assertTrue(subArticlePdf.isPdf());
 
 			assertEquals(subArticlePdf.getPageRef(), "4673855_t201403080.pdf");
@@ -202,8 +201,8 @@ public class TestDeTest extends ATest {
 		}
 
 		String summary = article.getSummary();
-		assertContains(summary, "Ob Beutels­auger oder Sauger mit Staubbox");
-		assertContains(summary, "Einem Gerät reichen bereits 870 Watt für gute Saug­ergeb­nisse.");
+		assertContains(summary, "Ob Beutelsauger oder Sauger mit Staubbox");
+		assertContains(summary, "Einem Gerät reichen bereits 870 Watt für gute Saugergebnisse.");
 
 		assertSize(subArticles, 10);
 
@@ -212,7 +211,7 @@ public class TestDeTest extends ATest {
 		assertTrue(subArticleStaubsauger.isLocked());
 
 		SubArticleRef subArticlePdf = subArticles.get(9);
-		assertEquals(subArticlePdf.getTitle(), "Heftartikel als PDF");
+		assertEquals(subArticlePdf.getTitle(), "Heft­artikel als PDF");
 		assertFalse(subArticlePdf.isPdf());
 
 		TestDe.login(loginData, observer);
@@ -239,7 +238,7 @@ public class TestDeTest extends ATest {
 			assertSize(subArticles, 9);
 
 			SubArticleRef subArticlePdf = subArticles.get(8);
-			assertEquals(subArticlePdf.getTitle(), "Artikel als PDF");
+			assertEquals(subArticlePdf.getTitle(), "Artikel als PDF (7 Seiten)");
 		} finally {
 			TestDe.logout(observer);
 		}
