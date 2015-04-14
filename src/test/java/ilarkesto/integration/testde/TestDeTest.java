@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -116,6 +116,19 @@ public class TestDeTest extends ATest {
 		assertContainsNot(html, "Kommentare");
 		assertContainsNot(html, "Lesen Sie auf der nächsten Seite");
 		assertContainsNot(html, "Liste schließen");
+	}
+
+	@Test
+	public void leds() throws ParseException {
+		ArticleRef ref = new ArticleRef(new Date(2015, 3, 26), "LED Lampen im Test: So gut und günstig wie nie",
+				"LED-Lampen-im-Test-So-gut-und-guenstig-wie-nie-4831275-0");
+		Article article = TestDe.downloadArticle(ref, observer);
+		log.info(article);
+
+		String summary = article.getSummary();
+		assertContains(summary, "Noch nie waren LED so billig und so gut.");
+
+		assertEquals(article.getSubArticleByPageId("4831278").getTitle(), "So haben wir getestet");
 	}
 
 	@Test

@@ -333,6 +333,13 @@ public class TestDe {
 			return subArticles;
 		}
 
+		public SubArticleRef getSubArticleByPageId(String pageId) {
+			for (SubArticleRef sa : getSubArticles()) {
+				if (pageId.equals(sa.getPageId())) return sa;
+			}
+			return null;
+		}
+
 		public ArticleRef getRef() {
 			return ref;
 		}
