@@ -55,5 +55,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/google-api-client-1.19.1.jar" sourcepath="lib/src/google-api-client-1.19.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-net-3.3.jar" sourcepath="lib/src/commons-net-3.3-sources.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
