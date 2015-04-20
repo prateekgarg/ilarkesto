@@ -14,6 +14,7 @@
  */
 package ilarkesto.integration.oauth;
 
+import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.json.JsonObject;
@@ -36,6 +37,12 @@ public class OAuth2 {
 	private String refreshToken;
 
 	private String accessToken;
+
+	public OAuth2(String authEndpoint, String tokenEndpoint, LoginDataProvider clientIdAndSecret, String redirectUri,
+			String refreshToken, String scope) {
+		this(authEndpoint, tokenEndpoint, clientIdAndSecret.getLoginData().getLogin(), clientIdAndSecret.getLoginData()
+				.getPassword(), redirectUri, refreshToken, scope);
+	}
 
 	public OAuth2(String authEndpoint, String tokenEndpoint, String clientId, String clientSecret, String redirectUri,
 			String refreshToken, String scope) {
