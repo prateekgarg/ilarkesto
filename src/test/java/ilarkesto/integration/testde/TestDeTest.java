@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -292,13 +293,26 @@ public class TestDeTest extends ATest {
 
 	@Test
 	public void downloadArticleRefs() throws ParseException {
-		List<ArticleRef> articles = TestDe.downloadArticleRefs(1, observer);
-		assertNotEmpty(articles);
-		for (ArticleRef ref : articles) {
-			log.debug(ref);
-			assertContainsNot(ref.getTitle(), "<span");
-			assertContainsNot(ref.getTitle(), "&#");
+		List<ArticleRef> articles = new ArrayList<TestDe.ArticleRef>();
+		for (int i = 1; i < 10; i++) {
+			List<ArticleRef> newArticles = TestDe.downloadArticleRefs(i, observer);
+			assertNotEmpty(newArticles);
+			for (ArticleRef ref : newArticles) {
+				log.debug(ref);
+				assertContainsNot(ref.getTitle(), "<span");
+				assertContainsNot(ref.getTitle(), "&#");
+			}
+			articles.addAll(newArticles);
 		}
+		// assertContainsArticle(articles,
+		// "Nacht­speicherhei­zung und Wärmepumpe: Wechsel des Stromanbieters endlich möglich");
+	}
+
+	private void assertContainsArticle(List<ArticleRef> articles, String title) {
+		for (ArticleRef article : articles) {
+			if (article.getTitle().equals(title)) return;
+		}
+		fail("Missing article: " + title);
 	}
 
 }
