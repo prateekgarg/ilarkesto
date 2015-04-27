@@ -49,7 +49,7 @@ public class GoogleContactsSynchronizer {
 
 		GoogleContactsSynchronizer synchronizer = new GoogleContactsSynchronizer(client.createContactsService(),
 				"ilarkestoId", "ilarkestoTimestammp", "ilarkestoVersion", String.valueOf(System.currentTimeMillis()),
-				"Ilarkesto-Test", new LocalContactManager<String>() {
+				"Ilarkesto-Test", false, new LocalContactManager<String>() {
 
 					@Override
 					public void onUpdateGoogleContactFailed(String contact, ContactEntry gContact, Exception ex) {
@@ -102,10 +102,12 @@ public class GoogleContactsSynchronizer {
 	private String localVersion;
 	private String contactsGroupTitle;
 	private LocalContactManager localContactManager;
+	private boolean addToMyContacts;
+	private ContactGroupEntry groupMyContacts;
 
 	public GoogleContactsSynchronizer(ContactsService service, String localIdentifierAttribute,
 			String localTimestampAttribute, String localVersionAttribute, String localVersion,
-			String contactsGroupTitle, LocalContactManager localContactManager) {
+			String contactsGroupTitle, boolean addToMyContacts, LocalContactManager localContactManager) {
 		super();
 		this.service = service;
 		this.localIdentifierAttribute = localIdentifierAttribute;
@@ -113,6 +115,7 @@ public class GoogleContactsSynchronizer {
 		this.localVersionAttribute = localVersionAttribute;
 		this.localVersion = localVersion;
 		this.contactsGroupTitle = contactsGroupTitle;
+		this.addToMyContacts = addToMyContacts;
 		this.localContactManager = localContactManager;
 	}
 
@@ -173,6 +176,8 @@ public class GoogleContactsSynchronizer {
 		Google.removeOrganizations(gContact);
 		Google.removeUserDefinedFields(gContact);
 
+		if (addToMyContacts) Google.addContactGroup(gContact, getGroupMyContacts());
+
 		localContactManager.updateGoogleContactFields(oContact, gContact);
 
 		Google.save(gContact, service);
@@ -186,6 +191,11 @@ public class GoogleContactsSynchronizer {
 				log.error("Uploading photo file failed:", this, oContact, photoFile);
 			}
 		}
+	}
+
+	private ContactGroupEntry getGroupMyContacts() {
+		if (groupMyContacts == null) groupMyContacts = Google.getContactGroupMyContacts(service, null);
+		return groupMyContacts;
 	}
 
 	private ContactGroupEntry getContactGroup() {
