@@ -57,6 +57,9 @@ public class Fuel {
 		ret.add(new FuelStation("Harting (Kleinbremen)", "Kleinbremer Straße 4, Porta Westfalica",
 				"519b4a92bed7139bf0d44b79").addServiceTime(new Time(7, 30), new Time(18, 30))); // TODO
 
+		ret.add(new FuelStation("Schlosserei Tankstelle (Kleinbremen)", "Rintelner Straße 261, Porta Westfalica",
+				"519b4a93bed7139bf0d44b7d").addServiceTime(new Time(6, 0), new Time(22, 00))); // TODO
+
 		ret.add(new FuelStation("Shell (Möllenbeck)", "Lemgoer Straße 55, Rinteln", "519b48f8bed7139bf0d42d66")
 				.addServiceTime(6, 22)); // TODO
 
