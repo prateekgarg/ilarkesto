@@ -548,14 +548,21 @@ public class Gwt {
 
 	}
 
-	public static boolean targetContains(ClickEvent event, String string) {
+	public static String getTargetString(ClickEvent event) {
 		NativeEvent nativeEvent = event.getNativeEvent();
-		if (nativeEvent == null) return false;
+		if (nativeEvent == null) return null;
 		EventTarget eventTarget = nativeEvent.getEventTarget();
-		if (eventTarget == null) return false;
+		if (eventTarget == null) return null;
 		String source = eventTarget.toSource();
 		if (source == null) source = eventTarget.toString();
-		if (source == null) return false;
-		return source.contains(string);
+		if (source == null) return null;
+		return source;
 	}
+
+	public static boolean targetStringContains(ClickEvent event, String string) {
+		String targetString = getTargetString(event);
+		if (targetString == null) return false;
+		return targetString.contains(string);
+	}
+
 }
