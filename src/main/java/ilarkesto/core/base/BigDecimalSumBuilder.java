@@ -22,8 +22,10 @@ import java.math.BigDecimal;
 public class BigDecimalSumBuilder implements Formatable {
 
 	private BigDecimal sum;
+	private int count;
 
 	public BigDecimalSumBuilder add(Number value) {
+		count++;
 		if (value == null) return this;
 		BigDecimal bdValue = ((value instanceof BigDecimal) ? (BigDecimal) value : new BigDecimal(value.toString()));
 		if (sum == null) {
@@ -36,6 +38,10 @@ public class BigDecimalSumBuilder implements Formatable {
 
 	public BigDecimal getSum() {
 		return sum;
+	}
+
+	public BigDecimal getAvg(int scale) {
+		return sum.divide(new BigDecimal(count), scale, BigDecimal.ROUND_HALF_UP);
 	}
 
 	@Override
