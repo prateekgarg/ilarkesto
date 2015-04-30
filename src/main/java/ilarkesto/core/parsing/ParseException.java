@@ -12,23 +12,14 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.templating;
+package ilarkesto.core.parsing;
 
-class OptionalElement extends ATemplateElement {
+import ilarkesto.core.base.Str;
 
-	private String expression;
-	private ATemplateElement contentTemplate;
+public class ParseException extends Exception {
 
-	public OptionalElement(String expression, ATemplateElement contentTemplate) {
-		super();
-		this.expression = expression;
-		this.contentTemplate = contentTemplate;
-	}
-
-	@Override
-	public void onProcess() {
-		if (!evalExpressionAsBoolean(expression)) return;
-		contentTemplate.process(context);
+	public ParseException(Object... message) {
+		super(Str.formatMessage(message));
 	}
 
 }

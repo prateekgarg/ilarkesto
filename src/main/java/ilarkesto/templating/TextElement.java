@@ -14,7 +14,7 @@
  */
 package ilarkesto.templating;
 
-class TextElement implements TemplateElement {
+class TextElement extends ATemplateElement {
 
 	private String text;
 
@@ -24,9 +24,18 @@ class TextElement implements TemplateElement {
 	}
 
 	@Override
-	public Context process(Context context) {
-		if (text == null) return context;
+	public void onProcess() {
+		if (text == null) return;
 		context.print(text);
-		return context;
+	}
+
+	public void append(String text) {
+		if (text == null) return;
+		if (text.isEmpty()) return;
+		this.text += text;
+	}
+
+	public String getText() {
+		return text;
 	}
 }

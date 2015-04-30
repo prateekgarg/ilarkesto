@@ -1,20 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.templating;
 
-class VariableElement implements TemplateElement {
+class VariableElement extends ATemplateElement {
 
 	private String expression;
 	private String defaultValue;
@@ -27,17 +27,20 @@ class VariableElement implements TemplateElement {
 	}
 
 	@Override
-	public Context process(Context context) {
-		Object value = context.getExpressionProcessor().eval(expression, context);
+	public void onProcess() {
+		Object value = evalExpression(expression);
 		if (value == null) value = defaultValue;
-		if (value == null) return context;
-		context.print(value);
-		return context;
+		if (value == null) return;
+		print(value);
 	}
 
 	public VariableElement setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
 		return this;
+	}
+
+	public String getExpression() {
+		return expression;
 	}
 
 }

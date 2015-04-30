@@ -36,23 +36,34 @@ public class TemplateTest extends ATest {
 	}
 
 	@Test
-	public void loop() {
+	public void loopObject() {
+		context.put("flower", new Flower("rose", "white"));
+		template = new Template().add(new LoopElement("flower", new VariableElement("color")));
+		assertTemplateProcess("white");
+
+		context.put("true", true);
+		template = new Template().add(new LoopElement("true", new VariableElement("flower/color")));
+		assertTemplateProcess("white");
+	}
+
+	@Test
+	public void loopItems() {
 		context.put("items",
 			Arrays.asList(new Flower("rose", "red"), new Flower("rose", "white"), new Flower("tulip", "yellow")));
 
 		template = new Template().add(new LoopElement("items", new VariableElement("color")));
 		assertTemplateProcess("redwhiteyellow");
 
-		template = new Template().add(new LoopElement("items", new VariableElement("#loop/index")));
+		template = new Template().add(new LoopElement("items", new VariableElement("$loop/index")));
 		assertTemplateProcess("012");
 
-		template = new Template().add(new LoopElement("items", new VariableElement("#loop/position")));
+		template = new Template().add(new LoopElement("items", new VariableElement("$loop/position")));
 		assertTemplateProcess("123");
 
-		template = new Template().add(new LoopElement("items", new VariableElement("#loop/first")));
+		template = new Template().add(new LoopElement("items", new VariableElement("$loop/first")));
 		assertTemplateProcess("truefalsefalse");
 
-		template = new Template().add(new LoopElement("items", new VariableElement("#loop/last")));
+		template = new Template().add(new LoopElement("items", new VariableElement("$loop/last")));
 		assertTemplateProcess("falsefalsetrue");
 	}
 
@@ -157,28 +168,7 @@ public class TemplateTest extends ATest {
 	}
 
 	private void assertTemplateProcess(String expectedValue) {
-		assertEquals(template.process(context).peekOutput(), expectedValue);
-	}
-
-	class Flower {
-
-		private String name;
-		private String color;
-
-		public Flower(String name, String color) {
-			super();
-			this.name = name;
-			this.color = color;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getColor() {
-			return color;
-		}
-
+		assertEquals(template.process(context).popOutput(), expectedValue);
 	}
 
 }

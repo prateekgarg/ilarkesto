@@ -14,29 +14,26 @@
  */
 package ilarkesto.templating;
 
-class ScopeElement implements TemplateElement {
+class ScopeElement extends ATemplateElement {
 
 	private String expression;
-	private TemplateElement contentTemplate;
+	private ATemplateElement contentTemplate;
 
-	public ScopeElement(String expression, TemplateElement contentTemplate) {
+	public ScopeElement(String expression, ATemplateElement contentTemplate) {
 		super();
 		this.expression = expression;
 		this.contentTemplate = contentTemplate;
 	}
 
 	@Override
-	public Context process(Context context) {
-
+	public void onProcess() {
 		Object value = context.getExpressionProcessor().eval(expression, context);
-		if (value == null) return context;
+		if (value == null) return;
 
 		Object scope = context.getScope();
 		context.setScope(value);
 		contentTemplate.process(context);
 		context.setScope(scope);
-
-		return context;
 	}
 
 }

@@ -9,26 +9,28 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
  * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.templating;
 
-class OptionalElement extends ATemplateElement {
+class Flower {
 
-	private String expression;
-	private ATemplateElement contentTemplate;
+	private String name;
+	private String color;
 
-	public OptionalElement(String expression, ATemplateElement contentTemplate) {
+	public Flower(String name, String color) {
 		super();
-		this.expression = expression;
-		this.contentTemplate = contentTemplate;
+		this.name = name;
+		this.color = color;
 	}
 
-	@Override
-	public void onProcess() {
-		if (!evalExpressionAsBoolean(expression)) return;
-		contentTemplate.process(context);
+	public String getName() {
+		return name;
+	}
+
+	public String getColor() {
+		return color;
 	}
 
 }

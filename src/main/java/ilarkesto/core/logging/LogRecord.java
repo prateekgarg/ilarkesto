@@ -72,27 +72,8 @@ public class LogRecord {
 	}
 
 	public String getParametersAsString() {
-		StringBuilder textSb = new StringBuilder();
-		if (parameters == null) {
-			textSb.append(" <null>");
-		} else {
-			for (Object parameter : parameters) {
-				textSb.append(' ');
-				if (parameter instanceof Throwable) {
-					Throwable ex = (Throwable) parameter;
-					textSb.append(Str.formatException(ex));
-					textSb.append("\n").append(Str.getStackTrace(ex));
-				} else {
-					try {
-						textSb.append(Str.format(parameter));
-					} catch (Exception ex) {
-						textSb.append("[Log-ERROR: " + Str.formatException(ex) + "]");
-					}
-				}
-			}
-		}
-		String text = textSb.toString();
-		return text;
+		if (parameters == null) return " <null>";
+		return Str.formatMessage(parameters);
 	}
 
 	private transient int hashcode;

@@ -15,6 +15,10 @@ public class Parser {
 		return pos >= data.length() - 1;
 	}
 
+	public void gotoEnd() {
+		pos = data.length() - 1;
+	}
+
 	public String tail() {
 		return data.substring(pos);
 	}
@@ -59,6 +63,17 @@ public class Parser {
 	public String getUntilAndGotoAfter(String... ss) throws ParseException {
 		String ret = getUntil(ss);
 		gotoAfter(ss);
+		return ret;
+	}
+
+	public String getUntilAndGotoAfterIf(String... ss) {
+		String ret = getUntilIf(ss);
+		if (ret == null) return null;
+		try {
+			gotoAfter(ss);
+		} catch (ParseException ex) {
+			throw new RuntimeException("Internal parser error");
+		}
 		return ret;
 	}
 

@@ -71,7 +71,7 @@ public class Context {
 		return expressionProcessor;
 	}
 
-	public String peekOutput() {
+	public String popOutput() {
 		if (stringWriter == null)
 			throw new IllegalStateException("Context was constructed with PrintWriter, peekOutput() not allowed");
 		out.close();

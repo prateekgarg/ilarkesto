@@ -14,38 +14,34 @@
  */
 package ilarkesto.templating;
 
-import ilarkesto.base.Utl;
-
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-class LoopElement implements TemplateElement {
+class LoopElement extends ContainerElement {
 
 	private String expression;
-	private TemplateElement contentTemplate;
 
 	private String name = "loop";
-	private boolean changeScopeToItem = true;
 
-	public LoopElement(String expression, TemplateElement contentTemplate) {
-		super();
+	public LoopElement(String expression) {
 		this.expression = expression;
-		this.contentTemplate = contentTemplate;
+	}
+
+	public LoopElement(String expression, ATemplateElement contentTemplate) {
+		this(expression);
+		add(contentTemplate);
 	}
 
 	@Override
-	public Context process(Context context) {
-
-		Object value = context.getExpressionProcessor().eval(expression, context);
+	public void onProcess() {
+		Object value = evalExpression(expression);
 
 		Collection items = toCollection(value);
-		if (items == null || items.isEmpty()) return context;
+		if (items == null || items.isEmpty()) return;
 
 		Map<String, Object> loopProperties = new HashMap<String, Object>();
-		String loopPropertiesName = "#" + name;
+		String loopPropertiesName = "$" + name;
 		context.put(loopPropertiesName, loopProperties);
 
 		int count = items.size();
@@ -66,24 +62,34 @@ class LoopElement implements TemplateElement {
 		}
 
 		context.remove(loopPropertiesName);
-
-		return context;
-	}
-
-	private Collection toCollection(Object value) {
-		if (value == null) return Collections.emptyList();
-		if (value instanceof Collection) return (Collection) value;
-		if (value instanceof Iterable) return Utl.toList((Iterable) value);
-		return Arrays.asList(value);
 	}
 
 	private void process(Context context, Object item) {
+		boolean changeScopeToItem = !isPrimitive(item);
+
 		Object oldScope = context.getScope();
 		if (changeScopeToItem) context.setScope(item);
 
-		contentTemplate.process(context);
+		processChildren();
 
 		if (changeScopeToItem) context.setScope(oldScope);
+	}
+
+	private boolean isPrimitive(Object o) {
+		if (o instanceof String) return true;
+		if (o instanceof Boolean) return true;
+		if (o instanceof Number) return true;
+		return false;
+	}
+
+	@Override
+	public LoopElement add(ATemplateElement element) {
+		super.add(element);
+		return this;
+	}
+
+	public String getExpression() {
+		return expression;
 	}
 
 }

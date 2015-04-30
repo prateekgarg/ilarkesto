@@ -17,6 +17,7 @@ package ilarkesto.templating;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.json.JsonObject;
 
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class ExpressionProcessor {
 	public Object eval(String expression, Context context) {
 		if (Str.isBlank(expression)) return null;
 		if (expression.startsWith("/")) return evalOnObject(expression.substring(1), context.getRootScope());
-		if (expression.startsWith("#")) return evalOnObject(expression, context.getRootScope());
+		if (expression.startsWith("$")) return evalOnObject(expression, context.getRootScope());
 		return evalOnObject(expression, context.getScope());
 	}
 
@@ -44,7 +45,11 @@ public class ExpressionProcessor {
 
 	private Object getFromObject(String propertyExpression, Object object) {
 		String property = propertyExpression;
+
 		if (object instanceof Map) return ((Map) object).get(property);
+
+		if (object instanceof JsonObject) return ((JsonObject) object).get(property);
+
 		try {
 			return Reflect.getProperty(object, property);
 		} catch (Throwable ex) {
