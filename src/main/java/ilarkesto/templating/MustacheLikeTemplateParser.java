@@ -17,6 +17,8 @@ package ilarkesto.templating;
 import ilarkesto.core.parsing.ASaxParserState;
 import ilarkesto.core.parsing.ParseException;
 
+import java.io.File;
+
 public class MustacheLikeTemplateParser extends ATemplateParser {
 
 	@Override
@@ -36,6 +38,10 @@ public class MustacheLikeTemplateParser extends ATemplateParser {
 
 	public static Template parseTemplate(String template) throws ParseException {
 		return new MustacheLikeTemplateParser().parse(template).getTemplate();
+	}
+
+	public static Template parseTemplate(File templateFile) throws ParseException {
+		return new MustacheLikeTemplateParser().parse(templateFile).getTemplate();
 	}
 
 	class MustacheState extends ASaxParserState {
