@@ -54,6 +54,14 @@ public class MustacheLikeTemplateParserTest extends ATest {
 	}
 
 	@Test
+	public void include() throws ParseException {
+		Template template = MustacheLikeTemplateParser.parseTemplate("{{> incl}}");
+		assertNotEmpty(template.children);
+		IncludeElement variable = (IncludeElement) template.children.get(0);
+		assertEquals(variable.getPath(), "incl");
+	}
+
+	@Test
 	public void variable() throws ParseException {
 		Template template = MustacheLikeTemplateParser.parseTemplate("{{a}}");
 		assertNotEmpty(template.children);

@@ -22,6 +22,7 @@ import java.util.Map;
 public class Context {
 
 	private ExpressionProcessor expressionProcessor = new ExpressionProcessor();
+	private TemplateResolver templateResolver;
 
 	private StringWriter stringWriter;
 	private PrintWriter out;
@@ -69,6 +70,14 @@ public class Context {
 
 	public ExpressionProcessor getExpressionProcessor() {
 		return expressionProcessor;
+	}
+
+	public void setTemplateResolver(TemplateResolver templateResolver) {
+		this.templateResolver = templateResolver;
+	}
+
+	public TemplateResolver getTemplateResolver() {
+		return templateResolver;
 	}
 
 	public String popOutput() {

@@ -62,6 +62,10 @@ public class MustacheLikeTemplateParser extends ATemplateParser {
 				builder.endContainer();
 				return;
 			}
+			if (text.startsWith(">")) {
+				builder.include(text.substring(1));
+				return;
+			}
 			if (text.startsWith("#")) {
 				builder.startLoop(text.substring(1));
 				return;
