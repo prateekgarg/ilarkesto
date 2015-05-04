@@ -22,6 +22,8 @@ import java.util.Map;
 public class Context {
 
 	private ExpressionProcessor expressionProcessor = new ExpressionProcessor();
+	private TextFormater textFormater = new TextFormater();
+	private TextEscaper textEscaper = new HtmlTextEscaper();
 	private TemplateResolver templateResolver;
 
 	private StringWriter stringWriter;
@@ -78,6 +80,22 @@ public class Context {
 
 	public TemplateResolver getTemplateResolver() {
 		return templateResolver;
+	}
+
+	public void setTextEscaper(TextEscaper textEscaper) {
+		this.textEscaper = textEscaper;
+	}
+
+	public TextEscaper getTextEscaper() {
+		return textEscaper;
+	}
+
+	public void setTextFormater(TextFormater textFormater) {
+		this.textFormater = textFormater;
+	}
+
+	public TextFormater getTextFormater() {
+		return textFormater;
 	}
 
 	public String popOutput() {

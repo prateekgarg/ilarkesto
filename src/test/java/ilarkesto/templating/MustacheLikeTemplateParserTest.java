@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -30,6 +30,8 @@ public class MustacheLikeTemplateParserTest extends ATest {
 		assertTemplateOutput("hello {{a}}", "hello a-value");
 		assertTemplateOutput("hello {{#rose}}existing{{/}}", "hello existing");
 		assertTemplateOutput("hello {{#rose}}{{color}}{{/}}", "hello red");
+		assertTemplateOutput("hello {{html}}", "hello &lt;html&gt;");
+		assertTemplateOutput("hello {{{html}}}", "hello <html>");
 	}
 
 	@Test
@@ -67,6 +69,25 @@ public class MustacheLikeTemplateParserTest extends ATest {
 		assertNotEmpty(template.children);
 		VariableElement variable = (VariableElement) template.children.get(0);
 		assertEquals(variable.getExpression(), "a");
+		assertTrue(variable.isEscape());
+	}
+
+	@Test
+	public void variableUnescaped() throws ParseException {
+		Template template = MustacheLikeTemplateParser.parseTemplate("{{{html}}}");
+		assertNotEmpty(template.children);
+		VariableElement variable = (VariableElement) template.children.get(0);
+		assertFalse(variable.isEscape());
+		assertEquals(variable.getExpression(), "html");
+	}
+
+	@Test
+	public void variableEscaped() throws ParseException {
+		Template template = MustacheLikeTemplateParser.parseTemplate("{{html}}");
+		assertNotEmpty(template.children);
+		VariableElement variable = (VariableElement) template.children.get(0);
+		assertTrue(variable.isEscape());
+		assertEquals(variable.getExpression(), "html");
 	}
 
 	@Test
@@ -81,6 +102,7 @@ public class MustacheLikeTemplateParserTest extends ATest {
 		Template template = MustacheLikeTemplateParser.parseTemplate(templateCode);
 		Context context = new Context();
 		context.put("a", "a-value");
+		context.put("html", "<html>");
 		context.put("rose", new Flower("rose", "red"));
 		context.put("flowers",
 			Arrays.asList(new Flower("rose", "white"), new Flower("rose", "red"), new Flower("tulip", "yellow")));

@@ -32,6 +32,14 @@ public abstract class ATemplateElement {
 		return context;
 	}
 
+	protected String format(Object o) {
+		return context.getTextFormater().format(o);
+	}
+
+	protected String escape(Object text) {
+		return context.getTextEscaper().escape(text.toString());
+	}
+
 	protected Object evalExpression(String expression) {
 		return context.getExpressionProcessor().eval(expression, context);
 	}
