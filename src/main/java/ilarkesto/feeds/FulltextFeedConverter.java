@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -49,7 +49,7 @@ public class FulltextFeedConverter {
 		this.url = url;
 	}
 
-	public void update() {
+	public synchronized void update() {
 		feed = Feed.load(url);
 		log.info("Feed loaded:", feed);
 		for (FeedItem item : feed.getItems()) {
@@ -77,11 +77,18 @@ public class FulltextFeedConverter {
 	private static String extract(FeedItem item, String text) {
 		int idx = -1;
 
-		// heise
 		if ((idx = text.indexOf("<div class=\"meldung_wrapper\">")) > 0) {
-			log.debug("heise");
+			log.debug("heise.de");
 			text = text.substring(idx + 29);
-			text = text.substring(0, text.indexOf("</div>"));
+			text = Str.removeSuffixStartingWith(text, "</div>");
+			return text;
+		}
+
+		if ((idx = text.indexOf("<div class=\"article-body\">")) > 0) {
+			log.debug("zeit.de");
+			text = text.substring(idx);
+			text = Str.removeSuffixStartingWith(text, "<a href=\"http://www.zeit.de\"");
+			text = Str.removeSuffixStartingWith(text, "<div class=\"articlefooter af\">");
 			return text;
 		}
 
@@ -89,7 +96,7 @@ public class FulltextFeedConverter {
 
 		if ((idx = text.indexOf("<body>")) > 0) {
 			text = text.substring(idx + 6);
-			if ((idx = text.indexOf("</body>")) > 0) text = text.substring(0, idx);
+			text = Str.removeSuffixStartingWith(text, "</body>");
 			return text;
 		}
 
