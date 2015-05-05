@@ -43,6 +43,10 @@ public class TemplateBuilder {
 		return startContainer(new LoopElement(expression));
 	}
 
+	public ComponentIncludeElement startComponentInclude(String componentTemplatePath) {
+		return startContainer(new ComponentIncludeElement(componentTemplatePath));
+	}
+
 	public <C extends ContainerElement> C startContainer(C container) {
 		add(container);
 		containerStack.push(container);

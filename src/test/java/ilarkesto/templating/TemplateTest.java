@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -33,6 +33,45 @@ public class TemplateTest extends ATest {
 	public void init() {
 		context = new Context();
 		template = new Template();
+	}
+
+	@Test
+	public void componentInclude() {
+		final Template component = new Template();
+		component.add(new IncludeElement("head"));
+		component.add(new TextElement("|"));
+		component.add(new IncludeElement("body"));
+		context.setTemplateResolver(new TemplateResolver() {
+
+			@Override
+			public Template getTemplate(String path) {
+				return path.equals("component") ? component : null;
+			}
+		});
+
+		ComponentIncludeElement componentInclude = new ComponentIncludeElement("component");
+		Template head = new Template().add(new TextElement("head-content"));
+		Template body = new Template().add(new TextElement("body-content"));
+		componentInclude.addTemplate("head", head);
+		componentInclude.addTemplate("body", body);
+
+		template = new Template().add(componentInclude);
+		assertTemplateProcess("head-content|body-content");
+	}
+
+	@Test
+	public void include() {
+		final Template subtemplate = new Template().add(new TextElement("include-content"));
+		context.setTemplateResolver(new TemplateResolver() {
+
+			@Override
+			public Template getTemplate(String path) {
+				return path.equals("sub") ? subtemplate : null;
+			}
+		});
+
+		template = new Template().add(new ComponentIncludeElement("sub"));
+		assertTemplateProcess("include-content");
 	}
 
 	@Test

@@ -15,6 +15,7 @@
 package ilarkesto.templating;
 
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.Str;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +31,14 @@ public abstract class ATemplateElement {
 		this.context = context;
 		onProcess();
 		return context;
+	}
+
+	protected Template getTemplate(String path) {
+		if (Str.isBlank(path)) return null;
+		TemplateResolver templateResolver = context.getTemplateResolver();
+		if (templateResolver == null) return null;
+		Template template = templateResolver.getTemplate(path);
+		return template;
 	}
 
 	protected String format(Object o) {
