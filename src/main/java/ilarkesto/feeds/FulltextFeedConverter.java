@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -71,10 +71,23 @@ public class FulltextFeedConverter {
 		String text = downloader.downloadText(link, IO.UTF_8);
 		if (Str.isBlank(text)) return;
 		text = extract(item, text);
+		text = optimize(text);
 		item.setDescription(text);
 	}
 
+	private static String optimize(String text) {
+		for (int i = 1; i < 6; i++) {
+			int iDest = i + 3;
+			text = text.replace("<h" + i, "<h" + iDest).replace("</h" + i, "</h" + iDest);
+			text = text.replace("<H" + i, "<H" + iDest).replace("</H" + i, "</H" + iDest);
+		}
+
+		return text;
+	}
+
 	private static String extract(FeedItem item, String text) {
+		if (text == null) return null;
+
 		int idx = -1;
 
 		if ((idx = text.indexOf("<div class=\"meldung_wrapper\">")) > 0) {
@@ -86,9 +99,15 @@ public class FulltextFeedConverter {
 
 		if ((idx = text.indexOf("<div class=\"article-body\">")) > 0) {
 			log.debug("zeit.de");
+			String nextPageUrl = extractZeitDeNextPageUrl(text);
 			text = text.substring(idx);
 			text = Str.removeSuffixStartingWith(text, "<a href=\"http://www.zeit.de\"");
 			text = Str.removeSuffixStartingWith(text, "<div class=\"articlefooter af\">");
+			if (nextPageUrl != null) {
+				String next = downloader.downloadText(nextPageUrl, IO.UTF_8);
+				if (!Str.isBlank(next)) return text;
+				text += extract(item, next);
+			}
 			return text;
 		}
 
@@ -101,6 +120,15 @@ public class FulltextFeedConverter {
 		}
 
 		return text;
+	}
+
+	private static String extractZeitDeNextPageUrl(String text) {
+		int idx = text.indexOf("<a id=\"hp.article.bottom.paginierung.");
+		if (idx < 0) return null;
+		idx = text.indexOf("href=\"", idx);
+		if (idx < 0) return null;
+		idx += 6;
+		return text.substring(idx, text.indexOf("\"", idx + 1));
 	}
 
 	public Feed getFeed() {
