@@ -41,6 +41,7 @@ public class BigDecimalSumBuilder implements Formatable {
 	}
 
 	public BigDecimal getAvg(int scale) {
+		if (count == 0) return null;
 		return sum.divide(new BigDecimal(count), scale, BigDecimal.ROUND_HALF_UP);
 	}
 
