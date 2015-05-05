@@ -14,6 +14,7 @@
  */
 package ilarkesto.tools.cms;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.parsing.ParseException;
 import ilarkesto.io.IO;
 import ilarkesto.templating.MustacheLikeTemplateParser;
@@ -57,6 +58,7 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 				page.build();
 				continue;
 			}
+			writeOutputFile(getRelativePath(file), file);
 		}
 	}
 
@@ -64,6 +66,12 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		File file = getOutputFile(path);
 		info("output>", file.getPath());
 		IO.writeFile(file, text, IO.UTF_8);
+	}
+
+	public void writeOutputFile(String path, File source) {
+		File file = getOutputFile(path);
+		info("output>", file.getPath());
+		IO.copyFile(source, file);
 	}
 
 	private File getOutputFile(String path) {
@@ -102,6 +110,10 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		File file = new File(templatesDir.getPath() + "/" + templatePath);
 		if (file.exists()) return file;
 		return cms.findTemplateFile(templatePath);
+	}
+
+	public String getRelativePath(File file) {
+		return Str.removePrefix(file.getPath(), getContentDir().getPath() + "/");
 	}
 
 }

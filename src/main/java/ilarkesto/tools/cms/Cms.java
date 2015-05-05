@@ -18,10 +18,13 @@ import java.io.File;
 
 public class Cms {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		File dir = new File("runtimedata/cms");
 		CmsContext cmsContext = new CmsContext(dir);
-		cmsContext.build();
+		while (true) {
+			cmsContext.build();
+			Thread.sleep(5000);
+		}
 	}
 
 }
