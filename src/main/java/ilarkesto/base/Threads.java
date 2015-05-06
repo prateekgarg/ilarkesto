@@ -45,7 +45,8 @@ public class Threads {
 
 	private static String identifyStackTrace(Thread thread, StackTraceElement[] stackTrace) {
 		if (Thread.currentThread() == thread) return "THIS";
-		if (thread.getThreadGroup().getName().equals("system")) return "JVM";
+		ThreadGroup group = thread.getThreadGroup();
+		if (group != null && "system".equals(group.getName())) return "JVM";
 		String ret = stackTraceIdentificator.identify(stackTrace);
 		return ret;
 	}
