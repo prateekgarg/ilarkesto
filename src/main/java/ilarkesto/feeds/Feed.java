@@ -32,6 +32,7 @@ public class Feed {
 	private String description;
 	private String language;
 	private String pubDate; // RFC 822
+	private String lastBuildDate;
 	private List<FeedItem> items = new ArrayList<FeedItem>();
 
 	public static Feed load(String url) {
@@ -43,6 +44,9 @@ public class Feed {
 		String link = JDom.getChildText(eChannel, "link");
 		String description = JDom.getChildText(eChannel, "description");
 		Feed feed = new Feed(title, link, description);
+		feed.setLastBuildDate(JDom.getChildText(eChannel, "lastBuildDate"));
+		feed.setPubDate(JDom.getChildText(eChannel, "lastBuildDate"));
+		feed.setLanguage(JDom.getChildText(eChannel, "language"));
 
 		for (Element eItem : eChannel.getChildren("item")) {
 			String itemTitle = JDom.getChildText(eItem, "title");
@@ -76,6 +80,7 @@ public class Feed {
 		JDom.addTextElement(eChannel, "description", description);
 		if (language != null) JDom.addTextElement(eChannel, "language", language);
 		if (pubDate != null) JDom.addTextElement(eChannel, "pubDate", pubDate);
+		if (lastBuildDate != null) JDom.addTextElement(eChannel, "lastBuildDate", lastBuildDate);
 
 		for (FeedItem item : items) {
 			item.appendTo(eChannel);
@@ -114,12 +119,31 @@ public class Feed {
 		return language;
 	}
 
+	public Feed setLanguage(String language) {
+		this.language = language;
+		return this;
+	}
+
 	public List<FeedItem> getItems() {
 		return items;
 	}
 
+	public Feed setPubDate(String pubDate) {
+		this.pubDate = pubDate;
+		return this;
+	}
+
 	public String getPubDate() {
 		return pubDate;
+	}
+
+	public String getLastBuildDate() {
+		return lastBuildDate;
+	}
+
+	public Feed setLastBuildDate(String lastBuildDate) {
+		this.lastBuildDate = lastBuildDate;
+		return this;
 	}
 
 	@Override
