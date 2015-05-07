@@ -111,6 +111,13 @@ public class FulltextFeedConverter {
 			return text;
 		}
 
+		if ((idx = text.indexOf("<article")) > 0) {
+			log.debug("<article>");
+			text = text.substring(idx);
+			text = Str.removeSuffixStartingWith(text, "</article>");
+			return text;
+		}
+
 		log.warn("Identification failed:", item.getLink());
 
 		if ((idx = text.indexOf("<body>")) > 0) {
