@@ -14,8 +14,6 @@
  */
 package ilarkesto.core.parsing;
 
-import java.io.File;
-
 public abstract class ASaxParserState {
 
 	private SaxParserWithStates parser;
@@ -40,11 +38,6 @@ public abstract class ASaxParserState {
 
 	public ASaxParserState parse(String text) throws ParseException {
 		new SaxParserWithStates(this).parse(text);
-		return this;
-	}
-
-	public ASaxParserState parse(File file) throws ParseException {
-		new SaxParserWithStates(this).parse(file);
 		return this;
 	}
 

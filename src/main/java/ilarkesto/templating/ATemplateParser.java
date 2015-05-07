@@ -16,6 +16,7 @@ package ilarkesto.templating;
 
 import ilarkesto.core.parsing.ASaxParserState;
 import ilarkesto.core.parsing.ParseException;
+import ilarkesto.core.parsing.SaxParserWithStates;
 
 import java.io.File;
 
@@ -33,9 +34,8 @@ public abstract class ATemplateParser extends ASaxParserState {
 		return this;
 	}
 
-	@Override
 	public ATemplateParser parse(File file) throws ParseException {
-		super.parse(file);
+		new SaxParserWithStates(this).parse(file);
 		return this;
 	}
 
