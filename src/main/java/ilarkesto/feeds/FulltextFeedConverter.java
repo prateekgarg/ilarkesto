@@ -111,8 +111,15 @@ public class FulltextFeedConverter {
 			return text;
 		}
 
+		if ((idx = text.indexOf("<div class=\"entry\"")) > 0) {
+			log.debug("<div class=\"entry\">"); // abgeordnetenwatch
+			text = text.substring(idx);
+			text = Str.removeSuffixStartingWith(text, "</div>");
+			return text;
+		}
+
 		if ((idx = text.indexOf("<article")) > 0) {
-			log.debug("<article>");
+			log.debug("<article>"); // golem
 			text = text.substring(idx);
 			text = Str.removeSuffixStartingWith(text, "</article>");
 			return text;
