@@ -19,14 +19,18 @@ import ilarkesto.core.base.Str.Formatable;
 public class MoneySumBuilder implements Formatable {
 
 	private Money sum;
+	private Money min;
+	private Money max;
+	private int count;
 
 	public MoneySumBuilder add(Money value) throws MultipleCurrenciesException {
+		count++;
 		if (value == null) return this;
-		if (sum == null) {
-			sum = value;
-			return this;
-		}
-		sum = sum.add(value);
+
+		sum = sum == null ? value : sum.add(value);
+		if (min == null || value.compareTo(min) < 0) min = value;
+		if (max == null || value.compareTo(max) > 0) max = value;
+
 		return this;
 	}
 
@@ -34,8 +38,35 @@ public class MoneySumBuilder implements Formatable {
 		return sum;
 	}
 
+	public Money getAvg() {
+		if (count == 0) return null;
+		return sum.divideAndRound(count);
+	}
+
+	public Money getMin() {
+		return min;
+	}
+
+	public Money getMax() {
+		return max;
+	}
+
 	@Override
 	public String format() {
 		return sum == null ? null : sum.format();
 	}
+
+	public String formatMin() {
+		return min == null ? null : min.format();
+	}
+
+	public String formatMax() {
+		return max == null ? null : max.format();
+	}
+
+	public String formatAvg() {
+		Money avg = getAvg();
+		return avg == null ? null : avg.format();
+	}
+
 }

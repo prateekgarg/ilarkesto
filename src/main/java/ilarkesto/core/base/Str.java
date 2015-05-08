@@ -38,6 +38,11 @@ public class Str {
 
 	public static final char EUR = '\u0080';
 
+	public static String prefix(String s, String prefix) {
+		if (s == null || prefix == null) return s;
+		return prefix + s;
+	}
+
 	public static boolean isLongerThan(String text, int maxLength) {
 		if (text == null) return false;
 		return text.length() > maxLength;
