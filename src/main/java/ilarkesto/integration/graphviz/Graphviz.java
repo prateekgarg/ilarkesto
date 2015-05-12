@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -19,10 +19,12 @@ import ilarkesto.base.Sys;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-
-import javax.servlet.ServletOutputStream;
+import java.io.OutputStream;
 
 public class Graphviz {
 
@@ -34,11 +36,11 @@ public class Graphviz {
 	public static final String OUTPUT_TYPE_PNG = "png";
 	public static final String OUTPUT_TYPE_IMAP = "imap";
 
-	public static File createDotPng(String sourceCode) {
-		return createDot(sourceCode, OUTPUT_TYPE_PNG);
+	public static File createPng(String sourceCode) {
+		return processDot(sourceCode, OUTPUT_TYPE_PNG);
 	}
 
-	public static File createDot(String sourceCode, String outputType) {
+	public static File processDot(String sourceCode, String outputType) {
 		File sourceFile;
 		try {
 			sourceFile = File.createTempFile("ilarkesto-graph_", ".dot");
@@ -46,10 +48,14 @@ public class Graphviz {
 			throw new RuntimeException(ex);
 		}
 		IO.writeFile(sourceFile, sourceCode, Sys.getFileEncoding());
-		return createDot(sourceFile, outputType);
+		try {
+			return processDot(sourceFile, outputType);
+		} catch (Exception ex) {
+			throw new RuntimeException("Processing dot failed -> " + sourceCode, ex);
+		}
 	}
 
-	public static File createDot(File sourceFile, String outputType) {
+	public static File processDot(File sourceFile, String outputType) {
 		File outputFile;
 		try {
 			outputFile = File.createTempFile("ilarkesto-graph_", "." + outputType);
@@ -73,8 +79,29 @@ public class Graphviz {
 		return outputFile;
 	}
 
-	public static void writeDot(ServletOutputStream outputStream, String string, String outputTypeSvg) {
-		File file = createDot(string, outputTypeSvg);
+	public static void write(File file, String sourceCode, String outputType) {
+		IO.createDirectory(file.getParentFile());
+		BufferedOutputStream out;
+		try {
+			out = new BufferedOutputStream(new FileOutputStream(file));
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
+		write(out, sourceCode, outputType);
+		try {
+			out.close();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public static void write(OutputStream outputStream, String sourceCode, String outputType) {
+		File file;
+		try {
+			file = processDot(sourceCode, outputType);
+		} catch (Exception ex) {
+			throw new RuntimeException("Processing dot failed -> " + sourceCode, ex);
+		}
 		IO.copyFile(file, outputStream);
 		file.delete();
 	}
