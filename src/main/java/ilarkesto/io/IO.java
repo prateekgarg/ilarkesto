@@ -54,6 +54,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,6 +84,26 @@ public abstract class IO {
 
 	private static LinkedList<Properties> properties = new LinkedList<Properties>();
 	private static LinkedList<File> propertiesFiles = new LinkedList<File>();
+
+	public static Map<String, Long> getModificationTimes(File root) {
+		HashMap<String, Long> modificationTimesByPath = new HashMap<String, Long>();
+		putModificationTimes(modificationTimesByPath, root);
+		return modificationTimesByPath;
+	}
+
+	private static void putModificationTimes(HashMap<String, Long> modificationTimesByPath, File file) {
+		long lastModified = file.lastModified();
+		if (lastModified <= 0) return; // does not exist
+		modificationTimesByPath.put(file.getPath(), lastModified);
+		if (file.isDirectory()) {
+			File[] files = file.listFiles();
+			if (files != null) {
+				for (File f : files) {
+					putModificationTimes(modificationTimesByPath, f);
+				}
+			}
+		}
+	}
 
 	public static File createTempDir(String prefix) {
 		File file = createTempFile(prefix, "");

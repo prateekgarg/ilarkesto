@@ -14,11 +14,7 @@
  */
 package ilarkesto.concurrent;
 
-import ilarkesto.core.logging.Log;
-
 public abstract class ALoopTask extends ATask {
-
-	private Log log = Log.get(getClass());
 
 	protected abstract void iteration() throws InterruptedException;
 
@@ -37,7 +33,16 @@ public abstract class ALoopTask extends ATask {
 					throw new RuntimeException("Task aborted by exception: " + toString(), ex1);
 				}
 			}
+			if (!isAbortRequested()) sleep();
 		}
+	}
+
+	protected void sleep() throws InterruptedException {
+		Thread.sleep(getSleepTimeBetweenIterations());
+	}
+
+	protected long getSleepTimeBetweenIterations() {
+		return 0;
 	}
 
 	protected void onError(Throwable ex) throws Throwable {
