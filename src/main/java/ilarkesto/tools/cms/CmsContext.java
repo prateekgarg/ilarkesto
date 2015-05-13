@@ -24,6 +24,7 @@ public class CmsContext {
 	protected final Log log = Log.get(getClass());
 
 	private File dir;
+	private File inputDir;
 	private File sitesDir;
 	private File templatesDir;
 	private File outputDir;
@@ -33,9 +34,14 @@ public class CmsContext {
 	public CmsContext(File dir) {
 		this.dir = dir;
 
-		sitesDir = new File(dir.getPath() + "/sites");
 		outputDir = new File(dir.getPath() + "/output");
-		templatesDir = new File(dir.getPath() + "/templates");
+		IO.createDirectory(outputDir);
+
+		inputDir = new File(dir.getPath() + "/input");
+		sitesDir = new File(inputDir.getPath() + "/sites");
+		IO.createDirectory(sitesDir);
+		templatesDir = new File(inputDir.getPath() + "/templates");
+		IO.createDirectory(templatesDir);
 	}
 
 	public void build() {
@@ -63,6 +69,10 @@ public class CmsContext {
 
 	public File getOutputDir() {
 		return outputDir;
+	}
+
+	public File getInputDir() {
+		return inputDir;
 	}
 
 	public File findTemplateFile(String templatePath) {
