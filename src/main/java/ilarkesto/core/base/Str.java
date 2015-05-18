@@ -484,6 +484,13 @@ public class Str {
 		return s.substring(0, idx);
 	}
 
+	public static String removeSuffixStartingWithLast(String s, String suffixIndicator) {
+		if (s == null) return null;
+		int idx = s.lastIndexOf(suffixIndicator);
+		if (idx < 0) return s;
+		return s.substring(0, idx);
+	}
+
 	public static String removePrefix(String s, String prefixToRemove) {
 		if (s == null) return null;
 		if (!s.startsWith(prefixToRemove)) return s;
@@ -967,6 +974,11 @@ public class Str {
 		// our last action in the above loop was to switch d and p, so p now
 		// actually has the most recent cost counts
 		return p[n];
+	}
+
+	public static String securePath(String key) {
+		if (key == null) return null;
+		return key.replace("..", "__");
 	}
 
 }

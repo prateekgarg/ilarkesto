@@ -21,9 +21,8 @@ import ilarkesto.templating.TemplateResolver;
 
 import java.io.File;
 
-public class ContentFilePageContext extends ABuilder implements TemplateResolver {
+public class ContentFilePageContext extends APageContext implements TemplateResolver {
 
-	private SiteContext site;
 	private File contentFile;
 	private JsonObject content;
 	private JsonObject data;
@@ -31,8 +30,7 @@ public class ContentFilePageContext extends ABuilder implements TemplateResolver
 	private Template template;
 
 	public ContentFilePageContext(SiteContext site, File contentFile) {
-		super(site.cms);
-		this.site = site;
+		super(site);
 		this.contentFile = contentFile;
 	}
 
@@ -48,6 +46,8 @@ public class ContentFilePageContext extends ABuilder implements TemplateResolver
 		}
 
 		data = content.getObject("data");
+
+		if (data != null) processData(data);
 
 		String outputPath = site.getRelativePath(contentFile).replace(".page.json", ".html");
 		Context templateContext = creaeTemplateContext();

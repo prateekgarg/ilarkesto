@@ -26,8 +26,10 @@ public class CmsContext {
 	private File dir;
 	private File inputDir;
 	private File sitesDir;
+	private File dataDir;
 	private File templatesDir;
 	private File outputDir;
+	private DataProvider dataProvider;
 
 	private BuildProtocol prot;
 
@@ -42,6 +44,10 @@ public class CmsContext {
 		IO.createDirectory(sitesDir);
 		templatesDir = new File(inputDir.getPath() + "/templates");
 		IO.createDirectory(templatesDir);
+		dataDir = new File(inputDir.getPath() + "/data");
+		IO.createDirectory(dataDir);
+
+		dataProvider = new FilesDataProvider(dataDir, null);
 	}
 
 	public void build() {
@@ -79,6 +85,10 @@ public class CmsContext {
 		File file = new File(templatesDir.getPath() + "/" + templatePath);
 		if (file.exists()) return file;
 		return null;
+	}
+
+	public DataProvider getDataProvider() {
+		return dataProvider;
 	}
 
 }

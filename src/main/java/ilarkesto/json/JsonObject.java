@@ -189,6 +189,10 @@ public class JsonObject {
 		return (JsonObject) get(name);
 	}
 
+	public boolean isObject(String property) {
+		return get(property) instanceof JsonObject;
+	}
+
 	public List getArray(String name) {
 		return (List) get(name);
 	}
