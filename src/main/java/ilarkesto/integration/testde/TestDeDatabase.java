@@ -190,7 +190,9 @@ public class TestDeDatabase {
 				index = JsonMapper.deserialize(indexFile, ArticlesIndex.class, typeResolver);
 				log.info("Article index loaded:", index.getArticlesCount(), "articles");
 			} catch (Exception ex) {
-				throw new RuntimeException(ex);
+				log.error("Article indes loading failed:", ex);
+				indexFile.delete();
+				return getIndex(observer);
 			}
 			if (imported) {
 				viewed.addAll(index.getArticles());
@@ -200,6 +202,7 @@ public class TestDeDatabase {
 				}
 			}
 		}
+
 		return index;
 	}
 
