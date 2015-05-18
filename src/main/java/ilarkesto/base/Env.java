@@ -381,7 +381,7 @@ public abstract class Env {
 
 		@Override
 		public void executeFile(File file, boolean block) {
-			Proc proc = new Proc("gnome-open");
+			Proc proc = new Proc("xdg-open");
 			proc.addParameter(file.getAbsolutePath());
 			proc.start();
 			if (block) {
@@ -403,11 +403,7 @@ public abstract class Env {
 
 		@Override
 		public void startFileBrowser(File file) {
-			try {
-				Runtime.getRuntime().exec(new String[] { "nautilus", file.getAbsolutePath() });
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+			executeFile(file, false);
 		}
 
 		private File applicationsDir;
