@@ -16,8 +16,10 @@ package ilarkesto.tools.cms;
 
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
+import ilarkesto.ui.web.HtmlBuilder;
 
 import java.io.File;
+import java.io.IOException;
 
 public class CmsContext {
 
@@ -51,10 +53,21 @@ public class CmsContext {
 	}
 
 	public void build() {
-		prot = new BuildProtocol();
+		HtmlBuilder htmlProtocolBuilder;
+		try {
+			htmlProtocolBuilder = new HtmlBuilder(new File(outputDir.getPath() + "/build.html"), IO.UTF_8);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		htmlProtocolBuilder.SCRIPTjavascript(null, "setTimeout(\"location.reload();\", 10000);");
+		prot = new BuildProtocol(htmlProtocolBuilder);
 		prot.pushContext(dir.getAbsolutePath());
-		buildSites();
-		prot.popContext();
+		try {
+			buildSites();
+		} finally {
+			prot.popContext();
+			htmlProtocolBuilder.close();
+		}
 	}
 
 	private void buildSites() {
