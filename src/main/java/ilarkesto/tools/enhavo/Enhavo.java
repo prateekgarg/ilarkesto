@@ -18,6 +18,7 @@ import ilarkesto.base.CommandLineArgs;
 import ilarkesto.io.IO;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Enhavo {
 
@@ -34,7 +35,12 @@ public class Enhavo {
 			return;
 		}
 
-		File dir = new File(path).getAbsoluteFile();
+		File dir;
+		try {
+			dir = new File(path).getCanonicalFile().getAbsoluteFile();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 		if (!dir.exists()) {
 			System.out.println("Creating new CMS: " + dir.getPath());
 			IO.createDirectory(dir);

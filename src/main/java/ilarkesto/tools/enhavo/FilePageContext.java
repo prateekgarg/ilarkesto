@@ -49,7 +49,8 @@ public class FilePageContext extends APageContext implements TemplateResolver {
 
 		if (content != null) processContent(content);
 
-		String outputPath = site.getRelativePath(contentFile).replace(".page.json", ".html");
+		String outputPath = site.getRelativePath(contentFile);
+		outputPath = outputPath.replace(".json", ".html");
 		Context templateContext = creaeTemplateContext();
 		template.process(templateContext);
 		site.writeOutputFile(outputPath, templateContext.popOutput());
