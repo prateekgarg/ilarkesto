@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -16,6 +16,9 @@ package ilarkesto.tools.enhavo;
 
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
+import ilarkesto.protocol.HtmlProtocolConsumer;
+import ilarkesto.protocol.ProtocolWriter;
+import ilarkesto.protocol.SysoutProtocolConsumer;
 import ilarkesto.ui.web.HtmlBuilder;
 
 import java.io.File;
@@ -36,7 +39,7 @@ public class CmsContext {
 
 	private ContentProvider contentProvider;
 
-	private BuildProtocol prot;
+	private ProtocolWriter prot;
 
 	public CmsContext(File dir) {
 		this.dir = dir;
@@ -65,7 +68,7 @@ public class CmsContext {
 			throw new RuntimeException(ex);
 		}
 		htmlProtocolBuilder.SCRIPTjavascript(null, "setTimeout(\"location.reload();\", 10000);");
-		prot = new BuildProtocol(htmlProtocolBuilder);
+		prot = new ProtocolWriter(new SysoutProtocolConsumer(), new HtmlProtocolConsumer(htmlProtocolBuilder));
 		prot.pushContext(dir.getAbsolutePath());
 		try {
 			buildSites();
@@ -87,7 +90,7 @@ public class CmsContext {
 		return dir;
 	}
 
-	public BuildProtocol getProt() {
+	public ProtocolWriter getProt() {
 		return prot;
 	}
 

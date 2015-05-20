@@ -12,40 +12,36 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.tools.enhavo;
+package ilarkesto.protocol;
 
-import ilarkesto.core.base.RuntimeTracker;
+import ilarkesto.core.base.Str;
 
-public abstract class ABuilder {
+public class Message {
 
-	protected CmsContext cms;
+	public static enum Type {
+		INFO, ERROR
+	}
 
-	protected abstract void onBuild();
+	private Type type;
+	private Object[] s;
 
-	public ABuilder(CmsContext cms) {
+	Message(Type type, Object... s) {
 		super();
-		this.cms = cms;
+		this.type = type;
+		this.s = s;
 	}
 
-	public final void build() {
-		cms.getProt().pushContext(toString());
-		RuntimeTracker rt = new RuntimeTracker();
-		try {
-			onBuild();
-			info(rt.getRuntimeFormated());
-		} catch (Exception ex) {
-			error(ex);
-		} finally {
-			cms.getProt().popContext();
-		}
+	public boolean isImportant() {
+		return type != Type.INFO;
 	}
 
-	protected void info(Object... message) {
-		cms.getProt().info(message);
+	public String getText() {
+		return Str.formatMessage(s);
 	}
 
-	protected void error(Object... message) {
-		cms.getProt().error(message);
+	@Override
+	public String toString() {
+		return type + " " + getText();
 	}
 
 }
