@@ -21,33 +21,33 @@ import ilarkesto.templating.TemplateResolver;
 
 import java.io.File;
 
-public class ContentFilePageContext extends APageContext implements TemplateResolver {
+public class FilePageContext extends APageContext implements TemplateResolver {
 
 	private File contentFile;
+	private JsonObject page;
 	private JsonObject content;
-	private JsonObject data;
 	private String templatePath;
 	private Template template;
 
-	public ContentFilePageContext(SiteContext site, File contentFile) {
+	public FilePageContext(SiteContext site, File contentFile) {
 		super(site);
 		this.contentFile = contentFile;
 	}
 
 	@Override
 	protected void onBuild() {
-		content = JsonObject.loadFile(contentFile, false);
+		page = JsonObject.loadFile(contentFile, false);
 
-		templatePath = content.getString("template");
+		templatePath = page.getString("template");
 		template = site.getTemplate(templatePath);
 		if (template == null) {
 			error("ABORTED");
 			return;
 		}
 
-		data = content.getObject("data");
+		content = page.getObject("content");
 
-		if (data != null) processData(data);
+		if (content != null) processContent(content);
 
 		String outputPath = site.getRelativePath(contentFile).replace(".page.json", ".html");
 		Context templateContext = creaeTemplateContext();
@@ -58,7 +58,7 @@ public class ContentFilePageContext extends APageContext implements TemplateReso
 	private Context creaeTemplateContext() {
 		Context context = new Context();
 		context.setTemplateResolver(this);
-		context.setScope(data);
+		context.setScope(content);
 		return context;
 	}
 

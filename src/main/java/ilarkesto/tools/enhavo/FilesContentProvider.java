@@ -20,11 +20,11 @@ import ilarkesto.json.JsonObject;
 
 import java.io.File;
 
-public class FilesDataProvider extends ADataProvider {
+public class FilesContentProvider extends AContentProvider {
 
 	private File dir;
 
-	public FilesDataProvider(File dir, DataProvider fallback) {
+	public FilesContentProvider(File dir, ContentProvider fallback) {
 		super(fallback);
 		this.dir = dir;
 	}

@@ -26,45 +26,45 @@ import java.io.File;
 public class SiteContext extends ABuilder implements TemplateResolver {
 
 	private File dir;
-	private File contentDir;
+	private File pagesDir;
 	private File templatesDir;
-	private File dataDir;
+	private File contentDir;
 
 	private File outputDir;
-	private DataProvider dataProvider;
+	private ContentProvider contentProvider;
 
 	public SiteContext(CmsContext cms, File dir) {
 		super(cms);
 		this.dir = dir;
 
-		contentDir = new File(dir.getPath() + "/content");
-		IO.createDirectory(contentDir);
+		pagesDir = new File(dir.getPath() + "/pages");
+		IO.createDirectory(pagesDir);
 
 		templatesDir = new File(dir.getPath() + "/templates");
 		IO.createDirectory(templatesDir);
 
-		dataDir = new File(dir.getPath() + "/data");
-		IO.createDirectory(dataDir);
+		contentDir = new File(dir.getPath() + "/content");
+		IO.createDirectory(contentDir);
 
-		dataProvider = new FilesDataProvider(dataDir, cms.getDataProvider());
+		contentProvider = new FilesContentProvider(contentDir, cms.getContentProvider());
 	}
 
 	@Override
 	protected void onBuild() {
 		outputDir = new File(cms.getOutputDir().getPath() + "/" + dir.getName());
 
-		processContentFiles(contentDir);
+		processPagesFiles(pagesDir);
 	}
 
-	private void processContentFiles(File dir) {
+	private void processPagesFiles(File dir) {
 		for (File file : IO.listFiles(dir)) {
 			if (file.isDirectory()) {
-				processContentFiles(file);
+				processPagesFiles(file);
 				continue;
 			}
 			String name = file.getName();
 			if (name.endsWith(".page.json")) {
-				ContentFilePageContext page = new ContentFilePageContext(this, file);
+				FilePageContext page = new FilePageContext(this, file);
 				page.build();
 				continue;
 			}
@@ -92,8 +92,8 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		return dir;
 	}
 
-	public File getContentDir() {
-		return contentDir;
+	public File getPagesDir() {
+		return pagesDir;
 	}
 
 	@Override
@@ -123,11 +123,11 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 	}
 
 	public String getRelativePath(File file) {
-		return Str.removePrefix(file.getPath(), getContentDir().getPath() + "/");
+		return Str.removePrefix(file.getPath(), getPagesDir().getPath() + "/");
 	}
 
-	public DataProvider getDataProvider() {
-		return dataProvider;
+	public ContentProvider getContentProvider() {
+		return contentProvider;
 	}
 
 }

@@ -14,9 +14,23 @@
  */
 package ilarkesto.tools.enhavo;
 
+public abstract class AContentProvider implements ContentProvider {
 
-public interface DataProvider {
+	private ContentProvider fallback;
 
-	Object get(String key);
+	protected abstract Object onGet(String key);
+
+	public AContentProvider(ContentProvider fallback) {
+		super();
+		this.fallback = fallback;
+	}
+
+	@Override
+	public final Object get(String key) {
+		Object value = onGet(key);
+		if (value != null) return value;
+		if (fallback == null) return null;
+		return fallback.get(key);
+	}
 
 }

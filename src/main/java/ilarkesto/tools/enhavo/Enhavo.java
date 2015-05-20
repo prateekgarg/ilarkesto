@@ -15,6 +15,7 @@
 package ilarkesto.tools.enhavo;
 
 import ilarkesto.base.CommandLineArgs;
+import ilarkesto.io.IO;
 
 import java.io.File;
 
@@ -33,7 +34,12 @@ public class Enhavo {
 			return;
 		}
 
-		File dir = new File("runtimedata/cms");
+		File dir = new File(path).getAbsoluteFile();
+		if (!dir.exists()) {
+			System.out.println("Creating new CMS: " + dir.getPath());
+			IO.createDirectory(dir);
+		}
+
 		CmsContext cmsContext = new CmsContext(dir);
 
 		if (loop) {

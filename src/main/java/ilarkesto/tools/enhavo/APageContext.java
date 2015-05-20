@@ -27,22 +27,22 @@ public abstract class APageContext extends ABuilder {
 		this.site = site;
 	}
 
-	protected DataProvider getDataProvider() {
-		return site.getDataProvider();
+	protected ContentProvider getContentProvider() {
+		return site.getContentProvider();
 	}
 
-	protected void processData(JsonObject json) {
-		DataProvider dataProvider = getDataProvider();
+	protected void processContent(JsonObject json) {
+		ContentProvider contentProvider = getContentProvider();
 
 		for (String property : new HashSet<String>(json.getProperties())) {
 			if (json.isObject(property)) {
-				processData(json.getObject(property));
+				processContent(json.getObject(property));
 				continue;
 			}
 
 			if (property.startsWith("@")) {
 				String dataKey = json.getString(property);
-				Object value = dataProvider.get(dataKey);
+				Object value = contentProvider.get(dataKey);
 
 				String name = property.substring(1);
 				json.put(name, value);
