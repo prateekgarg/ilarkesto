@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -29,6 +29,7 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 	private File pagesDir;
 	private File templatesDir;
 	private File contentDir;
+	private File resourcesDir;
 
 	private File outputDir;
 	private ContentProvider contentProvider;
@@ -46,14 +47,18 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		contentDir = new File(dir.getPath() + "/content");
 		IO.createDirectory(contentDir);
 
+		resourcesDir = new File(dir.getPath() + "/resources");
+		IO.createDirectory(resourcesDir);
+
 		contentProvider = new FilesContentProvider(contentDir, cms.getContentProvider());
 	}
 
 	@Override
 	protected void onBuild() {
-		outputDir = new File(cms.getOutputDir().getPath() + "/" + dir.getName());
+		outputDir = new File(cms.getSitesOutputDir().getPath() + "/" + dir.getName());
 
 		processPagesFiles(pagesDir);
+		IO.copyFiles(resourcesDir.listFiles(), outputDir);
 	}
 
 	private void processPagesFiles(File dir) {

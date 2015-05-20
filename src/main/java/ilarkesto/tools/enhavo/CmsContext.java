@@ -30,7 +30,10 @@ public class CmsContext {
 	private File sitesDir;
 	private File dataDir;
 	private File templatesDir;
+
 	private File outputDir;
+	private File sitesOutputDir;
+
 	private ContentProvider contentProvider;
 
 	private BuildProtocol prot;
@@ -40,6 +43,8 @@ public class CmsContext {
 
 		outputDir = new File(dir.getPath() + "/output");
 		IO.createDirectory(outputDir);
+		sitesOutputDir = new File(outputDir.getPath() + "/sites");
+		IO.createDirectory(sitesOutputDir);
 
 		inputDir = new File(dir.getPath() + "/input");
 		sitesDir = new File(inputDir.getPath() + "/sites");
@@ -88,6 +93,10 @@ public class CmsContext {
 
 	public File getOutputDir() {
 		return outputDir;
+	}
+
+	public File getSitesOutputDir() {
+		return sitesOutputDir;
 	}
 
 	public File getInputDir() {
