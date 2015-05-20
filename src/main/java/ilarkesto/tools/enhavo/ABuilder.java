@@ -12,11 +12,36 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.tools.cms;
+package ilarkesto.tools.enhavo;
 
+public abstract class ABuilder {
 
-public interface DataProvider {
+	protected CmsContext cms;
 
-	Object get(String key);
+	protected abstract void onBuild();
+
+	public ABuilder(CmsContext cms) {
+		super();
+		this.cms = cms;
+	}
+
+	public final void build() {
+		cms.getProt().pushContext(toString());
+		try {
+			onBuild();
+		} catch (Exception ex) {
+			error(ex);
+		} finally {
+			cms.getProt().popContext();
+		}
+	}
+
+	protected void info(Object... message) {
+		cms.getProt().info(message);
+	}
+
+	protected void error(Object... message) {
+		cms.getProt().error(message);
+	}
 
 }

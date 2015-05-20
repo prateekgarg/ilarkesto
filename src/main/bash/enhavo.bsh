@@ -1,0 +1,3 @@
+#!/bin/bash -e
+
+java -cp /opt/ilarkesto/jar/ilarkesto.jar ilarkesto.tools.enhavo.Enhavo $*
