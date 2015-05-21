@@ -12,11 +12,11 @@ public class Parser {
 	}
 
 	public boolean isEnd() {
-		return pos >= data.length() - 1;
+		return pos > data.length() - 1;
 	}
 
 	public void gotoEnd() {
-		pos = data.length() - 1;
+		pos = data.length();
 	}
 
 	public String tail() {

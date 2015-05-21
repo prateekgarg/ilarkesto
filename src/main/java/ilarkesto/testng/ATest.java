@@ -69,6 +69,11 @@ public class ATest extends Assert {
 		assertFalse(a.equals(b), "Objects expected not to be equal: <" + a + "> and <" + b + ">");
 	}
 
+	public static void assertEmpty(Collection collection) {
+		assertNotNull(collection);
+		assertTrue(collection.isEmpty(), "Collection expected not be empty, but is not: <" + collection + ">.");
+	}
+
 	public static void assertSize(Collection collection, int expectedSize) {
 		assertNotNull(collection, "Collection expected to be not null");
 		assertEquals(collection.size(), expectedSize, "Collection size expected to be <" + expectedSize + ">, but is <"

@@ -32,6 +32,20 @@ public class MustacheLikeTemplateParserTest extends ATest {
 		assertTemplateOutput("hello {{#rose}}{{color}}{{/}}", "hello red");
 		assertTemplateOutput("hello {{html}}", "hello &lt;html&gt;");
 		assertTemplateOutput("hello {{{html}}}", "hello <html>");
+		assertTemplateOutput("{{>> panel}}{{<< title}}hello{{/}}{{<< body}}world{{/}}{{/}}", "(hello!world)");
+	}
+
+	@Test
+	public void includeComponent() throws ParseException {
+		Template template = MustacheLikeTemplateParser
+				.parseTemplate("{{>> panel}}{{<< title}}hello{{/}}{{<< body}}world{{/}}{{/}}");
+		assertNotEmpty(template.children);
+		ComponentIncludeElement componentInclude = (ComponentIncludeElement) template.children.get(0);
+		assertEquals(componentInclude.getPath(), "panel");
+		// assertEmpty(componentInclude.getChildren());
+		Template titleTemplate = componentInclude.getInlineTemplates().get("title");
+		assertNotNull(titleTemplate);
+		assertEquals(((TextElement) titleTemplate.children.get(0)).getText(), "hello");
 	}
 
 	@Test
@@ -61,6 +75,16 @@ public class MustacheLikeTemplateParserTest extends ATest {
 		assertNotEmpty(template.children);
 		IncludeElement variable = (IncludeElement) template.children.get(0);
 		assertEquals(variable.getPath(), "incl");
+	}
+
+	@Test
+	public void variableAndText() throws ParseException {
+		Template template = MustacheLikeTemplateParser.parseTemplate("start {{a}}!");
+		assertNotEmpty(template.children);
+		assertSize(template.children, 3);
+		assertEquals(((TextElement) template.children.get(0)).getText(), "start ");
+		assertEquals(((VariableElement) template.children.get(1)).getExpression(), "a");
+		assertEquals(((TextElement) template.children.get(2)).getText(), "!");
 	}
 
 	@Test
@@ -106,6 +130,18 @@ public class MustacheLikeTemplateParserTest extends ATest {
 		context.put("rose", new Flower("rose", "red"));
 		context.put("flowers",
 			Arrays.asList(new Flower("rose", "white"), new Flower("rose", "red"), new Flower("tulip", "yellow")));
+		context.setTemplateResolver(new TemplateResolver() {
+
+			@Override
+			public Template getTemplate(String path) {
+				if (path.equals("panel")) try {
+					return MustacheLikeTemplateParser.parseTemplate("({{> title}}!{{> body}})");
+				} catch (ParseException ex) {
+					throw new RuntimeException(ex);
+				}
+				return null;
+			}
+		});
 		template.process(context);
 		assertEquals(context.popOutput(), output);
 	}

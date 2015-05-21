@@ -20,6 +20,7 @@ import ilarkesto.templating.Template;
 import ilarkesto.templating.TemplateResolver;
 
 import java.io.File;
+import java.util.List;
 
 public class FilePageContext extends APageContext implements TemplateResolver {
 
@@ -45,18 +46,41 @@ public class FilePageContext extends APageContext implements TemplateResolver {
 			return;
 		}
 
-		content = page.getObject("content");
+		JsonObject multipage = page.getObject("multipage-content");
+		if (multipage == null) {
+			// single page
+			content = page.getObject("content");
+			if (content != null) processContent(content);
+			String outputPath = site.getRelativePath(contentFile);
+			outputPath = outputPath.replace(".json", ".html");
+			processTemplate(outputPath);
+		} else {
+			// multiple pages
+			processContent(multipage);
+			List<JsonObject> contents = multipage.getArrayOfObjects("list");
+			if (contents == null || contents.isEmpty()) {
+				info("Empty multipage list");
+				return;
+			}
+			int i = 0;
+			for (JsonObject content : contents) {
+				this.content = content;
+				String outputPath = site.getRelativePath(contentFile);
+				outputPath = outputPath.replace(".json", "-" + i + ".html");
+				processTemplate(outputPath);
+				i++;
+			}
+		}
 
-		if (content != null) processContent(content);
+	}
 
-		String outputPath = site.getRelativePath(contentFile);
-		outputPath = outputPath.replace(".json", ".html");
-		Context templateContext = creaeTemplateContext();
+	private void processTemplate(String outputPath) {
+		Context templateContext = createTemplateContext();
 		template.process(templateContext);
 		site.writeOutputFile(outputPath, templateContext.popOutput());
 	}
 
-	private Context creaeTemplateContext() {
+	private Context createTemplateContext() {
 		Context context = new Context();
 		context.setTemplateResolver(this);
 		context.setScope(content);
