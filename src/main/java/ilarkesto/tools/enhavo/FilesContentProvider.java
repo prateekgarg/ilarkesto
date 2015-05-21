@@ -73,9 +73,11 @@ public class FilesContentProvider extends AContentProvider {
 	}
 
 	private JsonObject createStructFromDir(File dir) {
-		JsonObject ret = new JsonObject();
+		File structFile = new File(dir + "/struct.json");
+		JsonObject ret = structFile.exists() ? JsonObject.loadFile(structFile) : new JsonObject();
 		for (File file : listFilesInOrder(dir)) {
 			String name = file.getName();
+			if (name.equals("struct.json")) continue;
 			name = Str.removeSuffix(name, ".txt");
 			name = Str.removeSuffix(name, ".html");
 			name = Str.removeSuffix(name, ".json");

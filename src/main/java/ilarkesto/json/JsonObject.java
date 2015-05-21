@@ -70,6 +70,10 @@ public class JsonObject {
 		return file;
 	}
 
+	public static JsonObject loadFile(File file) {
+		return loadFile(file, false);
+	}
+
 	public static JsonObject loadFile(File file, boolean createEmptyIfNoFile) {
 		if (!file.exists()) {
 			if (createEmptyIfNoFile) {
