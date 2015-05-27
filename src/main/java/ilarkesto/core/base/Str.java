@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -172,7 +172,16 @@ public class Str {
 		int paramsIdx = url.indexOf('?');
 		if (paramsIdx > 0) url = url.substring(0, paramsIdx);
 		url = removeSuffix(url, "/");
-		url = cutRight(url, maxLength, "...");
+		int len = url.length();
+		if (len > maxLength) {
+			int cutlen = len - maxLength + 2;
+			int fromIdx = url.indexOf('/') + 1;
+			if (fromIdx > 4 && fromIdx + cutlen < len) {
+				url = url.substring(0, fromIdx) + ".." + url.substring(fromIdx + cutlen);
+			} else {
+				url = cutRight(url, maxLength, "..");
+			}
+		}
 		return url;
 	}
 
@@ -918,7 +927,7 @@ public class Str {
 		 * to the left, up one, and diagonally up and to the left of the current cost count being calculated).
 		 * (Note that the arrays aren't really copied anymore, just switched...this is clearly much better
 		 * than cloning an array or doing a System.arraycopy() each time through the outer loop.)
-		 *
+		 * 
 		 * Effectively, the difference between the two implementations is this one does not cause an out of
 		 * memory condition when calculating the LD over two very large strings.
 		 */
