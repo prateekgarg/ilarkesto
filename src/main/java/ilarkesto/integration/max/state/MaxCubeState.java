@@ -17,8 +17,10 @@ package ilarkesto.integration.max.state;
 import ilarkesto.core.time.Tm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -62,6 +64,19 @@ public class MaxCubeState {
 		long lastPingTime = getCubeLastPing().getDate().getTime();
 		long lastPingAge = System.currentTimeMillis() - lastPingTime;
 		return lastPingAge < maxMillis;
+	}
+
+	public Collection<MaxDevice> getAllDevicesWithError(boolean ignorePushButtonErrors) {
+		Set<MaxDevice> ret = new LinkedHashSet<MaxDevice>();
+		ret.addAll(getHouse().getDevicesWithDeviceStateInvalidError(ignorePushButtonErrors));
+		ret.addAll(getHouse().getDevicesWithError(ignorePushButtonErrors));
+		ret.addAll(getHouse().getDevicesWithLowBattery());
+		for (MaxRoom room : getRooms()) {
+			ret.addAll(room.getDevicesWithDeviceStateInvalidError());
+			ret.addAll(room.getDevicesWithError());
+			ret.addAll(room.getDevicesWithLowBattery());
+		}
+		return ret;
 	}
 
 	public List<MaxDevice> getAllDevicesWithDeviceStateInvalidError(boolean ignorePushButton) {
