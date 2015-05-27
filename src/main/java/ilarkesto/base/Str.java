@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -486,13 +486,6 @@ public class Str extends ilarkesto.core.base.Str {
 			sb.append(sa[i].substring(1));
 		}
 		return sb.toString();
-	}
-
-	public static String formatUrl(String url) {
-		if (url == null) return null;
-		url = url.trim();
-		if (url.startsWith("www.")) url = "http://" + url;
-		return url;
 	}
 
 	public static String formatPostalcode(String s) {
