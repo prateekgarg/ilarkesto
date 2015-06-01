@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -33,6 +33,24 @@ import java.util.Set;
 public class Utl {
 
 	public static final BigDecimal BD_HUNDRED = new BigDecimal(100);
+
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor) {
+		if (dividend == null) return null;
+		if (isZeroOrNull(divisor)) return null;
+		return dividend.divide(divisor, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, int scale) {
+		if (dividend == null) return null;
+		if (isZeroOrNull(divisor)) return null;
+		return dividend.divide(divisor, scale, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public static boolean isZeroOrNull(BigDecimal number) {
+		if (number == null) return true;
+		if (number.compareTo(BigDecimal.ZERO) == 0) return true;
+		return false;
+	}
 
 	public static Long biggest(Long... values) {
 		Long biggest = null;
