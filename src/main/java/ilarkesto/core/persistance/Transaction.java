@@ -144,6 +144,7 @@ public class Transaction {
 			return;
 		}
 		modified.add(entity);
+		backend.onEntityModified();
 		updatePropertiesMap(modifiedPropertiesByEntityId, entity, field, value);
 	}
 
@@ -159,6 +160,7 @@ public class Transaction {
 		}
 		deleted.add(entityId);
 		modified.remove(entityId);
+		backend.onEntityModified();
 		if (ensuringIntegrity) throw new EntityDeletedWhileEnsureIntegrity();
 	}
 

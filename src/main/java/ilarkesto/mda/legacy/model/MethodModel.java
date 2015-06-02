@@ -22,9 +22,38 @@ public class MethodModel extends AModel {
 	private List<ParameterModel> parameters = new ArrayList<ParameterModel>();
 	private String packageName = "base";
 	private boolean sync = true;
+	private String returnType;
+	private List<String> exceptions = new ArrayList<String>();
 
 	public MethodModel(String name) {
 		super(name);
+	}
+
+	public MethodModel addException(Class<? extends Throwable> type) {
+		return addException(type.getName());
+	}
+
+	public MethodModel addException(String type) {
+		exceptions.add(type);
+		return this;
+	}
+
+	public List<String> getExceptions() {
+		return exceptions;
+	}
+
+	public MethodModel setReturnType(Class type) {
+		setReturnType(type == null ? null : type.getName());
+		return this;
+	}
+
+	public MethodModel setReturnType(String type) {
+		this.returnType = type == null ? "void" : type;
+		return this;
+	}
+
+	public String getReturnType() {
+		return returnType;
 	}
 
 	public MethodModel addParameter(String name, String type) {
@@ -61,7 +90,12 @@ public class MethodModel extends AModel {
 		return addParameter(name, String.class);
 	}
 
+	public MethodModel addParameter(String name, EntityModel type) {
+		return addParameter(name, type.getPackageName() + "." + type.getName());
+	}
+
 	public MethodModel addParameter(String name, Class type) {
 		return addParameter(name, type.getName());
 	}
+
 }

@@ -97,8 +97,10 @@ public class Str {
 
 	public static List<String> parseCommaSeparatedString(String s, boolean trim) {
 		if (s == null) return Collections.emptyList();
+		if (s.length() == 0) return Collections.emptyList();
 		if (!trim) return Arrays.asList(s.split(","));
 
+		if (isBlank(s)) return Collections.emptyList();
 		List<String> ret = new ArrayList<String>();
 		for (String token : s.split(",")) {
 			ret.add(token.trim());

@@ -411,4 +411,13 @@ public class Utl {
 		return true;
 	}
 
+	public static <T> Map<T, T> toMap(Iterable<T> items) {
+		LinkedHashMap<T, T> ret = new LinkedHashMap<T, T>();
+		if (items == null) return ret;
+		for (T item : items) {
+			ret.put(item, item);
+		}
+		return ret;
+	}
+
 }

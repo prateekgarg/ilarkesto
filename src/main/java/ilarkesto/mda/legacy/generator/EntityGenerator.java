@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -30,8 +30,11 @@ import ilarkesto.core.persistance.EditableKeytableValue;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.KeytableValue;
 import ilarkesto.core.persistance.Transaction;
+import ilarkesto.core.persistance.ValuesCache;
 import ilarkesto.mda.legacy.model.BackReferenceModel;
+import ilarkesto.mda.legacy.model.ComputedValueModel;
 import ilarkesto.mda.legacy.model.EntityModel;
+import ilarkesto.mda.legacy.model.ParameterModel;
 import ilarkesto.mda.legacy.model.PredicateModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
@@ -134,7 +137,48 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			writeBackReference(br);
 		}
 
+		for (ComputedValueModel cv : bean.getComputedValues()) {
+			writeComputedValue(cv);
+		}
+
 		super.writeContent();
+	}
+
+	private void writeComputedValue(ComputedValueModel cv) {
+		String signature = "";
+		String params = "";
+		for (ParameterModel parameter : cv.getParameters()) {
+			if (signature.length() > 0) {
+				signature += ", ";
+				params += ", ";
+			}
+			signature += parameter.getType() + " " + parameter.getName();
+			params += parameter.getName();
+		}
+
+		String throwsText = "";
+		for (String ex : cv.getExceptions()) {
+			if (throwsText.length() == 0) {
+				throwsText += " throws ";
+			} else {
+				throwsText += ", ";
+			}
+			throwsText += ex;
+		}
+
+		ln();
+		ln("    protected abstract", cv.getReturnType(), "compute" + Str.uppercaseFirstLetter(cv.getName()) + "("
+				+ signature + ")" + throwsText + ";");
+		ln();
+		ln("    public final", cv.getReturnType(), "get" + Str.uppercaseFirstLetter(cv.getName()) + "(" + signature
+				+ ")" + throwsText + " {");
+		ln("        " + ValuesCache.class.getName(), "cache = getCache();");
+		ln("        Object cachedValue = cache.get(\"" + cv.getName() + "\""
+				+ (params.length() == 0 ? "" : ", " + params) + ");");
+		ln("        if (cachedValue != null) return (" + cv.getReturnType() + ") cachedValue;");
+		ln("        return cache.put(compute" + Str.uppercaseFirstLetter(cv.getName()) + "(" + params + "), \""
+				+ cv.getName() + "\"" + (params.length() == 0 ? "" : ", " + params) + ");");
+		ln("    }");
 	}
 
 	private void writeOnAfterPersist() {

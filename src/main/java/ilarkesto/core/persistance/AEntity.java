@@ -38,6 +38,10 @@ public class AEntity implements Serializable, TransferableEntity {
 	@Deprecated
 	private DateAndTime lastModified;
 
+	protected final ValuesCache getCache() {
+		return AEntityDatabase.get().getValuesCache(getId());
+	}
+
 	public final void persist() {
 		updateLastModified();
 		AEntityDatabase.get().getTransaction().persist(this);
