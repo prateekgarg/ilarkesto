@@ -42,10 +42,10 @@ public abstract class AAction implements Command, ClickHandler {
 		if (!isPermitted()) throw new RuntimeException("Action not permitted: " + this);
 		if (AEntityDatabase.instance == null) {
 			onExecute();
-			if (updatable != null) updatable.update();
+			if (updatable != null && isUpdateAfterExecute()) updatable.update();
 		} else {
 			Transaction transaction = Transaction.get().setAutoCommit(false);
-			if (updatable != null) transaction.runAfterCommit(new Updater());
+			if (updatable != null && isUpdateAfterExecute()) transaction.runAfterCommit(new Updater());
 			try {
 				onExecute();
 				transaction.commit();
@@ -59,6 +59,10 @@ public abstract class AAction implements Command, ClickHandler {
 				transaction.setAutoCommit(true);
 			}
 		}
+	}
+
+	protected boolean isUpdateAfterExecute() {
+		return true;
 	}
 
 	protected void handleException(Exception ex) throws Exception {
