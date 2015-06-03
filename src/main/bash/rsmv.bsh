@@ -18,6 +18,13 @@ fi
 
 for FILE in $1/*; do
     DESTFILE=$2/$(basename "$FILE")
+
+    if [ -d "$FILE" ]
+    then
+        $0 $FILE/ $DESTFILE/
+        exit 0
+    fi
+    
     rscp "$FILE" "$2"
     rm -rf "$FILE"
 done
