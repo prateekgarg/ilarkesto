@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -43,7 +43,11 @@ public class FilesContentProvider extends AContentProvider {
 		if (file.isDirectory()) return createFromDir(file);
 
 		String name = file.getName();
-		if (name.endsWith(".json")) return JsonObject.loadFile(file, false);
+		if (name.endsWith(".json")) {
+			JsonObject json = JsonObject.loadFile(file, false);
+			appendFilename(json, file);
+			return json;
+		}
 		return IO.readFile(file);
 	}
 
@@ -55,6 +59,7 @@ public class FilesContentProvider extends AContentProvider {
 
 	private Object createJsonFromDir(File dir) {
 		JsonObject ret = new JsonObject();
+		appendFilename(ret, dir);
 		for (File file : listFilesInOrder(dir)) {
 			Object object = createFromFile(file);
 			String property = file.getName();
@@ -62,6 +67,13 @@ public class FilesContentProvider extends AContentProvider {
 			ret.put(property, object);
 		}
 		return ret;
+	}
+
+	private void appendFilename(JsonObject json, File file) {
+		String name = file.getName();
+		json.put("$filename", name);
+		name = Str.removeSuffixStartingWith(name, ".");
+		json.put("$filename.cleaned", name);
 	}
 
 	private List createListFromDir(File dir) {
@@ -75,6 +87,7 @@ public class FilesContentProvider extends AContentProvider {
 	private JsonObject createStructFromDir(File dir) {
 		File structFile = new File(dir + "/struct.json");
 		JsonObject ret = structFile.exists() ? JsonObject.loadFile(structFile) : new JsonObject();
+		appendFilename(ret, dir);
 		for (File file : listFilesInOrder(dir)) {
 			String name = file.getName();
 			if (name.equals("struct.json")) continue;

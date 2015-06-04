@@ -14,6 +14,7 @@
  */
 package ilarkesto.tools.enhavo;
 
+import ilarkesto.base.Str;
 import ilarkesto.json.JsonObject;
 import ilarkesto.templating.Context;
 import ilarkesto.templating.Template;
@@ -66,7 +67,18 @@ public class FilePageContext extends APageContext implements TemplateResolver {
 			for (JsonObject content : contents) {
 				this.content = content;
 				String outputPath = site.getRelativePath(contentFile);
-				outputPath = outputPath.replace(".json", "-" + i + ".html");
+				String pageName = null;
+				String pagenameProperty = multipage.getString("pagename-property");
+				if (pagenameProperty != null) {
+					pageName = content.getDeepString(Str.tokenizeToArray(pagenameProperty, "/"));
+				}
+				if (pageName == null) {
+					outputPath = outputPath.replace(".json", "-" + i + ".html");
+				} else {
+					int idx = outputPath.lastIndexOf('/');
+					if (idx < 0) idx = 0;
+					outputPath = outputPath.substring(0, idx) + pageName + ".html";
+				}
 				processTemplate(outputPath);
 				i++;
 			}
