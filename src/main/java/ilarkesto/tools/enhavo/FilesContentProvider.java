@@ -36,6 +36,8 @@ public class FilesContentProvider extends AContentProvider {
 	@Override
 	protected Object onGet(String key) {
 		File file = new File(dir.getPath() + "/" + Str.securePath(key));
+		if (!file.exists()) return null;
+
 		return createFromFile(file);
 	}
 
