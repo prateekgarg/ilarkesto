@@ -69,7 +69,19 @@ public class Header extends AInfoDocElement {
 	public String getRef() {
 		String ref = text.trim();
 		if (!ref.startsWith("@")) return null;
-		return ref.substring(1);
+		ref = ref.substring(1);
+		int idx = ref.indexOf('/');
+		if (idx > 0) ref = ref.substring(0, idx).trim();
+		return ref;
+	}
+
+	public String getAlternativeTitle() {
+		String ref = text.trim();
+		if (!ref.startsWith("@")) return null;
+		ref = ref.substring(1);
+		int idx = ref.indexOf('/');
+		if (idx > 0) return Str.removeSuffix(ref.substring(idx + 1), "/").trim();
+		return null;
 	}
 
 	public String getText() {

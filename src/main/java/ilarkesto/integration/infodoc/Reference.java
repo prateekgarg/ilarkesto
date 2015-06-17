@@ -19,15 +19,17 @@ import ilarkesto.core.base.Str;
 public class Reference extends AInfoDocElement {
 
 	private String ref;
+	private String alternativeTitle;
 
-	public Reference(InfoDocStructure structure, String ref) {
+	public Reference(InfoDocStructure structure, String ref, String alternativeTitle) {
 		super(structure);
 		this.ref = ref;
+		this.alternativeTitle = alternativeTitle;
 	}
 
 	@Override
 	public String toHtml(AHtmlContext context, AReferenceResolver referenceResolver) {
-		String title = referenceResolver.getTitle(ref);
+		String title = Str.isBlank(alternativeTitle) ? referenceResolver.getTitle(ref) : alternativeTitle;
 		if (Str.isBlank(title)) title = "@" + ref;
 		String href = context.getHref(ref);
 		StringBuilder sb = new StringBuilder();
@@ -40,6 +42,10 @@ public class Reference extends AInfoDocElement {
 
 	public String getRef() {
 		return ref;
+	}
+
+	public String getAlternativeTitle() {
+		return alternativeTitle;
 	}
 
 	@Override

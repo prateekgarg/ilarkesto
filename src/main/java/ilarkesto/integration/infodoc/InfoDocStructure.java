@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -96,7 +96,17 @@ public class InfoDocStructure {
 	private static AInfoDocElement parseElement(InfoDocStructure strucutre, String text) {
 		if (Str.isBlank(text)) return null;
 		if (text.startsWith("# ")) return new Comment(strucutre, text.substring(2).trim());
-		if (text.startsWith("@")) return new Reference(strucutre, text.substring(1).trim());
+		if (text.startsWith("@")) {
+			text = text.substring(1).trim();
+			String alternativeTitle = null;
+			int idx = text.indexOf('/');
+			if (idx > 0) {
+				alternativeTitle = text.substring(idx + 1);
+				alternativeTitle = Str.removeSuffix(text, "/").trim();
+				text = text.substring(0, idx).trim();
+			}
+			return new Reference(strucutre, text, alternativeTitle);
+		}
 
 		int headerDepth = getHeaderDepth(text);
 		if (headerDepth >= 0) return new Header(strucutre, text.substring(text.indexOf(' ')).trim(), headerDepth);
