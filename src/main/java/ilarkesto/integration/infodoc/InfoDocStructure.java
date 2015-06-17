@@ -102,7 +102,7 @@ public class InfoDocStructure {
 			int idx = text.indexOf('/');
 			if (idx > 0) {
 				alternativeTitle = text.substring(idx + 1);
-				alternativeTitle = Str.removeSuffix(text, "/").trim();
+				alternativeTitle = Str.removeSuffixStartingWith(alternativeTitle, "/").trim();
 				text = text.substring(0, idx).trim();
 			}
 			return new Reference(strucutre, text, alternativeTitle);

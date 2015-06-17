@@ -41,7 +41,8 @@ public class Header extends AInfoDocElement {
 		if (ref == null) {
 			sb.append(context.getIndentationPrefix(this)).append(Str.toHtml(text, true));
 		} else {
-			String title = referenceResolver.getTitle(ref);
+			String alternativeTitle = getAlternativeTitle();
+			String title = Str.isBlank(alternativeTitle) ? referenceResolver.getTitle(ref) : alternativeTitle;
 			if (Str.isBlank(title)) title = "@" + ref;
 			String href = context.getHref(ref);
 			sb.append(context.getIndentationPrefix(this)).append("&nbsp;<a href='").append(href)
@@ -80,7 +81,7 @@ public class Header extends AInfoDocElement {
 		if (!ref.startsWith("@")) return null;
 		ref = ref.substring(1);
 		int idx = ref.indexOf('/');
-		if (idx > 0) return Str.removeSuffix(ref.substring(idx + 1), "/").trim();
+		if (idx > 0) return Str.removeSuffixStartingWith(ref.substring(idx + 1), "/").trim();
 		return null;
 	}
 
