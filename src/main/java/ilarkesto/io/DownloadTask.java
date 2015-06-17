@@ -14,8 +14,8 @@
  */
 package ilarkesto.io;
 
-import ilarkesto.base.Bytes;
 import ilarkesto.concurrent.ATask;
+import ilarkesto.core.base.Bytes;
 
 public class DownloadTask extends ATask {
 

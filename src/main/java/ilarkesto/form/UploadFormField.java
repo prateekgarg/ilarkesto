@@ -14,7 +14,7 @@
  */
 package ilarkesto.form;
 
-import ilarkesto.base.Bytes;
+import ilarkesto.core.base.Bytes;
 import ilarkesto.id.CountingIdGenerator;
 import ilarkesto.id.IdGenerator;
 

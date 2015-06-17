@@ -14,10 +14,10 @@
  */
 package ilarkesto.webapp;
 
-import ilarkesto.base.Bytes;
 import ilarkesto.base.Proc;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.Bytes;
 import ilarkesto.core.logging.LogRecord;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;

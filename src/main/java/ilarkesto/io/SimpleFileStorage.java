@@ -14,15 +14,23 @@
  */
 package ilarkesto.io;
 
+import ilarkesto.core.base.Args;
+
 import java.io.File;
 
 public class SimpleFileStorage extends AFileStorage {
 
 	private File baseDir;
 
-	public SimpleFileStorage(File baseDir) {
+	public SimpleFileStorage(File baseDir, boolean autoCreate) {
 		super(null);
+		Args.assertNotNull(baseDir, "baseDir");
 		this.baseDir = baseDir;
+		if (autoCreate) IO.createDirectory(baseDir);
+	}
+
+	public SimpleFileStorage(File baseDir) {
+		this(baseDir, false);
 	}
 
 	@Override

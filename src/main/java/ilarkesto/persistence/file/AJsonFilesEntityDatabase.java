@@ -1,36 +1,29 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.persistence.file;
 
-import ilarkesto.base.Bytes;
-import ilarkesto.base.Env;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.persistance.ACachingEntityDatabase;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.persistance.ValuesCache;
-import ilarkesto.di.Context;
-import ilarkesto.di.app.AApplication;
-import ilarkesto.integration.git.Git;
-import ilarkesto.integration.git.GitProject;
 import ilarkesto.io.AFileStorage;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonMapper;
 import ilarkesto.json.JsonMapper.TypeResolver;
-import ilarkesto.webapp.AWebApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,8 +37,7 @@ import java.util.Map;
 // TODO background task which checks if transactions are open (running) too long
 public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 
-	private AFileStorage storage;
-	private GitProject git;
+	protected AFileStorage storage;
 
 	private ThreadLocal<Transaction> tlTransaction = new ThreadLocal<Transaction>();
 	private Collection<Transaction> transactions = Collections.synchronizedList(new ArrayList<Transaction>());
@@ -57,10 +49,8 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 
 	protected abstract TypeResolver createTypeResolver();
 
-	public AJsonFilesEntityDatabase() {
-		AApplication application = AApplication.get();
-		storage = application.getFileStorage().getSubStorage("entities");
-		git = new GitProject(new Git(), new File(application.getApplicationDataDir()));
+	public AJsonFilesEntityDatabase(AFileStorage storage) {
+		this.storage = storage;
 		load();
 	}
 
@@ -167,18 +157,13 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 		}
 		log.info("Entity changes saved:", rt.getRuntimeFormated(), "(" + saveCount, "saved,", deleteCount, "deleted)");
 
-		if (git.isInitialized()) {
-			git.addAll();
-			git.commit(Context.get().toString());
-		}
-
-		AWebApplication webApplication = AWebApplication.get();
-		webApplication.deleteFromClients(deleted);
-		webApplication.sendToAllIfTracking((Collection) modified);
-		webApplication.sendToAll((Collection) created);
+		onEntityChangesSaved(modified, deleted, created);
 
 		if (callback != null) callback.run();
 	}
+
+	protected void onEntityChangesSaved(Collection<AEntity> modified, Collection<String> deleted,
+			Collection<AEntity> created) {}
 
 	private File getFile(AEntity entity) {
 		return storage.getFile(entity.getClass().getSimpleName() + "/" + entity.getId() + ".json");
@@ -221,15 +206,10 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	public String createInfo() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("\nEntities size on disk: ")
-				.append(new Bytes(Env.get().getFileSize(storage.getFile(null))).toRoundedString()).append("\n");
-
 		sb.append("\nEntity counts:\n");
 		for (Map.Entry<Class, Integer> entry : cache.countEntities().entrySet()) {
 			sb.append("* ").append(entry.getKey().getSimpleName()).append(": ").append(entry.getValue()).append("\n");
 		}
-
-		if (git.isInitialized()) sb.append("\nGit status: ").append(git.status()).append("\n");
 
 		return sb.toString();
 	}

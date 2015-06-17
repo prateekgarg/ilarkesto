@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class JsonObject {
@@ -59,6 +60,15 @@ public class JsonObject {
 			String name = entry.getKey().toString();
 			put(name, entry.getValue());
 		}
+	}
+
+	public Map<String, String> toMapOfStrings() {
+		LinkedHashMap<String, String> ret = new LinkedHashMap<String, String>();
+		for (Entry<String, Object> entry : elements.entrySet()) {
+			Object value = entry.getValue();
+			ret.put(entry.getKey(), value == null ? null : value.toString());
+		}
+		return ret;
 	}
 
 	public static JsonObject parse(String json) {
