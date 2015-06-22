@@ -1,7 +1,6 @@
 package ilarkesto.core.localization;
 
 import java.util.Comparator;
-import java.util.Locale;
 
 /**
  * nach DIN 5007 Variante 1
@@ -13,7 +12,7 @@ public class GermanComparator implements Comparator<String> {
 	private GermanComparator() {}
 
 	private String clean(String in) {
-		return in.toLowerCase(Locale.GERMAN).replace('ö', 'o').replace('ä', 'a').replace('ü', 'u').replace('ß', 's');
+		return in.toLowerCase().replace('ö', 'o').replace('ä', 'a').replace('ü', 'u').replace('ß', 's');
 	}
 
 	@Override
