@@ -63,6 +63,7 @@ public class OAuth2 {
 		sb.append("redirect_uri=").append(Str.encodeUrlParameter(redirectUri)).append("&");
 		sb.append("client_id=").append(clientId).append("&");
 		sb.append("response_type=code&");
+		sb.append("access_type=offline&");
 		sb.append("include_granted_scopes=true");
 		if (forceApprovalPrompt) sb.append("&approval_prompt=force");
 		String url = sb.toString();
