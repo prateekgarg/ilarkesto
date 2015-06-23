@@ -23,6 +23,16 @@ import org.testng.annotations.Test;
 public class InfoDocStructureTest extends ATest {
 
 	@Test
+	public void bgbAnfechtungsgrund() {
+		InfoDocStructure doc = InfoDocStructure
+				.parse("A) @bgb-inhaltsirrtum\r\n\r\nB) @bgb-erklaerungsirrtum\r\n\r\nC) @bgb-eigenschaftsirrtum\r\n\r\nD) @bgb-uebermittlirrtum\r\n\r\nE) @bgb-123\r\n\r\nI. @bgb-arglistigetaeuschungAnfechtung\r\n\r\nII. @bgb-widerrechtlDrohung");
+		List<AInfoDocElement> elements = doc.getElements();
+		assertSize(elements, 7);
+
+		assertTrue(doc.isPrefixingRequired());
+	}
+
+	@Test
 	public void refWithAlternativeTitle() {
 		InfoDocStructure doc = InfoDocStructure.parse("@ref/Alternative Überschrift\n\n" + "@ref2");
 		List<AInfoDocElement> elements = doc.getElements();
