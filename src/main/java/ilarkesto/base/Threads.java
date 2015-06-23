@@ -35,7 +35,11 @@ public class Threads {
 			Thread thread = entry.getKey();
 			StackTraceElement[] stackTrace = entry.getValue();
 			Object identification = identifyStackTrace(thread, stackTrace);
-			if (identification == null) identification = thread.getThreadGroup().getName();
+			if (identification == null) {
+				ThreadGroup threadGroup = thread.getThreadGroup();
+				if (threadGroup != null) identification = threadGroup.getName();
+				if (identification == null) identification = thread.getName();
+			}
 			sb.append("[").append(identification).append("]").append(" ");
 			sb.append(formatThread(thread)).append(" ").append(formatStackTrace(stackTrace));
 
