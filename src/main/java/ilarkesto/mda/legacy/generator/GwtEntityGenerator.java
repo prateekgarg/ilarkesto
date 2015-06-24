@@ -19,6 +19,7 @@ import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
+import ilarkesto.email.EmailAddress;
 import ilarkesto.gwt.client.AGwtDao;
 import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.Gwt;
@@ -36,13 +37,17 @@ import ilarkesto.mda.legacy.model.BeanModel;
 import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PredicateModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
+import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
 import ilarkesto.mda.legacy.model.StringPropertyModel;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
+
+	public static String persistenceUtil = Persistence.class.getName();
 
 	private ApplicationModel application;
 
@@ -461,39 +466,94 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 		ln();
 		comment("update properties by map");
 		ln();
-		ln("    public void updateProperties(Map props) {");
+		ln("    public void updateProperties(Map<String, String> properties) {");
+		// for (PropertyModel p : bean.getProperties()) {
+		// if (p.isCollection()) {
+		// if (p.isReference()) {
+		// ln("        " + p.getName() + "Ids = (Set<String>) props.get(\"" + p.getName() + "Ids\");");
+		// } else {
+		// ln("        " + p.getName(), " = (" + p.getType() + ") props.get(\"" + p.getName() + "\");");
+		// }
+		// } else {
+		// if (p.isReference()) {
+		// ln("        " + p.getName() + "Id = (String) props.get(\"" + p.getName() + "Id\");");
+		// } else {
+		// String type = p.getType();
+		// if (type.equals(Date.class.getName())) {
+		// ln("        String " + p.getName() + "AsString = (String) props.get(\"" + p.getName() + "\");");
+		// ln("        " + p.getName(), " =  " + p.getName() + "AsString == null ? null : new "
+		// + ilarkesto.core.time.Date.class.getName() + "(" + p.getName() + "AsString);");
+		// } else if (type.equals(Time.class.getName())) {
+		// ln("        String " + p.getName() + "AsString = (String) props.get(\"" + p.getName() + "\");");
+		// ln("        " + p.getName(), " =  " + p.getName() + "AsString == null ? null : new "
+		// + ilarkesto.core.time.Time.class.getName() + "(" + p.getName() + "AsString);");
+		// } else if (type.equals(DateAndTime.class.getName())) {
+		// ln("        String " + p.getName() + "AsString = (String) props.get(\"" + p.getName() + "\");");
+		// ln("        " + p.getName(), " =  " + p.getName() + "AsString == null ? null : new "
+		// + ilarkesto.core.time.DateAndTime.class.getName() + "(" + p.getName() + "AsString);");
+		// } else {
+		// if (type.equals("boolean")) type = "Boolean";
+		// if (type.equals("int")) type = "Integer";
+		// ln("        " + p.getName(), " = (" + type + ") props.get(\"" + p.getName() + "\");");
+		// }
+		// }
+		// }
+		// }
+
+		ln("        for (Map.Entry<String, String> entry : properties.entrySet()) {");
+		ln("            String property = entry.getKey();");
+		ln("            if (property.equals(\"id\")) continue;");
+		ln("            String value = entry.getValue();");
 		for (PropertyModel p : bean.getProperties()) {
-			if (p.isCollection()) {
-				if (p.isReference()) {
-					ln("        " + p.getName() + "Ids = (Set<String>) props.get(\"" + p.getName() + "Ids\");");
+
+			if (p.isValueObject()) {
+				comment("TODO ValueObject");
+				continue;
+			}
+
+			if (p.getType().equals(EmailAddress.class.getName())) {
+				comment("TODO EmailAddress");
+				continue;
+			}
+
+			if (p.getName().equals("changeNotificationEmails")) {
+				comment("TODO changeNotificationEmails");
+				continue;
+			}
+
+			String propertyName = p.getName();
+			if (p.isReference()) {
+				propertyName += "Id";
+				if (p.isCollection()) propertyName += "s";
+			}
+			String parseType;
+			if (p.isReference()) {
+				if (p.isCollection()) {
+					if (p instanceof ReferenceListPropertyModel) {
+						parseType = "ReferenceList";
+					} else {
+						parseType = "ReferenceSet";
+					}
 				} else {
-					ln("        " + p.getName(), " = (" + p.getType() + ") props.get(\"" + p.getName() + "\");");
+					parseType = "Reference";
 				}
 			} else {
-				if (p.isReference()) {
-					ln("        " + p.getName() + "Id = (String) props.get(\"" + p.getName() + "Id\");");
-				} else {
-					String type = p.getType();
-					if (type.equals(Date.class.getName())) {
-						ln("        String " + p.getName() + "AsString = (String) props.get(\"" + p.getName() + "\");");
-						ln("        " + p.getName(), " =  " + p.getName() + "AsString == null ? null : new "
-								+ ilarkesto.core.time.Date.class.getName() + "(" + p.getName() + "AsString);");
-					} else if (type.equals(Time.class.getName())) {
-						ln("        String " + p.getName() + "AsString = (String) props.get(\"" + p.getName() + "\");");
-						ln("        " + p.getName(), " =  " + p.getName() + "AsString == null ? null : new "
-								+ ilarkesto.core.time.Time.class.getName() + "(" + p.getName() + "AsString);");
-					} else if (type.equals(DateAndTime.class.getName())) {
-						ln("        String " + p.getName() + "AsString = (String) props.get(\"" + p.getName() + "\");");
-						ln("        " + p.getName(), " =  " + p.getName() + "AsString == null ? null : new "
-								+ ilarkesto.core.time.DateAndTime.class.getName() + "(" + p.getName() + "AsString);");
+				if (p.isCollection()) {
+					if (List.class.getName().equals(p.getCollectionType())) {
+						parseType = p.getContentType() + "List";
 					} else {
-						if (type.equals("boolean")) type = "Boolean";
-						if (type.equals("int")) type = "Integer";
-						ln("        " + p.getName(), " = (" + type + ") props.get(\"" + p.getName() + "\");");
+						parseType = p.getContentType() + "Set";
 					}
+					if (parseType.contains(".")) parseType = parseType.substring(parseType.lastIndexOf('.') + 1);
+				} else {
+					parseType = p.getType().substring(p.getType().lastIndexOf('.') + 1);
 				}
 			}
+			ln("            if (property.equals(\"" + propertyName + "\")) " + propertyName + " = " + persistenceUtil
+					+ ".parseProperty" + parseType + "(value);");
 		}
+		ln("        }");
+
 		ln("        updateLocalModificationTime();");
 		ln("    }");
 	}
