@@ -46,7 +46,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		threadName = Thread.currentThread().getName();
 	}
 
-	synchronized void saveEntity(AEntity entity) {
+	void saveEntity(AEntity entity) {
 		if (entity == null) throw new NullPointerException("entity");
 		entity.getId();
 		if (entitiesToSave.contains(entity) || entitiesToDelete.contains(entity)) return;
@@ -54,14 +54,14 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		entitiesToSave.add(entity);
 	}
 
-	synchronized void deleteEntity(AEntity entity) {
+	void deleteEntity(AEntity entity) {
 		if (entitiesToDelete.contains(entity)) return;
 		log.debug("DELETE", toStringWithType(entity), "@", this);
 		entitiesToDelete.add(entity);
 		entitiesToSave.remove(entity);
 	}
 
-	synchronized void registerEntity(AEntity entity) {
+	void registerEntity(AEntity entity) {
 		entitiesRegistered.add(entity);
 	}
 
@@ -116,7 +116,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		return false;
 	}
 
-	synchronized boolean isPersistent(String id) {
+	boolean isPersistent(String id) {
 		AEntity result = entityStore.getById(id);
 		if (result != null) return true;
 
@@ -129,7 +129,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 	}
 
 	@Override
-	public synchronized AEntity getById(String id) {
+	public AEntity getById(String id) {
 		AEntity result = entityStore.getById(id);
 		if (result == null && !entitiesToSave.isEmpty()) {
 			for (AEntity entity : entitiesToSave) {
@@ -152,7 +152,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 	}
 
 	@Override
-	public synchronized List<AEntity> getByIds(Collection<String> ids) {
+	public List<AEntity> getByIds(Collection<String> ids) {
 		List<AEntity> result = entityStore.getByIds(ids);
 		for (AEntity entity : entitiesToSave) {
 			if (ids.contains(entity.getId())) {
@@ -170,7 +170,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		return result;
 	}
 
-	synchronized Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
+	Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		Set<AEntity> result = entityStore.getEntities(typeFilter, entityFilter);
 		for (AEntity entity : entitiesToSave) {
 			if (Persist.test(entity, typeFilter, entityFilter)) result.add(entity);
@@ -186,7 +186,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		return entityStore.getEntitiesCount(typeFilter, entityFilter);
 	}
 
-	synchronized AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
+	AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		AEntity result = entityStore.getEntity(typeFilter, entityFilter);
 		if (result == null) {
 			for (AEntity entity : entitiesToSave) {
@@ -204,7 +204,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 	}
 
 	@Override
-	public synchronized String toString() {
+	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("#").append(no);
 		sb.append(" (").append(threadName).append(")");
