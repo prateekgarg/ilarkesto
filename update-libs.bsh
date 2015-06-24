@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Downloading libs..."
-wget -q -O ilarkesto-lib.zip https://servisto.de/projects/ilarkesto/ilarkesto-lib.zip
+wget -q -O ilarkesto-lib.zip https://servisto.de/projects/ilarkesto/ilarkesto-lib_kunagi-patch.zip
 rm -rf lib/*
 unzip -o ilarkesto-lib.zip
 rm ilarkesto-lib.zip
