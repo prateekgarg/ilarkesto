@@ -29,7 +29,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 
-public abstract class AServiceCall<D extends ADataTransferObject> implements ServiceCall {
+public abstract class AServiceCall<D extends ADataTransferObject> {
 
 	public static final long MAX_FAILURE_TIME = 30 * Tm.SECOND;
 
@@ -53,12 +53,10 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 		serviceDefTarget.setServiceEntryPoint(GWT.getModuleBaseURL() + contextName);
 	}
 
-	@Override
 	public final void execute() {
 		execute(null);
 	}
 
-	@Override
 	public final void execute(Runnable returnHandler) {
 		if (queue.contains(this)) throw new IllegalStateException(getName() + " already executed");
 		this.returnHandler = returnHandler;
@@ -107,16 +105,15 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 		onExecute(AGwtApplication.get().getConversationNumber(), new ServiceCallback());
 	}
 
-	public static final boolean containsServiceCall(Class<? extends ServiceCall> type) {
+	public static final boolean containsServiceCall(Class<? extends AServiceCall> type) {
 		String name = Str.getSimpleName(type);
-		for (ServiceCall call : queue) {
+		for (AServiceCall call : queue) {
 			String callName = Str.getSimpleName(call.getClass());
 			if (callName.equals(name)) return true;
 		}
 		return false;
 	}
 
-	@Override
 	public boolean isDispensable() {
 		return false;
 	}

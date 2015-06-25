@@ -24,6 +24,7 @@ public class MethodModel extends AModel {
 	private boolean sync = true;
 	private String returnType;
 	private List<String> exceptions = new ArrayList<String>();
+	private boolean dispensable;
 
 	public MethodModel(String name) {
 		super(name);
@@ -82,6 +83,15 @@ public class MethodModel extends AModel {
 
 	public boolean isSync() {
 		return sync;
+	}
+
+	public boolean isDispensable() {
+		return dispensable;
+	}
+
+	public MethodModel setDispensable(boolean dispensable) {
+		this.dispensable = dispensable;
+		return this;
 	}
 
 	// --- helper ---
