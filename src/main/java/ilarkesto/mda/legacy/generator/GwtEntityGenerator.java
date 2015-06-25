@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -320,21 +320,21 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln();
 				ln("    public final void set" + nameUpper + "(Collection<" + contentType + "> values) {");
 				ln("        " + varName + " = " + Gwt.class.getName() + ".getIdsAsSet(values);");
-				ln("        propertyChanged(\"" + p.getName() + "Ids\", this." + p.getName() + "Ids);");
+				writePropertyChanged(varName);
 				ln("    }");
 				ln();
 				ln("    public final void add" + nameSingularUpper + "(" + contentType, nameSingular + ") {");
 				ln("        String id = " + nameSingular + ".getId();");
 				ln("        if (" + varName + ".contains(id)) return;");
 				ln("        " + varName + ".add(id);");
-				ln("        propertyChanged(\"" + p.getName() + "Ids\", this." + p.getName() + "Ids);");
+				writePropertyChanged(varName);
 				ln("    }");
 				ln();
 				ln("    public final void remove" + nameSingularUpper + "(" + contentType, nameSingular + ") {");
 				ln("        String id = " + nameSingular + ".getId();");
 				ln("        if (!" + varName + ".contains(id)) return;");
 				ln("        " + varName + ".remove(id);");
-				ln("        propertyChanged(\"" + p.getName() + "Ids\", this." + p.getName() + "Ids);");
+				writePropertyChanged(varName);
 				ln("    }");
 				ln();
 				ln("    public final boolean contains" + nameSingularUpper + "(" + contentType + " " + nameSingular
@@ -362,7 +362,7 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln("        if (this." + p.getName() + ".equals(" + p.getName() + ")) return;");
 				ln("        this." + p.getName() + " = new " + p.getCollectionImpl() + "<" + p.getContentType() + ">("
 						+ p.getName() + ");");
-				ln("        propertyChanged(\"" + p.getName() + "\", this." + p.getName() + ");");
+				writePropertyChanged(p.getName());
 				ln("    }");
 				ln();
 				ln("    public final boolean contains" + nameSingularUpper + "(" + contentType + " " + nameSingular
@@ -402,7 +402,7 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln("        String id = " + p.getName() + " == null ? null : " + p.getName() + ".getId();");
 				ln("        if (equals(this." + p.getName() + "Id, id)) return (" + bean.getName() + ") this;");
 				ln("        this." + p.getName() + "Id = id;");
-				ln("        propertyChanged(\"" + p.getName() + "Id\", this." + p.getName() + "Id);");
+				writePropertyChanged(p.getName() + "Id");
 				ln("        return (" + bean.getName() + ")this;");
 				ln("    }");
 				ln();
@@ -436,7 +436,7 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 							+ " + \"\\\" already exists.\");");
 				}
 				ln("        this." + p.getName(), "=", p.getName(), ";");
-				ln("        propertyChanged(\"" + p.getName() + "\", this." + p.getName() + ");");
+				writePropertyChanged(p.getName());
 				ln("        return (" + bean.getName() + ")this;");
 				ln("    }");
 				ln();
@@ -460,6 +460,10 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 			}
 		}
 		editor(p);
+	}
+
+	private void writePropertyChanged(String var) {
+		ln("        propertyChanged(\"" + var + "\", " + persistenceUtil + ".propertyAsString(this." + var + "));");
 	}
 
 	private void updatePropertiesMethod() {

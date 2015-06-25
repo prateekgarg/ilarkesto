@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -28,7 +28,7 @@ public abstract class AGwtDao extends AComponent {
 
 	protected abstract Collection<Map<String, ? extends AGwtEntity>> getEntityMaps();
 
-	protected abstract AGwtEntity updateLocalEntity(String type, Map data);
+	protected abstract AGwtEntity updateLocalEntity(String type, Map<String, String> data);
 
 	protected abstract void onEntityModifiedRemotely(AGwtEntity entity);
 
@@ -38,7 +38,7 @@ public abstract class AGwtDao extends AComponent {
 
 	protected abstract void onEntityDeletedLocaly(AGwtEntity entity);
 
-	protected abstract void onEntityPropertyChangedLocaly(AGwtEntity entity, String property, Object value);
+	protected abstract void onEntityPropertyChangedLocaly(AGwtEntity entity, String property, String value);
 
 	public abstract Map<String, Integer> getEntityCounts();
 
@@ -63,8 +63,8 @@ public abstract class AGwtDao extends AComponent {
 		List<AGwtEntity> modifiedEntities = null;
 		if (data.containsEntities()) {
 			modifiedEntities = new ArrayList<AGwtEntity>(data.getEntities().size());
-			for (Map entityData : data.getEntities()) {
-				AGwtEntity entity = updateLocalEntity((String) entityData.get("@type"), entityData);
+			for (Map<String, String> entityData : data.getEntities()) {
+				AGwtEntity entity = updateLocalEntity(entityData.get("@type"), entityData);
 				modifiedEntities.add(entity);
 			}
 		}
@@ -98,7 +98,7 @@ public abstract class AGwtDao extends AComponent {
 		entity.updateLocalModificationTime();
 	}
 
-	public final void entityPropertyChanged(AGwtEntity entity, String property, Object value) {
+	public final void entityPropertyChanged(AGwtEntity entity, String property, String value) {
 		onEntityPropertyChangedLocaly(entity, property, value);
 	}
 

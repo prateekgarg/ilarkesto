@@ -1,24 +1,19 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.gwt.client;
 
-import ilarkesto.core.time.Date;
-import ilarkesto.core.time.DateAndTime;
-import ilarkesto.core.time.DateRange;
-import ilarkesto.core.time.Time;
-import ilarkesto.core.time.TimePeriod;
 import ilarkesto.core.time.Tm;
 import ilarkesto.gwt.client.editor.AEditorModel;
 import ilarkesto.gwt.client.undo.AUndoOperation;
@@ -66,13 +61,8 @@ public abstract class AGwtEntity {
 		this.inCreation = false;
 	}
 
-	protected final void propertyChanged(String property, Object value) {
+	protected final void propertyChanged(String property, String value) {
 		if (inCreation) return;
-		if (value instanceof Date) value = value.toString();
-		if (value instanceof Time) value = value.toString();
-		if (value instanceof DateAndTime) value = value.toString();
-		if (value instanceof DateRange) value = value.toString();
-		if (value instanceof TimePeriod) value = value.toString();
 		getDao().entityPropertyChanged(this, property, value);
 		updateLocalModificationTime();
 	}

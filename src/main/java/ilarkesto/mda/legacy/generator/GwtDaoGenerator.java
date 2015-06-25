@@ -115,8 +115,8 @@ public class GwtDaoGenerator extends AClassGenerator {
 			ln("        entityCreated(" + nameLower + ", null);");
 			ln("    }");
 			ln();
-			ln("    protected " + type + " update" + name + "(Map data) {");
-			ln("        String id = (String) data.get(\"id\");");
+			ln("    protected " + type + " update" + name + "(Map<String, String> data) {");
+			ln("        String id = data.get(\"id\");");
 			ln("        " + type + " entity =", mapVar + ".get(id);");
 			ln("        if (entity == null) {");
 			ln("            entity = new", type + "(data);");
@@ -219,7 +219,8 @@ public class GwtDaoGenerator extends AClassGenerator {
 
 		ln();
 		ln("    @Override");
-		ln("    protected final " + AGwtEntity.class.getName() + " updateLocalEntity(String type, Map data) {");
+		ln("    protected final " + AGwtEntity.class.getName()
+				+ " updateLocalEntity(String type, Map<String, String> data) {");
 		for (EntityModel entity : entities) {
 			ln("        if (type.equals(" + entity.getPackageName().replace(".server.", ".client.") + "."
 					+ entity.getName() + ".ENTITY_TYPE)) {");
