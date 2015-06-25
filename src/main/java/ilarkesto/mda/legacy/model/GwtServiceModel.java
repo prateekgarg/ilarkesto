@@ -46,7 +46,7 @@ public class GwtServiceModel extends AModel {
 	}
 
 	public final String getClientPackageName() {
-		return getPackageName().replace(".server.", ".client.");
+		return getPackageName().replace(".server", ".client");
 	}
 
 	public final String getDtoClassName() {

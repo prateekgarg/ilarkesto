@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -51,28 +51,30 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 		ln(");");
 
 		ln();
+		annotationOverride();
 		s("    public", service.getDtoClassName(), method.getName() + "(int conversationNumber");
 		for (ParameterModel param : method.getParameters()) {
 			s(",", param.getType(), param.getName());
 		}
 		ln(") {");
-		boolean ping = method.getName().equals("ping");
+		boolean ping = method.getName().toLowerCase().equals("ping");
 		if (!ping) {
 			ln("        " + RuntimeTracker.class.getName(), "rt = new", RuntimeTracker.class.getName() + "();");
 			ln("        log.debug(\"Handling service call: " + method.getName() + "\");");
 		}
 		ln("        WebSession session = (WebSession) getSession();");
 		if (method.isSync()) {
-			ln("        String threads = " + Threads.class.getName() + ".getAllThreadsInfo();");
+			if (!ping) ln("        String threads = " + Threads.class.getName() + ".getAllThreadsInfo();");
 			ln("        synchronized (getSyncObject()) {");
-			ln("            if (rt.getRuntime() > 1000) log.warn(\"ServiceCall "
-					+ method.getName()
-					+ " waited for sync\", rt.getRuntimeFormated(), \">>> Threads before:\\n\", threads, \"Threads after:\\n\", "
-					+ Threads.class.getName() + ".getAllThreadsInfo());");
+			if (!ping)
+				ln("            if (rt.getRuntime() > 1000) log.warn(\"ServiceCall "
+						+ method.getName()
+						+ " waited for sync\", rt.getRuntimeFormated(), \">>> Threads before:\\n\", threads, \"Threads after:\\n\", "
+						+ Threads.class.getName() + ".getAllThreadsInfo());");
 		}
 		ln("            GwtConversation conversation = null;");
 		ln("            try {");
-		ln("                conversation = (GwtConversation) session.getGwtConversation(conversationNumber);");
+		ln("                conversation = session.getGwtConversation(conversationNumber);");
 		ln("            } catch (Throwable ex) {");
 		ln("                log.info(\"Getting conversation failed:\", conversationNumber);");
 		ln("                " + service.getDtoClassName() + " dto = new " + service.getDtoClassName() + "();");
@@ -98,13 +100,16 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 			for (ParameterModel param : method.getParameters()) {
 				paramsString += ", " + param.getName();
 			}
-			ln("            if (rt.getRuntime() > getMaxServiceCallExecutionTime(\"" + method.getName() + "\")) {");
-			ln("                log.warn(\"ServiceCall served in\", rt.getRuntimeFormated(),\"" + method.getName()
-					+ "\"" + paramsString + ", \"Threads:\\n\", " + Threads.class.getName() + ".getAllThreadsInfo());");
-			ln("            } else {");
-			ln("                log.info(\"ServiceCall served in\", rt.getRuntimeFormated(),\"" + method.getName()
-					+ "\"" + paramsString + ");");
-			ln("            }");
+			if (!ping) {
+				ln("            if (rt.getRuntime() > getMaxServiceCallExecutionTime(\"" + method.getName() + "\")) {");
+				ln("                log.warn(\"ServiceCall served in\", rt.getRuntimeFormated(),\"" + method.getName()
+						+ "\"" + paramsString + ", \"Threads:\\n\", " + Threads.class.getName()
+						+ ".getAllThreadsInfo());");
+				ln("            } else {");
+				ln("                log.info(\"ServiceCall served in\", rt.getRuntimeFormated(),\"" + method.getName()
+						+ "\"" + paramsString + ");");
+				ln("            }");
+			}
 		}
 		ln("            return (" + service.getDtoClassName() + ") conversation.popNextData();");
 		if (method.isSync()) {

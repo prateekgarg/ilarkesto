@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- * 
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
- * 
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -21,10 +21,7 @@ import ilarkesto.mda.generator.GwtComponentTemplateGenerator;
 import ilarkesto.mda.generator.GwtComponentsReflectorGenerator;
 import ilarkesto.mda.generator.GwtEventGenerator;
 import ilarkesto.mda.generator.GwtEventHandlerGenerator;
-import ilarkesto.mda.generator.GwtServiceAsyncInterfaceGenerator;
 import ilarkesto.mda.generator.GwtServiceCallGenerator;
-import ilarkesto.mda.generator.GwtServiceImplGenerator;
-import ilarkesto.mda.generator.GwtServiceInterfaceGenerator;
 import ilarkesto.mda.generator.GwtTextBundleGenerator;
 import ilarkesto.mda.model.Model;
 import ilarkesto.mda.model.ModelProcessor;
@@ -61,9 +58,9 @@ public class GwtClassesGenerator implements ModelProcessor, NodeTypes {
 			processPackage(package_);
 		}
 		componentsReflectorGenerator.generate();
-		new GwtServiceInterfaceGenerator(genSrcPath, module).generate();
-		new GwtServiceAsyncInterfaceGenerator(genSrcPath, module).generate();
-		new GwtServiceImplGenerator(genSrcPath, module).generate();
+		// new GwtServiceInterfaceGenerator(genSrcPath, module).generate();
+		// new GwtServiceAsyncInterfaceGenerator(genSrcPath, module).generate();
+		// new GwtServiceImplGenerator(genSrcPath, module).generate();
 		for (Node textBundle : module.getChildrenByType(TextBundle)) {
 			new GwtTextBundleGenerator(genSrcPath, textBundle).generate();
 		}

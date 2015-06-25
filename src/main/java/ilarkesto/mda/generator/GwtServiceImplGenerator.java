@@ -15,12 +15,15 @@
 package ilarkesto.mda.generator;
 
 import ilarkesto.base.Str;
+import ilarkesto.core.logging.Log;
 import ilarkesto.gwt.client.ErrorWrapper;
 import ilarkesto.gwt.server.AGwtServiceImpl;
 import ilarkesto.mda.model.Node;
+import ilarkesto.mda.model.NodeByIndexComparator;
 import ilarkesto.mda.model.NodeTypes;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GwtServiceImplGenerator extends AJavaClassGenerator implements NodeTypes {
@@ -40,13 +43,39 @@ public class GwtServiceImplGenerator extends AJavaClassGenerator implements Node
 
 		out.loggerByClassName(module.getValue() + "ServiceImpl");
 
+		StringBuilder sb = new StringBuilder("\n\n");
+
 		List<Node> calls = module.getChildrenByTypeRecursive(ServiceCall);
+		for (Node call : calls) {
+			sb.append("\n");
+			sb.append("gwtServiceModel.addMethod(\"");
+			sb.append(Str.lowercaseFirstLetter(call.getValue()));
+			sb.append("\"");
+			sb.append(")");
+
+			List<Node> parameters = call.getChildrenByType(NodeTypes.Parameter);
+			Collections.sort(parameters, new NodeByIndexComparator());
+			for (Node parameter : parameters) {
+				sb.append(".addParameter(");
+				sb.append("\"").append(parameter.getValue()).append("\"");
+				String type = getParameterType(parameter, null);
+				if (type != null && !type.equals("String")) {
+					sb.append(", \"").append(type).append("\"");
+				}
+				sb.append(")");
+			}
+
+			sb.append(";");
+		}
+
 		for (Node call : calls) {
 			if (call.getValue().equals("StartConversation")) {
 				calls.remove(call);
 				break;
 			}
 		}
+
+		Log.TEST(sb.toString() + "\n\n");
 
 		for (Node call : calls) {
 			List<String> params = getParameterTypesAndNames(call, "String");
