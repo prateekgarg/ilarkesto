@@ -14,11 +14,14 @@
  */
 package ilarkesto.feeds;
 
+import ilarkesto.base.Tm;
+import ilarkesto.core.base.Utl;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.integration.jdom.JDom;
 
 import org.jdom2.Element;
 
-public class FeedItem {
+public class FeedItem implements Comparable<FeedItem> {
 
 	private String title;
 	private String description;
@@ -61,6 +64,10 @@ public class FeedItem {
 		return this;
 	}
 
+	public FeedItem setPubDate(DateAndTime pubDate) {
+		return setPubDate(pubDate == null ? null : Tm.FORMAT_RFC822.format(pubDate.getDate()));
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -84,6 +91,11 @@ public class FeedItem {
 	@Override
 	public String toString() {
 		return title == null ? description : title;
+	}
+
+	@Override
+	public int compareTo(FeedItem o) {
+		return Utl.compare(o.pubDate, pubDate);
 	}
 
 }

@@ -20,6 +20,7 @@ import ilarkesto.io.StringOutputStream;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jdom2.Document;
@@ -68,6 +69,11 @@ public class Feed {
 		this.description = description;
 	}
 
+	public Feed sortItems() {
+		Collections.sort(items);
+		return this;
+	}
+
 	public Document createRssJDom() {
 		Document document = new Document();
 		Element eRoot = new Element("rss");
@@ -87,6 +93,10 @@ public class Feed {
 		}
 
 		return document;
+	}
+
+	public void writeRss(OutputStream out, String encoding) {
+		JDom.write(createRssJDom(), out, encoding);
 	}
 
 	public String createRssText() {
