@@ -21,7 +21,6 @@ import ilarkesto.mda.generator.GwtComponentTemplateGenerator;
 import ilarkesto.mda.generator.GwtComponentsReflectorGenerator;
 import ilarkesto.mda.generator.GwtEventGenerator;
 import ilarkesto.mda.generator.GwtEventHandlerGenerator;
-import ilarkesto.mda.generator.GwtServiceCallGenerator;
 import ilarkesto.mda.generator.GwtTextBundleGenerator;
 import ilarkesto.mda.model.Model;
 import ilarkesto.mda.model.ModelProcessor;
@@ -81,7 +80,7 @@ public class GwtClassesGenerator implements ModelProcessor, NodeTypes {
 
 	private void processServiceCall(Node call) {
 		log.info("ServiceCall:", call);
-		new GwtServiceCallGenerator(genSrcPath, call).generate();
+		// new GwtServiceCallGenerator(genSrcPath, call).generate();
 	}
 
 	private void processEvent(Node event) {

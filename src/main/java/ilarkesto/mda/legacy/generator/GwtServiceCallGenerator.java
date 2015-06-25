@@ -64,8 +64,8 @@ public class GwtServiceCallGenerator extends AClassGenerator {
 
 		ln();
 		annotationOverride();
-		ln("    protected synchronized void onExecute(int conversationNumber,", AsyncCallback.class.getName(),
-			"callback) {");
+		ln("    protected synchronized void onExecute(int conversationNumber,", AsyncCallback.class.getName() + "<"
+				+ service.getDtoClassName() + ">", "callback) {");
 		ln("        if (service==null) {");
 		ln("            service = (" + getServiceClassName() + "Async) " + GWT.class.getName() + ".create("
 				+ getServiceClassName() + ".class);");
@@ -77,6 +77,12 @@ public class GwtServiceCallGenerator extends AClassGenerator {
 		}
 		ln(", callback);");
 		ln("    }");
+
+		ln();
+		annotationOverride();
+		ln("    public String toString() {");
+		ln("        return \"" + method.getName() + "\";");
+		ln("    }");
 	}
 
 	@Override
@@ -86,7 +92,7 @@ public class GwtServiceCallGenerator extends AClassGenerator {
 
 	@Override
 	protected String getSuperclass() {
-		return AServiceCall.class.getName();
+		return AServiceCall.class.getName() + "<" + service.getDtoClassName() + ">";
 	}
 
 	@Override
@@ -100,10 +106,10 @@ public class GwtServiceCallGenerator extends AClassGenerator {
 
 	@Override
 	protected String getPackage() {
-		String s = service.getClientPackageName();
-		int idx = s.indexOf(".client.");
-		s = s.substring(0, idx + 8);
-		return s + method.getPackageName();
+		String ret = service.getClientPackageName();
+		String methodPackage = method.getPackageName();
+		if (!Str.isBlank(methodPackage)) ret += "." + methodPackage;
+		return ret;
 	}
 
 	@Override

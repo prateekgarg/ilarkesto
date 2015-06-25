@@ -166,15 +166,10 @@ public abstract class AServiceCall<D extends ADataTransferObject> implements Ser
 		AGwtApplication.get().handleServiceCallError(getName(), errors);
 	}
 
-	protected void onCallbackSuccess(D data) {
-		// required for Kunagi legacy code
-	}
-
 	private void callbackSuccess(D data) {
 		lastSuccessfullServiceCallTime = Tm.getCurrentTimeMillis();
 		RuntimeTracker rtData = new RuntimeTracker();
 		AGwtApplication.get().serverDataReceived(data);
-		onCallbackSuccess(data);
 		runtimeData = rtData.getRuntime();
 
 		if (returnHandler != null) {

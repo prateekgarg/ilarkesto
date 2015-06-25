@@ -65,6 +65,9 @@ public class GwtServiceImplGenerator extends AJavaClassGenerator implements Node
 				sb.append(")");
 			}
 
+			String package_ = call.getSuperparentByType(Package).getValue();
+			sb.append(".setPackage(\"").append(package_).append("\")");
+
 			sb.append(";");
 		}
 
