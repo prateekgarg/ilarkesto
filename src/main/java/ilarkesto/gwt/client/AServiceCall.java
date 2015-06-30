@@ -54,6 +54,10 @@ public abstract class AServiceCall<D extends ADataTransferObject> {
 	}
 
 	public final void execute() {
+		if (AGwtApplication.get().isAborted()) {
+			log.info("GWT application aborted, service call execution prevented:", this);
+			return;
+		}
 		execute(null);
 	}
 
@@ -146,6 +150,9 @@ public abstract class AServiceCall<D extends ADataTransferObject> {
 		currentServiceCall = null;
 		rtCall.stop();
 		if (!getName().equals("Ping")) log.info("serviceCallReturned()");
+
+		if (AGwtApplication.get().isAborted()) return;
+
 		if (listener != null) listener.run();
 		runNext();
 	}

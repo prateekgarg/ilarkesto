@@ -14,6 +14,7 @@
  */
 package ilarkesto.gwt.client;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntity;
 
@@ -36,6 +37,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 	private static AGwtApplication singleton;
 	protected int conversationNumber = -1;
 	protected GwtLogRecordHandler logRecordHandler;
+	private String abortMessage;
 
 	public abstract void handleServiceCallError(String serviceCall, List<ErrorWrapper> errors);
 
@@ -57,6 +59,18 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 		});
 		History.addValueChangeHandler(new HistoryTokenChangedHandler());
 	}
+
+	public final boolean isAborted() {
+		return abortMessage != null;
+	}
+
+	public final void abort(String message) {
+		if (Str.isBlank(message)) message = "Unexpected error";
+		abortMessage = message;
+		onAborted(message);
+	}
+
+	protected void onAborted(String message) {}
 
 	protected void onHistoryTokenChanged(String token) {
 		log.info("History token changed:", token);
