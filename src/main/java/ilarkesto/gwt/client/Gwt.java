@@ -14,6 +14,7 @@
  */
 package ilarkesto.gwt.client;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.html.Html;
 import ilarkesto.core.html.ToHtmlSupport;
 import ilarkesto.gwt.client.editor.RichtextEditorWidget;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -54,6 +56,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class Gwt {
 
+	public static final char HISTORY_TOKEN_SEPARATOR = '/';
+
 	private static Widget rootWidget;
 	private static RichtextFormater defaultRichtextFormater = new DoNothingRichtextFormater();
 	private static Initializer<RichtextEditorWidget> richtextEditorEditInitializer;
@@ -64,6 +68,30 @@ public class Gwt {
 	private static DateTimeFormat dtfDay;
 	private static DateTimeFormat dtfWeekdayMonthDay;
 	private static DateTimeFormat dtfHourMinute;
+
+	public static LinkedHashMap<String, String> parseHistoryToken(String token) {
+		LinkedHashMap<String, String> ret = new LinkedHashMap<String, String>();
+		if (Str.isBlank(token)) return ret;
+		int sepIdx = token.indexOf(HISTORY_TOKEN_SEPARATOR);
+		while (sepIdx > 0) {
+			String part = token.substring(0, sepIdx);
+			parseHistoryTokenPart(part, ret);
+			token = token.substring(sepIdx + 1);
+			sepIdx = token.indexOf(HISTORY_TOKEN_SEPARATOR);
+		}
+		parseHistoryTokenPart(token, ret);
+		return ret;
+	}
+
+	private static void parseHistoryTokenPart(String part, LinkedHashMap<String, String> resultContainer) {
+		if (Str.isBlank(part)) return;
+		int idx = part.indexOf('=');
+		if (idx < 0) {
+			resultContainer.put(part, part);
+			return;
+		}
+		resultContainer.put(part.substring(0, idx), part.substring(idx + 1));
+	}
 
 	public static void setPopupPositionAndShow(final DialogBox dialog, final ClickEvent event) {
 		if (event == null || event.getClientX() == 0) {

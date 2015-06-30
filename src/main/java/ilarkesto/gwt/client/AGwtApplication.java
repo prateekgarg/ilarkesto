@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -18,12 +18,16 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntity;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.History;
 
 public abstract class AGwtApplication<D extends ADataTransferObject> implements EntryPoint {
 
@@ -51,7 +55,15 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 				handleUnexpectedError(ex);
 			}
 		});
+		History.addValueChangeHandler(new HistoryTokenChangedHandler());
 	}
+
+	protected void onHistoryTokenChanged(String token) {
+		log.info("History token changed:", token);
+		onHistoryTokenChanged(Gwt.parseHistoryToken(token));
+	}
+
+	private void onHistoryTokenChanged(LinkedHashMap<String, String> parameters) {}
 
 	final void serverDataReceived(D data) {
 		if (data.conversationNumber != null) {
@@ -105,5 +117,14 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 	public abstract void sendChangesToServer(Collection<AEntity> modified, Collection<String> deleted,
 			Map<String, Map<String, String>> modifiedProperties, Runnable callback);
+
+	private class HistoryTokenChangedHandler implements ValueChangeHandler<String> {
+
+		@Override
+		public void onValueChange(ValueChangeEvent<String> event) {
+			onHistoryTokenChanged(event.getValue());
+		}
+
+	}
 
 }
