@@ -7,8 +7,8 @@
     <delete dir="test-output" />
   </target>
 
-  <target name="update-libs">
-    <exec executable="./update-libs.bsh" failonerror="true" />
+  <target name="download-dependencies">
+    <exec executable="./download-dependencies.bsh" failonerror="true" />
   </target>
 
   <target name="compile">
@@ -72,7 +72,8 @@
     </copy>
   </target>
 
-  <target name="continousIntegrationBuild" depends="clean,update-libs,test,package,javadoc,r1-deploy" />
+  <target name="continousIntegrationBuild"
+    depends="clean,download-dependencies,test,package,javadoc,r1-deploy" />
 
 </project>
 
