@@ -38,7 +38,8 @@
   </target>
 
   <target name="test" depends="compile-test">
-    <taskdef name="testng" classpath="lib/testng-5.8.jar"
+    <taskdef name="testng"
+      classpath="${ilarkesto.dir}/lib/testng-6.9.4.jar;${ilarkesto.dir}/lib/jcommander-1.48.jar"
       classname="org.testng.TestNGAntTask" />
     <testng outputDir="test-output" haltonfailure="true">
       <classfileset dir="build/test-classes" includes="**/*.class" />
