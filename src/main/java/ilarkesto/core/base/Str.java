@@ -109,13 +109,14 @@ public class Str {
 	}
 
 	public static String toFileCompatibleString(String s) {
+		return toFileCompatibleString(s, null);
+	}
+
+	public static String toFileCompatibleString(String s, String spaceReplacement) {
+		if (spaceReplacement != null) s = s.replace(" ", spaceReplacement);
 		s = s.replace('/', '-');
 		s = s.replace('\\', '-');
-		s = s.replace(':', '_');
-		s = s.replace(';', '_');
-		s = s.replace('&', '@');
-		s = s.replace('?', '@');
-		s = s.replace('=', '_');
+
 		s = s.replace(String.valueOf(ae), "ae");
 		s = s.replace(String.valueOf(AE), "Ae");
 		s = s.replace(String.valueOf(ue), "ue");
@@ -124,6 +125,13 @@ public class Str {
 		s = s.replace(String.valueOf(OE), "Oe");
 		s = s.replace(String.valueOf(sz), "ss");
 		s = s.replace(String.valueOf(EUR), "EUR");
+
+		s = s.replace(':', '_');
+		s = s.replace(';', '_');
+		s = s.replace('&', '_');
+		s = s.replace('?', '_');
+		s = s.replace('=', '_');
+
 		return s;
 	}
 

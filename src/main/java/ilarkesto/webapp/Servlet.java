@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -269,7 +269,7 @@ public abstract class Servlet {
 		sb.append(indent).append("parameters:         ").append(Str.format(r.getParameterMap())).append("\n");
 		sb.append(indent).append("headers:            ").append(Str.format(getHeaders(r))).append("\n");
 		sb.append(indent).append("attributes:         ").append(Str.format(getAttributes(r))).append("\n");
-		sb.append(indent).append("cookies:            ").append(Str.format(r.getCookies())).append("\n");
+		sb.append(indent).append("cookies:            ").append(toString(r.getCookies())).append("\n");
 		sb.append(indent).append("protocol:           ").append(r.getProtocol()).append("\n");
 		sb.append(indent).append("method:             ").append(r.getMethod()).append("\n");
 		sb.append(indent).append("scheme:             ").append(r.getScheme()).append("\n");
@@ -295,6 +295,16 @@ public abstract class Servlet {
 		sb.append(indent).append("serverName:         ").append(r.getServerName()).append("\n");
 		sb.append(indent).append("serverPort:         ").append(r.getServerPort()).append("\n");
 		sb.append(indent).append("servletPath:        ").append(r.getServletPath()).append("\n");
+		return sb.toString();
+	}
+
+	private static String toString(Cookie[] cookies) {
+		if (cookies == null || cookies.length == 0) return "";
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < cookies.length; i++) {
+			if (i > 0) sb.append(", ");
+			sb.append(cookies[i].getName()).append("=").append(cookies[i].getValue());
+		}
 		return sb.toString();
 	}
 

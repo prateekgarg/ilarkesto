@@ -19,6 +19,7 @@ function servistodownload {
     wget -N $BASE_URL/$FILENAME
 }
 
+mkdir -p lib
 cd lib
 
 mavendownload org/beanshell bsh 2.0b5
