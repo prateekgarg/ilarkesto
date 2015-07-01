@@ -38,6 +38,7 @@ mavendownload com/google/gwt gwt-user 2.7.0
 mavendownload org/ow2/asm asm 5.0.4
 mavendownload org/ow2/asm asm-commons 5.0.4
 mavendownload org/ow2/asm asm-util 5.0.4
+mavendownload javax/validation validation-api 1.1.0.Final
 mavendownload com/allen-sauer/gwt/dnd gwt-dnd 3.3.0
 mavendownload com/googlecode/gwtupload gwtupload 1.0.3
 
