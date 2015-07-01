@@ -56,7 +56,12 @@ public class Ldap {
 		} catch (NamingException ex) {
 			throw new RuntimeException(ex);
 		}
-		SearchResult searchResult = searchResultEnum.nextElement();
+		SearchResult searchResult;
+		try {
+			searchResult = searchResultEnum.nextElement();
+		} catch (NullPointerException ex) {
+			throw new RuntimeException("LDAP authentication failed, please check the configured user filter RegEx.", ex);
+		}
 		if (searchResult == null) throw new AuthenticationFailedException("User does not exist.");
 
 		try {
