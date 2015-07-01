@@ -1,0 +1,97 @@
+#!/bin/bash -e
+
+function mavendownload {
+    MVNGROUP=$1
+    MVNARTIFACT=$2
+    MVNVERSION=$3
+    FILENAME=$MVNARTIFACT-$MVNVERSION.jar
+    
+    BASE_URL=http://central.maven.org/maven2
+    
+    wget -N $BASE_URL/$MVNGROUP/$MVNARTIFACT/$MVNVERSION/$FILENAME
+}
+
+function servistodownload {
+    FILENAME=$1
+    
+    BASE_URL=https://servisto.de/projects/ilarkesto/lib
+    
+    wget -N $BASE_URL/$FILENAME
+}
+
+cd lib
+
+mavendownload org/beanshell bsh 2.0b5
+servistodownload codemirror_V-0.4-gwt16.jar
+
+servistodownload gdata-contacts-3.0.jar
+mavendownload com/google/gdata core 1.47.1
+mavendownload com/google/api-client google-api-client 1.19.1
+mavendownload com/google/guava guava 18.0
+mavendownload com/google/inject guice 4.0
+
+mavendownload com/google/gwt gwt-codeserver 2.7.0
+mavendownload com/google/gwt gwt-dev 2.7.0
+mavendownload com/google/gwt gwt-servlet 2.7.0
+mavendownload com/google/gwt gwt-user 2.7.0
+mavendownload org/ow2/asm asm 5.0.4
+mavendownload org/ow2/asm asm-commons 5.0.4
+mavendownload org/ow2/asm asm-util 5.0.4
+mavendownload com/allen-sauer/gwt/dnd gwt-dnd 3.3.0
+mavendownload com/googlecode/gwtupload gwtupload 1.0.3
+
+mavendownload org/apache/httpcomponents httpclient 4.5
+
+servistodownload httpcore-4.2.2.jar
+servistodownload httpunit-1.6.2.jar
+servistodownload nekohtml-1.9.14.jar
+servistodownload tidy.jar
+
+mavendownload com/itextpdf itextpdf 5.5.6
+mavendownload com/itextpdf itext-asian 5.2.0
+mavendownload com/itextpdf itext-pdfa 5.5.6-1
+mavendownload com/itextpdf itext-xtra 5.5.6
+
+mavendownload org jaudiotagger 2.0.3
+
+mavendownload javax/mail javax.mail-api 1.5.4
+
+mavendownload net/jcip jcip-annotations 1.0
+
+mavendownload org/jfree jcommon 1.0.23
+mavendownload org/jfree jfreechart 1.0.19
+
+mavendownload org/jdom jdom2 2.0.6
+
+mavendownload junit junit 4.12
+
+mavendownload mysql mysql-connector-java 5.1.35
+
+servistodownload openid4java-0.9.8.jar
+
+mavendownload org/apache/poi poi 3.12
+mavendownload org/apache/poi poi-ooxml 3.12
+mavendownload org/apache/poi poi-ooxml-schemas 3.12
+
+mavendownload org/scribe scribe 1.3.7
+
+mavendownload javax/servlet javax.servlet-api 3.1.0
+
+mavendownload org/testng testng 6.9.4
+
+mavendownload org/apache/velocity velocity 1.7
+
+mavendownload xerces xercesImpl 2.11.0
+
+mavendownload org/apache/xmlbeans xmlbeans 2.6.0
+
+mavendownload com/thoughtworks/xstream xstream 1.4.8
+
+mavendownload commons-fileupload commons-fileupload 1.3.1
+mavendownload commons-collections commons-collections 3.2.1
+mavendownload commons-io commons-io 2.4
+mavendownload commons-lang commons-lang 2.6
+mavendownload commons-logging commons-logging 1.2
+mavendownload commons-net commons-net 3.3
+mavendownload commons-codec commons-codec 1.10
+

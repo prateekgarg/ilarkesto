@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -47,6 +47,21 @@ public class GwtSuperDevMode {
 	private WebServer webServer;
 	private Proc proc;
 
+	public void startCodeServerInSeparateProcessWithJarsFromIlarkesto(File workDir) {
+		List<String> cp = new ArrayList<String>();
+		File ilarkestoDir = new File(workDir.getPath() + "/ilarkesto");
+		if (!ilarkestoDir.exists())
+			throw new RuntimeException("Ilarkesto directory does not exist: " + ilarkestoDir.getAbsolutePath());
+		for (File file : IO.listFiles(new File(ilarkestoDir.getPath() + "/lib"))) {
+			if (!file.isFile()) continue;
+			String name = file.getName();
+			if (!name.endsWith(".jar")) continue;
+			if (name.startsWith("gwt")) cp.add("ilarkesto/lib/" + name);
+			if (name.startsWith("asm")) cp.add("ilarkesto/lib/" + name);
+		}
+		startCodeServerInSeparateProcess(workDir, cp);
+	}
+
 	public void startCodeServerInSeparateProcess(File workDir, Collection<String> classpath) {
 		IO.delete(getWorkDir());
 
@@ -55,7 +70,7 @@ public class GwtSuperDevMode {
 		Proc proc = new Proc("java");
 		proc.setWorkingDir(workDir);
 		proc.setRedirectOutputToSysout(true);
-		proc.addParameters("-classpath", Str.concat(classpath, Sys.getPathSeparator()));
+		if (!classpath.isEmpty()) proc.addParameters("-classpath", Str.concat(classpath, Sys.getPathSeparator()));
 		proc.addParameter("com.google.gwt.dev.codeserver.CodeServer");
 		if (!precompile) proc.addParameter("-noprecompile");
 		if (!incremental) proc.addParameter("-noincremental");
