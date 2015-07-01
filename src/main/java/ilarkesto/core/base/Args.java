@@ -17,7 +17,12 @@ package ilarkesto.core.base;
 public class Args {
 
 	public static void assertNotBlank(String arg, String name) {
-		if (Str.isBlank(name)) throw new IllegalArgumentException("Argument must not be blank: " + name);
+		if (Str.isBlank(arg)) throw new IllegalArgumentException("Argument must not be blank: " + name);
+	}
+
+	public static void assertNotBlank(String arg1, String name1, String arg2, String name2) {
+		assertNotBlank(arg1, name1);
+		assertNotBlank(arg2, name2);
 	}
 
 	public static void assertNotNull(Object arg, String name) {

@@ -16,6 +16,7 @@ package ilarkesto.integration.ldap;
 
 import ilarkesto.auth.AuthenticationFailedException;
 import ilarkesto.auth.WrongPasswordException;
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 
@@ -43,6 +44,7 @@ public class Ldap {
 
 	public static String authenticateUserGetEmail(String url, String bindUser, String bindPassword, String baseDn,
 			String userFilterRegex, String user, String password) throws AuthenticationFailedException {
+		Args.assertNotBlank(bindUser, "bindUser", bindPassword, "bindPassword");
 		log.info("LDAP authentication for ", user, "on", url);
 		NamingEnumeration<SearchResult> searchResultEnum;
 		try {
