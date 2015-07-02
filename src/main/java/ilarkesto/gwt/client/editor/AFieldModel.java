@@ -20,6 +20,10 @@ public abstract class AFieldModel<T> {
 
 	public abstract T getValue();
 
+	public T getDisplayValue() {
+		return getValue();
+	}
+
 	public String getDisplayValueForNull() {
 		return ".";
 	}
