@@ -60,7 +60,7 @@ public class GwtServiceInterfaceGenerator extends AClassGenerator {
 
 	@Override
 	protected String getPackage() {
-		return service.getPackageName().replace(".server", ".client");
+		return service.getServerPackageName().replace(".server", ".client");
 	}
 
 	@Override

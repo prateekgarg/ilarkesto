@@ -130,6 +130,7 @@ public class RequestWrapper<S extends AWebSession> {
 	}
 
 	public void sendRedirect(String url) {
+		log.debug("Sending redirect:", url);
 		try {
 			response.sendRedirect(url);
 		} catch (IOException ex) {

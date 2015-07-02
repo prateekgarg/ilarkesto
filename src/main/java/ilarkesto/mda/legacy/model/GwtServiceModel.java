@@ -19,12 +19,12 @@ import java.util.List;
 
 public class GwtServiceModel extends AModel {
 
-	private String packageName;
+	private String serverPackageName;
 	private List<MethodModel> methods = new ArrayList<MethodModel>();
 
 	public GwtServiceModel(String name, String packageName) {
 		super(name);
-		this.packageName = packageName;
+		this.serverPackageName = packageName;
 	}
 
 	public MethodModel addMethod(String name, String packageName) {
@@ -37,8 +37,8 @@ public class GwtServiceModel extends AModel {
 		return methodModel;
 	}
 
-	public String getPackageName() {
-		return packageName;
+	public String getServerPackageName() {
+		return serverPackageName;
 	}
 
 	public List<MethodModel> getMethods() {
@@ -46,7 +46,7 @@ public class GwtServiceModel extends AModel {
 	}
 
 	public final String getClientPackageName() {
-		return getPackageName().replace(".server", ".client");
+		return getServerPackageName().replace(".server", ".client");
 	}
 
 	public final String getDtoClassName() {

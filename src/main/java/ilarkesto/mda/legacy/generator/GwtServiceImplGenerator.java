@@ -138,7 +138,7 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 
 	@Override
 	protected String getPackage() {
-		return service.getPackageName();
+		return service.getServerPackageName();
 	}
 
 	@Override

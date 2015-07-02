@@ -42,7 +42,7 @@ public class KunagiConnector {
 	}
 
 	public String postIssue(OperationObserver observer, String name, String email, String subject, String text,
-			boolean wiki, boolean publish) {
+			String additionalInfo, boolean wiki, boolean publish) {
 		String url = kunagiUrl + "submitIssue";
 		observer.onOperationInfoChanged(OperationObserver.DOWNLOADING, url);
 		Map<String, String> data = new HashMap<String, String>();
@@ -53,6 +53,7 @@ public class KunagiConnector {
 		data.put("wiki", String.valueOf(wiki));
 		data.put("subject", subject);
 		data.put("text", text);
+		data.put("additionalInfo", additionalInfo);
 		data.put("spamPreventionCode", "no-spam");
 		String ret = httpDownloader.post(url, data, IO.UTF_8);
 		if (ret.contains("Submitting issue failed") || ret.contains("Submitting your feedback failed")) {
