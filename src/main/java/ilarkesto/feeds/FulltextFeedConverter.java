@@ -17,7 +17,6 @@ package ilarkesto.feeds;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
-import ilarkesto.net.ApacheHttpDownloader;
 import ilarkesto.net.HttpDownloader;
 
 import java.util.HashSet;
@@ -28,21 +27,25 @@ public class FulltextFeedConverter {
 	private static final Log log = Log.get(FulltextFeedConverter.class);
 
 	public static void main(String[] args) {
-		FulltextFeedConverter converter = new FulltextFeedConverter("http://www.heise.de/newsticker/heise.rdf");
-		converter.update();
-		System.out.println(converter.feed);
-		for (FeedItem item : converter.feed.getItems()) {
-			System.out.println(" * " + item);
-			System.out.println("    " + item.getDescription());
-		}
-		System.out.println(converter.feed.createRssText());
+		// FulltextFeedConverter converter = new
+		// FulltextFeedConverter("http://www.heise.de/newsticker/heise.rdf");
+		// converter.update();
+		// System.out.println(converter.feed);
+		// for (FeedItem item : converter.feed.getItems()) {
+		// System.out.println(" * " + item);
+		// System.out.println("    " + item.getDescription());
+		// }
+		// System.out.println(converter.feed.createRssText());
+
+		log.info("\n\n >>>", downloadText("http://www.engadget.com/2015/07/06/gopro-hero4-session/?ncid=rss_truncated"));
+
 	}
 
 	private String url;
 	private Feed feed;
 	private Set<FeedItem> updatedItems = new HashSet<FeedItem>();
 
-	public static HttpDownloader downloader = new ApacheHttpDownloader();
+	public static HttpDownloader downloader = HttpDownloader.create();
 
 	public FulltextFeedConverter(String url) {
 		super();
@@ -68,11 +71,21 @@ public class FulltextFeedConverter {
 		String link = item.getLink();
 		if (Str.isBlank(link)) return;
 
-		String text = downloader.downloadText(link, IO.UTF_8);
+		log.info("----------> ", link);
+
+		String text = downloadText(link);
 		if (Str.isBlank(text)) return;
-		text = extract(item, text);
-		text = optimize(text);
 		item.setDescription(text);
+	}
+
+	static String downloadText(String url) {
+		log.info("Downloading", url);
+		String text = downloader.downloadText(url, IO.UTF_8);
+		log.info(text);
+		if (Str.isBlank(text)) return null;
+		text = extract(text);
+		text = optimize(text);
+		return text;
 	}
 
 	private static String optimize(String text) {
@@ -85,7 +98,7 @@ public class FulltextFeedConverter {
 		return text;
 	}
 
-	private static String extract(FeedItem item, String text) {
+	private static String extract(String text) {
 		if (text == null) return null;
 
 		int idx = -1;
@@ -106,7 +119,7 @@ public class FulltextFeedConverter {
 			if (nextPageUrl != null) {
 				String next = downloader.downloadText(nextPageUrl, IO.UTF_8);
 				if (!Str.isBlank(next)) return text;
-				text += extract(item, next);
+				text += extract(next);
 			}
 			return text;
 		}
@@ -118,6 +131,13 @@ public class FulltextFeedConverter {
 			return text;
 		}
 
+		if ((idx = text.indexOf("<div class=\"article-content\"")) > 0) {
+			log.debug("class=article-content"); // engadget.com
+			text = text.substring(idx);
+			text = Str.removeSuffixStartingWith(text, "<div class=\"post-meta\"");
+			return text;
+		}
+
 		if ((idx = text.indexOf("<article")) > 0) {
 			log.debug("<article>"); // golem
 			text = text.substring(idx);
@@ -125,7 +145,7 @@ public class FulltextFeedConverter {
 			return text;
 		}
 
-		log.warn("Identification failed:", item.getLink());
+		log.warn("Identification failed:", text);
 
 		if ((idx = text.indexOf("<body>")) > 0) {
 			text = text.substring(idx + 6);

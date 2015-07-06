@@ -23,14 +23,12 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.dev.codeserver.CodeServer;
 import com.google.gwt.dev.codeserver.Options;
 import com.google.gwt.dev.codeserver.WebServer;
@@ -117,9 +115,7 @@ public class GwtSuperDevMode {
 		Options options = createOptions();
 		try {
 			webServer = CodeServer.start(options);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		} catch (UnableToCompleteException ex) {
+		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 		log.info("CodeServer started in", rt.getRuntimeFormated());

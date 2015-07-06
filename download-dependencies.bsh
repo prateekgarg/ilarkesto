@@ -22,6 +22,9 @@ function servistodownload {
 mkdir -p lib
 cd lib
 
+mavendownload org/apache/httpcomponents httpclient 4.3.1
+mavendownload org/apache/httpcomponents httpcore 4.3
+
 mavendownload org/beanshell bsh 2.0b5
 servistodownload codemirror_V-0.4-gwt16.jar
 
@@ -42,9 +45,7 @@ mavendownload javax/validation validation-api 1.1.0.Final
 mavendownload com/allen-sauer/gwt/dnd gwt-dnd 3.3.0
 mavendownload com/googlecode/gwtupload gwtupload 1.0.3
 
-mavendownload org/apache/httpcomponents httpclient 4.5
 
-servistodownload httpcore-4.2.2.jar
 servistodownload httpunit-1.6.2.jar
 servistodownload nekohtml-1.9.14.jar
 servistodownload tidy.jar
