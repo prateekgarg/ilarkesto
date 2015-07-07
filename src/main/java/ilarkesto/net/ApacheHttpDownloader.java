@@ -64,6 +64,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
@@ -74,6 +75,8 @@ public class ApacheHttpDownloader extends HttpDownloader {
 
 	private HttpClient client;
 	private HttpContext context;
+
+	private String userAgent = UserAgentBuilder.random();
 
 	public String upload(String url, File file, Map<String, String> parameters, Map<String, String> requestHeaders,
 			String charset) {
@@ -307,6 +310,8 @@ public class ApacheHttpDownloader extends HttpDownloader {
 		HttpParams params = client.getParams();
 		HttpClientParams.setCookiePolicy(params, CookiePolicy.BROWSER_COMPATIBILITY);
 		HttpClientParams.setRedirecting(params, false);
+
+		client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
 	}
 
 	private HttpClient wrapClientForDisabledServerChecking(HttpClient client) {
