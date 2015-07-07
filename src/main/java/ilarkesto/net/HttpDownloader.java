@@ -28,8 +28,18 @@ public abstract class HttpDownloader {
 	private String password;
 	private String baseUrl;
 
+	private boolean sslServerCheckingDisabled = true;
+
 	public static HttpDownloader create() {
 		return Reflect.newInstance(defaultType);
+	}
+
+	public void setSslServerCheckingDisabled(boolean sslVerificationDisabled) {
+		this.sslServerCheckingDisabled = sslVerificationDisabled;
+	}
+
+	public boolean isSslServerCheckingDisabled() {
+		return sslServerCheckingDisabled;
 	}
 
 	public boolean isInternetAvailable() {
@@ -139,5 +149,9 @@ public abstract class HttpDownloader {
 			return getMessage();
 		}
 
+	}
+
+	public void upload(String url, File file, Map<String, String> map, Object object, String charset) {
+		throw new RuntimeException("Not implemented: upload()");
 	}
 }

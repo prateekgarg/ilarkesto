@@ -17,7 +17,7 @@ package ilarkesto.integration.organizanto;
 import ilarkesto.core.base.MapBuilder;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
-import ilarkesto.net.ApacheHttpDownloader;
+import ilarkesto.net.HttpDownloader;
 
 import java.io.File;
 
@@ -29,7 +29,7 @@ public class OrganizantoStorage {
 	private String volume;
 	private String accessKey;
 
-	private ApacheHttpDownloader http = new ApacheHttpDownloader();
+	private HttpDownloader http = HttpDownloader.create();
 
 	public OrganizantoStorage(String volume, String accessKey) {
 		super();

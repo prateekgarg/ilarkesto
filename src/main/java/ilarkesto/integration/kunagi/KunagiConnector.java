@@ -17,7 +17,6 @@ package ilarkesto.integration.kunagi;
 import ilarkesto.core.base.OperationObserver;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
-import ilarkesto.net.ApacheHttpDownloader;
 import ilarkesto.net.HttpDownloader;
 
 import java.util.HashMap;
@@ -29,7 +28,7 @@ public class KunagiConnector {
 
 	private String kunagiUrl;
 	private String projectId;
-	private HttpDownloader httpDownloader = new ApacheHttpDownloader();
+	private HttpDownloader httpDownloader = HttpDownloader.create();
 
 	public KunagiConnector(String kunagiUrl, String projectId) {
 		super();

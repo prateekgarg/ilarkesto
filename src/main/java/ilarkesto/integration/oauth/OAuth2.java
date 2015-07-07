@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -18,7 +18,7 @@ import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.json.JsonObject;
-import ilarkesto.net.ApacheHttpDownloader;
+import ilarkesto.net.HttpDownloader;
 
 import java.util.HashMap;
 
@@ -78,7 +78,7 @@ public class OAuth2 {
 		params.put("client_id", clientId);
 		params.put("client_secret", clientSecret);
 		params.put("grant_type", "refresh_token");
-		ApacheHttpDownloader http = new ApacheHttpDownloader();
+		HttpDownloader http = HttpDownloader.create();
 		String result = http.post(tokenEndpoint, params, null);
 
 		JsonObject json = JsonObject.parse(result);
@@ -101,7 +101,7 @@ public class OAuth2 {
 		params.put("grant_type", "authorization_code");
 		params.put("redirect_uri", redirectUri);
 		params.put("access_type", "offline");
-		ApacheHttpDownloader http = new ApacheHttpDownloader();
+		HttpDownloader http = HttpDownloader.create();
 		String result = http.post(tokenEndpoint, params, null);
 
 		JsonObject json = JsonObject.parse(result);

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -23,7 +23,6 @@ import ilarkesto.core.html.Html;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
-import ilarkesto.net.ApacheHttpDownloader;
 import ilarkesto.net.HttpDownloader;
 
 import java.io.File;
@@ -47,7 +46,7 @@ public class TestDe {
 	public static final String URL_LOGIN = URL_BASE + "/meintest/login/";
 	public static final String URL_LOGOUT = URL_BASE + "/service/logout/";
 
-	public static HttpDownloader http = new ApacheHttpDownloader();
+	public static HttpDownloader http = HttpDownloader.create();
 	private static final String charset = IO.UTF_8;
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
