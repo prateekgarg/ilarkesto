@@ -14,8 +14,10 @@
  */
 package ilarkesto.net;
 
-import ilarkesto.base.Utl;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.time.Tm;
+
+import java.util.Random;
 
 public class UserAgentBuilder {
 
@@ -38,7 +40,7 @@ public class UserAgentBuilder {
 	}
 
 	private UserAgentBuilder addRandomEngine() {
-		switch (Utl.randomInt(0, 3)) {
+		switch (randomInt(0, 3)) {
 			case 0:
 				return add("Gecko", "20130401", null);
 			case 1:
@@ -51,18 +53,28 @@ public class UserAgentBuilder {
 	}
 
 	private UserAgentBuilder addRandomBrowser() {
-		switch (Utl.randomInt(0, 3)) {
+		switch (randomInt(0, 3)) {
 			case 0:
-				return add("Chrome", Utl.randomInt(36, 42) + ".0." + Utl.randomInt(2001, 2230) + ".0", null);
+				return add("Chrome", randomInt(36, 42) + ".0." + randomInt(2001, 2230) + ".0", null);
 			default:
-				return add("Firefox", Utl.randomInt(20, 38) + ".0", null);
+				return add("Firefox", randomInt(20, 38) + ".0", null);
 		}
 	}
 
 	private static String randomOs() {
-		return Utl.randomElement("Windows NT 6.3; rv:36.0", "Windows; U; Windows NT 5.1; de; rv:1.9.2.3",
+		return randomElement("Windows NT 6.3; rv:36.0", "Windows; U; Windows NT 5.1; de; rv:1.9.2.3",
 			"Windows NT 6.0; WOW64; rv:24.0", "Macintosh; Intel Mac OS X 10_10; rv:33.0", "X11; Linux i586; rv:31.0",
 			"X11; Ubuntu; Linux x86_64; rv:24.0");
+	}
+
+	private static final Random random = new Random(Tm.getCurrentTimeMillis());
+
+	private static String randomElement(String... elements) {
+		return elements[random.nextInt(elements.length)];
+	}
+
+	private static int randomInt(int min, int max) {
+		return random.nextInt(max - min + 1) + min;
 	}
 
 	@Override
