@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -21,6 +21,7 @@ import ilarkesto.auth.Ownable;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
@@ -43,7 +44,7 @@ import java.util.Set;
 public abstract class ADao<E extends AEntity> extends ADatobManager<E> implements IdentifiableResolver<E>, Searcher,
 		DaoListener, Iconized, Comparable<ADao> {
 
-	private static final Log LOG = Log.get(ADao.class);
+	private static final Log log = Log.get(ADao.class);
 
 	private Predicate<Class> entityTypeFilter;
 	private String icon;
@@ -60,7 +61,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		boolean persistent = isPersistent(entity);
 		if (!persistent) return;
 
-		LOG.info("Entity modified:", Utl.toStringWithType(entity), "->", field, "=", Str.format(value));
+		log.info("Entity modified:", Utl.toStringWithType(entity), "->", field, "=", Str.format(value));
 		saveEntity(entity);
 	}
 
@@ -227,7 +228,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	public void ensureIntegrity() {
 		if (!initialized) throw new RuntimeException("Not initialized!");
 		Class clazz = getEntityClass();
-		LOG.info("Ensuring integrity:", clazz.getSimpleName());
+		log.info("Ensuring integrity:", clazz.getSimpleName());
 		for (E entity : getEntities()) {
 			try {
 				entity.ensureIntegrity();
@@ -259,18 +260,25 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	public void feed(final SearchResultsConsumer searchBox) {
 		if (!Searchable.class.isAssignableFrom(getEntityClass())) return;
 
-		for (AEntity entity : getEntities(new Predicate<E>() {
+		final Set<String> keys = searchBox.getKeys();
+		final AUser searcher = searchBox.getSearcher();
+
+		RuntimeTracker rt = new RuntimeTracker();
+		Predicate<E> filter = new Predicate<E>() {
 
 			@Override
 			public boolean test(E e) {
-				return Auth.isVisible(e, searchBox.getSearcher()) && e instanceof Searchable
-						&& Persist.matchesKeys(e, searchBox.getKeys());
+				if (!(e instanceof Searchable)) return false;
+				if (!Persist.matchesKeys(e, keys)) return false;
+				if (!Auth.isVisible(e, searcher)) return false;
+				return true;
 			}
 
-		})) {
+		};
+		for (AEntity entity : getEntities(filter)) {
 			searchBox.addEntity(entity);
 		}
-
+		log.info("Search took", rt);
 	}
 
 	protected final TransactionService getTransactionService() {
