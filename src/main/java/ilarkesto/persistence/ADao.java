@@ -44,7 +44,7 @@ import java.util.Set;
 public abstract class ADao<E extends AEntity> extends ADatobManager<E> implements IdentifiableResolver<E>, Searcher,
 		DaoListener, Iconized, Comparable<ADao> {
 
-	private static final Log log = Log.get(ADao.class);
+	private final Log log = Log.get(getClass());
 
 	private Predicate<Class> entityTypeFilter;
 	private String icon;
@@ -278,7 +278,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		for (AEntity entity : getEntities(filter)) {
 			searchBox.addEntity(entity);
 		}
-		log.info("Search took", rt);
+		log.info("Search in took", rt);
 	}
 
 	protected final TransactionService getTransactionService() {
