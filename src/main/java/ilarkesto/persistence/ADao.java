@@ -26,10 +26,11 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+import ilarkesto.core.search.SearchText;
+import ilarkesto.core.search.Searchable;
 import ilarkesto.di.Context;
 import ilarkesto.id.IdentifiableResolver;
 import ilarkesto.search.SearchResultsConsumer;
-import ilarkesto.search.Searchable;
 import ilarkesto.search.Searcher;
 
 import java.lang.reflect.Field;
@@ -260,7 +261,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	public void feed(final SearchResultsConsumer searchBox) {
 		if (!Searchable.class.isAssignableFrom(getEntityClass())) return;
 
-		final Set<String> keys = searchBox.getKeys();
+		final SearchText searchText = searchBox.getSearchText();
 		final AUser searcher = searchBox.getSearcher();
 
 		RuntimeTracker rt = new RuntimeTracker();
@@ -268,8 +269,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 
 			@Override
 			public boolean test(E e) {
-				if (!(e instanceof Searchable)) return false;
-				if (!Persist.matchesKeys(e, keys)) return false;
+				if (!e.matches(searchText)) return false;
 				if (!Auth.isVisible(e, searcher)) return false;
 				return true;
 			}
@@ -278,7 +278,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		for (AEntity entity : getEntities(filter)) {
 			searchBox.addEntity(entity);
 		}
-		log.info("Search in took", rt);
+		log.info("Search took", rt);
 	}
 
 	protected final TransactionService getTransactionService() {

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -20,8 +20,8 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.money.Money;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.Persistence;
-import ilarkesto.core.persistance.SearchText;
 import ilarkesto.core.persistance.UniqueFieldConstraintException;
+import ilarkesto.core.search.SearchText;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.DateRange;
@@ -263,35 +263,22 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln();
 		section("Searchable");
 
-		if (isLegacyBean(bean)) {
-			ln();
-			ln("    public boolean matchesKey(String key) {");
-			ln("        if (super.matchesKey(key)) return true;");
-			for (PropertyModel p : searchableProperties) {
-				ln("        if (matchesKey(get" + Str.uppercaseFirstLetter(p.getName()) + "(), key)) return true;");
+		ln();
+		annotationOverride();
+		ln("    public boolean matches(" + SearchText.class.getName() + " search) {");
+		s("         return search.matches(");
+		boolean first = true;
+		for (PropertyModel p : searchableProperties) {
+			if (first) {
+				first = false;
+			} else {
+				s(", ");
 			}
-			ln("        return false;");
-			ln("    }");
+			s("get" + Str.uppercaseFirstLetter(p.getName()) + "()");
 		}
+		ln(");");
+		ln("    }");
 
-		if (!isLegacyBean(bean)) {
-			ln();
-			ln("    @Override");
-			ln("    public boolean matches(" + SearchText.class.getName() + " search) {");
-			s("         return search.matches(");
-			boolean first = true;
-			for (PropertyModel p : searchableProperties) {
-				if (first) {
-					first = false;
-				} else {
-					s(", ");
-				}
-				s("get" + Str.uppercaseFirstLetter(p.getName()) + "()");
-			}
-			ln(");");
-			ln("    }");
-
-		}
 	}
 
 	private void writeProperty(PropertyModel p) {

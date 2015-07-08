@@ -12,19 +12,11 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.search;
+package ilarkesto.core.search;
 
-import ilarkesto.auth.AUser;
-import ilarkesto.core.search.SearchText;
-import ilarkesto.persistence.AEntity;
 
-public interface SearchResultsConsumer {
+public interface Searchable {
 
-	AUser getSearcher();
-
-	SearchText getSearchText();
-
-	// TODO abstract from entity
-	void addEntity(AEntity entity);
+	boolean matches(SearchText searchText);
 
 }

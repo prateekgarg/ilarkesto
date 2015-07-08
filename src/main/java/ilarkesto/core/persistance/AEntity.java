@@ -18,6 +18,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.base.Uuid;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.search.SearchText;
 import ilarkesto.core.time.DateAndTime;
 
 import java.io.Serializable;

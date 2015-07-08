@@ -31,6 +31,7 @@ import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.KeytableValue;
 import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.persistance.ValuesCache;
+import ilarkesto.core.search.Searchable;
 import ilarkesto.mda.legacy.model.BackReferenceModel;
 import ilarkesto.mda.legacy.model.ComputedValueModel;
 import ilarkesto.mda.legacy.model.EntityModel;
@@ -41,7 +42,6 @@ import ilarkesto.mda.legacy.model.ReferencePropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceSetPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
-import ilarkesto.search.Searchable;
 
 import java.util.LinkedHashSet;
 import java.util.List;

@@ -12,34 +12,23 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.core.persistance;
+package ilarkesto.core.search;
 
-import java.util.ArrayList;
-import java.util.List;
+import ilarkesto.testng.ATest;
 
-public class SearchText {
+import org.testng.annotations.Test;
 
-	private List<String> words;
+public class SearchTextTest extends ATest {
 
-	public SearchText(String text) {
-		words = new ArrayList<String>();
-		words.add(text.trim().toLowerCase());
-	}
+	@Test
+	public void matching() {
+		SearchText st = new SearchText("duke nukem");
 
-	public boolean matches(Object... values) {
-		for (String word : words) {
-			if (!matchesAny(word, values)) return false;
-		}
-		return true;
-	}
+		assertTrue(st.matches("duke nukem"));
+		assertTrue(st.matches("duke", "nukem"));
+		assertTrue(st.matches("duke abc", 22, "xyz nukem", new Object()));
 
-	private boolean matchesAny(String word, Object[] values) {
-		for (Object value : values) {
-			if (value == null) continue;
-			String s = value.toString().trim().toLowerCase();
-			if (s.contains(word)) return true;
-		}
-		return false;
+		assertFalse(st.matches("duke"));
 	}
 
 }

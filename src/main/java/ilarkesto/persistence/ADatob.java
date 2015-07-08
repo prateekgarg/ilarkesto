@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -16,13 +16,13 @@ package ilarkesto.persistence;
 
 import ilarkesto.auth.AUserDao;
 import ilarkesto.base.OverrideExpectedException;
-import ilarkesto.search.Searchable;
+import ilarkesto.core.search.SearchText;
+import ilarkesto.core.search.Searchable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +65,7 @@ public abstract class ADatob implements Searchable {
 	}
 
 	@Override
-	public boolean matchesKey(String key) {
+	public boolean matches(SearchText searchText) {
 		return false;
 	}
 
@@ -118,17 +118,9 @@ public abstract class ADatob implements Searchable {
 		return result;
 	}
 
-	protected static boolean matchesKey(Object object, String key) {
-		if (object == null) return false;
-		if (object instanceof Searchable) { return ((Searchable) object).matchesKey(key); }
-		return object.toString().toLowerCase().indexOf(key) >= 0;
-	}
-
-	protected static boolean matchesKey(Collection objects, String key) {
-		for (Iterator iter = objects.iterator(); iter.hasNext();) {
-			if (matchesKey(iter.next(), key)) return true;
-		}
-		return false;
+	protected static boolean matchesKey(String s, String key) {
+		if (s == null) return false;
+		return s.toLowerCase().contains(key);
 	}
 
 	protected void repairDeadDatob(ADatob datob) {

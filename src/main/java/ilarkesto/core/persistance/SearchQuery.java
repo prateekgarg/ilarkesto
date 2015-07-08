@@ -14,6 +14,8 @@
  */
 package ilarkesto.core.persistance;
 
+import ilarkesto.core.search.SearchText;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
