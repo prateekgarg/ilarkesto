@@ -14,6 +14,7 @@
  */
 package ilarkesto.gwt.client;
 
+import ilarkesto.core.persistance.ABaseEntity;
 import ilarkesto.core.persistance.TransferBus;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.Tm;
@@ -26,47 +27,52 @@ import java.util.Map;
 /**
  * Base class for entities.
  */
-public abstract class AGwtEntity implements TransferableEntity {
+public abstract class AGwtEntity extends ABaseEntity implements TransferableEntity {
 
-	private String id;
 	private boolean inCreation;
-	private transient long localModificationTime = -7;
+	private transient Long localModificationTime;
 
 	public abstract String getEntityType();
 
 	protected abstract AGwtDao getDao();
 
 	public AGwtEntity() {
-		this.id = getDao().getNewEntityId();
+		setId(getDao().getNewEntityId());
 		inCreation = true;
-		updateLocalModificationTime();
+		updateLastModified();
 	}
 
 	public AGwtEntity(Map data) {
-		this.id = (String) data.get("id");
-		updateLocalModificationTime();
+		setId((String) data.get("id"));
+		updateLastModified();
 	}
 
 	@Override
-	public <E extends TransferableEntity> void collectPassengers(TransferBus bus) {}
-
-	public long getLocalModificationTime() {
-		return localModificationTime;
+	protected void onAfterUpdateLastModified() {
+		updateLocalModificationTime();
+		super.onAfterUpdateLastModified();
 	}
 
 	public void updateLocalModificationTime() {
 		localModificationTime = Tm.getCurrentTimeMillis();
 	}
 
-	@Override
-	public Long getModificationTime() {
-		return getLocalModificationTime();
+	public final Long getLocalModificationTime() {
+		return localModificationTime;
 	}
 
 	@Override
-	public final String getId() {
-		return id;
+	public void persist() {
+		doPersist();
+		onAfterPersist();
 	}
+
+	protected abstract void doPersist();
+
+	protected void onAfterPersist() {}
+
+	@Override
+	public <E extends TransferableEntity> void collectPassengers(TransferBus bus) {}
 
 	void setCreated() {
 		this.inCreation = false;
@@ -75,7 +81,7 @@ public abstract class AGwtEntity implements TransferableEntity {
 	protected final void propertyChanged(String property, String value) {
 		if (inCreation) return;
 		getDao().entityPropertyChanged(this, property, value);
-		updateLocalModificationTime();
+		updateLastModified();
 	}
 
 	public void storeProperties(Map<String, String> properties) {
@@ -91,18 +97,6 @@ public abstract class AGwtEntity implements TransferableEntity {
 
 	public boolean matchesKey(String key) {
 		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return id.hashCode();
-	}
-
-	@Override
-	public final boolean equals(Object obj) {
-		if (!(obj instanceof AGwtEntity)) return false;
-		if (this == obj) return true;
-		return id.equals(((AGwtEntity) obj).id);
 	}
 
 	@Override

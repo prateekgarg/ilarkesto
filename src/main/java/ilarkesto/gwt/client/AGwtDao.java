@@ -76,7 +76,7 @@ public abstract class AGwtDao extends AComponent {
 					if (entity != null) {
 						deletedEntities.remove(entityId);
 						onEntityDeletedRemotely(entity);
-						entity.updateLocalModificationTime();
+						entity.updateLastModified();
 					}
 				}
 			}
@@ -95,7 +95,7 @@ public abstract class AGwtDao extends AComponent {
 
 	protected final void entityDeleted(AGwtEntity entity) {
 		onEntityDeletedLocaly(entity);
-		entity.updateLocalModificationTime();
+		entity.updateLastModified();
 	}
 
 	public final void entityPropertyChanged(AGwtEntity entity, String property, String value) {

@@ -14,6 +14,52 @@
  */
 package ilarkesto.core.persistance;
 
-public abstract class ABaseEntity {
+import ilarkesto.core.base.Uuid;
+
+public abstract class ABaseEntity implements Entity {
+
+	private String id;
+	private Long modificationTime;
+
+	@Override
+	public final String getId() {
+		if (id == null) id = Uuid.create();
+		return id;
+	}
+
+	public Entity setId(String id) {
+		if (this.id != null) throw new IllegalStateException("id already set: " + this.id);
+		this.id = id;
+		return this;
+	}
+
+	public final boolean isId(String id) {
+		return getId().equals(id);
+	}
+
+	@Override
+	public final int hashCode() {
+		return getId().hashCode();
+	}
+
+	@Override
+	public final boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null) return false;
+		if (!getClass().equals(o.getClass())) return false;
+		return isId(((Entity) o).getId());
+	}
+
+	public final void updateLastModified() {
+		modificationTime = System.currentTimeMillis();
+		onAfterUpdateLastModified();
+	}
+
+	protected void onAfterUpdateLastModified() {}
+
+	@Override
+	public Long getModificationTime() {
+		return modificationTime;
+	}
 
 }

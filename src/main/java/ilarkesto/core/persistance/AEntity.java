@@ -16,7 +16,6 @@ package ilarkesto.core.persistance;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
-import ilarkesto.core.base.Uuid;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.search.SearchText;
 
@@ -27,12 +26,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class AEntity implements TransferableEntity {
+public class AEntity extends ABaseEntity implements TransferableEntity {
 
 	private static final transient Log log = Log.get(AEntity.class);
 
-	private String id;
-	private Long modificationTime;
+	@Override
+	public AEntity setId(String id) {
+		super.setId(id);
+		return this;
+	}
 
 	protected final ValuesCache getCache() {
 		return AEntityDatabase.get().getValuesCache(getId());
@@ -105,37 +107,12 @@ public class AEntity implements TransferableEntity {
 		delete();
 	}
 
-	public final void updateLastModified() {
-		modificationTime = System.currentTimeMillis();
-	}
-
 	protected final void fireModified(String field, String value) {
 		Transaction.get().modified(this, field, value);
 	}
 
 	public boolean matches(SearchText search) {
 		return search.matches(toString());
-	}
-
-	@Override
-	public Long getModificationTime() {
-		return modificationTime;
-	}
-
-	@Override
-	public final String getId() {
-		if (id == null) id = Uuid.create();
-		return id;
-	}
-
-	public final AEntity setId(String id) {
-		if (this.id != null) throw new IllegalStateException("id already set: " + this.id);
-		this.id = id;
-		return this;
-	}
-
-	public final boolean isId(String id) {
-		return getId().equals(id);
 	}
 
 	@Override
@@ -169,17 +146,6 @@ public class AEntity implements TransferableEntity {
 		} catch (Exception ex) {
 			return "asString()-ERROR: " + Utl.getSimpleName(getClass()) + ":" + getId();
 		}
-	}
-
-	@Override
-	public final int hashCode() {
-		return getId().hashCode();
-	}
-
-	@Override
-	public final boolean equals(Object obj) {
-		if (!(obj instanceof AEntity)) return false;
-		return getId().equals(((AEntity) obj).getId());
 	}
 
 	public static boolean exists(String id) {

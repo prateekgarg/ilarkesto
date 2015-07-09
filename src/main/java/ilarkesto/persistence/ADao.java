@@ -206,7 +206,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		return entity;
 	}
 
-	public E newEntityInstance() {
+	public E newEntityInstance(String id) {
 		E entity;
 		try {
 			entity = (E) getEntityClass().newInstance();
@@ -215,14 +215,14 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		} catch (IllegalAccessException ex) {
 			throw new RuntimeException(ex);
 		}
+		if (id != null) entity.setId(id);
 		entity.updateLastModified();
 		transactionService.registerEntity(entity);
 		return entity;
 	}
 
-	public E newEntityInstance(String id) {
-		E entity = newEntityInstance();
-		entity.setId(id);
+	public E newEntityInstance() {
+		E entity = newEntityInstance((String) null);
 		return entity;
 	}
 

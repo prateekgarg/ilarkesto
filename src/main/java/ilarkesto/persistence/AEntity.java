@@ -18,7 +18,6 @@ import ilarkesto.auth.AUser;
 import ilarkesto.auth.AUserDao;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.OverrideExpectedException;
-import ilarkesto.base.Utl;
 import ilarkesto.core.persistance.ABaseEntity;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.TransferBus;
@@ -34,14 +33,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 public abstract class AEntity extends ABaseEntity implements Datob, TransferableEntity, Iconized, Searchable {
 
 	private static DaoService daoService;
 
-	private String id;
-	private Long modificationTime;
 	private String lastEditorId;
 
 	@Deprecated
@@ -66,6 +62,14 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 	}
 
 	// --- ---
+
+	@Override
+	public final void persist() {
+		getDao().saveEntity(this);
+		onAfterPersist();
+	}
+
+	protected void onAfterPersist() {}
 
 	public static AEntity getById(String entityId) {
 		return daoService.getEntityById(entityId);
@@ -93,17 +97,8 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 	}
 
 	@Override
-	public final String getId() {
-		if (id == null) id = UUID.randomUUID().toString();
-		return id;
-	}
-
-	final void setId(String id) {
-		this.id = id;
-	}
-
-	@Override
 	public final Long getModificationTime() {
+		Long modificationTime = super.getModificationTime();
 		if (modificationTime == null && lastModified != null) modificationTime = lastModified.toMillis();
 		return modificationTime;
 	}
@@ -136,10 +131,6 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 		getDao().onDatobModified(this, field, value);
 	}
 
-	public void updateLastModified() {
-		modificationTime = System.currentTimeMillis();
-	}
-
 	public void ensureIntegrity() {
 		// super.ensureIntegrity();
 	}
@@ -153,20 +144,6 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 
 	@Override
 	public <E extends TransferableEntity> void collectPassengers(TransferBus bus) {}
-
-	@Override
-	public final boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null) return false;
-		if (!getClass().equals(o.getClass())) return false;
-		return Utl.equals(getId(), ((AEntity) o).getId());
-	}
-
-	@Override
-	public final int hashCode() {
-		if (id == null) return 0;
-		return id.hashCode();
-	}
 
 	public void updateProperties(Map<String, String> properties) {}
 
