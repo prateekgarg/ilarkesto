@@ -14,12 +14,25 @@
  */
 package ilarkesto.core.persistance;
 
-import ilarkesto.core.base.Identifiable;
+import ilarkesto.core.base.Str;
 
-import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface Entity extends Serializable, Identifiable {
+public abstract class ADatastruct {
 
-	Long getModificationTime();
+	protected abstract void updateLastModified();
+
+	public void updateProperties(Map<String, String> properties) {}
+
+	protected void storeProperties(Map<String, String> properties) {
+		properties.put("@type", Str.getSimpleName(getClass()));
+	}
+
+	public final HashMap<String, String> createPropertiesMap() {
+		HashMap<String, String> properties = new HashMap<String, String>();
+		storeProperties(properties);
+		return properties;
+	}
 
 }

@@ -16,21 +16,20 @@ package ilarkesto.persistence;
 
 import ilarkesto.auth.AUserDao;
 import ilarkesto.base.OverrideExpectedException;
+import ilarkesto.core.persistance.ADatastruct;
 import ilarkesto.core.search.SearchText;
 import ilarkesto.core.search.Searchable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * Base class for classes with persistent data.
  */
-public abstract class ADatob implements Searchable {
+public abstract class ADatob extends ADatastruct implements Searchable {
 
 	// --- dependencies ---
 
@@ -43,8 +42,6 @@ public abstract class ADatob implements Searchable {
 	// --- ---
 
 	protected abstract ADatobManager getManager();
-
-	public void updateProperties(Map<String, String> properties) {}
 
 	protected void updateLastModified() {
 		ADatobManager manager = getManager();
@@ -79,14 +76,6 @@ public abstract class ADatob implements Searchable {
 	}
 
 	// --- properties as map ---
-
-	public final HashMap<String, String> createPropertiesMap() {
-		HashMap<String, String> properties = new HashMap<String, String>();
-		storeProperties(properties);
-		return properties;
-	}
-
-	protected void storeProperties(Map<String, String> properties) {}
 
 	// --- helper ---
 

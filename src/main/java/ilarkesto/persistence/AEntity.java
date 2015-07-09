@@ -17,7 +17,6 @@ package ilarkesto.persistence;
 import ilarkesto.auth.AUser;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Utl;
-import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.TransferBus;
 import ilarkesto.core.persistance.TransferableEntity;
@@ -29,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class AEntity extends ADatob implements Entity, Iconized, TransferableEntity {
+public abstract class AEntity extends ADatob implements TransferableEntity, Iconized {
 
 	private static DaoService daoService;
 
@@ -137,6 +136,7 @@ public abstract class AEntity extends ADatob implements Entity, Iconized, Transf
 
 	@Override
 	protected void storeProperties(Map<String, String> properties) {
+		super.storeProperties(properties);
 		properties.put("@type", getDao().getEntityName());
 		properties.put("id", getId());
 		properties.put("modificationTime", getModificationTime().toString());

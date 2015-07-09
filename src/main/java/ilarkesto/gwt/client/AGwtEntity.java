@@ -1,19 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.gwt.client;
 
+import ilarkesto.core.persistance.TransferBus;
+import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.Tm;
 import ilarkesto.gwt.client.editor.AEditorModel;
 import ilarkesto.gwt.client.undo.AUndoOperation;
@@ -24,7 +26,7 @@ import java.util.Map;
 /**
  * Base class for entities.
  */
-public abstract class AGwtEntity {
+public abstract class AGwtEntity implements TransferableEntity {
 
 	private String id;
 	private boolean inCreation;
@@ -45,6 +47,9 @@ public abstract class AGwtEntity {
 		updateLocalModificationTime();
 	}
 
+	@Override
+	public <E extends TransferableEntity> void collectPassengers(TransferBus bus) {}
+
 	public long getLocalModificationTime() {
 		return localModificationTime;
 	}
@@ -53,6 +58,12 @@ public abstract class AGwtEntity {
 		localModificationTime = Tm.getCurrentTimeMillis();
 	}
 
+	@Override
+	public Long getModificationTime() {
+		return getLocalModificationTime();
+	}
+
+	@Override
 	public final String getId() {
 		return id;
 	}
@@ -71,6 +82,7 @@ public abstract class AGwtEntity {
 		properties.put("id", getId());
 	}
 
+	@Override
 	public Map<String, String> createPropertiesMap() {
 		Map<String, String> properties = new HashMap<String, String>();
 		storeProperties(properties);

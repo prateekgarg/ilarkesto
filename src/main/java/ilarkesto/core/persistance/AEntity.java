@@ -21,15 +21,13 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.search.SearchText;
 import ilarkesto.core.time.DateAndTime;
 
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class AEntity implements Entity, Serializable, TransferableEntity {
+public class AEntity extends ADatastruct implements TransferableEntity {
 
 	private static final transient Log log = Log.get(AEntity.class);
 
@@ -149,24 +147,19 @@ public class AEntity implements Entity, Serializable, TransferableEntity {
 		return getId().equals(id);
 	}
 
+	@Override
 	public void storeProperties(Map<String, String> properties) {
-		properties.put("@type", Str.getSimpleName(getClass()));
+		super.storeProperties(properties);
 		properties.put("id", getId());
 		properties.put("modificationTime", getModificationTime().toString());
 	}
 
+	@Override
 	public void updateProperties(Map<String, String> properties) {
 		String idFromProperties = properties.get("id");
 		if (!isId(idFromProperties))
 			throw new IllegalArgumentException("Updating properties on " + Str.getSimpleName(getClass()) + " "
 					+ getId() + " failed. Given properties have other id: " + idFromProperties);
-	}
-
-	@Override
-	public final HashMap<String, String> createPropertiesMap() {
-		HashMap<String, String> properties = new HashMap<String, String>();
-		storeProperties(properties);
-		return properties;
 	}
 
 	protected String asString() {
