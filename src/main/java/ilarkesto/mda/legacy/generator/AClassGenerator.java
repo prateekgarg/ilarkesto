@@ -14,21 +14,25 @@
  */
 package ilarkesto.mda.legacy.generator;
 
-import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
-import ilarkesto.mda.legacy.model.ParameterModel;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
-public abstract class AClassGenerator {
+public abstract class AClassGenerator extends AJavaCodeGenerator {
 
 	protected final Log log = Log.get(AClassGenerator.class);
+
+	private StringWriter stringWriter;
+	private PrintWriter out;
+
+	private List<AClassGeneratorPlugin> plugins = new ArrayList<AClassGeneratorPlugin>();
 
 	protected abstract String getName();
 
@@ -38,8 +42,14 @@ public abstract class AClassGenerator {
 
 	protected abstract void writeContent();
 
-	private StringWriter stringWriter;
-	private PrintWriter out;
+	@Override
+	protected void print(String text) {
+		out.print(text);
+	}
+
+	public void addPlugin(AClassGeneratorPlugin plugin) {
+		plugins.add(plugin);
+	}
 
 	public final void generate() {
 		File file = getFile();
@@ -146,90 +156,6 @@ public abstract class AClassGenerator {
 		// }
 		// }
 		return true;
-	}
-
-	public AClassGenerator parameterNames(Collection<ParameterModel> parameters) {
-		boolean first = true;
-		for (ParameterModel parameter : parameters) {
-			if (first) {
-				first = false;
-			} else {
-				s(", ");
-			}
-			s(parameter.getName());
-		}
-		return this;
-	}
-
-	public AClassGenerator parameterDeclaration(Collection<ParameterModel> parameters) {
-		boolean first = true;
-		for (ParameterModel parameter : parameters) {
-			if (first) {
-				first = false;
-			} else {
-				s(", ");
-			}
-			s(parameter.getType(), parameter.getName());
-		}
-		return this;
-	}
-
-	public AClassGenerator s(String... ss) {
-		boolean first = true;
-		for (String s : ss) {
-			if (first) {
-				first = false;
-			} else {
-				out.print(" ");
-			}
-			out.print(s);
-		}
-		return this;
-	}
-
-	public AClassGenerator annotationOverride() {
-		return ln("    @Override");
-	}
-
-	public AClassGenerator annotation(String type, String... parameters) {
-		s("@" + type);
-		if (parameters != null) {
-			s("(");
-			for (String parameter : parameters) {
-				s("\"" + parameter + "\"");
-			}
-			s(")");
-		}
-		ln();
-		return this;
-	}
-
-	public AClassGenerator ln(String... ss) {
-		s(ss);
-		s("\n");
-		return this;
-	}
-
-	public AClassGenerator javadoc(String text) {
-		ln("/**");
-		ln(" * ", text);
-		ln("**/");
-		return this;
-	}
-
-	public AClassGenerator sU(String s) {
-		return s(Str.uppercaseFirstLetter(s));
-	}
-
-	public void comment(String s) {
-		s("    // --- ").s(s).s(" ---").ln();
-	}
-
-	public void section(String description) {
-		ln();
-		ln("    // -----------------------------------------------------------");
-		ln("    // - " + description);
-		ln("    // -----------------------------------------------------------");
 	}
 
 	public void dependency(String type, String name, boolean statik, boolean getter) {
