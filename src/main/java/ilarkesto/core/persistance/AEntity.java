@@ -22,12 +22,13 @@ import ilarkesto.core.search.SearchText;
 import ilarkesto.core.time.DateAndTime;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class AEntity extends ADatastruct implements TransferableEntity {
+public class AEntity implements TransferableEntity {
 
 	private static final transient Log log = Log.get(AEntity.class);
 
@@ -148,13 +149,18 @@ public class AEntity extends ADatastruct implements TransferableEntity {
 	}
 
 	@Override
-	public void storeProperties(Map<String, String> properties) {
-		super.storeProperties(properties);
+	public final HashMap<String, String> createPropertiesMap() {
+		HashMap<String, String> properties = new HashMap<String, String>();
+		storeProperties(properties);
+		return properties;
+	}
+
+	protected void storeProperties(Map<String, String> properties) {
+		properties.put("@type", Str.getSimpleName(getClass()));
 		properties.put("id", getId());
 		properties.put("modificationTime", getModificationTime().toString());
 	}
 
-	@Override
 	public void updateProperties(Map<String, String> properties) {
 		String idFromProperties = properties.get("id");
 		if (!isId(idFromProperties))
