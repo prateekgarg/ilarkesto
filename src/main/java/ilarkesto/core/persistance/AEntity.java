@@ -19,7 +19,6 @@ import ilarkesto.core.base.Utl;
 import ilarkesto.core.base.Uuid;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.search.SearchText;
-import ilarkesto.core.time.DateAndTime;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,9 +33,6 @@ public class AEntity implements TransferableEntity {
 
 	private String id;
 	private Long modificationTime;
-
-	@Deprecated
-	private DateAndTime lastModified;
 
 	protected final ValuesCache getCache() {
 		return AEntityDatabase.get().getValuesCache(getId());
@@ -88,12 +84,6 @@ public class AEntity implements TransferableEntity {
 		if (ensuringIntegrity) return;
 		if (isDeleted()) return;
 		ensuringIntegrity = true;
-
-		if (modificationTime == null && lastModified != null) {
-			modificationTime = lastModified.toMillis();
-			lastModified = null;
-			fireModified("modificationTime", modificationTime.toString());
-		}
 
 		try {
 			onEnsureIntegrity();
