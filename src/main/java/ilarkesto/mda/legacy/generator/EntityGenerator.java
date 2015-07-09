@@ -91,12 +91,16 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("    }");
 		}
 
+		writeKeytableFactoryMethod();
+		writeKeytableGetLabel();
+
+		if (!bean.isAbstract()) {
+			writeToString();
+		}
+
 		if (!isLegacyBean(bean)) {
-			writeKeytableFactoryMethod();
-			writeKeytableGetLabel();
 			if (!bean.isAbstract()) {
 				writeListAll();
-				writeToString();
 				writeGetByListBy();
 			}
 			writeQueryBaseclass();
