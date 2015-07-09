@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -16,11 +16,11 @@ package ilarkesto.persistence;
 
 public abstract class AStructure extends ADatob {
 
-	private transient ADatob.StructureManager manager;
+	private transient ADatobManager manager;
 
 	public AStructure(AStructure template) {}
 
-	final void setManager(ADatob.StructureManager manager) {
+	final void setManager(ADatobManager manager) {
 		this.manager = manager;
 	}
 
@@ -29,11 +29,11 @@ public abstract class AStructure extends ADatob {
 	}
 
 	@Override
-	protected final ADatob.StructureManager getManager() {
+	protected final ADatobManager getManager() {
 		return manager;
 	}
 
-	public final AStructure clone(ADatob.StructureManager manager) {
+	public final AStructure clone(ADatobManager manager) {
 		AStructure result;
 		try {
 			result = getClass().getConstructor(new Class[] { getClass() }).newInstance(new Object[] { this });

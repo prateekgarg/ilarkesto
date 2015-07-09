@@ -15,20 +15,28 @@
 package ilarkesto.persistence;
 
 import ilarkesto.auth.AUser;
+import ilarkesto.auth.AUserDao;
 import ilarkesto.base.Iconized;
+import ilarkesto.base.OverrideExpectedException;
 import ilarkesto.base.Utl;
+import ilarkesto.core.persistance.ABaseEntity;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.TransferBus;
 import ilarkesto.core.persistance.TransferableEntity;
+import ilarkesto.core.search.SearchText;
+import ilarkesto.core.search.Searchable;
 import ilarkesto.core.time.DateAndTime;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class AEntity extends ADatob implements TransferableEntity, Iconized {
+public abstract class AEntity extends ABaseEntity implements Datob, TransferableEntity, Iconized, Searchable {
 
 	private static DaoService daoService;
 
@@ -51,6 +59,12 @@ public abstract class AEntity extends ADatob implements TransferableEntity, Icon
 		AEntity.daoService = daoService;
 	}
 
+	protected static AUserDao userDao;
+
+	public static void setUserDao(AUserDao userDao) {
+		AEntity.userDao = userDao;
+	}
+
 	// --- ---
 
 	public static AEntity getById(String entityId) {
@@ -69,7 +83,6 @@ public abstract class AEntity extends ADatob implements TransferableEntity, Icon
 		return getDao().isDeleted(this);
 	}
 
-	@Override
 	protected final ADao getManager() {
 		return getDao();
 	}
@@ -119,24 +132,20 @@ public abstract class AEntity extends ADatob implements TransferableEntity, Icon
 		return lastEditorId != null;
 	}
 
-	@Override
 	protected void fireModified(String field, String value) {
-		super.fireModified(field, value);
+		getDao().onDatobModified(this, field, value);
 	}
 
-	@Override
 	public void updateLastModified() {
 		modificationTime = System.currentTimeMillis();
 	}
 
-	@Override
 	public void ensureIntegrity() {
-		super.ensureIntegrity();
+		// super.ensureIntegrity();
 	}
 
-	@Override
 	protected void storeProperties(Map<String, String> properties) {
-		super.storeProperties(properties);
+		// super.storeProperties(properties);
 		properties.put("@type", getDao().getEntityName());
 		properties.put("id", getId());
 		properties.put("modificationTime", getModificationTime().toString());
@@ -157,6 +166,93 @@ public abstract class AEntity extends ADatob implements TransferableEntity, Icon
 	public final int hashCode() {
 		if (id == null) return 0;
 		return id.hashCode();
+	}
+
+	public void updateProperties(Map<String, String> properties) {}
+
+	protected void repairDeadReferences(String entityId) {}
+
+	protected final void repairMissingMaster() {
+		ADatobManager manager = getManager();
+		if (manager == null) return;
+		manager.onMissingMaster(this);
+	}
+
+	@Override
+	public final HashMap<String, String> createPropertiesMap() {
+		HashMap<String, String> properties = new HashMap<String, String>();
+		storeProperties(properties);
+		return properties;
+	}
+
+	@Override
+	public boolean matches(SearchText searchText) {
+		return false;
+	}
+
+	// --- helper from datob ---
+
+	protected static void repairDeadReferencesOfValueObjects(Collection<? extends ADatob> valueObjects, String entityId) {
+		for (ADatob vo : valueObjects)
+			vo.repairDeadReferences(entityId);
+	}
+
+	protected final <S extends AStructure> Set<S> cloneValueObjects(Collection<S> strucktures, ADatobManager<S> manager) {
+		Set<S> ret = new HashSet<S>();
+		for (S s : strucktures) {
+			ret.add((S) s.clone(manager));
+		}
+		return ret;
+	}
+
+	protected static Set<String> getIdsAsSet(Collection<? extends AEntity> entities) {
+		Set<String> result = new HashSet<String>(entities.size());
+		for (AEntity entity : entities)
+			result.add(entity.getId());
+		return result;
+	}
+
+	protected static List<String> getIdsAsList(Collection<? extends AEntity> entities) {
+		List<String> result = new ArrayList<String>(entities.size());
+		for (AEntity entity : entities)
+			result.add(entity.getId());
+		return result;
+	}
+
+	protected static boolean matchesKey(String s, String key) {
+		if (s == null) return false;
+		return s.toLowerCase().contains(key);
+	}
+
+	protected void repairDeadDatob(ADatob datob) {
+		throw new OverrideExpectedException();
+	}
+
+	public class StructureManager<D extends ADatob> extends ADatobManager<D> {
+
+		@Override
+		public void onDatobModified(D datob, String field, String value) {
+			fireModified(field, value);
+		}
+
+		@Override
+		public void updateLastModified(D datob) {
+			AEntity.this.updateLastModified();
+		}
+
+		@Override
+		public void onMissingMaster(D datob) {
+			repairDeadDatob(datob);
+		}
+
+		@Override
+		public void ensureIntegrityOfStructures(Collection<D> structures) {
+			for (ADatob structure : new ArrayList<ADatob>(structures)) {
+				((AStructure) structure).setManager(this);
+				structure.ensureIntegrity();
+			}
+		}
+
 	}
 
 }

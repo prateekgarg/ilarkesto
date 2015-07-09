@@ -34,6 +34,7 @@ import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
 import ilarkesto.persistence.ADatob;
+import ilarkesto.persistence.ADatobManager;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.persistence.AStructure;
 
@@ -302,11 +303,11 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (p.isValueObject()) {
 			datobGetter = "get" + pNameUpper + "Manager()";
 			ln();
-			ln("    private transient " + ADatob.StructureManager.class.getName().replace('$', '.') + "<"
-					+ p.getContentType() + "> " + p.getName() + "Manager;");
+			ln("    private transient " + ADatobManager.class.getName().replace('$', '.') + "<" + p.getContentType()
+					+ "> " + p.getName() + "Manager;");
 			ln();
-			ln("    private " + ADatob.StructureManager.class.getName().replace('$', '.') + "<" + p.getContentType()
-					+ "> " + datobGetter + " {");
+			ln("    private " + ADatobManager.class.getName().replace('$', '.') + "<" + p.getContentType() + "> "
+					+ datobGetter + " {");
 			ln("        if (" + p.getName() + "Manager == null) " + p.getName() + "Manager = new StructureManager<"
 					+ p.getContentType() + ">();");
 			ln("        return " + p.getName() + "Manager;");
@@ -476,9 +477,18 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			}
 		} else {
 			if (p.isCollection()) {
-				ln("        return new " + getFieldImpl(p) + "(" + p.getName() + ");");
+				if (p.isValueObject()) {
+					ln("        return cloneValueObjects(" + p.getName() + ", get"
+							+ Str.uppercaseFirstLetter(p.getName()) + "Manager());");
+				} else {
+					ln("        return new " + getFieldImpl(p) + "(" + p.getName() + ");");
+				}
 			} else {
-				ln("        return " + p.getName() + ";");
+				if (p.isValueObject()) {
+					ln("        return " + p.getName() + ".clone();");
+				} else {
+					ln("        return " + p.getName() + ";");
+				}
 			}
 		}
 	}

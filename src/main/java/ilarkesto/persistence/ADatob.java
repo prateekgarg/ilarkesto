@@ -31,7 +31,7 @@ import java.util.Set;
 /**
  * Base class for classes with persistent data.
  */
-public abstract class ADatob implements Searchable {
+public abstract class ADatob implements Datob, Searchable {
 
 	// --- dependencies ---
 
@@ -147,9 +147,10 @@ public abstract class ADatob implements Searchable {
 			repairDeadDatob(datob);
 		}
 
-		public void ensureIntegrityOfStructures(Collection<? extends AStructure> structures) {
-			for (AStructure structure : new ArrayList<AStructure>(structures)) {
-				structure.setManager(this);
+		@Override
+		public void ensureIntegrityOfStructures(Collection<D> structures) {
+			for (ADatob structure : new ArrayList<ADatob>(structures)) {
+				((AStructure) structure).setManager(this);
 				structure.ensureIntegrity();
 			}
 		}
