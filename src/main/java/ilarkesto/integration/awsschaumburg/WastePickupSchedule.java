@@ -1,8 +1,8 @@
 package ilarkesto.integration.awsschaumburg;
 
+import ilarkesto.core.base.Identifiable;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.time.Date;
-import ilarkesto.id.Identifiable;
 import ilarkesto.json.AJsonWrapper;
 import ilarkesto.json.JsonObject;
 

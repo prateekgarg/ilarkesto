@@ -16,8 +16,8 @@ package ilarkesto.persistence;
 
 import ilarkesto.auth.AUser;
 import ilarkesto.auth.Auth;
+import ilarkesto.core.base.Identifiable;
 import ilarkesto.core.fp.Predicate;
-import ilarkesto.id.Identifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;

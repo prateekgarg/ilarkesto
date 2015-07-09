@@ -17,11 +17,11 @@ package ilarkesto.persistence;
 import ilarkesto.auth.AUser;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Utl;
+import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.TransferBus;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
-import ilarkesto.id.Identifiable;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class AEntity extends ADatob implements Identifiable, Iconized, TransferableEntity {
+public abstract class AEntity extends ADatob implements Entity, Iconized, TransferableEntity {
 
 	private static DaoService daoService;
 

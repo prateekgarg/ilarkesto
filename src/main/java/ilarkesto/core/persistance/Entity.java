@@ -14,12 +14,10 @@
  */
 package ilarkesto.core.persistance;
 
-import java.util.HashMap;
+import ilarkesto.core.base.Identifiable;
 
-public interface TransferableEntity extends Entity {
+public interface Entity extends Identifiable {
 
-	HashMap<String, String> createPropertiesMap();
-
-	<E extends TransferableEntity> void collectPassengers(TransferBus bus);
+	Long getModificationTime();
 
 }

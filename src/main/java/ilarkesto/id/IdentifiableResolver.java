@@ -14,6 +14,8 @@
  */
 package ilarkesto.id;
 
+import ilarkesto.core.base.Identifiable;
+
 import java.util.Collection;
 import java.util.List;
 
