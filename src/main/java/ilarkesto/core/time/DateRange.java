@@ -193,7 +193,7 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 		return (double) overlappingDays / (double) dayCount;
 	}
 
-	public DateRange getUnion(DateRange other) {
+	public DateRange expand(DateRange other) {
 		Date start = other.getStart().isAfter(getStart()) ? getStart() : other.getStart();
 		Date end = other.getEnd().isBefore(getEnd()) ? getEnd() : other.getEnd();
 		return new DateRange(start, end);
