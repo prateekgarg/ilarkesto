@@ -85,7 +85,7 @@ public class FileEntityStore implements EntityStore {
 	// --- ---
 
 	public FileEntityStore() {
-		Transaction.entityStore = this;
+		Transaction.backend = this;
 	}
 
 	@Override

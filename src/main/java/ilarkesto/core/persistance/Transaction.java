@@ -26,17 +26,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class Transaction extends ATransaction<AEntity> {
 
 	private static final Log log = Log.get(Transaction.class);
+	public static EntitiesBackend<AEntity, Transaction> backend;
 
 	private String name;
 	private boolean autoCommit;
-	private EntitiesBackend<AEntity, Transaction> backend;
 	private boolean ignoreModifications;
 	private boolean ensureIntegrityOnCommit;
 	private boolean ensuringIntegrity;
@@ -46,12 +45,16 @@ public class Transaction extends ATransaction<AEntity> {
 	private Map<String, Map<String, String>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, String>>();
 	private Set<String> deleted = new HashSet<String>();
 
-	public Transaction(AEntityDatabase backend, String name, boolean autoCommit, boolean ensureIntegrityOnCommit) {
+	public Transaction(String name, boolean autoCommit, boolean ensureIntegrityOnCommit) {
 		super();
-		this.backend = backend;
 		this.name = name;
 		this.autoCommit = autoCommit;
 		this.ensureIntegrityOnCommit = ensureIntegrityOnCommit;
+	}
+
+	@Override
+	protected EntitiesBackend getBackend() {
+		return backend;
 	}
 
 	@Override
@@ -188,14 +191,6 @@ public class Transaction extends ATransaction<AEntity> {
 		if (entity == null) entity = backend.findFirst(query);
 		if (entity != null && deleted.contains(entity.getId())) return null;
 		return entity;
-	}
-
-	public Set<AEntity> findAllAsSet(AEntityQuery query) {
-		return findAll(query, new HashSet<AEntity>());
-	}
-
-	public List<AEntity> findAllAsList(AEntityQuery query) {
-		return findAll(query, new ArrayList<AEntity>());
 	}
 
 	@Override

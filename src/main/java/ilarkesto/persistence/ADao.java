@@ -233,7 +233,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		}
 		if (id != null) entity.setId(id);
 		entity.updateLastModified();
-		Transaction.get().registerEntity(entity);
+		Transaction.get().register(entity);
 		return entity;
 	}
 

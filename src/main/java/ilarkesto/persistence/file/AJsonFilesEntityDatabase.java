@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -174,7 +174,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 		Transaction transaction = tlTransaction.get();
 		if (transaction == null) {
 			int no = ++transactionNumberCounter;
-			transaction = new Transaction(this, "#" + no + " (" + Thread.currentThread().getName() + ")", false, true);
+			transaction = new Transaction("#" + no + " (" + Thread.currentThread().getName() + ")", false, true);
 			transactions.add(transaction);
 			tlTransaction.set(transaction);
 		}

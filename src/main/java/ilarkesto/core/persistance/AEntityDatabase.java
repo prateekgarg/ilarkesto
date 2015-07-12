@@ -33,6 +33,7 @@ public abstract class AEntityDatabase implements EntitiesBackend<AEntity, Transa
 
 	protected abstract Map<String, ValuesCache> createValuesCachesMap();
 
+	@Override
 	public abstract AEntity findFirst(AEntityQuery query);
 
 	public abstract Set<AEntity> findAllAsSet(AEntityQuery query);
@@ -40,6 +41,10 @@ public abstract class AEntityDatabase implements EntitiesBackend<AEntity, Transa
 	public abstract boolean isTransactionWithChangesOpen();
 
 	public abstract Collection<AEntity> listAll();
+
+	public AEntityDatabase() {
+		Transaction.backend = this;
+	}
 
 	final ValuesCache getValuesCache(String id) {
 		ValuesCache cache = valuesCachesById.get(id);

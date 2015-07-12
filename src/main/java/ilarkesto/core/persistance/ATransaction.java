@@ -26,6 +26,8 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 
 	public abstract void rollback();
 
+	protected abstract EntitiesBackend<E, ATransaction<E>> getBackend();
+
 	@Override
 	public final List<E> getByIdsAsList(Collection<String> ids) throws EntityDoesNotExistException {
 		return getByIds(ids, new ArrayList<E>(ids.size()));
@@ -43,6 +45,14 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 			resultContainer.add(getById(id));
 		}
 		return resultContainer;
+	}
+
+	public final Set<E> findAllAsSet(AEntityQuery query) {
+		return findAll(query, new HashSet<E>());
+	}
+
+	public final List<E> findAllAsList(AEntityQuery query) {
+		return findAll(query, new ArrayList<E>());
 	}
 
 }

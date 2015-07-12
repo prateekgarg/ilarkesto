@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -18,6 +18,7 @@ import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.ATransaction;
+import ilarkesto.core.persistance.EntitiesBackend;
 import ilarkesto.id.IdentifiableResolver;
 
 import java.util.Collection;
@@ -28,7 +29,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 
 	private static final Log log = Log.get(Transaction.class);
 
-	static EntityStore entityStore;
+	static EntitiesBackend<AEntity, Transaction> backend;
 
 	private static int count = 0;
 	private int no;
@@ -43,6 +44,11 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 			no = ++count;
 		}
 		threadName = Thread.currentThread().getName();
+	}
+
+	@Override
+	protected EntitiesBackend getBackend() {
+		return backend;
 	}
 
 	void saveEntity(AEntity entity) {
@@ -60,7 +66,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		entitiesToSave.remove(entity);
 	}
 
-	public void registerEntity(AEntity entity) {
+	public void register(AEntity entity) {
 		entitiesRegistered.add(entity);
 	}
 
@@ -72,7 +78,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		try {
 			doCommit();
 		} finally {
-			entityStore.onTransactionFinished(this);
+			backend.onTransactionFinished(this);
 		}
 	}
 
@@ -111,7 +117,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		}
 
 		log.debug("Persisting entities:", entitiesToSave, entitiesToDelete);
-		entityStore.update(entitiesToSave, Persist.getIdsAsList(entitiesToDelete), null, null);
+		backend.update(entitiesToSave, Persist.getIdsAsList(entitiesToDelete), null, null);
 
 		log.debug("Transaction committed:", this);
 		entitiesToSave.clear();
@@ -125,7 +131,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		entitiesToSave.clear();
 		entitiesToDelete.clear();
 		entitiesRegistered.clear();
-		entityStore.onTransactionFinished(this);
+		backend.onTransactionFinished(this);
 	}
 
 	@Override
@@ -134,7 +140,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 
 		if (Persist.getIdsAsList(entitiesToDelete).contains(id)) return false;
 
-		AEntity result = entityStore.getById(id);
+		AEntity result = backend.getById(id);
 		if (result != null) return true;
 
 		for (AEntity entity : entitiesToSave) {
@@ -147,7 +153,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 
 	@Override
 	public AEntity getById(String id) {
-		AEntity result = entityStore.getById(id);
+		AEntity result = backend.getById(id);
 		if (result == null && !entitiesToSave.isEmpty()) {
 			for (AEntity entity : entitiesToSave) {
 				if (id.equals(entity.getId())) {
@@ -168,13 +174,9 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		return result;
 	}
 
-	public Set<AEntity> findAllAsSet(AEntityQuery query) {
-		return findAll(query, new HashSet<AEntity>());
-	}
-
 	@Override
 	public <C extends Collection<AEntity>> C findAll(AEntityQuery<AEntity> query, C resultCollection) {
-		resultCollection.addAll(entityStore.findAll(query, resultCollection));
+		resultCollection.addAll(backend.findAll(query, resultCollection));
 		for (AEntity entity : entitiesToSave) {
 			if (resultCollection.contains(entity)) continue;
 			if (Persist.test(entity, query)) resultCollection.add(entity);
@@ -189,7 +191,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 
 	@Override
 	public AEntity findFirst(AEntityQuery query) {
-		AEntity result = entityStore.findFirst(query);
+		AEntity result = backend.findFirst(query);
 		if (result == null) {
 			for (AEntity entity : entitiesToSave) {
 				if (entitiesToDelete.contains(entity)) continue;
@@ -244,7 +246,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 	}
 
 	public static Transaction get() {
-		return entityStore.getTransaction();
+		return backend.getTransaction();
 	}
 
 }
