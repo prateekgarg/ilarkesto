@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -25,25 +25,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class Transaction extends ATransaction<AEntity> implements IdentifiableResolver<AEntity> {
+public class Transaction extends ATransaction<AEntity> implements IdentifiableResolver<AEntity> {
 
 	private static final Log log = Log.get(Transaction.class);
 
+	static EntityStore entityStore;
+
 	private static int count = 0;
 	private int no;
-
-	private EntityStore entityStore;
 
 	private String threadName;
 	private Set<AEntity> entitiesToSave = new HashSet<AEntity>();
 	private Set<AEntity> entitiesToDelete = new HashSet<AEntity>();
 	private Set<AEntity> entitiesRegistered = new HashSet<AEntity>();
 
-	public Transaction(EntityStore entityStore) {
+	public Transaction() {
 		synchronized (getClass()) {
 			no = ++count;
 		}
-		this.entityStore = entityStore;
 		threadName = Thread.currentThread().getName();
 	}
 
@@ -68,8 +67,16 @@ class Transaction extends ATransaction<AEntity> implements IdentifiableResolver<
 
 	private boolean committed;
 
-	synchronized void commit() {
+	public void commit() {
 		if (committed) throw new RuntimeException("Transaction already committed: " + this);
+		try {
+			doCommit();
+		} finally {
+			entityStore.onTransactionFinished(this);
+		}
+	}
+
+	private void doCommit() {
 		committed = true;
 
 		if (entitiesToDelete.isEmpty() && entitiesToSave.isEmpty()) {
@@ -110,6 +117,14 @@ class Transaction extends ATransaction<AEntity> implements IdentifiableResolver<
 		entitiesToSave.clear();
 		entitiesToDelete.clear();
 		entitiesRegistered.clear();
+	}
+
+	public void rollback() {
+		log.debug("Transaction canceled:", this);
+		entitiesToSave.clear();
+		entitiesToDelete.clear();
+		entitiesRegistered.clear();
+		entityStore.onTransactionFinished(this);
 	}
 
 	public boolean isDeleted(AEntity entity) {
@@ -240,6 +255,10 @@ class Transaction extends ATransaction<AEntity> implements IdentifiableResolver<
 		} catch (Exception ex) {
 			return o.getClass().getSimpleName();
 		}
+	}
+
+	public static Transaction get() {
+		return entityStore.getTransaction();
 	}
 
 }

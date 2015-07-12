@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -63,7 +63,7 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 		// reset modified entities
 		if (AEntityDatabase.instance != null) Transaction.get().rollback();
 		TransactionService ts = getWebApplication().getTransactionService();
-		if (ts != null) ts.cancel();
+		if (ts != null) ilarkesto.persistence.Transaction.get().rollback();
 
 		try {
 			// send error to client
@@ -81,7 +81,7 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 		// save modified entities
 		if (AEntityDatabase.instance != null) Transaction.get().commit();
 		TransactionService ts = getWebApplication().getTransactionService();
-		if (ts != null) ts.commit();
+		if (ts != null) ilarkesto.persistence.Transaction.get().commit();
 
 		// destroy request context
 		context.destroy(false);

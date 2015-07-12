@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -30,81 +30,38 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 	@In
 	private EntityStore entityStore;
 
-	private ThreadLocal<Transaction> threadLocalTransaction = new ThreadLocal<Transaction>();
-
 	public TransactionService() {}
-
-	public synchronized void commit() {
-		Transaction t = getCurrentTransaction(false);
-		if (t == null) return;
-		try {
-			t.commit();
-		} finally {
-			threadLocalTransaction.set(null);
-		}
-	}
-
-	public synchronized void cancel() {
-		Transaction t = getCurrentTransaction(false);
-		if (t == null) return;
-		log.debug("Cancelling transaction:", t);
-		threadLocalTransaction.set(null);
-	}
-
-	synchronized Transaction getCurrentTransaction(boolean autocreate) {
-		Transaction t = threadLocalTransaction.get();
-		if (t == null) {
-			if (!autocreate) return null;
-			t = new Transaction(entityStore);
-			log.debug("Transaction created: " + t);
-			threadLocalTransaction.set(t);
-		}
-		return t;
-	}
 
 	public boolean isPersistent(String id) {
 		if (id == null) return false;
-		Transaction transaction = getCurrentTransaction(false);
-		if (transaction == null) {
-			AEntity entity = entityStore.getById(id);
-			return entity != null;
-		}
+		Transaction transaction = Transaction.get();
 		return transaction.isPersistent(id);
 	}
 
 	public boolean isDeleted(AEntity entity) {
 		if (entity == null) return false;
-		Transaction transaction = getCurrentTransaction(false);
-		if (transaction == null) return false;
+		Transaction transaction = Transaction.get();
 		return transaction.isDeleted(entity);
 	}
 
 	// --- delegations ---
 
+	@Deprecated
 	@Override
 	public AEntity getById(String id) {
-		Transaction transaction = getCurrentTransaction(false);
-		if (transaction == null) {
-			return entityStore.getById(id);
-		} else {
-			return transaction.getById(id);
-		}
+		Transaction transaction = Transaction.get();
+		return transaction.getById(id);
 	}
 
+	@Deprecated
 	public AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
-		Transaction transaction = getCurrentTransaction(false);
-		AEntity ret;
-		if (transaction == null) {
-			ret = entityStore.getEntity(typeFilter, entityFilter);
-		} else {
-			ret = transaction.getEntity(typeFilter, entityFilter);
-		}
-		return ret;
+		Transaction transaction = Transaction.get();
+		return transaction.getEntity(typeFilter, entityFilter);
 	}
 
 	@Override
 	public List<AEntity> getByIds(Collection<String> ids) {
-		Transaction transaction = getCurrentTransaction(false);
+		Transaction transaction = Transaction.get();
 		if (transaction == null) {
 			return entityStore.getByIds(ids);
 		} else {
@@ -113,7 +70,7 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 	}
 
 	public Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
-		Transaction transaction = getCurrentTransaction(false);
+		Transaction transaction = Transaction.get();
 		Set<AEntity> ret;
 		if (transaction == null) {
 			ret = entityStore.getEntities(typeFilter, entityFilter);
@@ -124,7 +81,7 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 	}
 
 	public int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
-		Transaction transaction = getCurrentTransaction(false);
+		Transaction transaction = Transaction.get();
 		int ret;
 		if (transaction == null) {
 			ret = entityStore.getEntitiesCount(typeFilter, entityFilter);
@@ -135,15 +92,14 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 	}
 
 	public synchronized void deleteEntity(AEntity entity) {
-		getCurrentTransaction(true).deleteEntity(entity);
+		Transaction.get().deleteEntity(entity);
 	}
 
 	public synchronized void saveEntity(AEntity entity) {
-		getCurrentTransaction(true).saveEntity(entity);
+		Transaction.get().saveEntity(entity);
 	}
 
 	public synchronized void registerEntity(AEntity entity) {
-		getCurrentTransaction(true).registerEntity(entity);
+		Transaction.get().registerEntity(entity);
 	}
-
 }
