@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -61,13 +61,18 @@ public abstract class ACachingEntityDatabase extends AEntityDatabase {
 	}
 
 	@Override
-	public AEntity get(AEntityQuery query) {
-		return cache.get(query);
+	public AEntity findFirst(AEntityQuery query) {
+		return cache.findFirst(query);
 	}
 
 	@Override
-	public Set<AEntity> list(AEntityQuery query) {
-		return cache.list(query);
+	public Set<AEntity> findAllAsSet(AEntityQuery query) {
+		return cache.findAllAsSet(query);
+	}
+
+	@Override
+	public <C extends Collection<AEntity>> C findAll(AEntityQuery<AEntity> query, C resultCollection) {
+		return cache.findAll(query, resultCollection);
 	}
 
 	@Override

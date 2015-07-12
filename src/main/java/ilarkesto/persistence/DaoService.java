@@ -1,20 +1,19 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.persistence;
 
-import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.time.Date;
@@ -80,14 +79,8 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 
 	public AEntity getEntityById(final String id) {
 		if (id == null) throw new IllegalArgumentException("id == null");
-		AEntity entity = Transaction.get().getEntity(null, new Predicate<AEntity>() {
 
-			@Override
-			public boolean test(AEntity e) {
-				return id.equals(e.getId());
-			}
-
-		});
+		AEntity entity = Transaction.get().getById(id);
 
 		if (entity == null) throw new EntityDoesNotExistException(id);
 		return entity;
@@ -95,15 +88,7 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 
 	public boolean containsEntityWithId(final String id) {
 		if (id == null) throw new IllegalArgumentException("id == null");
-		AEntity entity = Transaction.get().getEntity(null, new Predicate<AEntity>() {
-
-			@Override
-			public boolean test(AEntity e) {
-				return id.equals(e.getId());
-			}
-
-		});
-		return entity != null;
+		return Transaction.get().containsWithId(id);
 	}
 
 	@Override

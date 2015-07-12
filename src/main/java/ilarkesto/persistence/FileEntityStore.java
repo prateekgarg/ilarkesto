@@ -15,8 +15,9 @@
 package ilarkesto.persistence;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.AEntityQuery;
+import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
 
@@ -86,6 +87,9 @@ public class FileEntityStore implements EntityStore {
 	public FileEntityStore() {
 		Transaction.entityStore = this;
 	}
+
+	@Override
+	public void onEntityModified() {}
 
 	@Override
 	public synchronized void lock() {
@@ -170,14 +174,30 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
-	public AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
+	public AEntity findFirst(AEntityQuery<AEntity> query) {
 		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : entitiesByIdByType.entrySet()) {
-			if (typeFilter != null && !typeFilter.test(daoEntry.getKey())) continue;
+			if (!query.testType(daoEntry.getKey())) continue;
+
 			for (AEntity entity : daoEntry.getValue().values()) {
-				if (entityFilter.test(entity)) return entity;
+				if (query.test(entity)) return entity;
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public <C extends Collection<AEntity>> C findAll(AEntityQuery<AEntity> query, C resultCollection) {
+		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : entitiesByIdByType.entrySet()) {
+			if (!query.testType(entry.getKey())) continue;
+			if (query.getClass().equals(AllByTypeQuery.class)) {
+				resultCollection.addAll(entry.getValue().values());
+			} else {
+				for (AEntity entity : entry.getValue().values()) {
+					if (query.test(entity)) resultCollection.add(entity);
+				}
+			}
+		}
+		return resultCollection;
 	}
 
 	@Override
@@ -200,38 +220,6 @@ public class FileEntityStore implements EntityStore {
 			}
 		}
 		return resultContainer;
-	}
-
-	@Override
-	public Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
-		Set<AEntity> result = new HashSet<AEntity>();
-		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : entitiesByIdByType.entrySet()) {
-			if (typeFilter != null && !typeFilter.test(entry.getKey())) continue;
-			if (entityFilter == null) {
-				result.addAll(entry.getValue().values());
-			} else {
-				for (AEntity entity : entry.getValue().values()) {
-					if (entityFilter.test(entity)) result.add(entity);
-				}
-			}
-		}
-		return result;
-	}
-
-	@Override
-	public int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
-		int result = 0;
-		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : entitiesByIdByType.entrySet()) {
-			if (typeFilter != null && !typeFilter.test(entry.getKey())) continue;
-			if (entityFilter == null) {
-				result += entry.getValue().size();
-			} else {
-				for (AEntity entity : entry.getValue().values()) {
-					if (entityFilter.test(entity)) result++;
-				}
-			}
-		}
-		return result;
 	}
 
 	private Map<Class, String> aliases = new HashMap<Class, String>();

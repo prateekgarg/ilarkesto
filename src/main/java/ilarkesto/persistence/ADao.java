@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -25,6 +25,8 @@ import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.AEntityQuery;
+import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.search.SearchText;
 import ilarkesto.core.search.Searchable;
@@ -123,21 +125,34 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		return icon;
 	}
 
-	public int getEntitiesCount(Predicate<E> predicate) {
-		return Transaction.get().getEntitiesCount(getEntityTypeFilter(), (Predicate<AEntity>) predicate);
+	public E getEntity(final Predicate<E> predicate) {
+		return (E) Transaction.get().findFirst(new AEntityQuery<E>() {
+
+			@Override
+			public boolean test(E entity) {
+				return predicate.test(entity);
+			}
+
+			@Override
+			public Class<E> getType() {
+				return ADao.this.getEntityClass();
+			}
+		});
 	}
 
-	public E getEntity(Predicate<E> predicate) {
-		return (E) Transaction.get().getEntity(getEntityTypeFilter(), (Predicate<AEntity>) predicate);
-	}
+	public final Set<E> getEntities(final Predicate<E> filter) {
+		return (Set<E>) Transaction.get().findAllAsSet(new AEntityQuery<E>() {
 
-	public final Set<E> getEntities(Predicate<E> filter) {
-		// long start = System.currentTimeMillis();
-		Set<E> result = (Set<E>) Transaction.get().getEntities(getEntityTypeFilter(), (Predicate<AEntity>) filter);
-		// long time = System.currentTimeMillis() - start;
-		// if (time > 2000) throw new RuntimeException("getEntities took too
-		// long. fix it!");
-		return result;
+			@Override
+			public boolean test(E entity) {
+				return filter.test(entity);
+			}
+
+			@Override
+			public Class<E> getType() {
+				return ADao.this.getEntityClass();
+			}
+		});
 	}
 
 	@Override
@@ -188,7 +203,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	}
 
 	public Set<E> getEntities() {
-		return (Set<E>) Transaction.get().getEntities(getEntityTypeFilter(), null);
+		return (Set<E>) Transaction.get().findAllAsSet(new AllByTypeQuery(getEntityClass()));
 	}
 
 	public void deleteEntity(E entity) {

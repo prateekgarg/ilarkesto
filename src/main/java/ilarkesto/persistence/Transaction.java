@@ -15,8 +15,8 @@
 package ilarkesto.persistence;
 
 import ilarkesto.base.Utl;
-import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.ATransaction;
 import ilarkesto.id.IdentifiableResolver;
 
@@ -128,12 +128,6 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		entityStore.onTransactionFinished(this);
 	}
 
-	public boolean isDeleted(AEntity entity) {
-		if (entity == null) return false;
-		if (entitiesToDelete.contains(entity)) return true;
-		return false;
-	}
-
 	@Override
 	public boolean containsWithId(String id) {
 		if (id == null) return false;
@@ -174,32 +168,36 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		return result;
 	}
 
-	Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
-		Set<AEntity> result = entityStore.getEntities(typeFilter, entityFilter);
+	public Set<AEntity> findAllAsSet(AEntityQuery query) {
+		return findAll(query, new HashSet<AEntity>());
+	}
+
+	@Override
+	public <C extends Collection<AEntity>> C findAll(AEntityQuery<AEntity> query, C resultCollection) {
+		resultCollection.addAll(entityStore.findAll(query, resultCollection));
 		for (AEntity entity : entitiesToSave) {
-			if (Persist.test(entity, typeFilter, entityFilter)) result.add(entity);
+			if (resultCollection.contains(entity)) continue;
+			if (Persist.test(entity, query)) resultCollection.add(entity);
 		}
 		for (AEntity entity : entitiesRegistered) {
-			if (Persist.test(entity, typeFilter, entityFilter)) result.add(entity);
+			if (resultCollection.contains(entity)) continue;
+			if (Persist.test(entity, query)) resultCollection.add(entity);
 		}
-		result.removeAll(entitiesToDelete);
-		return result;
+		resultCollection.removeAll(entitiesToDelete);
+		return resultCollection;
 	}
 
-	int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
-		return entityStore.getEntitiesCount(typeFilter, entityFilter);
-	}
-
-	AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
-		AEntity result = entityStore.getEntity(typeFilter, entityFilter);
+	@Override
+	public AEntity findFirst(AEntityQuery query) {
+		AEntity result = entityStore.findFirst(query);
 		if (result == null) {
 			for (AEntity entity : entitiesToSave) {
-				if (Persist.test(entity, typeFilter, entityFilter) && !entitiesToDelete.contains(entity))
-					return entity;
+				if (entitiesToDelete.contains(entity)) continue;
+				if (Persist.test(entity, query)) return entity;
 			}
 			for (AEntity entity : entitiesRegistered) {
-				if (Persist.test(entity, typeFilter, entityFilter) && !entitiesToDelete.contains(entity))
-					return entity;
+				if (entitiesToDelete.contains(entity)) continue;
+				if (Persist.test(entity, query)) return entity;
 			}
 		} else {
 			if (entitiesToDelete.contains(result)) return null;

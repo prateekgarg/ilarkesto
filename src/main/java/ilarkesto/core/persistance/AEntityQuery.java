@@ -25,11 +25,11 @@ import java.util.Set;
 public abstract class AEntityQuery<E extends Entity> implements Predicate<E> {
 
 	public Set<E> list() {
-		return (Set<E>) AEntityDatabase.get().getTransaction().list(this);
+		return (Set<E>) Transaction.get().findAllAsSet(this);
 	}
 
-	public E getFirst() {
-		return (E) AEntityDatabase.get().getTransaction().getFirst(this);
+	public E findFirst() {
+		return (E) Transaction.get().findFirst(this);
 	}
 
 	@Override
@@ -50,6 +50,19 @@ public abstract class AEntityQuery<E extends Entity> implements Predicate<E> {
 	@Override
 	public String toString() {
 		return Utl.getSimpleName(getClass());
+	}
+
+	public boolean testType(Class typeToTest) {
+		Class<E> queryType = getType();
+		if (queryType == null) return true;
+		return isInstanceOf(typeToTest, queryType);
+	}
+
+	static boolean isInstanceOf(Class givenType, Class requiredType) {
+		if (requiredType.equals(givenType)) return true;
+		Class superType = givenType.getSuperclass();
+		if (superType.equals(Object.class)) return false;
+		return isInstanceOf(superType, requiredType);
 	}
 
 }

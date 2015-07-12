@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ public class Transaction extends ATransaction<AEntity> {
 
 	private String name;
 	private boolean autoCommit;
-	private AEntityDatabase backend;
+	private EntitiesBackend<AEntity, Transaction> backend;
 	private boolean ignoreModifications;
 	private boolean ensureIntegrityOnCommit;
 	private boolean ensuringIntegrity;
@@ -167,15 +168,7 @@ public class Transaction extends ATransaction<AEntity> {
 		if (ensuringIntegrity) throw new EntityDeletedWhileEnsureIntegrity();
 	}
 
-	public boolean isDeleted(String id) {
-		if (deleted.contains(id)) return true;
-		return false;
-	}
-
-	public boolean isDeleted(AEntity entity) {
-		return isDeleted(entity.getId());
-	}
-
+	@Override
 	public boolean containsWithId(String id) {
 		if (deleted.contains(id)) return false;
 		return modified.containsWithId(id) || backend.containsWithId(id);
@@ -189,30 +182,41 @@ public class Transaction extends ATransaction<AEntity> {
 		return backend.getById(id);
 	}
 
-	public AEntity getFirst(AEntityQuery query) {
-		AEntity entity = modified.get(query);
-		if (entity == null) entity = backend.get(query);
-		if (entity != null && isDeleted(entity)) return null;
+	@Override
+	public AEntity findFirst(AEntityQuery query) {
+		AEntity entity = modified.findFirst(query);
+		if (entity == null) entity = backend.findFirst(query);
+		if (entity != null && deleted.contains(entity.getId())) return null;
 		return entity;
 	}
 
-	public Set<AEntity> list(AEntityQuery query) {
+	public Set<AEntity> findAllAsSet(AEntityQuery query) {
+		return findAll(query, new HashSet<AEntity>());
+	}
+
+	public List<AEntity> findAllAsList(AEntityQuery query) {
+		return findAll(query, new ArrayList<AEntity>());
+	}
+
+	@Override
+	public <C extends Collection<AEntity>> C findAll(AEntityQuery<AEntity> query, C resultCollection) {
 		RuntimeTracker rt = new RuntimeTracker();
-		Set<AEntity> ret = backend.list(query);
-		for (AEntity entity : modified.list(query)) {
-			ret.add(entity);
-		}
-		Iterator<AEntity> iterator = ret.iterator();
+
+		backend.findAll(query, resultCollection);
+		modified.findAll(query, resultCollection);
+
+		Iterator<AEntity> iterator = resultCollection.iterator();
 		while (iterator.hasNext()) {
 			AEntity entity = iterator.next();
-			if (isDeleted(entity)) iterator.remove();
+			if (deleted.contains(entity.getId())) iterator.remove();
 		}
+
 		long time = rt.getRuntime();
 		if (time > 100) {
-			log.log(time > 1000 ? Log.Level.WARN : Log.Level.DEBUG, "Query provided", ret.size(), "elements in",
-				rt.getRuntimeFormated(), query);
+			log.log(time > 1000 ? Log.Level.WARN : Log.Level.DEBUG, "Query provided", resultCollection.size(),
+				"elements in", rt.getRuntimeFormated(), query);
 		}
-		return ret;
+		return resultCollection;
 	}
 
 	public void setIgnoreModifications(boolean disabled) {

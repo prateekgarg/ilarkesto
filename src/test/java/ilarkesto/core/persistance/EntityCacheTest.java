@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -49,7 +49,7 @@ public class EntityCacheTest extends ATest {
 			};
 		}.start();
 
-		Set<AEntity> all = cache.list(new AEntityQuery<Car>() {
+		Set<AEntity> all = cache.findAllAsSet(new AEntityQuery<Car>() {
 
 			@Override
 			public boolean test(Car entity) {
@@ -68,7 +68,7 @@ public class EntityCacheTest extends ATest {
 		cache.add(new Car().setName("c2"));
 		cache.add(new Mercedes().setName("m1"));
 
-		Set<AEntity> mercedeses = cache.list(new AEntityQuery<Mercedes>() {
+		Set<AEntity> mercedeses = cache.findAllAsSet(new AEntityQuery<Mercedes>() {
 
 			@Override
 			public boolean test(Mercedes entity) {
@@ -82,7 +82,7 @@ public class EntityCacheTest extends ATest {
 		});
 		assertSize(mercedeses, 1);
 
-		Set<AEntity> cars = cache.list(new AEntityQuery<Car>() {
+		Set<AEntity> cars = cache.findAllAsSet(new AEntityQuery<Car>() {
 
 			@Override
 			public boolean test(Car entity) {
@@ -100,10 +100,10 @@ public class EntityCacheTest extends ATest {
 	@Test
 	public void isInstanceOf() {
 		EntitiesCache cache = new EntitiesCache();
-		assertTrue(cache.isInstanceOf(Car.class, Car.class));
-		assertTrue(cache.isInstanceOf(Mercedes.class, Car.class));
-		assertTrue(cache.isInstanceOf(Mercedes.class, AEntity.class));
-		assertFalse(cache.isInstanceOf(Car.class, Mercedes.class));
+		assertTrue(AEntityQuery.isInstanceOf(Car.class, Car.class));
+		assertTrue(AEntityQuery.isInstanceOf(Mercedes.class, Car.class));
+		assertTrue(AEntityQuery.isInstanceOf(Mercedes.class, AEntity.class));
+		assertFalse(AEntityQuery.isInstanceOf(Car.class, Mercedes.class));
 	}
 
 	public static class Mercedes extends Car {}

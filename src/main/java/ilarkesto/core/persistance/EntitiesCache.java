@@ -43,32 +43,33 @@ public class EntitiesCache<E extends Entity> implements EntitiesProvider<E> {
 		return ret;
 	}
 
-	public Set<E> list(AEntityQuery query) {
-		Class queryType = query.getType();
+	public Set<E> findAllAsSet(AEntityQuery query) {
+		return findAll(query, new HashSet<E>());
+	}
 
-		Set<E> ret = new HashSet<E>();
+	@Override
+	public <C extends Collection<E>> C findAll(AEntityQuery<E> query, C resultCollection) {
 		for (Entry<Class, Map<String, E>> entry : entitiesByTypeById.entrySet()) {
-			if (queryType != null) {
-				Class type = entry.getKey();
-				if (!isInstanceOf(type, queryType)) continue;
-			}
+			if (!query.testType(entry.getKey())) continue;
+
 			Map<String, E> entitiesById = entry.getValue();
-			for (E entity : entitiesById.values()) {
-				if (query.test(entity)) ret.add(entity);
+			if (query.getClass().equals(AllByTypeQuery.class)) {
+				resultCollection.addAll(entitiesById.values());
+			} else {
+				for (E entity : entitiesById.values()) {
+					if (query.test(entity)) resultCollection.add(entity);
+				}
 			}
 		}
 
-		return ret;
+		return resultCollection;
 	}
 
-	public E get(AEntityQuery query) {
-		Class queryType = query.getType();
-
+	@Override
+	public E findFirst(AEntityQuery query) {
 		for (Entry<Class, Map<String, E>> entry : entitiesByTypeById.entrySet()) {
-			if (queryType != null) {
-				Class type = entry.getKey();
-				if (!isInstanceOf(type, queryType)) continue;
-			}
+			if (!query.testType(entry.getKey())) continue;
+
 			Map<String, E> entitiesById = entry.getValue();
 			for (E entity : entitiesById.values()) {
 				if (query.test(entity)) return entity;
@@ -76,13 +77,6 @@ public class EntitiesCache<E extends Entity> implements EntitiesProvider<E> {
 		}
 
 		return null;
-	}
-
-	boolean isInstanceOf(Class givenType, Class requiredType) {
-		if (requiredType.equals(givenType)) return true;
-		Class superType = givenType.getSuperclass();
-		if (superType.equals(Object.class)) return false;
-		return isInstanceOf(superType, requiredType);
 	}
 
 	public void add(E entity) {
@@ -118,6 +112,7 @@ public class EntitiesCache<E extends Entity> implements EntitiesProvider<E> {
 		}
 	}
 
+	@Override
 	public boolean containsWithId(String id) {
 		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
 			if (entitiesById.containsKey(id)) return true;

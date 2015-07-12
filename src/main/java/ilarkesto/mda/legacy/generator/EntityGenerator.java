@@ -451,7 +451,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 								+ "Id());");
 					}
 					ln("            }");
-					ln("            }.getFirst();");
+					ln("            }.findFirst();");
 					ln("            }");
 					ln("            @Override");
 					ln("            public String toString() {");
@@ -470,7 +470,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					ln("        return", p.getName() + "BackReferencesCache.getById(" + p.getName() + ".getId());");
 				} else {
 					ln("        return (" + bean.getName() + ") " + Transaction.class.getName()
-							+ ".get().getFirst(new " + queryName + "() {");
+							+ ".get().findFirst(new " + queryName + "() {");
 					ln("            @Override");
 					ln("            public boolean test(" + bean.getName() + " entity) {");
 					if (p.isCollection()) {
