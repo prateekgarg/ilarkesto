@@ -43,7 +43,7 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 	}
 
 	public final boolean isPersisted() {
-		return AEntityDatabase.get().getTransaction().contains(getId());
+		return AEntityDatabase.get().getTransaction().containsWithId(getId());
 	}
 
 	@Override
@@ -119,20 +119,20 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 	}
 
 	public static boolean exists(String id) {
-		return Transaction.get().contains(id);
+		return Transaction.get().containsWithId(id);
 	}
 
 	public static AEntity getById(String id) {
 		if (id == null) return null;
-		return Transaction.get().get(id);
+		return Transaction.get().getById(id);
 	}
 
 	public static List<AEntity> getByIds(Collection<String> ids) {
-		return Transaction.get().list(ids);
+		return Transaction.get().getByIdsAsList(ids);
 	}
 
 	public static Set<AEntity> getByIdsAsSet(Collection<String> ids) {
-		return Transaction.get().listAsSet(ids);
+		return Transaction.get().getByIdsAsSet(ids);
 	}
 
 }

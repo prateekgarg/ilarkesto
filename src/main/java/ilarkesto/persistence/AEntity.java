@@ -75,7 +75,7 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 	}
 
 	public static List<AEntity> getByIds(Collection<String> ids) {
-		return daoService.getByIds(ids);
+		return daoService.getByIdsAsList(ids);
 	}
 
 	public static Set<AEntity> getByIdsAsSet(Collection<String> ids) {

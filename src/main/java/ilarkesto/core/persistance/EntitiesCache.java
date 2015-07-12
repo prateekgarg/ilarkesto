@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -18,11 +18,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class EntityCache<E extends Entity> {
+public class EntitiesCache<E extends Entity> implements EntitiesProvider<E> {
 
 	private Map<Class, Map<String, E>> entitiesByTypeById = new HashMap<Class, Map<String, E>>();
 
@@ -117,14 +118,15 @@ public class EntityCache<E extends Entity> {
 		}
 	}
 
-	public boolean contains(String id) {
+	public boolean containsWithId(String id) {
 		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
 			if (entitiesById.containsKey(id)) return true;
 		}
 		return false;
 	}
 
-	public E get(String id) throws EntityDoesNotExistException {
+	@Override
+	public E getById(String id) throws EntityDoesNotExistException {
 		E entity = null;
 		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
 			entity = entitiesById.get(id);
@@ -134,12 +136,23 @@ public class EntityCache<E extends Entity> {
 		return entity;
 	}
 
-	public Set<E> list(Collection<String> ids) throws EntityDoesNotExistException {
-		Set<E> ret = new HashSet<E>();
+	@Override
+	public Set<E> getByIdsAsSet(Collection<String> ids) throws EntityDoesNotExistException {
+		return getByIds(ids, new HashSet<E>(ids.size()));
+	}
+
+	@Override
+	public List<E> getByIdsAsList(Collection<String> ids) throws EntityDoesNotExistException {
+		return getByIds(ids, new ArrayList<E>(ids.size()));
+	}
+
+	@Override
+	public <C extends Collection<E>> C getByIds(Collection<String> ids, C resultContainer)
+			throws EntityDoesNotExistException {
 		for (String id : ids) {
-			ret.add(get(id));
+			resultContainer.add(getById(id));
 		}
-		return ret;
+		return resultContainer;
 	}
 
 	public int size() {

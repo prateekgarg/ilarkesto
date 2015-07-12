@@ -1,19 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.core.persistance;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
@@ -25,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +41,7 @@ public class Transaction extends ATransaction<AEntity> {
 	private boolean ensuringIntegrity;
 	private LinkedList<Runnable> runnablesAfterCommit;
 
-	private EntityCache<AEntity> modified = new EntityCache<AEntity>();
+	private EntitiesCache<AEntity> modified = new EntitiesCache<AEntity>();
 	private Map<String, Map<String, String>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, String>>();
 	private Set<String> deleted = new HashSet<String>();
 
@@ -53,6 +53,7 @@ public class Transaction extends ATransaction<AEntity> {
 		this.ensureIntegrityOnCommit = ensureIntegrityOnCommit;
 	}
 
+	@Override
 	public void commit() {
 		// if (autoCommit) throw new IllegalStateException("Transaction is autoCommit");
 		if (!isEmpty()) {
@@ -83,7 +84,7 @@ public class Transaction extends ATransaction<AEntity> {
 			for (String id : deleted) {
 				AEntity deletedEntity;
 				try {
-					deletedEntity = backend.get(id);
+					deletedEntity = backend.getById(id);
 				} catch (EntityDoesNotExistException ex) {
 					continue;
 				}
@@ -115,6 +116,7 @@ public class Transaction extends ATransaction<AEntity> {
 		return sb.toString();
 	}
 
+	@Override
 	public void rollback() {
 		log.info("rollback()", toString());
 		backend.onTransactionFinished(this);
@@ -136,7 +138,7 @@ public class Transaction extends ATransaction<AEntity> {
 
 	public void modified(AEntity entity, String field, String value) {
 		if (ignoreModifications) return;
-		if (!contains(entity.getId())) return;
+		if (!containsWithId(entity.getId())) return;
 		log.info(name, "modified", toString(entity), field, value);
 		if (autoCommit) {
 			backend.update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value),
@@ -174,31 +176,17 @@ public class Transaction extends ATransaction<AEntity> {
 		return isDeleted(entity.getId());
 	}
 
-	public boolean contains(String id) {
+	public boolean containsWithId(String id) {
 		if (deleted.contains(id)) return false;
-		return modified.contains(id) || backend.contains(id);
+		return modified.containsWithId(id) || backend.containsWithId(id);
 	}
 
-	public AEntity get(String id) {
-		if (id == null) return null;
+	@Override
+	public AEntity getById(String id) {
+		Args.assertNotNull(id, "id");
 		if (deleted.contains(id)) throw new EntityDoesNotExistException(id);
-		if (modified.contains(id)) return modified.get(id);
-		return backend.get(id);
-	}
-
-	public Set<AEntity> listAsSet(Collection<String> ids) {
-		return list(ids, new HashSet<AEntity>());
-	}
-
-	public List<AEntity> list(Collection<String> ids) {
-		return list(ids, new ArrayList<AEntity>(ids.size()));
-	}
-
-	private <C extends Collection<AEntity>> C list(Collection<String> ids, C ret) {
-		for (String id : ids) {
-			ret.add(get(id));
-		}
-		return ret;
+		if (modified.containsWithId(id)) return modified.getById(id);
+		return backend.getById(id);
 	}
 
 	public AEntity getFirst(AEntityQuery query) {

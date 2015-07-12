@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -22,7 +22,6 @@ import ilarkesto.id.IdentifiableResolver;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Transaction extends ATransaction<AEntity> implements IdentifiableResolver<AEntity> {
@@ -67,6 +66,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 
 	private boolean committed;
 
+	@Override
 	public void commit() {
 		if (committed) throw new RuntimeException("Transaction already committed: " + this);
 		try {
@@ -119,6 +119,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		entitiesRegistered.clear();
 	}
 
+	@Override
 	public void rollback() {
 		log.debug("Transaction canceled:", this);
 		entitiesToSave.clear();
@@ -133,7 +134,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		return false;
 	}
 
-	public boolean isPersistent(String id) {
+	public boolean containsWithId(String id) {
 		if (id == null) return false;
 		AEntity result = entityStore.getById(id);
 		if (result != null) return true;
@@ -166,25 +167,6 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 			}
 		}
 		if (result != null && entitiesToDelete.contains(result)) return null;
-		return result;
-	}
-
-	@Override
-	public List<AEntity> getByIds(Collection<String> ids) {
-		List<AEntity> result = entityStore.getByIds(ids);
-		for (AEntity entity : entitiesToSave) {
-			if (ids.contains(entity.getId())) {
-				result.remove(entity);
-				result.add(entity);
-			}
-		}
-		for (AEntity entity : entitiesRegistered) {
-			if (ids.contains(entity.getId())) {
-				result.remove(entity);
-				result.add(entity);
-			}
-		}
-		result.removeAll(entitiesToDelete);
 		return result;
 	}
 

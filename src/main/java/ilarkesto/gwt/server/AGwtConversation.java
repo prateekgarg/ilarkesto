@@ -132,7 +132,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		if (entity == null) return;
 
 		if (AWebApplication.get().getDaoService() != null
-				&& !ilarkesto.persistence.Transaction.get().isPersistent(entity.getId())) {
+				&& !ilarkesto.persistence.Transaction.get().containsWithId(entity.getId())) {
 			getNextData().addDeletedEntity(entity.getId());
 			return;
 		}

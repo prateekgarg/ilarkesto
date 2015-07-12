@@ -107,12 +107,12 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 	}
 
 	@Override
-	public List<AEntity> getByIds(Collection<String> ids) {
+	public List<AEntity> getByIdsAsList(Collection<String> ids) {
 		return getEntitiesByIds(ids);
 	}
 
 	public Set<AEntity> getByIdsAsSet(Collection<String> ids) {
-		return new HashSet<AEntity>(getByIds(ids));
+		return new HashSet<AEntity>(getByIdsAsList(ids));
 	}
 
 	public List<AEntity> getEntitiesByIds(final Collection<String> ids) {

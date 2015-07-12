@@ -33,10 +33,6 @@ public abstract class AEntityDatabase implements EntitiesBackend<AEntity, Transa
 
 	protected abstract Map<String, ValuesCache> createValuesCachesMap();
 
-	public abstract AEntity get(String id);
-
-	public abstract Set<AEntity> list(Collection<String> ids);
-
 	public abstract AEntity get(AEntityQuery query);
 
 	public abstract Set<AEntity> list(AEntityQuery query);
@@ -66,9 +62,10 @@ public abstract class AEntityDatabase implements EntitiesBackend<AEntity, Transa
 		return false;
 	}
 
-	public boolean contains(String id) {
+	@Override
+	public boolean containsWithId(String id) {
 		try {
-			return get(id) != null;
+			return getById(id) != null;
 		} catch (EntityDoesNotExistException ex) {
 			return false;
 		}

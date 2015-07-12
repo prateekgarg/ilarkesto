@@ -144,7 +144,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 			for (String id : deleted) {
 				AEntity entity;
 				try {
-					entity = cache.get(id);
+					entity = cache.getById(id);
 				} catch (EntityDoesNotExistException ex) {
 					continue;
 				}

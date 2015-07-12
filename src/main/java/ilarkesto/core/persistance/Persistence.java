@@ -236,7 +236,7 @@ public class Persistence {
 		if (AEntityDatabase.instance != null) {
 			AEntity entity = null;
 			try {
-				entity = Transaction.get().get(entityId);
+				entity = Transaction.get().getById(entityId);
 			} catch (EntityDoesNotExistException ex) {}
 			if (entity != null) entity.ensureIntegrity();
 		}

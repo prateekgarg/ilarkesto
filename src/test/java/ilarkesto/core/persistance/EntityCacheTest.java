@@ -25,7 +25,7 @@ public class EntityCacheTest extends ATest {
 
 	@Test
 	public void basic() {
-		EntityCache cache = new EntityCache();
+		EntitiesCache cache = new EntitiesCache();
 		cache.add(new Car().setName("a"));
 		cache.add(new Car().setName("b"));
 		cache.add(new Car().setName("c"));
@@ -35,7 +35,7 @@ public class EntityCacheTest extends ATest {
 
 	// @Test
 	public void concurrency() {
-		final EntityCache cache = new EntityCache();
+		final EntitiesCache cache = new EntitiesCache();
 		cache.add(new Car().setName("c1"));
 		cache.add(new Car().setName("c2"));
 		cache.add(new Mercedes().setName("m1"));
@@ -63,7 +63,7 @@ public class EntityCacheTest extends ATest {
 
 	@Test
 	public void query() {
-		EntityCache cache = new EntityCache();
+		EntitiesCache cache = new EntitiesCache();
 		cache.add(new Car().setName("c1"));
 		cache.add(new Car().setName("c2"));
 		cache.add(new Mercedes().setName("m1"));
@@ -99,7 +99,7 @@ public class EntityCacheTest extends ATest {
 
 	@Test
 	public void isInstanceOf() {
-		EntityCache cache = new EntityCache();
+		EntitiesCache cache = new EntitiesCache();
 		assertTrue(cache.isInstanceOf(Car.class, Car.class));
 		assertTrue(cache.isInstanceOf(Mercedes.class, Car.class));
 		assertTrue(cache.isInstanceOf(Mercedes.class, AEntity.class));

@@ -78,7 +78,7 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 				String id = data.get("id");
 				AEntity entity;
 				try {
-					entity = cache.get(id);
+					entity = cache.getById(id);
 				} catch (EntityDoesNotExistException ex) {
 					String type = data.get("@type");
 					entity = factory.createEntity(type, id);

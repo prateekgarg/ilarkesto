@@ -147,14 +147,14 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	private Map<String, AEntity> getDao(Class<? extends AEntity> type) {
-		Map<String, AEntity> dao = data.get(type);
+		Map<String, AEntity> dao = entitiesByIdByType.get(type);
 		if (dao == null) { throw new RuntimeException("Unknown entity type: " + type); }
 		return dao;
 	}
 
 	@Override
 	public AEntity getById(String id) {
-		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : data.entrySet()) {
+		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : entitiesByIdByType.entrySet()) {
 			AEntity entity = daoEntry.getValue().get(id);
 			if (entity != null) return entity;
 		}
@@ -162,8 +162,16 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
+	public boolean containsWithId(String id) {
+		for (Map<String, AEntity> entitiesById : entitiesByIdByType.values()) {
+			if (entitiesById.containsKey(id)) return true;
+		}
+		return false;
+	}
+
+	@Override
 	public AEntity getEntity(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
-		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : data.entrySet()) {
+		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : entitiesByIdByType.entrySet()) {
 			if (typeFilter != null && !typeFilter.test(daoEntry.getKey())) continue;
 			for (AEntity entity : daoEntry.getValue().values()) {
 				if (entityFilter.test(entity)) return entity;
@@ -173,22 +181,31 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
-	public List<AEntity> getByIds(Collection<String> ids) {
-		List<AEntity> result = new ArrayList<AEntity>(ids.size());
-		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : data.entrySet()) {
+	public List<AEntity> getByIdsAsList(Collection<String> ids) {
+		return getByIds(ids, new ArrayList<AEntity>(ids.size()));
+	}
+
+	@Override
+	public Set<AEntity> getByIdsAsSet(Collection<String> ids) {
+		return getByIds(ids, new HashSet<AEntity>(ids.size()));
+	}
+
+	@Override
+	public <C extends Collection<AEntity>> C getByIds(Collection<String> ids, C resultContainer) {
+		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : entitiesByIdByType.entrySet()) {
 			Map<String, AEntity> entites = entry.getValue();
 			for (String id : ids) {
 				AEntity entity = entites.get(id);
-				if (entity != null) result.add(entity);
+				if (entity != null) resultContainer.add(entity);
 			}
 		}
-		return result;
+		return resultContainer;
 	}
 
 	@Override
 	public Set<AEntity> getEntities(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		Set<AEntity> result = new HashSet<AEntity>();
-		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : data.entrySet()) {
+		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : entitiesByIdByType.entrySet()) {
 			if (typeFilter != null && !typeFilter.test(entry.getKey())) continue;
 			if (entityFilter == null) {
 				result.addAll(entry.getValue().values());
@@ -204,7 +221,7 @@ public class FileEntityStore implements EntityStore {
 	@Override
 	public int getEntitiesCount(Predicate<Class> typeFilter, Predicate<AEntity> entityFilter) {
 		int result = 0;
-		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : data.entrySet()) {
+		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : entitiesByIdByType.entrySet()) {
 			if (typeFilter != null && !typeFilter.test(entry.getKey())) continue;
 			if (entityFilter == null) {
 				result += entry.getValue().size();
@@ -219,7 +236,7 @@ public class FileEntityStore implements EntityStore {
 
 	private Map<Class, String> aliases = new HashMap<Class, String>();
 
-	private Map<Class<AEntity>, Map<String, AEntity>> data = new HashMap<Class<AEntity>, Map<String, AEntity>>();
+	private Map<Class<AEntity>, Map<String, AEntity>> entitiesByIdByType = new HashMap<Class<AEntity>, Map<String, AEntity>>();
 
 	@Override
 	public void setAlias(String alias, Class cls) {
@@ -234,7 +251,7 @@ public class FileEntityStore implements EntityStore {
 		aliases.put(cls, alias);
 
 		Map<String, AEntity> entities = new HashMap<String, AEntity>();
-		data.put((Class<AEntity>) cls, entities);
+		entitiesByIdByType.put((Class<AEntity>) cls, entities);
 
 		beanSerializer.setAlias(Str.lowercaseFirstLetter(alias), cls);
 		beanSerializer.setAlias(alias, cls);

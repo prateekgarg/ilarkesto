@@ -92,7 +92,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	}
 
 	private boolean isPersistent(E entity) {
-		return Transaction.get().isPersistent(entity.getId());
+		return Transaction.get().containsWithId(entity.getId());
 	}
 
 	public boolean isDeleted(E entity) {
@@ -153,9 +153,9 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	}
 
 	@Override
-	public List<E> getByIds(Collection<String> entitiesIds) {
+	public List<E> getByIdsAsList(Collection<String> entitiesIds) {
 		Set<String> ids = new HashSet<String>(entitiesIds);
-		List<E> result = (List<E>) Transaction.get().getByIds(entitiesIds);
+		List<E> result = (List<E>) Transaction.get().getByIdsAsList(entitiesIds);
 		if (result.size() != ids.size()) {
 			result = new ArrayList<E>();
 			for (String id : ids) {
@@ -167,12 +167,12 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	}
 
 	public Set<E> getByIdsAsSet(Collection<String> entitiesIds) {
-		return new HashSet<E>(getByIds(entitiesIds));
+		return new HashSet<E>(getByIdsAsList(entitiesIds));
 	}
 
 	@Deprecated
 	public List<E> getEntitiesByIds(Collection<String> entitiesIds) {
-		return getByIds(entitiesIds);
+		return getByIdsAsList(entitiesIds);
 	}
 
 	public Set<E> getEntitiesVisibleForUser(final AUser user) {
