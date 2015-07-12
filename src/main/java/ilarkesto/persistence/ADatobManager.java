@@ -29,4 +29,6 @@ public abstract class ADatobManager<D extends Datob> {
 
 	public abstract void ensureIntegrityOfStructures(Collection<D> views);
 
+	public abstract boolean isPersisted();
+
 }

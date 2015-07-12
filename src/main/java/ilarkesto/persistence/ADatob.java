@@ -84,6 +84,10 @@ public abstract class ADatob implements Datob, Searchable {
 
 	public void ensureIntegrity() {}
 
+	public boolean isPersisted() {
+		return getManager().isPersisted();
+	}
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName();
@@ -153,6 +157,11 @@ public abstract class ADatob implements Datob, Searchable {
 				((AStructure) structure).setManager(this);
 				structure.ensureIntegrity();
 			}
+		}
+
+		@Override
+		public boolean isPersisted() {
+			return ADatob.this.isPersisted();
 		}
 
 	}

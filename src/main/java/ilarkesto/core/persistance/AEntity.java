@@ -39,11 +39,11 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 
 	@Override
 	protected void doPersist() {
-		AEntityDatabase.get().getTransaction().persist(this);
+		Transaction.get().persist(this);
 	}
 
 	public final boolean isPersisted() {
-		return AEntityDatabase.get().getTransaction().containsWithId(getId());
+		return Transaction.get().containsWithId(getId());
 	}
 
 	@Override
@@ -66,10 +66,6 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 		return getDeleteVeto() == null;
 	}
 
-	public final boolean isDeleted() {
-		return AEntityDatabase.get().getTransaction().isDeleted(this);
-	}
-
 	private transient boolean ensuringIntegrity;
 
 	/**
@@ -77,7 +73,7 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 	 */
 	public final void ensureIntegrity() {
 		if (ensuringIntegrity) return;
-		if (isDeleted()) return;
+		if (!isPersisted()) return;
 		ensuringIntegrity = true;
 
 		try {

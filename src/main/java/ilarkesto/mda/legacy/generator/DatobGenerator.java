@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -233,7 +233,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (!bean.getProperties().isEmpty()) {
 			ln();
 			ln("    protected void repairDeadReferences(String entityId) {");
-			ln("        if (isDeleted()) return;");
+			ln("        if (!isPersisted()) return;");
 			ln("        super.repairDeadReferences(entityId);");
 			for (PropertyModel p : bean.getProperties()) {
 				if (p.isCollection()) {
@@ -615,7 +615,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (p.isReference()) {
 			ln();
 			ln("    protected void repairDead" + pNameSingularUpper + "Reference(String entityId) {");
-			ln("        if (isDeleted()) return;");
+			ln("        if (!isPersisted()) return;");
 			ln("        if (" + getFieldName(p) + " == null ) return;");
 			ln("        if (" + getFieldName(p) + ".remove(entityId)) {");
 			writeModified(p);
@@ -792,7 +792,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			ln();
 			ln("    protected void repairDead" + Str.uppercaseFirstLetter(p.getNameSingular())
 					+ "Reference(String entityId) {");
-			ln("        if (isDeleted()) return;");
+			ln("        if (!isPersisted()) return;");
 			ln("        if (" + getFieldName(p) + " == null || entityId.equals(" + getFieldName(p) + ")) {");
 			if (pRef.isMaster()) {
 				ln("            repairMissingMaster();");
