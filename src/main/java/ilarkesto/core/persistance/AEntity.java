@@ -1,29 +1,26 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.core.persistance;
 
-import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.search.SearchText;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class AEntity extends ABaseEntity implements TransferableEntity {
@@ -40,6 +37,7 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 		return AEntityDatabase.get().getValuesCache(getId());
 	}
 
+	@Override
 	public final void persist() {
 		updateLastModified();
 		AEntityDatabase.get().getTransaction().persist(this);
@@ -96,9 +94,6 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 
 	protected void onEnsureIntegrity() {}
 
-	@Override
-	public void collectPassengers(TransferBus ret) {}
-
 	/**
 	 * Gets called when the master entity is deleted.
 	 */
@@ -113,26 +108,6 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 
 	public boolean matches(SearchText search) {
 		return search.matches(toString());
-	}
-
-	@Override
-	public final HashMap<String, String> createPropertiesMap() {
-		HashMap<String, String> properties = new HashMap<String, String>();
-		storeProperties(properties);
-		return properties;
-	}
-
-	protected void storeProperties(Map<String, String> properties) {
-		properties.put("@type", Str.getSimpleName(getClass()));
-		properties.put("id", getId());
-		properties.put("modificationTime", getModificationTime().toString());
-	}
-
-	public void updateProperties(Map<String, String> properties) {
-		String idFromProperties = properties.get("id");
-		if (!isId(idFromProperties))
-			throw new IllegalArgumentException("Updating properties on " + Str.getSimpleName(getClass()) + " "
-					+ getId() + " failed. Given properties have other id: " + idFromProperties);
 	}
 
 	protected String asString() {

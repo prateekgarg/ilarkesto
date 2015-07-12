@@ -15,13 +15,11 @@
 package ilarkesto.gwt.client;
 
 import ilarkesto.core.persistance.ABaseEntity;
-import ilarkesto.core.persistance.TransferBus;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.Tm;
 import ilarkesto.gwt.client.editor.AEditorModel;
 import ilarkesto.gwt.client.undo.AUndoOperation;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -71,9 +69,6 @@ public abstract class AGwtEntity extends ABaseEntity implements TransferableEnti
 
 	protected void onAfterPersist() {}
 
-	@Override
-	public <E extends TransferableEntity> void collectPassengers(TransferBus bus) {}
-
 	void setCreated() {
 		this.inCreation = false;
 	}
@@ -82,17 +77,6 @@ public abstract class AGwtEntity extends ABaseEntity implements TransferableEnti
 		if (inCreation) return;
 		getDao().entityPropertyChanged(this, property, value);
 		updateLastModified();
-	}
-
-	public void storeProperties(Map<String, String> properties) {
-		properties.put("id", getId());
-	}
-
-	@Override
-	public Map<String, String> createPropertiesMap() {
-		Map<String, String> properties = new HashMap<String, String>();
-		storeProperties(properties);
-		return properties;
 	}
 
 	public boolean matchesKey(String key) {

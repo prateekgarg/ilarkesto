@@ -14,12 +14,39 @@
  */
 package ilarkesto.core.persistance;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Uuid;
 
-public abstract class ABaseEntity implements Entity {
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class ABaseEntity implements TransferableEntity {
 
 	private String id;
 	private Long modificationTime;
+
+	public void updateProperties(Map<String, String> properties) {
+		String idFromProperties = properties.get("id");
+		if (!isId(idFromProperties))
+			throw new IllegalArgumentException("Updating properties on " + Str.getSimpleName(getClass()) + " "
+					+ getId() + " failed. Given properties have other id: " + idFromProperties);
+	}
+
+	@Override
+	public final HashMap<String, String> createPropertiesMap() {
+		HashMap<String, String> properties = new HashMap<String, String>();
+		storeProperties(properties);
+		return properties;
+	}
+
+	protected void storeProperties(Map<String, String> properties) {
+		properties.put("@type", Str.getSimpleName(getClass()));
+		properties.put("id", getId());
+		properties.put("modificationTime", getModificationTime().toString());
+	}
+
+	@Override
+	public void collectPassengers(TransferBus bus) {}
 
 	@Override
 	public final String getId() {

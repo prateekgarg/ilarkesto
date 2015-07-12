@@ -20,7 +20,6 @@ import ilarkesto.base.Iconized;
 import ilarkesto.base.OverrideExpectedException;
 import ilarkesto.core.persistance.ABaseEntity;
 import ilarkesto.core.persistance.Persistence;
-import ilarkesto.core.persistance.TransferBus;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.search.SearchText;
 import ilarkesto.core.search.Searchable;
@@ -28,10 +27,8 @@ import ilarkesto.core.time.DateAndTime;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public abstract class AEntity extends ABaseEntity implements Datob, TransferableEntity, Iconized, Searchable {
@@ -135,31 +132,12 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 		// super.ensureIntegrity();
 	}
 
-	protected void storeProperties(Map<String, String> properties) {
-		// super.storeProperties(properties);
-		properties.put("@type", getDao().getEntityName());
-		properties.put("id", getId());
-		properties.put("modificationTime", getModificationTime().toString());
-	}
-
-	@Override
-	public <E extends TransferableEntity> void collectPassengers(TransferBus bus) {}
-
-	public void updateProperties(Map<String, String> properties) {}
-
 	protected void repairDeadReferences(String entityId) {}
 
 	protected final void repairMissingMaster() {
 		ADatobManager manager = getManager();
 		if (manager == null) return;
 		manager.onMissingMaster(this);
-	}
-
-	@Override
-	public final HashMap<String, String> createPropertiesMap() {
-		HashMap<String, String> properties = new HashMap<String, String>();
-		storeProperties(properties);
-		return properties;
 	}
 
 	@Override
