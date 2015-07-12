@@ -1,20 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.mda.legacy.generator;
 
 import ilarkesto.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
@@ -409,7 +410,8 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln();
 				ln("    public final", bean.getName(), "set" + nameUpper + "(" + type, p.getName() + ") {");
 				ln("        String id = " + p.getName() + " == null ? null : " + p.getName() + ".getId();");
-				ln("        if (equals(this." + p.getName() + "Id, id)) return (" + bean.getName() + ") this;");
+				ln("        if (" + Utl.class.getName() + ".equals(this." + p.getName() + "Id, id)) return ("
+						+ bean.getName() + ") this;");
 				ln("        this." + p.getName() + "Id = id;");
 				writePropertyChanged(p.getName() + "Id");
 				ln("        return (" + bean.getName() + ")this;");
@@ -418,7 +420,7 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln("    public final boolean is" + nameUpper + "(" + type.replace(".server.", ".client."), p.getName()
 						+ ") {");
 				ln("        String id = " + p.getName() + "==null ? null : " + p.getName() + ".getId();");
-				ln("        return equals(this." + p.getName() + "Id" + ", id);");
+				ln("        return " + Utl.class.getName() + ".equals(this." + p.getName() + "Id" + ", id);");
 				ln("    }");
 			} else {
 				// simple property
@@ -451,7 +453,7 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 				ln();
 				ln("    public final boolean is" + nameUpper + "(" + type.replace(".server.", ".client."), p.getName()
 						+ ") {");
-				ln("        return equals(this." + p.getName() + ", " + p.getName() + ");");
+				ln("        return " + Utl.class.getName() + ".equals(this." + p.getName() + ", " + p.getName() + ");");
 				ln("    }");
 				if (p.isOptionRestricted()) {
 					String optionType = type;
