@@ -46,15 +46,6 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 		}
 	}
 
-	public Collection<ADao> getDaos() {
-		return daos.values();
-	}
-
-	public void addDao(ADao dao) {
-		daos.put(dao.getEntityClass(), dao);
-		entityStore.load(dao.getEntityClass(), dao.getEntityName(), dao.isSkipLoadingEntityOnFailure());
-	}
-
 	public ADao getDaoByName(String entityName) {
 		for (ADao manager : daos.values()) {
 			if (manager.getEntityName().equals(entityName)) return manager;
@@ -164,7 +155,8 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 
 		for (ADao dao : context.getBeansByType(ADao.class)) {
 			if (dao.getEntityClass() == null) continue;
-			addDao(dao);
+			daos.put(dao.getEntityClass(), dao);
+			entityStore.load(dao.getEntityClass(), dao.getEntityName(), dao.isSkipLoadingEntityOnFailure());
 		}
 
 		initialized = true;
