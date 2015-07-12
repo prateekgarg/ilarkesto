@@ -22,13 +22,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class EntityCache {
+public class EntityCache<E extends Entity> {
 
-	private Map<Class, Map<String, AEntity>> entitiesByTypeById = new HashMap<Class, Map<String, AEntity>>();
+	private Map<Class, Map<String, E>> entitiesByTypeById = new HashMap<Class, Map<String, E>>();
 
-	public Collection<AEntity> getAll() {
-		ArrayList<AEntity> ret = new ArrayList<AEntity>();
-		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+	public Collection<E> getAll() {
+		ArrayList<E> ret = new ArrayList<E>();
+		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
 			ret.addAll(entitiesById.values());
 		}
 		return ret;
@@ -36,23 +36,23 @@ public class EntityCache {
 
 	public Set<String> getAllIds() {
 		Set<String> ret = new HashSet<String>();
-		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
 			ret.addAll(entitiesById.keySet());
 		}
 		return ret;
 	}
 
-	public Set<AEntity> list(AEntityQuery query) {
+	public Set<E> list(AEntityQuery query) {
 		Class queryType = query.getType();
 
-		Set<AEntity> ret = new HashSet<AEntity>();
-		for (Entry<Class, Map<String, AEntity>> entry : entitiesByTypeById.entrySet()) {
+		Set<E> ret = new HashSet<E>();
+		for (Entry<Class, Map<String, E>> entry : entitiesByTypeById.entrySet()) {
 			if (queryType != null) {
 				Class type = entry.getKey();
 				if (!isInstanceOf(type, queryType)) continue;
 			}
-			Map<String, AEntity> entitiesById = entry.getValue();
-			for (AEntity entity : entitiesById.values()) {
+			Map<String, E> entitiesById = entry.getValue();
+			for (E entity : entitiesById.values()) {
 				if (query.test(entity)) ret.add(entity);
 			}
 		}
@@ -60,16 +60,16 @@ public class EntityCache {
 		return ret;
 	}
 
-	public AEntity get(AEntityQuery query) {
+	public E get(AEntityQuery query) {
 		Class queryType = query.getType();
 
-		for (Entry<Class, Map<String, AEntity>> entry : entitiesByTypeById.entrySet()) {
+		for (Entry<Class, Map<String, E>> entry : entitiesByTypeById.entrySet()) {
 			if (queryType != null) {
 				Class type = entry.getKey();
 				if (!isInstanceOf(type, queryType)) continue;
 			}
-			Map<String, AEntity> entitiesById = entry.getValue();
-			for (AEntity entity : entitiesById.values()) {
+			Map<String, E> entitiesById = entry.getValue();
+			for (E entity : entitiesById.values()) {
 				if (query.test(entity)) return entity;
 			}
 		}
@@ -84,27 +84,27 @@ public class EntityCache {
 		return isInstanceOf(superType, requiredType);
 	}
 
-	public void add(AEntity entity) {
+	public void add(E entity) {
 		Class type = entity.getClass();
-		Map<String, AEntity> entitiesById = entitiesByTypeById.get(type);
+		Map<String, E> entitiesById = entitiesByTypeById.get(type);
 		if (entitiesById == null) {
-			entitiesById = new HashMap<String, AEntity>();
+			entitiesById = new HashMap<String, E>();
 			entitiesByTypeById.put(type, entitiesById);
 		}
 		entitiesById.put(entity.getId(), entity);
 	}
 
-	public void addAll(Collection<AEntity> entities) {
+	public void addAll(Collection<E> entities) {
 		if (entities == null) return;
-		for (AEntity entity : entities) {
+		for (E entity : entities) {
 			add(entity);
 		}
 	}
 
-	public AEntity remove(String entityId) {
+	public E remove(String entityId) {
 		if (entityId == null) return null;
-		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
-			AEntity removed = entitiesById.remove(entityId);
+		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
+			E removed = entitiesById.remove(entityId);
 			if (removed != null) return removed;
 		}
 		return null;
@@ -118,15 +118,15 @@ public class EntityCache {
 	}
 
 	public boolean contains(String id) {
-		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
 			if (entitiesById.containsKey(id)) return true;
 		}
 		return false;
 	}
 
-	public AEntity get(String id) throws EntityDoesNotExistException {
-		AEntity entity = null;
-		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+	public E get(String id) throws EntityDoesNotExistException {
+		E entity = null;
+		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
 			entity = entitiesById.get(id);
 			if (entity != null) break;
 		}
@@ -134,8 +134,8 @@ public class EntityCache {
 		return entity;
 	}
 
-	public Set<AEntity> list(Collection<String> ids) throws EntityDoesNotExistException {
-		Set<AEntity> ret = new HashSet<AEntity>();
+	public Set<E> list(Collection<String> ids) throws EntityDoesNotExistException {
+		Set<E> ret = new HashSet<E>();
 		for (String id : ids) {
 			ret.add(get(id));
 		}
@@ -144,14 +144,14 @@ public class EntityCache {
 
 	public int size() {
 		int sum = 0;
-		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
 			sum += entitiesById.size();
 		}
 		return sum;
 	}
 
 	public boolean isEmpty() {
-		for (Map<String, AEntity> entitiesById : entitiesByTypeById.values()) {
+		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
 			if (!entitiesById.isEmpty()) return false;
 		}
 		return true;
@@ -160,7 +160,7 @@ public class EntityCache {
 	public final Map<Class, Integer> countEntities() {
 		Map<Class, Integer> countsByType = new HashMap<Class, Integer>();
 
-		for (Entry<Class, Map<String, AEntity>> entry : entitiesByTypeById.entrySet()) {
+		for (Entry<Class, Map<String, E>> entry : entitiesByTypeById.entrySet()) {
 			countsByType.put(entry.getKey(), entry.getValue().size());
 		}
 

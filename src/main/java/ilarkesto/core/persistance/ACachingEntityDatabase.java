@@ -20,7 +20,7 @@ import java.util.Set;
 
 public abstract class ACachingEntityDatabase extends AEntityDatabase {
 
-	protected EntityCache cache = new EntityCache();
+	protected EntityCache<AEntity> cache = new EntityCache<AEntity>();
 
 	protected abstract void onUpdate(Collection<AEntity> entities, Collection<String> entityIds,
 			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback);

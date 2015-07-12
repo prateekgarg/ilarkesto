@@ -103,7 +103,7 @@ class Transaction implements IdentifiableResolver<AEntity> {
 		}
 
 		log.debug("Persisting entities:", entitiesToSave, entitiesToDelete);
-		entityStore.persist(entitiesToSave, entitiesToDelete);
+		entityStore.update(entitiesToSave, Persist.getIdsAsList(entitiesToDelete), null, null);
 
 		log.debug("Transaction committed:", this);
 		entitiesToSave.clear();

@@ -89,19 +89,20 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
-	public synchronized void persist(Collection<AEntity> entitiesToSave, Collection<AEntity> entitiesToDelete) {
+	public void update(Collection<AEntity> modified, Collection<String> deletedIds,
+			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback) {
 		if (locked) throw new RuntimeException("Can not persist entity changes. EntityStore already locked.");
 
 		if (!versionSaved) saveVersion();
 
 		// create operations
-		List<Operation> operations = new ArrayList<FileEntityStore.Operation>(entitiesToSave.size()
-				+ entitiesToDelete.size());
-		for (AEntity entity : entitiesToSave) {
+		List<Operation> operations = new ArrayList<FileEntityStore.Operation>(modified.size() + deletedIds.size());
+		for (AEntity entity : modified) {
 			operations.add(new SaveOperation(entity));
 		}
-		for (AEntity entity : entitiesToDelete) {
-			operations.add(new DeleteOperation(entity));
+
+		for (String deletedId : deletedIds) {
+			operations.add(new DeleteOperation(getById(deletedId)));
 		}
 
 		// prepare operations
@@ -119,6 +120,8 @@ public class FileEntityStore implements EntityStore {
 			sb.append("\n    ").append(operation.toString());
 		}
 		log.debug("Entity changes persisted.", sb.toString());
+
+		if (callback != null) callback.run();
 	}
 
 	private Map<String, AEntity> getDao(Class<? extends AEntity> type) {
