@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class AEntityDatabase {
+public abstract class AEntityDatabase implements EntitiesBackend {
 
 	protected final Log log = Log.get(getClass());
 
@@ -46,9 +46,6 @@ public abstract class AEntityDatabase {
 	public abstract Set<AEntity> list(AEntityQuery query);
 
 	public abstract boolean isTransactionWithChangesOpen();
-
-	public abstract void update(Collection<AEntity> modified, Collection<String> deletedIds,
-			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback);
 
 	public abstract Collection<AEntity> listAll();
 
