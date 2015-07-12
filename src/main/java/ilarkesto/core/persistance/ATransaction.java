@@ -14,14 +14,6 @@
  */
 package ilarkesto.core.persistance;
 
-import java.util.Collection;
-import java.util.Map;
-
-public interface EntitiesBackend<E extends Entity, T extends ATransaction<E>> {
-
-	void update(Collection<E> modified, Collection<String> deletedIds,
-			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback);
-
-	T getTransaction();
+public class ATransaction<E extends Entity> {
 
 }

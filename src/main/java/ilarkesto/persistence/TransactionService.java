@@ -51,7 +51,7 @@ public class TransactionService implements IdentifiableResolver<AEntity> {
 		threadLocalTransaction.set(null);
 	}
 
-	private synchronized Transaction getCurrentTransaction(boolean autocreate) {
+	synchronized Transaction getCurrentTransaction(boolean autocreate) {
 		Transaction t = threadLocalTransaction.get();
 		if (t == null) {
 			if (!autocreate) return null;

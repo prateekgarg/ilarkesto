@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class AEntityDatabase implements EntitiesBackend<AEntity> {
+public abstract class AEntityDatabase implements EntitiesBackend<AEntity, Transaction> {
 
 	protected final Log log = Log.get(getClass());
 
@@ -32,8 +32,6 @@ public abstract class AEntityDatabase implements EntitiesBackend<AEntity> {
 	private Map<String, ValuesCache> valuesCachesById = createValuesCachesMap();
 
 	protected abstract Map<String, ValuesCache> createValuesCachesMap();
-
-	public abstract Transaction getTransaction();
 
 	public abstract void onTransactionFinished(Transaction transaction);
 

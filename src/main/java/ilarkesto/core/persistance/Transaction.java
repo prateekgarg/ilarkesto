@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Transaction {
+public class Transaction extends ATransaction<AEntity> {
 
 	private static final Log log = Log.get(Transaction.class);
 
@@ -158,6 +158,7 @@ public class Transaction {
 			backend.update(null, Arrays.asList(entityId), null, new CommitCallback());
 			return;
 		}
+		if (deleted.contains(entityId)) return;
 		deleted.add(entityId);
 		modified.remove(entityId);
 		backend.onEntityModified();

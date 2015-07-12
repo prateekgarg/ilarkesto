@@ -61,6 +61,7 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 	protected void writeContent() {
 		dao();
 		persist();
+		delete();
 		predicates();
 		constructors();
 		type();
@@ -70,6 +71,14 @@ public class GwtEntityGenerator extends ABeanGenerator<EntityModel> {
 		backReferences();
 		if (bean.isSearchable()) searchable();
 
+	}
+
+	private void delete() {
+		ln();
+		annotationOverride();
+		ln("    public void delete() {");
+		ln("        getDao().delete" + bean.getName() + "((" + bean.getName() + ")this);");
+		ln("    }");
 	}
 
 	private void persist() {
