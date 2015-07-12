@@ -61,12 +61,9 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 	// --- ---
 
 	@Override
-	public final void persist() {
+	protected void doPersist() {
 		getDao().saveEntity(this);
-		onAfterPersist();
 	}
-
-	protected void onAfterPersist() {}
 
 	public static AEntity getById(String entityId) {
 		return daoService.getEntityById(entityId);
