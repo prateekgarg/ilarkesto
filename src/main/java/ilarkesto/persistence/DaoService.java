@@ -80,7 +80,7 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 
 	public AEntity getEntityById(final String id) {
 		if (id == null) throw new IllegalArgumentException("id == null");
-		AEntity entity = transactionService.getEntity(null, new Predicate<AEntity>() {
+		AEntity entity = Transaction.get().getEntity(null, new Predicate<AEntity>() {
 
 			@Override
 			public boolean test(AEntity e) {
@@ -95,7 +95,7 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 
 	public boolean containsEntityWithId(final String id) {
 		if (id == null) throw new IllegalArgumentException("id == null");
-		AEntity entity = transactionService.getEntity(null, new Predicate<AEntity>() {
+		AEntity entity = Transaction.get().getEntity(null, new Predicate<AEntity>() {
 
 			@Override
 			public boolean test(AEntity e) {
@@ -118,7 +118,7 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 	public List<AEntity> getEntitiesByIds(final Collection<String> ids) {
 		List<AEntity> ret = new ArrayList<AEntity>(ids.size());
 		for (String id : ids)
-			ret.add(transactionService.getById(id));
+			ret.add(Transaction.get().getById(id));
 		return ret;
 	}
 
@@ -189,12 +189,6 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 
 	public void setEntityStore(EntityStore entityStore) {
 		this.entityStore = entityStore;
-	}
-
-	private TransactionService transactionService;
-
-	public void setTransactionService(TransactionService transactionService) {
-		this.transactionService = transactionService;
 	}
 
 }

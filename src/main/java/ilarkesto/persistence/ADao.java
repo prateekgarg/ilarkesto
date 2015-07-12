@@ -92,11 +92,11 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	}
 
 	private boolean isPersistent(E entity) {
-		return transactionService.isPersistent(entity.getId());
+		return Transaction.get().isPersistent(entity.getId());
 	}
 
 	public boolean isDeleted(E entity) {
-		return transactionService.isDeleted(entity);
+		return Transaction.get().isDeleted(entity);
 	}
 
 	public final Predicate<Class> getEntityTypeFilter() {
@@ -123,16 +123,16 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	}
 
 	public int getEntitiesCount(Predicate<E> predicate) {
-		return transactionService.getEntitiesCount(getEntityTypeFilter(), (Predicate<AEntity>) predicate);
+		return Transaction.get().getEntitiesCount(getEntityTypeFilter(), (Predicate<AEntity>) predicate);
 	}
 
 	public E getEntity(Predicate<E> predicate) {
-		return (E) transactionService.getEntity(getEntityTypeFilter(), (Predicate<AEntity>) predicate);
+		return (E) Transaction.get().getEntity(getEntityTypeFilter(), (Predicate<AEntity>) predicate);
 	}
 
 	public final Set<E> getEntities(Predicate<E> filter) {
 		// long start = System.currentTimeMillis();
-		Set<E> result = (Set<E>) transactionService.getEntities(getEntityTypeFilter(), (Predicate<AEntity>) filter);
+		Set<E> result = (Set<E>) Transaction.get().getEntities(getEntityTypeFilter(), (Predicate<AEntity>) filter);
 		// long time = System.currentTimeMillis() - start;
 		// if (time > 2000) throw new RuntimeException("getEntities took too
 		// long. fix it!");
@@ -142,7 +142,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	@Override
 	public E getById(String id) {
 		if (id == null) throw new RuntimeException("id must not be null");
-		E entity = (E) transactionService.getById(id);
+		E entity = (E) Transaction.get().getById(id);
 		if (entity == null) throw new EntityDoesNotExistException(id);
 		return entity;
 	}
@@ -155,11 +155,11 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	@Override
 	public List<E> getByIds(Collection<String> entitiesIds) {
 		Set<String> ids = new HashSet<String>(entitiesIds);
-		List<E> result = (List<E>) transactionService.getByIds(entitiesIds);
+		List<E> result = (List<E>) Transaction.get().getByIds(entitiesIds);
 		if (result.size() != ids.size()) {
 			result = new ArrayList<E>();
 			for (String id : ids) {
-				E entity = (E) transactionService.getById(id);
+				E entity = (E) Transaction.get().getById(id);
 				result.add(entity);
 			}
 		}
@@ -187,16 +187,16 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	}
 
 	public Set<E> getEntities() {
-		return (Set<E>) transactionService.getEntities(getEntityTypeFilter(), null);
+		return (Set<E>) Transaction.get().getEntities(getEntityTypeFilter(), null);
 	}
 
 	public void deleteEntity(E entity) {
-		transactionService.deleteEntity(entity);
+		Transaction.get().deleteEntity(entity);
 		daoService.fireEntityDeleted(entity);
 	}
 
 	public void saveEntity(E entity) {
-		transactionService.saveEntity(entity);
+		Transaction.get().saveEntity(entity);
 		daoService.fireEntitySaved(entity);
 	}
 
@@ -217,7 +217,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		}
 		if (id != null) entity.setId(id);
 		entity.updateLastModified();
-		transactionService.registerEntity(entity);
+		Transaction.get().registerEntity(entity);
 		return entity;
 	}
 
@@ -281,10 +281,6 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		log.info("Search took", rt);
 	}
 
-	protected final TransactionService getTransactionService() {
-		return transactionService;
-	}
-
 	// ---
 
 	protected Set<Class> getValueObjectClasses() {
@@ -346,12 +342,6 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 
 	public final DaoService getDaoService() {
 		return daoService;
-	}
-
-	private TransactionService transactionService;
-
-	public final void setTransactionService(TransactionService transactionService) {
-		this.transactionService = transactionService;
 	}
 
 	protected AUserDao userDao;

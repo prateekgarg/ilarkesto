@@ -61,7 +61,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		entitiesToSave.remove(entity);
 	}
 
-	void registerEntity(AEntity entity) {
+	public void registerEntity(AEntity entity) {
 		entitiesRegistered.add(entity);
 	}
 
@@ -128,11 +128,13 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 	}
 
 	public boolean isDeleted(AEntity entity) {
+		if (entity == null) return false;
 		if (entitiesToDelete.contains(entity)) return true;
 		return false;
 	}
 
-	boolean isPersistent(String id) {
+	public boolean isPersistent(String id) {
+		if (id == null) return false;
 		AEntity result = entityStore.getById(id);
 		if (result != null) return true;
 

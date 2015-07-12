@@ -17,7 +17,6 @@ package ilarkesto.persistence;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.logging.Log;
-import ilarkesto.core.scope.In;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
 
@@ -69,9 +68,6 @@ public class FileEntityStore implements EntityStore {
 	public void setEntityfilePreparator(EntityfilePreparator entityfilePreparator) {
 		this.entityfilePreparator = entityfilePreparator;
 	}
-
-	@In
-	private TransactionService transactionService;
 
 	private String dir;
 
@@ -240,9 +236,10 @@ public class FileEntityStore implements EntityStore {
 		Map<String, AEntity> entities = new HashMap<String, AEntity>();
 		data.put((Class<AEntity>) cls, entities);
 
+		beanSerializer.setAlias(Str.lowercaseFirstLetter(alias), cls);
 		beanSerializer.setAlias(alias, cls);
 
-		File entitiesDir = new File(dir + "/" + alias);
+		File entitiesDir = new File(dir + "/" + Str.lowercaseFirstLetter(alias));
 
 		File clusterFile = new File(dir + "/" + CLUSTER_FILE_NAME);
 		if (clusterFile.exists()) {
@@ -409,7 +406,8 @@ public class FileEntityStore implements EntityStore {
 		@Override
 		protected void prepare() {
 			tmpFile = new File(dir + "/tmp/" + entity.getId() + ".xml");
-			file = new File(dir + "/" + entity.getDao().getEntityName() + "/" + entity.getId() + ".xml");
+			file = new File(dir + "/" + Str.lowercaseFirstLetter(entity.getDao().getEntityName()) + "/"
+					+ entity.getId() + ".xml");
 
 			wirteTemporaryFile();
 			backupExistingFile();

@@ -20,7 +20,6 @@ import ilarkesto.core.persistance.Transaction;
 import ilarkesto.di.Context;
 import ilarkesto.gwt.client.ErrorWrapper;
 import ilarkesto.persistence.DaoService;
-import ilarkesto.persistence.TransactionService;
 import ilarkesto.webapp.AWebApplication;
 import ilarkesto.webapp.AWebSession;
 
@@ -62,8 +61,7 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 
 		// reset modified entities
 		if (AEntityDatabase.instance != null) Transaction.get().rollback();
-		TransactionService ts = getWebApplication().getTransactionService();
-		if (ts != null) ilarkesto.persistence.Transaction.get().rollback();
+		if (getWebApplication().getDaoService() != null) ilarkesto.persistence.Transaction.get().rollback();
 
 		try {
 			// send error to client
@@ -80,8 +78,7 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 	protected final void onServiceMethodExecuted(Context context) {
 		// save modified entities
 		if (AEntityDatabase.instance != null) Transaction.get().commit();
-		TransactionService ts = getWebApplication().getTransactionService();
-		if (ts != null) ilarkesto.persistence.Transaction.get().commit();
+		if (getWebApplication().getDaoService() != null) ilarkesto.persistence.Transaction.get().commit();
 
 		// destroy request context
 		context.destroy(false);

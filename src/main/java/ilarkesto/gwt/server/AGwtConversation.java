@@ -28,7 +28,7 @@ import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.gwt.client.ADataTransferObject;
 import ilarkesto.gwt.client.ClientDataTransporter;
-import ilarkesto.persistence.TransactionService;
+import ilarkesto.webapp.AWebApplication;
 import ilarkesto.webapp.AWebSession;
 
 import java.util.ArrayList;
@@ -45,8 +45,6 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 
 	private static final Log log = Log.get(AGwtConversation.class);
 	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(2);
-
-	private TransactionService transactionService;
 
 	/**
 	 * Data that will be transferred to the client at the next request.
@@ -133,7 +131,8 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	private void sendToClientInternal(E entity) {
 		if (entity == null) return;
 
-		if (transactionService != null && !transactionService.isPersistent(entity.getId())) {
+		if (AWebApplication.get().getDaoService() != null
+				&& !ilarkesto.persistence.Transaction.get().isPersistent(entity.getId())) {
 			getNextData().addDeletedEntity(entity.getId());
 			return;
 		}
@@ -241,10 +240,6 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 
 	public final DateAndTime getLastTouched() {
 		return lastTouched;
-	}
-
-	public void setTransactionService(TransactionService transactionService) {
-		this.transactionService = transactionService;
 	}
 
 	public void invalidate() {}
