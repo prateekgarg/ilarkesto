@@ -15,6 +15,7 @@
 package ilarkesto.core.persistance;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.base.Uuid;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class ABaseEntity implements TransferableEntity {
+public abstract class ABaseEntity implements Entity, TransferableEntity {
 
 	private String id;
 	private Long modificationTime;
@@ -102,6 +103,19 @@ public abstract class ABaseEntity implements TransferableEntity {
 
 	public final boolean isId(String id) {
 		return getId().equals(id);
+	}
+
+	protected String asString() {
+		return Utl.getSimpleName(getClass()) + ":" + getId();
+	}
+
+	@Override
+	public final String toString() {
+		try {
+			return asString();
+		} catch (Exception ex) {
+			return "asString()-ERROR: " + Utl.getSimpleName(getClass()) + ":" + getId();
+		}
 	}
 
 	@Override
