@@ -406,21 +406,8 @@ public abstract class AApplication {
 	protected EntityStore createEntityStore() {
 		FileEntityStore store = new FileEntityStore();
 		store.setDir(getApplicationDataDir() + "/entities");
-		File backupDir = new File(getApplicationDataDir() + "/entities-rescue");
-
-		File backupDirOld = new File(getApplicationDataDir() + "/backup/entities");
-		if (backupDirOld.exists()) {
-			backupDirOld.renameTo(backupDir);
-			backupDirOld.delete();
-			backupDirOld.getParentFile().delete();
-		}
-
-		store.setBackupDir(backupDir.getPath());
 		store.setVersion(getDataVersion());
 		Context.get().autowire(store);
-
-		store.deleteOldBackups();
-
 		return store;
 	}
 

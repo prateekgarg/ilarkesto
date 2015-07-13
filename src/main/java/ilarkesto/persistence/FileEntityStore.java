@@ -20,7 +20,6 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
-import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
 
 import java.io.BufferedInputStream;
@@ -43,13 +42,13 @@ public class FileEntityStore implements EntityStore {
 
 	private static final Log log = Log.get(FileEntityStore.class);
 
-	public static String CLUSTER_FILE_NAME = "cluster.xml";
-
 	private boolean versionSaved;
 	private boolean versionChecked;
 	private boolean locked;
 
 	private ThreadLocal<Transaction> threadLocalTransaction = new ThreadLocal<Transaction>();
+	private Map<Class, String> aliases = new HashMap<Class, String>();
+	private Map<Class<AEntity>, Map<String, AEntity>> entitiesByIdByType = new HashMap<Class<AEntity>, Map<String, AEntity>>();
 
 	// --- dependencies ---
 
@@ -76,12 +75,6 @@ public class FileEntityStore implements EntityStore {
 
 	public void setDir(String dir) {
 		this.dir = dir;
-	}
-
-	private String backupDir;
-
-	public void setBackupDir(String backupDir) {
-		this.backupDir = backupDir;
 	}
 
 	// --- ---
@@ -226,10 +219,6 @@ public class FileEntityStore implements EntityStore {
 		return resultContainer;
 	}
 
-	private Map<Class, String> aliases = new HashMap<Class, String>();
-
-	private Map<Class<AEntity>, Map<String, AEntity>> entitiesByIdByType = new HashMap<Class<AEntity>, Map<String, AEntity>>();
-
 	@Override
 	public void setAlias(String alias, Class cls) {
 		aliases.put(cls, alias);
@@ -250,11 +239,6 @@ public class FileEntityStore implements EntityStore {
 
 		File entitiesDir = new File(dir + "/" + Str.lowercaseFirstLetter(alias));
 
-		File clusterFile = new File(dir + "/" + CLUSTER_FILE_NAME);
-		if (clusterFile.exists()) {
-			loadCluster(clusterFile, entities, cls, alias);
-		}
-
 		File[] files = entitiesDir.listFiles();
 		int count = files == null ? 0 : files.length;
 		log.info("Loading", count, "entitiy files:", alias);
@@ -263,7 +247,6 @@ public class FileEntityStore implements EntityStore {
 				File file = files[i];
 				String filename = file.getName();
 
-				if (filename.equals(CLUSTER_FILE_NAME)) continue;
 				if (!filename.endsWith(".xml")) {
 					log.warn("Unsupported file. Skipping:", filename);
 					continue;
@@ -274,34 +257,9 @@ public class FileEntityStore implements EntityStore {
 				} catch (Exception ex) {
 					if (!deleteOnFailure) throw new RuntimeException("Loading object from " + file + " failed", ex);
 					log.warn("Loading object from file failed:", file, ex);
-					if (true) { // delete
-						backup(file, alias);
-						file.delete();
-					}
+					file.delete();
 				}
 			}
-		}
-	}
-
-	private void loadCluster(File file, Map<String, AEntity> container, Class type, String alias) {
-		if (entityfilePreparator != null) entityfilePreparator.prepareClusterfile(file, type, alias);
-
-		BufferedInputStream in;
-		try {
-			in = new BufferedInputStream(new FileInputStream(file));
-		} catch (FileNotFoundException ex) {
-			throw new RuntimeException(ex);
-		}
-		Collection<AEntity> entities = (Collection<AEntity>) beanSerializer.deserialize(in);
-
-		for (AEntity entity : entities) {
-			container.put(entity.getId(), entity);
-		}
-
-		try {
-			in.close();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
 		}
 	}
 
@@ -321,19 +279,6 @@ public class FileEntityStore implements EntityStore {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	}
-
-	private void backup(File src, String type) {
-		if (src.isDirectory()) throw new RuntimeException("sorry, backing up directories is not implemented yet.");
-
-		String destinationPath = backupDir + "/" + Date.today() + "/" + type + "/";
-		File dst = new File(destinationPath + src.getName());
-		for (int i = 2; dst.exists(); i++) {
-			dst = new File(destinationPath + i + "_" + src.getName());
-		}
-
-		// LOG.debug("Backing up", src.getPath(), "to", dst.getPath());
-		IO.copyFile(src.getPath(), dst.getPath());
 	}
 
 	private synchronized void checkVersion() {
@@ -360,29 +305,6 @@ public class FileEntityStore implements EntityStore {
 				: new Properties();
 		properties.setProperty("version", String.valueOf(version));
 		IO.saveProperties(properties, getClass().getName(), propertiesFile);
-	}
-
-	@Override
-	public void deleteOldBackups() {
-		if (Str.isBlank(backupDir)) return;
-		File[] dirs = new File(backupDir).listFiles();
-		if (dirs == null || dirs.length == 0) return;
-		Date deadline = Date.beforeDays(7);
-		log.info("Deleting temporary entity backups from before", deadline);
-		for (File dir : dirs) {
-			if (!dir.isDirectory()) continue;
-			String name = dir.getName();
-			Date date = null;
-			try {
-				date = new Date(name);
-			} catch (Throwable ex) {
-				continue;
-			}
-			if (date.isBefore(deadline)) {
-				log.debug("    Deleting temporary enity backups:", name);
-				IO.delete(dir);
-			}
-		}
 	}
 
 	private File getPropertiesFile() {
@@ -420,19 +342,12 @@ public class FileEntityStore implements EntityStore {
 					+ entity.getId() + ".xml");
 
 			wirteTemporaryFile();
-			backupExistingFile();
 		}
 
 		@Override
 		protected void complete() {
 			IO.move(tmpFile, file, true);
 			getDao(entity.getClass()).put(entity.getId(), entity);
-		}
-
-		public void backupExistingFile() {
-			if (file.exists() && !(entity instanceof BackupHostile)) {
-				backup(file, entity.getDao().getEntityName());
-			}
 		}
 
 		public void wirteTemporaryFile() {
@@ -471,12 +386,6 @@ public class FileEntityStore implements EntityStore {
 		protected void prepare() {
 			file = new File(dir + "/" + Str.lowercaseFirstLetter(entity.getDao().getEntityName()) + "/"
 					+ entity.getId() + ".xml");
-
-			// backup
-			if (file.exists() && !(entity instanceof BackupHostile)) {
-				backup(file, entity.getDao().getEntityName());
-			}
-
 		}
 
 		@Override
