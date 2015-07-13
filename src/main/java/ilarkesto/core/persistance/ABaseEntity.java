@@ -18,14 +18,43 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Uuid;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class ABaseEntity implements TransferableEntity {
 
 	private String id;
 	private Long modificationTime;
+	private transient boolean ensuringIntegrity;
 
 	protected abstract void doPersist();
+
+	/**
+	 * Method gets called bevore persiting and after loading
+	 */
+	@Override
+	public final void ensureIntegrity() {
+		if (ensuringIntegrity) return;
+		if (!isPersisted()) return;
+		ensuringIntegrity = true;
+
+		try {
+			onEnsureIntegrity();
+		} finally {
+			ensuringIntegrity = false;
+		}
+	}
+
+	protected void onEnsureIntegrity() {}
+
+	/**
+	 * Provides all referenced entities. Back-references included.
+	 */
+	@Override
+	public Set<Entity> getReferencedEntities() {
+		return new HashSet<Entity>();
+	}
 
 	public void updateProperties(Map<String, String> properties) {
 		String idFromProperties = properties.get("id");

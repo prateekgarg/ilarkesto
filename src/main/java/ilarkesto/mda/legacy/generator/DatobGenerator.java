@@ -30,6 +30,7 @@ import ilarkesto.core.time.Time;
 import ilarkesto.email.EmailAddress;
 import ilarkesto.mda.legacy.model.BeanModel;
 import ilarkesto.mda.legacy.model.DatobModel;
+import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
@@ -159,16 +160,12 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 	}
 
 	protected void writeEnsureIntegrity() {
+		if (!(bean instanceof EntityModel)) return;
 		ln();
 		comment("ensure integrity");
 		annotationOverride();
-		if (isLegacyBean(bean)) {
-			s("    public void ensureIntegrity() {").ln();
-			s("        super.ensureIntegrity();").ln();
-		} else {
-			s("    public void onEnsureIntegrity() {").ln();
-			s("        super.onEnsureIntegrity();").ln();
-		}
+		s("    public void onEnsureIntegrity() {").ln();
+		s("        super.onEnsureIntegrity();").ln();
 		writeEnsureIntegrityContent();
 		s("    }").ln();
 	}

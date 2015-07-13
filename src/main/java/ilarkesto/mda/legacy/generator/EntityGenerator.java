@@ -105,10 +105,11 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			}
 			writeQueryBaseclass();
 			writePredicates();
-			writeCollectPassengers();
-			writeGetReferencedEntities();
 			writeOnAfterPersist();
 		}
+
+		writeCollectPassengers();
+		writeGetReferencedEntities();
 
 		ln();
 		ln("    @Override");
@@ -204,7 +205,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 	private void writeGetReferencedEntities() {
 		ln();
 		annotationOverride();
-		String setType = "Set<" + ilarkesto.core.persistance.AEntity.class.getName() + ">";
+		String setType = "Set<" + ilarkesto.core.persistance.Entity.class.getName() + ">";
 		ln("    public", setType, "getReferencedEntities() {");
 		ln("        " + setType + " ret = super.getReferencedEntities();");
 

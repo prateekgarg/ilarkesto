@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -218,23 +218,23 @@ public class Persistence {
 		return value == null ? null : Str.concat(value, ", ");
 	}
 
-	public static Set<String> getIdsAsSet(Collection<? extends AEntity> entities) {
+	public static Set<String> getIdsAsSet(Collection<? extends Entity> entities) {
 		Set<String> result = new HashSet<String>(entities.size());
-		for (AEntity entity : entities)
+		for (Entity entity : entities)
 			result.add(entity.getId());
 		return result;
 	}
 
-	public static List<String> getIdsAsList(Collection<? extends AEntity> entities) {
+	public static List<String> getIdsAsList(Collection<? extends Entity> entities) {
 		List<String> result = new ArrayList<String>();
-		for (AEntity entity : entities)
+		for (Entity entity : entities)
 			result.add(entity.getId());
 		return result;
 	}
 
 	public static void ensureIntegrity(String entityId) {
 		if (AEntityDatabase.instance != null) {
-			AEntity entity = null;
+			Entity entity = null;
 			try {
 				entity = Transaction.get().getById(entityId);
 			} catch (EntityDoesNotExistException ex) {}
@@ -242,7 +242,7 @@ public class Persistence {
 		}
 	}
 
-	public static String toStringWithTypeAndId(AEntity entity) {
+	public static String toStringWithTypeAndId(Entity entity) {
 		if (entity == null) return null;
 		String s;
 		try {
@@ -253,13 +253,13 @@ public class Persistence {
 		return getTypeAndId(entity) + " " + s;
 	}
 
-	public static String getTypeAndId(AEntity entity) {
+	public static String getTypeAndId(Entity entity) {
 		if (entity == null) return null;
 		return Str.getSimpleName(entity.getClass()) + ":" + entity.getId();
 	}
 
-	public static void deleteAll(Iterable<? extends AEntity> entities) {
-		for (AEntity entity : entities) {
+	public static void deleteAll(Iterable<? extends Entity> entities) {
+		for (Entity entity : entities) {
 			entity.delete();
 		}
 	}

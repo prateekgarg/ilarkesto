@@ -19,7 +19,6 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.search.SearchText;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +41,7 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 		Transaction.get().persist(this);
 	}
 
+	@Override
 	public final boolean isPersisted() {
 		return Transaction.get().containsWithId(getId());
 	}
@@ -51,13 +51,6 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 		Transaction.get().delete(getId());
 	}
 
-	/**
-	 * Provides all referenced entities. Back-references included.
-	 */
-	public Set<AEntity> getReferencedEntities() {
-		return new HashSet<AEntity>();
-	}
-
 	public String getDeleteVeto() {
 		return "Objekt ist nicht löschbar";
 	}
@@ -65,25 +58,6 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 	public final boolean isDeletable() {
 		return getDeleteVeto() == null;
 	}
-
-	private transient boolean ensuringIntegrity;
-
-	/**
-	 * Method gets called bevore persiting and after loading
-	 */
-	public final void ensureIntegrity() {
-		if (ensuringIntegrity) return;
-		if (!isPersisted()) return;
-		ensuringIntegrity = true;
-
-		try {
-			onEnsureIntegrity();
-		} finally {
-			ensuringIntegrity = false;
-		}
-	}
-
-	protected void onEnsureIntegrity() {}
 
 	/**
 	 * Gets called when the master entity is deleted.
