@@ -52,25 +52,26 @@ public abstract class AAction extends ATask {
 		try {
 			assertPermissions();
 			performAction();
+			Transaction.get().commit();
 		} catch (InterruptedException ex) {
 			finish();
+			Transaction.get().rollback();
 			return;
 		} catch (ActionAbortedException ex) {
-			// transactionService.commit();
 			exception = ex;
 			if (isRootAction() && !ui.isViewSet()) showReturnView();
 			finish();
+			Transaction.get().rollback();
 			return;
 		} catch (Throwable ex) {
-			Transaction.get().commit();
 			exception = ex;
 			LOG.error(ex);
 			error(ex);
 			if (isRootAction() && !ui.isViewSet()) showReturnView();
 			finish();
+			Transaction.get().rollback();
 			return;
 		}
-		Transaction.get().commit();
 		if (!infoDisplayed && autoShowInfoDone) infoDone();
 
 		if (!ui.isViewSet() && isRootAction()) showReturnView();

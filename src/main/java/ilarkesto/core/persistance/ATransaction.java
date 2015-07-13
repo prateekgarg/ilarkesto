@@ -123,7 +123,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	}
 
 	public void persist(E entity) {
-		log.info("persist", toString(entity));
+		log.info("PERSIST", toString(entity));
 		if (autoCommit) {
 			getBackend().update(Arrays.asList(entity), null, updatePropertiesMap(null, entity), new CommitCallback());
 			return;
@@ -137,7 +137,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	public void modified(E entity, String field, String value) {
 		if (ignoreModifications) return;
 		if (!containsWithId(entity.getId())) return;
-		log.info(name, "modified", toString(entity), field, value);
+		log.info(name, "MODIFIED", toString(entity), field, value);
 		if (autoCommit) {
 			getBackend().update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value),
 				new CommitCallback());
@@ -154,11 +154,15 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	}
 
 	public void delete(String entityId) {
+		log.info("DELETE", entityId);
 		if (autoCommit) {
 			getBackend().update(null, Arrays.asList(entityId), null, new CommitCallback());
 			return;
 		}
-		if (deleted.contains(entityId)) return;
+		if (deleted.contains(entityId)) {
+			log.debug("Already deleted:", entityId);
+			return;
+		}
 		deleted.add(entityId);
 		modified.remove(entityId);
 		getBackend().onEntityModified();
