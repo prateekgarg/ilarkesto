@@ -62,7 +62,7 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 
 	@Override
 	protected void doPersist() {
-		getDao().saveEntity(this);
+		getDao().persist(this);
 	}
 
 	@Override

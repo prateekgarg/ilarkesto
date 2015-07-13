@@ -14,10 +14,12 @@
  */
 package ilarkesto.persistence;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
 
@@ -157,15 +159,6 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
-	public AEntity getById(String id) {
-		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : entitiesByIdByType.entrySet()) {
-			AEntity entity = daoEntry.getValue().get(id);
-			if (entity != null) return entity;
-		}
-		return null;
-	}
-
-	@Override
 	public boolean containsWithId(String id) {
 		for (Map<String, AEntity> entitiesById : entitiesByIdByType.values()) {
 			if (entitiesById.containsKey(id)) return true;
@@ -211,13 +204,18 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
+	public AEntity getById(String id) {
+		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : entitiesByIdByType.entrySet()) {
+			AEntity entity = daoEntry.getValue().get(id);
+			if (entity != null) return entity;
+		}
+		throw new EntityDoesNotExistException(id);
+	}
+
+	@Override
 	public <C extends Collection<AEntity>> C getByIds(Collection<String> ids, C resultContainer) {
-		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : entitiesByIdByType.entrySet()) {
-			Map<String, AEntity> entites = entry.getValue();
-			for (String id : ids) {
-				AEntity entity = entites.get(id);
-				if (entity != null) resultContainer.add(entity);
-			}
+		for (String id : ids) {
+			resultContainer.add(getById(id));
 		}
 		return resultContainer;
 	}
@@ -394,6 +392,7 @@ public class FileEntityStore implements EntityStore {
 		protected AEntity entity;
 
 		public Operation(AEntity entity) {
+			Args.assertNotNull(entity, "entity");
 			this.entity = entity;
 		}
 

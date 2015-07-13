@@ -70,7 +70,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		if (!persistent) return;
 
 		log.info("Entity modified:", Utl.toStringWithType(entity), "->", field, "=", Str.format(value));
-		saveEntity(entity);
+		persist(entity);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 	public String getIcon() {
 		if (icon == null) {
 			icon = (String) Reflect.getFieldValue(getEntityClass(), "ICON");
-			if (icon == null) icon = getEntityName();
+			if (icon == null) icon = Str.lowercaseFirstLetter(getEntityName());
 		}
 		return icon;
 	}
@@ -211,8 +211,8 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		daoService.fireEntityDeleted(entity);
 	}
 
-	public void saveEntity(E entity) {
-		Transaction.get().saveEntity(entity);
+	public void persist(E entity) {
+		Transaction.get().persist(entity);
 		daoService.fireEntitySaved(entity);
 	}
 
@@ -233,7 +233,6 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		}
 		if (id != null) entity.setId(id);
 		entity.updateLastModified();
-		Transaction.get().register(entity);
 		return entity;
 	}
 

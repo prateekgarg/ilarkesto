@@ -15,6 +15,7 @@
 package ilarkesto.persistence;
 
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.Args;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.ATransaction;
@@ -37,7 +38,6 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 	private String threadName;
 	private Set<AEntity> entitiesToSave = new HashSet<AEntity>();
 	private Set<AEntity> entitiesToDelete = new HashSet<AEntity>();
-	private Set<AEntity> entitiesRegistered = new HashSet<AEntity>();
 
 	public Transaction() {
 		synchronized (getClass()) {
@@ -51,8 +51,8 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		return backend;
 	}
 
-	void saveEntity(AEntity entity) {
-		if (entity == null) throw new NullPointerException("entity");
+	void persist(AEntity entity) {
+		Args.assertNotNull(entity, "entity");
 		entity.getId();
 		if (entitiesToSave.contains(entity) || entitiesToDelete.contains(entity)) return;
 		log.debug("SAVE", toStringWithType(entity), "@", this);
@@ -60,14 +60,11 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 	}
 
 	void deleteEntity(AEntity entity) {
+		Args.assertNotNull(entity, "entity");
 		if (entitiesToDelete.contains(entity)) return;
 		log.debug("DELETE", toStringWithType(entity), "@", this);
 		entitiesToDelete.add(entity);
 		entitiesToSave.remove(entity);
-	}
-
-	public void register(AEntity entity) {
-		entitiesRegistered.add(entity);
 	}
 
 	private boolean committed;
@@ -122,7 +119,6 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		log.debug("Transaction committed:", this);
 		entitiesToSave.clear();
 		entitiesToDelete.clear();
-		entitiesRegistered.clear();
 	}
 
 	@Override
@@ -130,7 +126,6 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		log.debug("Transaction canceled:", this);
 		entitiesToSave.clear();
 		entitiesToDelete.clear();
-		entitiesRegistered.clear();
 		backend.onTransactionFinished(this);
 	}
 
@@ -140,8 +135,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 
 		if (Persist.getIdsAsList(entitiesToDelete).contains(id)) return false;
 
-		AEntity result = backend.getById(id);
-		if (result != null) return true;
+		if (backend.containsWithId(id)) return true;
 
 		for (AEntity entity : entitiesToSave) {
 			if (id.equals(entity.getId())) return true;
@@ -162,14 +156,6 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 				}
 			}
 		}
-		if (result == null && !entitiesRegistered.isEmpty()) {
-			for (AEntity entity : entitiesRegistered) {
-				if (id.equals(entity.getId())) {
-					result = entity;
-					break;
-				}
-			}
-		}
 		if (result != null && entitiesToDelete.contains(result)) return null;
 		return result;
 	}
@@ -178,10 +164,6 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 	public <C extends Collection<AEntity>> C findAll(AEntityQuery<AEntity> query, C resultCollection) {
 		resultCollection.addAll(backend.findAll(query, resultCollection));
 		for (AEntity entity : entitiesToSave) {
-			if (resultCollection.contains(entity)) continue;
-			if (Persist.test(entity, query)) resultCollection.add(entity);
-		}
-		for (AEntity entity : entitiesRegistered) {
 			if (resultCollection.contains(entity)) continue;
 			if (Persist.test(entity, query)) resultCollection.add(entity);
 		}
@@ -194,10 +176,6 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		AEntity result = backend.findFirst(query);
 		if (result == null) {
 			for (AEntity entity : entitiesToSave) {
-				if (entitiesToDelete.contains(entity)) continue;
-				if (Persist.test(entity, query)) return entity;
-			}
-			for (AEntity entity : entitiesRegistered) {
 				if (entitiesToDelete.contains(entity)) continue;
 				if (Persist.test(entity, query)) return entity;
 			}
@@ -214,9 +192,6 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 		sb.append(" (").append(threadName).append(")");
 		if (!entitiesToSave.isEmpty()) {
 			sb.append("\n    SAVE: ").append(toString(entitiesToSave));
-		}
-		if (!entitiesRegistered.isEmpty()) {
-			sb.append("\n    REGISTERED: ").append(toString(entitiesRegistered));
 		}
 		if (!entitiesToDelete.isEmpty()) {
 			sb.append("\n    DELETE: ").append(toString(entitiesToDelete));
