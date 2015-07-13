@@ -56,6 +56,7 @@ public class Searcher implements Runnable {
 
 	private void searchRestrictedBook() {
 		BookIndex index = bookCaches.bookIndexCache.get().getPayload();
+		if (index == null) return;
 		for (String code : searchStrings) {
 			restrictToBook = index.getBookByCode(code);
 			if (restrictToBook != null) {
