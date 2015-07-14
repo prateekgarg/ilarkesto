@@ -85,7 +85,9 @@ public abstract class ADatob implements Datob, Searchable {
 	public void ensureIntegrity() {}
 
 	public boolean isPersisted() {
-		return getManager().isPersisted();
+		ADatobManager manager = getManager();
+		if (manager == null) return false;
+		return manager.isPersisted();
 	}
 
 	@Override
