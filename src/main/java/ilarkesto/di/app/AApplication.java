@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -19,9 +19,12 @@ import ilarkesto.base.Sys;
 import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
 import ilarkesto.concurrent.ATask;
+import ilarkesto.concurrent.DefaultSynchronizer;
 import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.logging.Log;
-import ilarkesto.core.persistance.AEntityDatabase;
+import ilarkesto.core.persistance.EntitiesBackend;
+import ilarkesto.core.persistance.EntityIntegrityEnsurer;
+import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.di.Context;
@@ -37,7 +40,9 @@ import ilarkesto.persistence.DaoListener;
 import ilarkesto.persistence.DaoService;
 import ilarkesto.persistence.EntityStore;
 import ilarkesto.persistence.FileEntityStore;
+import ilarkesto.persistence.LegacyThreadlocalTransactionManager;
 import ilarkesto.persistence.Serializer;
+import ilarkesto.persistence.ThreadlocalTransactionManager;
 import ilarkesto.properties.FilePropertiesStore;
 
 import java.io.File;
@@ -67,19 +72,32 @@ public abstract class AApplication {
 
 	protected abstract void scheduleTasks(TaskManager tm);
 
+	protected abstract EntitiesBackend createEntitiesBackend();
+
 	protected Context context;
 	private String[] arguments = new String[0];
 
-	public void ensureIntegrity() {
-		log.info("Ensuring application integrity");
-
-		DaoService ds = getDaoService();
-		if (ds != null) {
-			ds.ensureIntegrity();
-			ilarkesto.persistence.Transaction.get().commit();
+	protected void initializePersistence() {
+		EntitiesBackend backend = createEntitiesBackend();
+		if (backend != null) {
+			log.info("Entities backend:", backend.getClass().getSimpleName());
+			Persistence.initialize(backend,
+				backend instanceof FileEntityStore ? new LegacyThreadlocalTransactionManager()
+						: new ThreadlocalTransactionManager());
+		} else {
+			log.debug("No persistence backend");
 		}
+	}
 
-		if (AEntityDatabase.instance != null) AEntityDatabase.instance.ensureIntegrityForAllEntities();
+	protected void ensureIntegrity() {
+		if (Persistence.backend != null) {
+			DaoService ds = getDaoService();
+			if (ds != null) {
+				ds.ensureIntegrity();
+			} else {
+				EntityIntegrityEnsurer.runForAll();
+			}
+		}
 	}
 
 	protected boolean isSingleton() {
@@ -116,6 +134,8 @@ public abstract class AApplication {
 				}
 			}
 
+			DefaultSynchronizer.install();
+
 			try {
 				getApplicationConfig();
 			} catch (Throwable ex) {
@@ -134,15 +154,40 @@ public abstract class AApplication {
 			} catch (Throwable ex) {
 				log.error("Backing up application data directory failed.", ex);
 			}
+
+			log.info("Initializing persistence");
 			try {
-				ensureIntegrity();
+				initializePersistence();
+			} catch (Throwable ex) {
+				startupFailed = true;
+				shutdown(false);
+				throw new RuntimeException("Application startup failed. Initializing persistence failed.", ex);
+			}
+
+			log.info("Ensuring application integrity");
+			try {
+				Persistence.runInTransaction("start.ensureIntegrity", new Runnable() {
+
+					@Override
+					public void run() {
+						ensureIntegrity();
+					}
+				});
 			} catch (Throwable ex) {
 				startupFailed = true;
 				shutdown(false);
 				throw new RuntimeException("Application startup failed. Data integrity check or repair failed.", ex);
 			}
+
 			try {
-				onStart();
+				Persistence.runInTransaction("start.onStart", new Runnable() {
+
+					@Override
+					public void run() {
+						onStart();
+					}
+				});
+
 			} catch (Throwable ex) {
 				startupFailed = true;
 				shutdown(false);
@@ -174,7 +219,17 @@ public abstract class AApplication {
 					if (instance == null) throw new RuntimeException("Application not started yet.");
 					log.info("Shutdown initiated:", getApplicationName());
 
-					if (runOnShutdown) onShutdown();
+					if (runOnShutdown) {
+
+						Persistence.runInTransaction("shutdown", new Runnable() {
+
+							@Override
+							public void run() {
+								onShutdown();
+							}
+						});
+
+					}
 
 					getTaskManager().shutdown(10000);
 					Set<ATask> tasks = getTaskManager().getRunningTasks();
@@ -362,7 +417,7 @@ public abstract class AApplication {
 		return buildProperties;
 	}
 
-	public boolean isDevelopmentMode() {
+	public final boolean isDevelopmentMode() {
 		return Sys.isDevelopmentMode();
 	}
 

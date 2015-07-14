@@ -16,8 +16,7 @@ package ilarkesto.gwt.client;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
-import ilarkesto.core.persistance.AEntityDatabase;
-import ilarkesto.core.persistance.Transaction;
+import ilarkesto.core.persistance.Persistence;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -40,26 +39,24 @@ public abstract class AAction implements Command, ClickHandler {
 	public final void execute() {
 		if (!isExecutable()) throw new RuntimeException("Action not executable: " + this);
 		if (!isPermitted()) throw new RuntimeException("Action not permitted: " + this);
-		if (AEntityDatabase.instance == null) {
-			onExecute();
-			if (updatable != null && isUpdateAfterExecute()) updatable.update();
-		} else {
-			Transaction transaction = Transaction.get();
-			transaction.setAutoCommit(false);
-			if (updatable != null && isUpdateAfterExecute()) transaction.runAfterCommit(new Updater());
-			try {
-				onExecute();
-				transaction.commit();
-			} catch (Exception ex) {
-				try {
-					handleException(ex);
-				} catch (Exception ex1) {
-					throw new RuntimeException(Str.getSimpleName(getClass()) + ".onExecute() failed", ex1);
+
+		try {
+			Persistence.runInTransaction(Str.getSimpleName(getClass()), new Runnable() {
+
+				@Override
+				public void run() {
+					onExecute();
 				}
-			} finally {
-				transaction.setAutoCommit(true);
+
+			}, updatable != null && isUpdateAfterExecute() ? new Updater() : null);
+		} catch (Exception ex) {
+			try {
+				handleException(ex);
+			} catch (Exception ex1) {
+				throw new RuntimeException(Str.getSimpleName(getClass()) + ".onExecute() failed", ex1);
 			}
 		}
+
 	}
 
 	protected boolean isUpdateAfterExecute() {

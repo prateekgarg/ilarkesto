@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -39,8 +39,8 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	private boolean ignoreModifications;
 	private boolean ensureIntegrityOnCommit;
 	private boolean ensuringIntegrity;
-	private LinkedList<Runnable> runnablesAfterCommit;
-	private int transactionNumberCounter = 0;
+	private LinkedList<Runnable> runnablesAfterCommited;
+	private static int transactionNumberCounter = 0;
 
 	private EntitiesCache<E> modified = new EntitiesCache<E>();
 	private Map<String, Map<String, String>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, String>>();
@@ -48,7 +48,8 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 
 	public ATransaction(String name, boolean autoCommit, boolean ensureIntegrityOnCommit) {
 		super();
-		this.name = "#" + (++transactionNumberCounter) + " (" + name + ")";
+		transactionNumberCounter++;
+		this.name = "#" + transactionNumberCounter + " (" + name + ")";
 		this.autoCommit = autoCommit;
 		this.ensureIntegrityOnCommit = ensureIntegrityOnCommit;
 	}
@@ -58,13 +59,13 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 		if (!isEmpty()) {
 			log.info("commit()", toString());
 			if (ensureIntegrityOnCommit) ensureIntegrityUntilUnchanged();
-			getBackend().update(modified.getAll(), deleted, modifiedPropertiesByEntityId, new CommitCallback());
+			getBackend().update(modified.getAllAsList(), deleted, modifiedPropertiesByEntityId, new CommitCallback());
 		} else {
 			new CommitCallback().run();
 		}
-		getBackend().onTransactionFinished(this);
 		modified = null;
 		deleted = null;
+		Persistence.transactionManager.transactionFinished(this);
 	}
 
 	private void ensureIntegrityUntilUnchanged() {
@@ -77,7 +78,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	private void ensureIntegrity() {
 		ensuringIntegrity = true;
 		try {
-			for (E entity : new ArrayList<E>(modified.getAll())) {
+			for (E entity : modified.getAll(new ArrayList<E>())) {
 				entity.ensureIntegrity();
 			}
 			for (String id : deleted) {
@@ -106,7 +107,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 
 	private String createChangeHash() {
 		StringBuilder sb = new StringBuilder();
-		for (E entity : modified.getAll()) {
+		for (E entity : modified.getAllAsList()) {
 			sb.append("/").append(entity.getId());
 		}
 		for (String id : deleted) {
@@ -117,7 +118,8 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 
 	public void rollback() {
 		log.info("rollback()", toString());
-		getBackend().onTransactionFinished(this);
+		Persistence.transactionManager.transactionFinished(this);
+		// getBackend().onTransactionFinished(this);
 		modified = null;
 		deleted = null;
 	}
@@ -137,14 +139,16 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	public void modified(E entity, String field, String value) {
 		if (ignoreModifications) return;
 		if (!containsWithId(entity.getId())) return;
-		log.info(name, "MODIFIED", toString(entity), field, value);
+		log.info("MODIFIED", toString(entity), field, value);
 		if (autoCommit) {
 			getBackend().update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value),
 				new CommitCallback());
 			return;
 		}
 		modified.add(entity);
-		getBackend().onEntityModified();
+
+		Persistence.clearCaches();
+
 		updatePropertiesMap(modifiedPropertiesByEntityId, entity, field, value);
 	}
 
@@ -165,7 +169,9 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 		}
 		deleted.add(entityId);
 		modified.remove(entityId);
-		getBackend().onEntityModified();
+
+		Persistence.clearCaches();
+
 		if (ensuringIntegrity) throw new EntityDeletedWhileEnsureIntegrity();
 	}
 
@@ -184,6 +190,33 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	}
 
 	@Override
+	public <C extends Collection<E>> C getAll(C resultCollection) {
+
+		if (deleted.isEmpty()) return getBackend().getAll(resultCollection);
+
+		getBackend().find(new AEntityQuery<E>() {
+
+			@Override
+			public boolean test(E entity) {
+				if (deleted.contains(entity.getId())) return false;
+				return true;
+			}
+
+		}, resultCollection);
+		return resultCollection;
+	}
+
+	@Override
+	public Set<E> getAllAsSet() {
+		return getAll(new HashSet<E>());
+	}
+
+	@Override
+	public List<E> getAllAsList() {
+		return getAll(new ArrayList<E>());
+	}
+
+	@Override
 	public E findFirst(AEntityQuery query) {
 		E entity = modified.findFirst(query);
 		if (entity == null) entity = getBackend().findFirst(query);
@@ -192,11 +225,11 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	}
 
 	@Override
-	public <C extends Collection<E>> C findAll(AEntityQuery<E> query, C resultCollection) {
+	public <C extends Collection<E>> C find(AEntityQuery<E> query, C resultCollection) {
 		RuntimeTracker rt = new RuntimeTracker();
 
-		getBackend().findAll(query, resultCollection);
-		modified.findAll(query, resultCollection);
+		getBackend().find(query, resultCollection);
+		modified.find(query, resultCollection);
 
 		Iterator<E> iterator = resultCollection.iterator();
 		while (iterator.hasNext()) {
@@ -229,11 +262,11 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
 		boolean empty = true;
-		if (!modified.isEmpty()) {
+		if (modified != null && !modified.isEmpty()) {
 			sb.append("\n    Modified: ").append(formatIds(modified.getAllIds()));
 			empty = false;
 		}
-		if (!deleted.isEmpty()) {
+		if (deleted != null && !deleted.isEmpty()) {
 			sb.append("\n    Deleted: ").append(formatIds(deleted));
 			empty = false;
 		}
@@ -248,13 +281,14 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 		return String.valueOf(size);
 	}
 
-	public void runAfterCommit(Runnable runnable) {
+	public void runAfterCommited(Runnable runnable) {
+		if (runnable == null) return;
 		if (autoCommit) {
 			runnable.run();
 			return;
 		}
-		if (runnablesAfterCommit == null) runnablesAfterCommit = new LinkedList<Runnable>();
-		runnablesAfterCommit.add(runnable);
+		if (runnablesAfterCommited == null) runnablesAfterCommited = new LinkedList<Runnable>();
+		runnablesAfterCommited.add(runnable);
 	}
 
 	public boolean isEmpty() {
@@ -294,8 +328,8 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 
 		@Override
 		public void run() {
-			if (runnablesAfterCommit != null) {
-				for (Runnable runnable : runnablesAfterCommit) {
+			if (runnablesAfterCommited != null) {
+				for (Runnable runnable : runnablesAfterCommited) {
 					runnable.run();
 				}
 			}
@@ -325,11 +359,15 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	}
 
 	public final Set<E> findAllAsSet(AEntityQuery query) {
-		return findAll(query, new HashSet<E>());
+		return find(query, new HashSet<E>());
 	}
 
 	public final List<E> findAllAsList(AEntityQuery query) {
-		return findAll(query, new ArrayList<E>());
+		return find(query, new ArrayList<E>());
+	}
+
+	public static ATransaction get() {
+		return Persistence.transactionManager.getTransaction();
 	}
 
 }

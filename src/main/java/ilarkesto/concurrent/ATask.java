@@ -15,7 +15,9 @@
 package ilarkesto.concurrent;
 
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.RunnableWithException;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.time.Tm;
 
 public abstract class ATask {
@@ -101,20 +103,34 @@ public abstract class ATask {
 
 	public final void run() {
 		this.thread = Thread.currentThread();
-		if (started) throw new RuntimeException("Task already started: " + this);
+		if (started) throw new IllegalStateException("Task already started: " + this);
 		started = true;
 		startTime = Tm.getCurrentTimeMillis();
 		try {
-			perform();
-		} catch (InterruptedException ex) {
-			// all right
-		} catch (Throwable ex) {
+
+			if (isRunInTransactionEnabled()) {
+
+				Persistence.runInTransaction(getClass().getSimpleName(), new RunnableWithException() {
+
+					@Override
+					public void onRun() throws Exception {
+						perform();
+					}
+				});
+
+			} else {
+
+				perform();
+
+			}
+
+		} catch (Exception ex) {
 			Throwable rootCause = Utl.getRootCause(ex);
 			if (rootCause instanceof InterruptedException) {
 				// all right
 			} else {
 				log.error("Task execution failed:", this, ex);
-				throw new RuntimeException(ex);
+				throw new TaskExcecutionFailedException(this, ex);
 			}
 		} finally {
 			finished = true;
@@ -124,6 +140,10 @@ public abstract class ATask {
 			}
 			thread = null;
 		}
+	}
+
+	protected boolean isRunInTransactionEnabled() {
+		return true;
 	}
 
 	public final void waitForFinish() throws InterruptedException {

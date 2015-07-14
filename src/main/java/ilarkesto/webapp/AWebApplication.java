@@ -44,10 +44,21 @@ public abstract class AWebApplication extends AApplication {
 	private String contextPath;
 
 	private JsonApiFactory restApiFactory;
+	private GwtSuperDevMode gwtSuperDevMode;
+
+	@Override
+	protected void onPreStart() {
+		if (!isDevelopmentMode()) Sys.setHeadless(true);
+		super.onPreStart();
+
+		if (isDevelopmentMode()) {
+			gwtSuperDevMode = createGwtSuperDevMode();
+			if (gwtSuperDevMode != null) gwtSuperDevMode.startCodeServerInSeparateProcessWithJarsFromIlarkesto();
+		}
+	}
 
 	@Override
 	protected void onStart() {
-		if (!isDevelopmentMode()) Sys.setHeadless(true);
 		DefaultLogRecordHandler.setLogFile(new File(getApplicationDataDir() + "/error.log"));
 		log.info("Initializing web application");
 		onStartWebApplication();
@@ -59,16 +70,11 @@ public abstract class AWebApplication extends AApplication {
 		onShutdownWebApplication();
 	}
 
-	// --- components ---
-
-	private GwtSuperDevMode gwtSuperDevMode;
-
-	public GwtSuperDevMode getGwtSuperDevMode() {
-		if (gwtSuperDevMode == null) gwtSuperDevMode = new GwtSuperDevMode();
-		return gwtSuperDevMode;
-	}
-
 	// --- ---
+
+	protected GwtSuperDevMode createGwtSuperDevMode() {
+		return null;
+	}
 
 	public final AWebApplication getWebApplication() {
 		return this;

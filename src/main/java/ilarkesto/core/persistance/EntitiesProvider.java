@@ -32,6 +32,12 @@ public interface EntitiesProvider<E extends Entity> {
 
 	E findFirst(AEntityQuery<E> query);
 
-	<C extends Collection<E>> C findAll(AEntityQuery<E> query, C resultCollection);
+	<C extends Collection<E>> C find(AEntityQuery<E> query, C resultCollection);
+
+	<C extends Collection<E>> C getAll(C resultCollection);
+
+	Set<E> getAllAsSet();
+
+	List<E> getAllAsList();
 
 }

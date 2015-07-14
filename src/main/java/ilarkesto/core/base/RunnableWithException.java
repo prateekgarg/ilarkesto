@@ -12,16 +12,19 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.core.persistance;
+package ilarkesto.core.base;
 
-import java.util.Collection;
-import java.util.Map;
+public abstract class RunnableWithException implements Runnable {
 
-public interface EntitiesBackend<E extends Entity, T extends ATransaction<E>> extends EntitiesProvider<E> {
+	protected abstract void onRun() throws Exception;
 
-	void update(Collection<E> modified, Collection<String> deletedIds,
-			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback);
-
-	String createInfo();
+	@Override
+	public final void run() {
+		try {
+			onRun();
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
 }

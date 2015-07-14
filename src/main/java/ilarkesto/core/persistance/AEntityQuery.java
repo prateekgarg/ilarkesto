@@ -25,11 +25,11 @@ import java.util.Set;
 public abstract class AEntityQuery<E extends Entity> implements Predicate<E> {
 
 	public Set<E> list() {
-		return (Set<E>) Transaction.get().findAllAsSet(this);
+		return ATransaction.get().findAllAsSet(this);
 	}
 
 	public E findFirst() {
-		return (E) Transaction.get().findFirst(this);
+		return (E) ATransaction.get().findFirst(this);
 	}
 
 	@Override

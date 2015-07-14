@@ -46,7 +46,7 @@ import java.util.Set;
 
 public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
-	public static String persistenceUtil = Persistence.class.getName();
+	public static String persistenceUtilClass = Persistence.class.getName();
 
 	public DatobGenerator(D bean) {
 		super(bean);
@@ -146,8 +146,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 			}
 			ln("            if (property.equals(\"" + propertyName + "\")) update"
-					+ Str.uppercaseFirstLetter(propertyName) + "(" + persistenceUtil + ".parseProperty" + parseType
-					+ "(value));");
+					+ Str.uppercaseFirstLetter(propertyName) + "(" + persistenceUtilClass + ".parseProperty"
+					+ parseType + "(value));");
 		}
 		ln("        }");
 		ln("    }");
@@ -449,7 +449,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("            updateLastModified();");
 		if (p.isModified()) {
 			String fieldName = getFieldName(p);
-			ln("            fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", " + persistenceUtil
+			ln("            fireModified(\"" + Str.removePrefix(fieldName, "this.") + "\", " + persistenceUtilClass
 					+ ".propertyAsString(" + fieldName + "));");
 		}
 	}
@@ -496,7 +496,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			if (p.isCollection()) {
 				ln("        if (" + p.getName() + " == null) " + p.getName() + " = Collections.emptyList();");
 				String prefix = "";
-				if (!isLegacyBean(bean)) prefix = persistenceUtil + ".";
+				if (!isLegacyBean(bean)) prefix = persistenceUtilClass + ".";
 				String suffix = p instanceof ReferenceListPropertyModel ? "AsList" : "AsSet";
 				ln("        " + p.getCollectionType() + "<String> ids = " + prefix + "getIds" + suffix + "("
 						+ p.getName() + ");");

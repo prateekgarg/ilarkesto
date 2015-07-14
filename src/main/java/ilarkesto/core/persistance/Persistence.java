@@ -15,6 +15,7 @@
 package ilarkesto.core.persistance;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.logging.Log;
 import ilarkesto.core.money.Money;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
@@ -26,11 +27,66 @@ import ilarkesto.core.time.TimePeriod;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Persistence {
+
+	private static final Log log = Log.get(Persistence.class);
+
+	public static EntitiesBackend backend;
+	public static ATransactionManager transactionManager;
+	public static Map<String, ValuesCache> valuesCachesById = new HashMap<String, ValuesCache>();
+
+	public static void initialize(EntitiesBackend backend, ATransactionManager transactionManager) {
+		Persistence.backend = backend;
+		Persistence.transactionManager = transactionManager;
+	}
+
+	public static void runInTransaction(String name, Runnable runnable) {
+		runInTransaction(name, runnable, null);
+	}
+
+	public static void runInTransaction(String name, Runnable runnable, Runnable runAfterCommited) {
+		// log.debug("runInTransaction()", name, "->", runnable.getClass());
+
+		if (transactionManager == null) {
+			runnable.run();
+			if (runAfterCommited != null) runAfterCommited.run();
+			return;
+		}
+
+		final ATransaction transaction = transactionManager.createTransaction(name);
+		boolean autoCommit = transaction.isAutoCommit();
+		transaction.setAutoCommit(false);
+		transaction.runAfterCommited(runAfterCommited);
+		try {
+			runnable.run();
+		} catch (Exception ex) {
+			transaction.rollback();
+			throw new RuntimeException("runInTransaction() for " + runnable.getClass().getName() + " failed.\n -> "
+					+ transaction.toString() + "\n -> ", ex);
+		} finally {
+			transaction.setAutoCommit(autoCommit);
+		}
+		transaction.commit();
+	}
+
+	static ValuesCache getValuesCache(String id) {
+		ValuesCache cache = valuesCachesById.get(id);
+		if (cache == null) {
+			cache = new ValuesCache();
+			valuesCachesById.put(id, cache);
+		}
+		return cache;
+	}
+
+	public static void clearCaches() {
+		valuesCachesById.clear();
+	}
 
 	public static int parsePropertyint(String value) {
 		if (value == null) return 0;
@@ -230,16 +286,6 @@ public class Persistence {
 		for (Entity entity : entities)
 			result.add(entity.getId());
 		return result;
-	}
-
-	public static void ensureIntegrity(String entityId) {
-		if (AEntityDatabase.instance != null) {
-			Entity entity = null;
-			try {
-				entity = Transaction.get().getById(entityId);
-			} catch (EntityDoesNotExistException ex) {}
-			if (entity != null) entity.ensureIntegrity();
-		}
 	}
 
 	public static String toStringWithTypeAndId(Entity entity) {

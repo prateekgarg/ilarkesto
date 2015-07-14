@@ -20,15 +20,13 @@ import ilarkesto.base.Utl;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
-import ilarkesto.core.persistance.AEntityDatabase;
-import ilarkesto.core.persistance.Transaction;
+import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.TransferBus;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.gwt.client.ADataTransferObject;
 import ilarkesto.gwt.client.ClientDataTransporter;
-import ilarkesto.webapp.AWebApplication;
 import ilarkesto.webapp.AWebSession;
 
 import java.util.ArrayList;
@@ -131,13 +129,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	private void sendToClientInternal(E entity) {
 		if (entity == null) return;
 
-		if (AWebApplication.get().getDaoService() != null
-				&& !ilarkesto.persistence.Transaction.get().containsWithId(entity.getId())) {
-			getNextData().addDeletedEntity(entity.getId());
-			return;
-		}
-
-		if (AEntityDatabase.instance != null && !Transaction.get().containsWithId(entity.getId())) {
+		if (!Persistence.transactionManager.getTransaction().containsWithId(entity.getId())) {
 			getNextData().addDeletedEntity(entity.getId());
 			return;
 		}

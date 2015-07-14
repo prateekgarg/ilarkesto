@@ -27,12 +27,22 @@ public class EntitiesCache<E extends Entity> implements EntitiesProvider<E> {
 
 	private Map<Class, Map<String, E>> entitiesByTypeById = new HashMap<Class, Map<String, E>>();
 
-	public Collection<E> getAll() {
-		ArrayList<E> ret = new ArrayList<E>();
+	@Override
+	public <C extends Collection<E>> C getAll(C resultCollection) {
 		for (Map<String, E> entitiesById : entitiesByTypeById.values()) {
-			ret.addAll(entitiesById.values());
+			resultCollection.addAll(entitiesById.values());
 		}
-		return ret;
+		return resultCollection;
+	}
+
+	@Override
+	public Set<E> getAllAsSet() {
+		return getAll(new HashSet<E>());
+	}
+
+	@Override
+	public List<E> getAllAsList() {
+		return getAll(new ArrayList<E>());
 	}
 
 	public Set<String> getAllIds() {
@@ -44,11 +54,11 @@ public class EntitiesCache<E extends Entity> implements EntitiesProvider<E> {
 	}
 
 	public Set<E> findAllAsSet(AEntityQuery query) {
-		return findAll(query, new HashSet<E>());
+		return find(query, new HashSet<E>());
 	}
 
 	@Override
-	public <C extends Collection<E>> C findAll(AEntityQuery<E> query, C resultCollection) {
+	public <C extends Collection<E>> C find(AEntityQuery<E> query, C resultCollection) {
 		for (Entry<Class, Map<String, E>> entry : entitiesByTypeById.entrySet()) {
 			if (!query.testType(entry.getKey())) continue;
 

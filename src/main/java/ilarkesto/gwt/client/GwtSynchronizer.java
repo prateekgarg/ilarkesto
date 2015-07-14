@@ -12,16 +12,22 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.core.persistance;
+package ilarkesto.gwt.client;
 
-import java.util.Collection;
+import ilarkesto.core.base.Concurrent;
+import ilarkesto.core.base.Concurrent.Synchronizer;
+
 import java.util.Map;
 
-public interface EntitiesBackend<E extends Entity, T extends ATransaction<E>> extends EntitiesProvider<E> {
+public class GwtSynchronizer implements Synchronizer {
 
-	void update(Collection<E> modified, Collection<String> deletedIds,
-			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback);
+	public static void install() {
+		Concurrent.synchronizer = new GwtSynchronizer();
+	}
 
-	String createInfo();
+	@Override
+	public <K, V> Map<K, V> map(Map<K, V> map) {
+		return map;
+	}
 
 }

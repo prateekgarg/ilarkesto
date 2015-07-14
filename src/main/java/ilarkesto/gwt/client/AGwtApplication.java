@@ -17,6 +17,9 @@ package ilarkesto.gwt.client;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.Persistence;
+import ilarkesto.gwt.client.persistence.AGwtEntityFactory;
+import ilarkesto.gwt.client.persistence.GwtRpcDatabase;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -38,6 +41,9 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 	protected int conversationNumber = -1;
 	protected GwtLogRecordHandler logRecordHandler;
 	private String abortMessage;
+	private GwtRpcDatabase entitiesBackend;
+
+	protected abstract void init();
 
 	public abstract void handleServiceCallError(String serviceCall, List<ErrorWrapper> errors);
 
@@ -45,9 +51,12 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 	protected abstract AGwtDao getDao();
 
+	protected abstract AGwtEntityFactory getEntityFactory();
+
 	public AGwtApplication() {
 		if (singleton != null) throw new RuntimeException("GWT application already instantiated: " + singleton);
 		singleton = this;
+		GwtSynchronizer.install();
 		logRecordHandler = new GwtLogRecordHandler();
 		Log.setLogRecordHandler(logRecordHandler);
 		GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
@@ -58,6 +67,20 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 			}
 		});
 		History.addValueChangeHandler(new HistoryTokenChangedHandler());
+	}
+
+	@Override
+	public final void onModuleLoad() {
+		AGwtEntityFactory entityFactory = getEntityFactory();
+		if (entityFactory != null) {
+			entitiesBackend = new GwtRpcDatabase(entityFactory);
+			Persistence.initialize(entitiesBackend, new GwtTransactionManager());
+		}
+		init();
+	}
+
+	public GwtRpcDatabase getEntitiesBackend() {
+		return entitiesBackend;
 	}
 
 	public final boolean isAborted() {

@@ -17,7 +17,10 @@ package ilarkesto.gwt.server;
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
 
+import ilarkesto.core.base.RunnableWithException;
+import ilarkesto.core.base.Wrapper;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.Persistence;
 import ilarkesto.io.IO;
 import ilarkesto.webapp.AWebApplication;
 
@@ -41,7 +44,8 @@ public abstract class AUploadServlet extends UploadAction {
 	protected abstract String handleFiles(HttpServletRequest req, List<FileItem> sessionFiles) throws IOException;
 
 	@Override
-	public final String executeAction(HttpServletRequest req, List<FileItem> sessionFiles) throws UploadActionException {
+	public final String executeAction(final HttpServletRequest req, final List<FileItem> sessionFiles)
+			throws UploadActionException {
 		// log.info("Upload:\n" + Servlet.toString(req, "  "));
 
 		if (webApplication == null) throw new IllegalStateException("Application not started yet");
@@ -52,11 +56,21 @@ public abstract class AUploadServlet extends UploadAction {
 
 		webApplication.getWebSession(req).getContext().bindCurrentThread();
 
-		sessionFiles = new ArrayList<FileItem>(sessionFiles);
 		log.info("Files received:", sessionFiles);
 		try {
 			synchronized (webApplication.getApplicationLock()) {
-				return handleFiles(req, sessionFiles);
+
+				final Wrapper<String> ret = new Wrapper<String>();
+
+				Persistence.runInTransaction(getClass().getSimpleName(), new RunnableWithException() {
+
+					@Override
+					public void onRun() throws IOException {
+						ret.set(handleFiles(req, new ArrayList<FileItem>(sessionFiles)));
+					}
+				});
+
+				return ret.get();
 			}
 		} catch (Exception e) {
 			log.error(e);

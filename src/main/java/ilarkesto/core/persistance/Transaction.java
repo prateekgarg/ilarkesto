@@ -28,7 +28,7 @@ public class Transaction extends ATransaction<AEntity> {
 	}
 
 	public static Transaction get() {
-		return AEntityDatabase.get().getTransaction();
+		return (Transaction) Persistence.transactionManager.getTransaction();
 	}
 
 }

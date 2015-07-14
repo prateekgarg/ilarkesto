@@ -16,10 +16,10 @@ package ilarkesto.core.persistance;
 
 import ilarkesto.core.fp.Function;
 
-public class EntitiesByTypeGroupFunctionn implements Function<AEntity, Class<? extends AEntity>> {
+public class EntitiesByTypeGroupFunctionn implements Function<Entity, Class<? extends Entity>> {
 
 	@Override
-	public Class<? extends AEntity> eval(AEntity e) {
+	public Class<? extends Entity> eval(Entity e) {
 		return e.getClass();
 	}
 

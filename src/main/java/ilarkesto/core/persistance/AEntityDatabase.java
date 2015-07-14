@@ -14,54 +14,21 @@
  */
 package ilarkesto.core.persistance;
 
-import ilarkesto.core.base.RuntimeTracker;
-import ilarkesto.core.fp.FP;
 import ilarkesto.core.logging.Log;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public abstract class AEntityDatabase implements EntitiesBackend<AEntity, Transaction> {
 
 	protected final Log log = Log.get(getClass());
 
-	public static AEntityDatabase instance;
-
-	private Map<String, ValuesCache> valuesCachesById = createValuesCachesMap();
-
-	protected abstract Map<String, ValuesCache> createValuesCachesMap();
-
 	@Override
 	public abstract AEntity findFirst(AEntityQuery query);
 
 	public abstract Set<AEntity> findAllAsSet(AEntityQuery query);
 
-	public abstract boolean isTransactionWithChangesOpen();
-
-	public abstract Collection<AEntity> listAll();
-
 	public AEntityDatabase() {
 		Transaction.backend = this;
-	}
-
-	final ValuesCache getValuesCache(String id) {
-		ValuesCache cache = valuesCachesById.get(id);
-		if (cache == null) {
-			cache = new ValuesCache();
-			valuesCachesById.put(id, cache);
-		}
-		return cache;
-	}
-
-	@Override
-	public final void onEntityModified() {
-		clearCaches();
-	}
-
-	public void clearCaches() {
-		valuesCachesById.clear();
 	}
 
 	public boolean isPartial() {
@@ -77,42 +44,7 @@ public abstract class AEntityDatabase implements EntitiesBackend<AEntity, Transa
 		}
 	}
 
-	public void ensureIntegrityForAllEntities() {
-		Collection<AEntity> entities = listAll();
-		int count = entities.size();
-		log.info("Ensuring integrity for all", count, "entities");
-		RuntimeTracker rt = new RuntimeTracker();
-		Transaction transaction = getTransaction();
-
-		Map<Class<? extends AEntity>, List<AEntity>> entitiesByType = FP.group(entities,
-			new EntitiesByTypeGroupFunctionn());
-		for (Map.Entry<Class<? extends AEntity>, List<AEntity>> entry : entitiesByType.entrySet()) {
-			Class<? extends AEntity> type = entry.getKey();
-			List<AEntity> entitiesOfType = entry.getValue();
-			log.info("   ", type.getSimpleName(), entitiesOfType.size());
-			ensureIntegrity(entitiesOfType);
-		}
-
-		log.info("Integrity for all", count, "entities ensured in", rt.getRuntimeFormated());
-		transaction.commit();
-	}
-
-	private void ensureIntegrity(Collection<AEntity> entities) {
-		for (AEntity entity : entities) {
-			try {
-				entity.ensureIntegrity();
-			} catch (Exception ex) {
-				throw new RuntimeException("Ensuring integrity failed for entity: "
-						+ Persistence.toStringWithTypeAndId(entity), ex);
-			}
-		}
-	}
-
-	public static AEntityDatabase get() {
-		if (instance == null) throw new IllegalStateException("ADatabase.instance == null");
-		return instance;
-	}
-
+	@Override
 	public String createInfo() {
 		return getClass().getName();
 	}

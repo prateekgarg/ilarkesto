@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -20,6 +20,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+import ilarkesto.core.persistance.Transient;
 import ilarkesto.io.IO;
 
 import java.io.BufferedInputStream;
@@ -46,7 +47,6 @@ public class FileEntityStore implements EntityStore {
 	private boolean versionChecked;
 	private boolean locked;
 
-	private ThreadLocal<Transaction> threadLocalTransaction = new ThreadLocal<Transaction>();
 	private Map<Class, String> aliases = new HashMap<Class, String>();
 	private Map<Class<AEntity>, Map<String, AEntity>> entitiesByIdByType = new HashMap<Class<AEntity>, Map<String, AEntity>>();
 
@@ -79,34 +79,13 @@ public class FileEntityStore implements EntityStore {
 
 	// --- ---
 
-	public FileEntityStore() {
-		Transaction.backend = this;
-	}
-
-	@Override
-	public void onEntityModified() {}
+	public FileEntityStore() {}
 
 	@Override
 	public synchronized void lock() {
 		if (locked) return;
 		locked = true;
 		log.info("File entity store locked.");
-	}
-
-	@Override
-	public Transaction getTransaction() {
-		Transaction t = threadLocalTransaction.get();
-		if (t == null) {
-			t = new Transaction(Thread.currentThread().getName(), false, true);
-			log.debug("Transaction created: " + t);
-			threadLocalTransaction.set(t);
-		}
-		return t;
-	}
-
-	@Override
-	public void onTransactionFinished(Transaction transaction) {
-		threadLocalTransaction.set(null);
 	}
 
 	@Override
@@ -119,6 +98,7 @@ public class FileEntityStore implements EntityStore {
 		// create operations
 		List<Operation> operations = new ArrayList<FileEntityStore.Operation>(modified.size() + deletedIds.size());
 		for (AEntity entity : modified) {
+			if (entity instanceof Transient) continue;
 			operations.add(new SaveOperation(entity));
 		}
 
@@ -166,6 +146,24 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
+	public <C extends Collection<AEntity>> C getAll(C resultCollection) {
+		for (Map<String, AEntity> entitiesById : entitiesByIdByType.values()) {
+			resultCollection.addAll(entitiesById.values());
+		}
+		return resultCollection;
+	}
+
+	@Override
+	public Set<AEntity> getAllAsSet() {
+		return getAll(new HashSet<AEntity>());
+	}
+
+	@Override
+	public List<AEntity> getAllAsList() {
+		return getAll(new ArrayList<AEntity>());
+	}
+
+	@Override
 	public AEntity findFirst(AEntityQuery<AEntity> query) {
 		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> daoEntry : entitiesByIdByType.entrySet()) {
 			if (!query.testType(daoEntry.getKey())) continue;
@@ -178,7 +176,7 @@ public class FileEntityStore implements EntityStore {
 	}
 
 	@Override
-	public <C extends Collection<AEntity>> C findAll(AEntityQuery<AEntity> query, C resultCollection) {
+	public <C extends Collection<AEntity>> C find(AEntityQuery<AEntity> query, C resultCollection) {
 		for (Map.Entry<Class<AEntity>, Map<String, AEntity>> entry : entitiesByIdByType.entrySet()) {
 			if (!query.testType(entry.getKey())) continue;
 			if (query.getClass().equals(AllByTypeQuery.class)) {
@@ -309,6 +307,11 @@ public class FileEntityStore implements EntityStore {
 
 	private File getPropertiesFile() {
 		return new File(dir + "/store.properties");
+	}
+
+	@Override
+	public String createInfo() {
+		return getClass().getName();
 	}
 
 	abstract class Operation {

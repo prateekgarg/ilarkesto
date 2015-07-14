@@ -18,8 +18,7 @@ import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.persistance.ACachingEntityDatabase;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
-import ilarkesto.core.persistance.Transaction;
-import ilarkesto.core.persistance.ValuesCache;
+import ilarkesto.core.persistance.Transient;
 import ilarkesto.io.AFileStorage;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonMapper;
@@ -29,18 +28,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// TODO background task which checks if transactions are open (running) too long
 public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 
 	protected AFileStorage storage;
-
-	private ThreadLocal<Transaction> tlTransaction = new ThreadLocal<Transaction>();
-	private Collection<Transaction> transactions = Collections.synchronizedList(new ArrayList<Transaction>());
 
 	protected abstract AEntityJsonFileUpgrades createUpgrader();
 
@@ -51,11 +44,6 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 	public AJsonFilesEntityDatabase(AFileStorage storage) {
 		this.storage = storage;
 		load();
-	}
-
-	@Override
-	protected Map<String, ValuesCache> createValuesCachesMap() {
-		return Collections.synchronizedMap(new HashMap<String, ValuesCache>());
 	}
 
 	private void load() {
@@ -124,6 +112,7 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 		Collection<AEntity> created = new ArrayList<AEntity>();
 		if (modified != null) {
 			for (AEntity entity : modified) {
+				if (entity instanceof Transient) continue;
 				File file = getFile(entity);
 				if (!file.exists()) {
 					created.add(entity);
@@ -166,38 +155,6 @@ public abstract class AJsonFilesEntityDatabase extends ACachingEntityDatabase {
 
 	private File getFile(AEntity entity) {
 		return storage.getFile(entity.getClass().getSimpleName() + "/" + entity.getId() + ".json");
-	}
-
-	@Override
-	public Transaction getTransaction() {
-		Transaction transaction = tlTransaction.get();
-		if (transaction == null) {
-			transaction = new Transaction(Thread.currentThread().getName(), false, true);
-			transactions.add(transaction);
-			tlTransaction.set(transaction);
-		}
-		return transaction;
-	}
-
-	@Override
-	public void onTransactionFinished(Transaction transaction) {
-		Transaction current = tlTransaction.get();
-		if (current == null) {
-			if (transaction == null) return;
-			throw new IllegalStateException("Current transaction == null. Finished: " + transaction);
-		}
-		if (current != transaction)
-			throw new IllegalStateException("Transaction is not current transaction: " + transaction);
-		tlTransaction.set(null);
-		transactions.remove(transaction);
-	}
-
-	@Override
-	public boolean isTransactionWithChangesOpen() {
-		for (Transaction transaction : new ArrayList<Transaction>(transactions)) {
-			if (!transaction.isEmpty()) return true;
-		}
-		return false;
 	}
 
 	@Override

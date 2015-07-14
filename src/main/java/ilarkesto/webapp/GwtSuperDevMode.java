@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -44,8 +44,9 @@ public class GwtSuperDevMode {
 	private boolean incremental = true;
 	private WebServer webServer;
 	private Proc proc;
+	private File workDir;
 
-	public void startCodeServerInSeparateProcessWithJarsFromIlarkesto(File workDir) {
+	public void startCodeServerInSeparateProcessWithJarsFromIlarkesto() {
 		List<String> cp = new ArrayList<String>();
 		File ilarkestoDir = new File(workDir.getPath() + "/ilarkesto");
 		if (!ilarkestoDir.exists())
@@ -213,6 +214,11 @@ public class GwtSuperDevMode {
 		return "javascript:%7B window.__gwt_bookmarklet_params %3D %7Bserver_url%3A'http%3A%2F%2Flocalhost%3A9876%2F'%2Cmodule_name%3A'"
 				+ moduleName
 				+ "'%7D%3B var s %3D document.createElement('script')%3B s.src %3D 'http%3A%2F%2Flocalhost%3A9876%2Fdev_mode_on.js'%3B void(document.getElementsByTagName('head')%5B0%5D.appendChild(s))%3B%7D";
+	}
+
+	public GwtSuperDevMode setWorkDir(File workDir) {
+		this.workDir = workDir;
+		return this;
 	}
 
 }

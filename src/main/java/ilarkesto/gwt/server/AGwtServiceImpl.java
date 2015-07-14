@@ -15,8 +15,6 @@
 package ilarkesto.gwt.server;
 
 import ilarkesto.core.logging.Log;
-import ilarkesto.core.persistance.AEntityDatabase;
-import ilarkesto.core.persistance.Transaction;
 import ilarkesto.di.Context;
 import ilarkesto.gwt.client.ErrorWrapper;
 import ilarkesto.persistence.DaoService;
@@ -59,10 +57,6 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 			Context context) {
 		log.info("Service method failed:", method, "->", t);
 
-		// reset modified entities
-		if (AEntityDatabase.instance != null) Transaction.get().rollback();
-		if (getWebApplication().getDaoService() != null) ilarkesto.persistence.Transaction.get().rollback();
-
 		try {
 			// send error to client
 			AGwtConversation conversation = getSession().getGwtConversation(conversationNumber);
@@ -76,10 +70,6 @@ public abstract class AGwtServiceImpl extends RemoteServiceServlet {
 	}
 
 	protected final void onServiceMethodExecuted(Context context) {
-		// save modified entities
-		if (AEntityDatabase.instance != null) Transaction.get().commit();
-		if (getWebApplication().getDaoService() != null) ilarkesto.persistence.Transaction.get().commit();
-
 		// destroy request context
 		context.destroy(false);
 

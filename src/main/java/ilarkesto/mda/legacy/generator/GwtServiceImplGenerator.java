@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -17,6 +17,8 @@ package ilarkesto.mda.legacy.generator;
 import ilarkesto.base.Threads;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.Persistence;
+import ilarkesto.di.Context;
 import ilarkesto.gwt.server.AGwtServiceImpl;
 import ilarkesto.mda.legacy.model.GwtServiceModel;
 import ilarkesto.mda.legacy.model.MethodModel;
@@ -52,9 +54,9 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 
 		ln();
 		annotationOverride();
-		s("    public", service.getDtoClassName(), method.getName() + "(int conversationNumber");
+		s("    public", service.getDtoClassName(), method.getName() + "(final int conversationNumber");
 		for (ParameterModel param : method.getParameters()) {
-			s(",", param.getType(), param.getName());
+			s(", final", param.getType(), param.getName());
 		}
 		ln(") {");
 		boolean ping = method.getName().toLowerCase().equals("ping");
@@ -72,7 +74,7 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 						+ " waited for sync\", rt.getRuntimeFormated(), \">>> Threads before:\\n\", threads, \"Threads after:\\n\", "
 						+ Threads.class.getName() + ".getAllThreadsInfo());");
 		}
-		ln("            GwtConversation conversation = null;");
+		ln("            final GwtConversation conversation;");
 		ln("            try {");
 		ln("                conversation = session.getGwtConversation(conversationNumber);");
 		ln("            } catch (Throwable ex) {");
@@ -81,17 +83,22 @@ public class GwtServiceImplGenerator extends AClassGenerator {
 		ln("                dto.addError(new ilarkesto.gwt.client.ErrorWrapper(ex));");
 		ln("                return dto;");
 		ln("            }");
-		ln("            ilarkesto.di.Context context = ilarkesto.di.Context.get();");
+		ln("            final", Context.class.getName(), "context = ilarkesto.di.Context.get();");
 		ln("            context.setName(\"gwt-srv:" + method.getName() + "\");");
 		ln("            context.bindCurrentThread();");
 		ln("            try {");
-		s("                on" + Str.uppercaseFirstLetter(method.getName()) + "(conversation");
+		ln("                " + Persistence.class.getName() + ".runInTransaction(\"GwtService." + method.getName()
+				+ "()\", new Runnable() { public void run() {");
+		ln();
+		s("                    on" + Str.uppercaseFirstLetter(method.getName()) + "(conversation");
 		for (ParameterModel param : method.getParameters()) {
 			s(",", param.getName());
 		}
 		ln(");");
+		ln();
+		ln("                }});");
 		ln("                onServiceMethodExecuted(context);");
-		ln("            } catch (Throwable ex) {");
+		ln("            } catch (Exception ex) {");
 		ln("                handleServiceMethodException(conversationNumber, \"" + method.getName()
 				+ "\", ex, context);");
 		ln("            }");

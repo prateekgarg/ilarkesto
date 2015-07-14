@@ -12,16 +12,19 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.core.persistance;
+package ilarkesto.concurrent;
 
-import java.util.Collection;
-import java.util.Map;
+public class TaskExcecutionFailedException extends RuntimeException {
 
-public interface EntitiesBackend<E extends Entity, T extends ATransaction<E>> extends EntitiesProvider<E> {
+	private ATask task;
 
-	void update(Collection<E> modified, Collection<String> deletedIds,
-			Map<String, Map<String, String>> modifiedPropertiesByEntityId, Runnable callback);
+	public TaskExcecutionFailedException(ATask task, Throwable cause) {
+		super(task.toString(), cause);
+		this.task = task;
+	}
 
-	String createInfo();
+	public ATask getTask() {
+		return task;
+	}
 
 }
