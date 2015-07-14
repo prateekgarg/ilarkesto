@@ -69,7 +69,8 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		boolean persistent = isPersistent(entity);
 		if (!persistent) return;
 
-		log.info("Entity modified:", Utl.toStringWithType(entity), "->", field, "=", Str.format(value));
+		log.debug("Entity modified:", Utl.toStringWithType(entity), "->", field, "=",
+			Str.getFirstLine(Str.format(value), 50, ".."));
 		persist(entity);
 	}
 
