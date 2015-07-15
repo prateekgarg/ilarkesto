@@ -14,7 +14,10 @@
  */
 package ilarkesto.core.search;
 
+import ilarkesto.core.base.Str;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class SearchText {
@@ -33,6 +36,14 @@ public class SearchText {
 		words.add(text.trim());
 	}
 
+	public <C extends Collection<Searchable>> C collectMatching(C resultContainer,
+			Collection<? extends Searchable> searchables) {
+		for (Searchable searchable : searchables) {
+			if (searchable.matches(this)) resultContainer.add(searchable);
+		}
+		return resultContainer;
+	}
+
 	public boolean matches(Object... values) {
 		for (String word : words) {
 			if (!matchesAny(word, values)) return false;
@@ -47,6 +58,11 @@ public class SearchText {
 			if (s.contains(word)) return true;
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return Str.concat(words, " ");
 	}
 
 }

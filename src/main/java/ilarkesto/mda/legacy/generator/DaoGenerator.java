@@ -14,7 +14,6 @@
  */
 package ilarkesto.mda.legacy.generator;
 
-import ilarkesto.auth.AUserDao;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.base.Str;
@@ -252,10 +251,7 @@ public class DaoGenerator extends ABeanGenerator<EntityModel> {
 	}
 
 	protected final String getUserClassName() {
-		EntityModel userModel = bean.getUserModel();
-		if (userModel == null && bean.getName().equals("User")) userModel = bean;
-		if (userModel == null) return null;
-		return userModel.getPackageName() + "." + userModel.getName();
+		return bean.getUserModel().getBeanClass();
 	}
 
 	@Override
@@ -265,7 +261,6 @@ public class DaoGenerator extends ABeanGenerator<EntityModel> {
 
 	@Override
 	protected String getSuperclass() {
-		if ("User".equals(bean.getName())) return AUserDao.class.getName() + "<" + bean.getName() + ">";
 		return ADao.class.getName() + "<" + bean.getName() + ">";
 	}
 

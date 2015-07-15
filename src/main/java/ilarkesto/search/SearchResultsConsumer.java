@@ -14,13 +14,13 @@
  */
 package ilarkesto.search;
 
-import ilarkesto.auth.AUser;
+import ilarkesto.auth.AuthUser;
 import ilarkesto.core.search.SearchText;
 import ilarkesto.persistence.AEntity;
 
 public interface SearchResultsConsumer {
 
-	AUser getSearcher();
+	AuthUser getSearcher();
 
 	SearchText getSearchText();
 

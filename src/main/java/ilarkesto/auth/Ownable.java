@@ -14,7 +14,7 @@
  */
 package ilarkesto.auth;
 
-public interface Ownable<U extends AUser> {
+public interface Ownable<U extends AuthUser> {
 
 	boolean isOwner(U user);
 

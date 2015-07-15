@@ -1,22 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.persistence;
 
-import ilarkesto.auth.AUser;
-import ilarkesto.auth.AUserDao;
 import ilarkesto.auth.Auth;
+import ilarkesto.auth.AuthUser;
 import ilarkesto.auth.Ownable;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Reflect;
@@ -81,7 +80,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 
 	@Override
 	public void onMissingMaster(E entity) {
-		deleteEntity(entity);
+		entity.delete();
 		throw new EnsureIntegrityCompletedException();
 	}
 
@@ -192,7 +191,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		return getByIdsAsList(entitiesIds);
 	}
 
-	public Set<E> getEntitiesVisibleForUser(final AUser user) {
+	public Set<E> getEntitiesVisibleForUser(final AuthUser user) {
 		return getEntities(new Predicate<E>() {
 
 			@Override
@@ -207,17 +206,12 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		return (Set<E>) Transaction.get().findAllAsSet(new AllByTypeQuery(getEntityClass()));
 	}
 
-	public void deleteEntity(E entity) {
-		Transaction.get().delete(entity.getId());
-		daoService.fireEntityDeleted(entity);
-	}
-
 	public void persist(E entity) {
 		Transaction.get().persist(entity);
 		daoService.fireEntitySaved(entity);
 	}
 
-	public E newEntityInstance(AUser user) {
+	public E newEntityInstance(AuthUser user) {
 		E entity = newEntityInstance();
 		if (entity instanceof Ownable) ((Ownable) entity).setOwner(user);
 		return entity;
@@ -278,7 +272,7 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		if (!Searchable.class.isAssignableFrom(getEntityClass())) return;
 
 		final SearchText searchText = searchBox.getSearchText();
-		final AUser searcher = searchBox.getSearcher();
+		final AuthUser searcher = searchBox.getSearcher();
 
 		RuntimeTracker rt = new RuntimeTracker();
 		Predicate<E> filter = new Predicate<E>() {
@@ -358,12 +352,6 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 
 	public final DaoService getDaoService() {
 		return daoService;
-	}
-
-	protected AUserDao userDao;
-
-	public final void setUserDao(AUserDao userDao) {
-		this.userDao = userDao;
 	}
 
 	@Override

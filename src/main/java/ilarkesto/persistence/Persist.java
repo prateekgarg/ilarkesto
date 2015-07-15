@@ -14,7 +14,7 @@
  */
 package ilarkesto.persistence;
 
-import ilarkesto.auth.AUser;
+import ilarkesto.auth.AuthUser;
 import ilarkesto.auth.Auth;
 import ilarkesto.core.base.Identifiable;
 import ilarkesto.core.fp.Predicate;
@@ -53,7 +53,7 @@ public abstract class Persist {
 		return true;
 	}
 
-	public static List<AEntity> getVisible(Collection<AEntity> entities, AUser user) {
+	public static List<AEntity> getVisible(Collection<AEntity> entities, AuthUser user) {
 		List<AEntity> result = new ArrayList<AEntity>(entities.size());
 		for (AEntity entity : entities)
 			if (Auth.isVisible(entity, user)) result.add(entity);

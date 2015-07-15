@@ -90,6 +90,14 @@ public abstract class ABaseEntity implements Entity, TransferableEntity {
 	protected void onAfterPersist() {}
 
 	@Override
+	public final void delete() {
+		ATransaction.get().delete(id);
+		onAfterDelete();
+	}
+
+	protected void onAfterDelete() {}
+
+	@Override
 	public final String getId() {
 		if (id == null) id = Uuid.create();
 		return id;

@@ -14,11 +14,11 @@
  */
 package ilarkesto.mda.legacy;
 
-import ilarkesto.auth.AUser;
 import ilarkesto.base.Str;
 import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntitiesBackend;
+import ilarkesto.core.persistance.InMemoryEntitiesBackend;
 import ilarkesto.di.BeanProvider;
 import ilarkesto.di.Context;
 import ilarkesto.di.app.AApplication;
@@ -107,7 +107,7 @@ public abstract class AGeneratorApplication extends AApplication {
 
 	@Override
 	protected EntitiesBackend createEntitiesBackend() {
-		return null;
+		return new InMemoryEntitiesBackend();
 	}
 
 	// --------------
@@ -115,17 +115,6 @@ public abstract class AGeneratorApplication extends AApplication {
 	// --------------
 
 	protected abstract String getBasePackageName();
-
-	private EntityModel userModel;
-
-	public EntityModel getUserModel() {
-		if (userModel == null) {
-			userModel = new EntityModel(AUser.class.getSimpleName(), AUser.class.getPackage().getName());
-			userModel.setUserModel(userModel);
-			Context.get().autowire(userModel);
-		}
-		return userModel;
-	}
 
 	private EntityModel entityModel;
 
@@ -165,7 +154,6 @@ public abstract class AGeneratorApplication extends AApplication {
 		for (Iterator iterator = Context.get().getBeanProvider().getBeansByType(EntityModel.class).iterator(); iterator
 				.hasNext();) {
 			EntityModel entityModel = (EntityModel) iterator.next();
-			if (excludeUser && entityModel == getUserModel()) continue;
 			if (entityModel == getEntityModel()) continue;
 			entityModels.add(entityModel);
 		}
@@ -209,7 +197,6 @@ public abstract class AGeneratorApplication extends AApplication {
 	protected EntityModel createEntityModel(String name, String packageName) {
 		EntityModel model = new EntityModel(name, getBasePackageName() + "." + packageName);
 		model.setSuperbean(getAbstractEntityModel());
-		if (!name.equals("User")) model.setUserModel(getUserModel());
 		return model;
 	}
 

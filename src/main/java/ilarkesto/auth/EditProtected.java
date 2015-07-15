@@ -14,7 +14,7 @@
  */
 package ilarkesto.auth;
 
-public interface EditProtected<U extends AUser> {
+public interface EditProtected<U extends AuthUser> {
 
 	boolean isEditableBy(U user);
 

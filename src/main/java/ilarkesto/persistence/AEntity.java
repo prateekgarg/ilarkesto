@@ -1,25 +1,26 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.persistence;
 
-import ilarkesto.auth.AUser;
-import ilarkesto.auth.AUserDao;
+import ilarkesto.auth.AuthUser;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.OverrideExpectedException;
 import ilarkesto.core.persistance.ABaseEntity;
+import ilarkesto.core.persistance.ATransaction;
 import ilarkesto.core.persistance.Persistence;
+import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.search.SearchText;
 import ilarkesto.core.search.Searchable;
@@ -52,13 +53,11 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 		AEntity.daoService = daoService;
 	}
 
-	protected static AUserDao userDao;
-
-	public static void setUserDao(AUserDao userDao) {
-		AEntity.userDao = userDao;
-	}
-
 	// --- ---
+
+	public String getDeleteVeto() {
+		return null;
+	}
 
 	@Override
 	protected void doPersist() {
@@ -66,8 +65,8 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 	}
 
 	@Override
-	public void delete() {
-		getDao().deleteEntity(this);
+	protected void onAfterDelete() {
+		getDaoService().fireEntityDeleted(this);
 	}
 
 	public static AEntity getById(String entityId) {
@@ -107,18 +106,18 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 		return new DateAndTime(getModificationTime());
 	}
 
-	public final AUser getLastEditor() {
+	public final AuthUser getLastEditor() {
 		if (this.lastEditorId == null) return null;
-		return (AUser) userDao.getById(this.lastEditorId);
+		return (AuthUser) AEntity.getById(this.lastEditorId);
 	}
 
-	public final void setLastEditor(AUser lastEditor) {
+	public final void setLastEditor(AuthUser lastEditor) {
 		if (isLastEditor(lastEditor)) return;
 		this.lastEditorId = lastEditor == null ? null : lastEditor.getId();
 		fireModified("lastEditor", Persistence.propertyAsString(lastEditorId));
 	}
 
-	public final boolean isLastEditor(AUser user) {
+	public final boolean isLastEditor(AuthUser user) {
 		if (this.lastEditorId == null && user == null) return true;
 		return user != null && user.getId().equals(this.lastEditorId);
 	}
@@ -142,6 +141,10 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 	@Override
 	public boolean matches(SearchText searchText) {
 		return false;
+	}
+
+	public static boolean exists(String id) {
+		return ATransaction.get().containsWithId(id);
 	}
 
 	// --- helper from datob ---

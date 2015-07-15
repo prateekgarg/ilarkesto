@@ -14,7 +14,6 @@
  */
 package ilarkesto.persistence;
 
-import ilarkesto.auth.AUserDao;
 import ilarkesto.base.OverrideExpectedException;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.search.SearchText;
@@ -32,16 +31,6 @@ import java.util.Set;
  * Base class for classes with persistent data.
  */
 public abstract class ADatob implements Datob, Searchable {
-
-	// --- dependencies ---
-
-	protected static AUserDao userDao;
-
-	public static void setUserDao(AUserDao userDao) {
-		ADatob.userDao = userDao;
-	}
-
-	// --- ---
 
 	protected abstract ADatobManager getManager();
 

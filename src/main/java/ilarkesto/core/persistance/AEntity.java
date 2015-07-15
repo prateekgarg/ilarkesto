@@ -16,12 +16,13 @@ package ilarkesto.core.persistance;
 
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.search.SearchText;
+import ilarkesto.core.search.Searchable;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class AEntity extends ABaseEntity implements TransferableEntity {
+public class AEntity extends ABaseEntity implements Entity, Searchable, TransferableEntity {
 
 	private static final transient Log log = Log.get(AEntity.class);
 
@@ -45,11 +46,6 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 		return Transaction.get().containsWithId(getId());
 	}
 
-	@Override
-	public final void delete() {
-		Transaction.get().delete(getId());
-	}
-
 	public String getDeleteVeto() {
 		return "Objekt ist nicht löschbar";
 	}
@@ -70,6 +66,7 @@ public class AEntity extends ABaseEntity implements TransferableEntity {
 		Transaction.get().modified(this, field, value);
 	}
 
+	@Override
 	public boolean matches(SearchText search) {
 		return search.matches(toString());
 	}

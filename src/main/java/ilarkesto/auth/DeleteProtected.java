@@ -14,7 +14,7 @@
  */
 package ilarkesto.auth;
 
-public interface DeleteProtected<U extends AUser> {
+public interface DeleteProtected<U extends AuthUser> {
 
 	boolean isDeletableBy(U user);
 

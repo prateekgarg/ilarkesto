@@ -14,7 +14,7 @@
  */
 package ilarkesto.mda.legacy.generator;
 
-import ilarkesto.auth.AUser;
+import ilarkesto.auth.AuthUser;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.money.Money;
@@ -34,6 +34,8 @@ import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
+import ilarkesto.mda.legacy.model.ReferenceSetPropertyModel;
+import ilarkesto.mda.legacy.model.StringPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.ADatobManager;
 import ilarkesto.persistence.AEntity;
@@ -334,6 +336,11 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		// --- getXxx ---
 		ln();
 		String type2 = p.getType();
+		if (p instanceof ReferencePropertyModel)
+			type2 = getBeanClass(((ReferencePropertyModel) p).getReferencedEntity());
+		if (p instanceof ReferenceSetPropertyModel)
+			type2 = ((ReferenceSetPropertyModel) p).getCollectionType() + "<"
+					+ getBeanClass(((ReferenceSetPropertyModel) p).getReferencedEntity()) + ">";
 		// if (!isLegacyBean(bean) && p.isCollection()) type2 = "List<" + p.getContentType() + ">";
 		ln("    public final " + type2 + " " + getterMethodPrefix + pNameUpper + "() {");
 		writeGetXxxContent(p);
@@ -343,10 +350,30 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln();
 		String type3 = p.getType();
 		if (p.isCollection()) type3 = "Collection<" + p.getContentType() + ">";
+		if (p instanceof ReferencePropertyModel)
+			type3 = getBeanClass(((ReferencePropertyModel) p).getReferencedEntity());
+		if (p instanceof ReferenceSetPropertyModel)
+			type3 = "Collection<" + getBeanClass(((ReferenceSetPropertyModel) p).getReferencedEntity()) + ">";
 		ln("    public final void set" + pNameUpper + "(" + type3 + " " + p.getName() + ") {");
 		ln("        " + p.getName() + " = " + "prepare" + pNameUpper + "(" + p.getName() + ");");
 		writeSetXxxContent(p);
 		ln("    }");
+
+		if (p.isOptionRestricted()) {
+			String optionType = type3;
+			if (optionType.equals(int.class.getName())) optionType = Integer.class.getName();
+			ln();
+			ln("    public abstract List<" + optionType + "> get" + Str.uppercaseFirstLetter(p.getName())
+					+ "Options();");
+		}
+
+		if (p instanceof StringPropertyModel) {
+			StringPropertyModel sp = (StringPropertyModel) p;
+			if (sp.isTemplateAvailable()) {
+				ln();
+				ln("    public abstract String get" + Str.uppercaseFirstLetter(p.getName()) + "Template();");
+			}
+		}
 
 		if (p.isReference()) {
 			ln();
@@ -465,9 +492,10 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("            throw ex.setCallerInfo(\"" + bean.getName() + "." + p.getName() + "\");");
 				ln("        }");
 			} else {
+				ReferencePropertyModel refP = (ReferencePropertyModel) p;
 				ln("        try {");
-				ln("            return " + getFieldName(p) + " == null ? null : (" + p.getContentType()
-						+ ") AEntity.getById(" + getFieldName(p) + ");");
+				ln("            return " + getFieldName(p) + " == null ? null : ("
+						+ getBeanClass(refP.getReferencedEntity()) + ") AEntity.getById(" + getFieldName(p) + ");");
 				ln("        } catch (" + EntityDoesNotExistException.class.getName() + " ex) {");
 				ln("            throw ex.setCallerInfo(\"" + bean.getName() + "." + p.getName() + "\");");
 				ln("        }");
@@ -622,8 +650,11 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		// --- containsXxx ---
 		ln();
-		ln("    public final boolean contains" + pNameSingularUpper + "(" + p.getContentType() + " "
-				+ p.getNameSingular() + ") {");
+		String contentType = p.getContentType();
+		if (p instanceof ReferenceSetPropertyModel)
+			contentType = getBeanClass(((ReferenceSetPropertyModel) p).getReferencedEntity());
+		ln("    public final boolean contains" + pNameSingularUpper + "(" + contentType + " " + p.getNameSingular()
+				+ ") {");
 		ln("        if (" + p.getNameSingular() + " == null) return false;");
 		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        return " + getFieldName(p) + ".contains(" + paramExpr + ");");
@@ -645,14 +676,13 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		// --- addXxx ---
 		ln();
-		ln("    public final boolean add" + pNameSingularUpper + "(" + p.getContentType() + " " + p.getNameSingular()
-				+ ") {");
+		ln("    public final boolean add" + pNameSingularUpper + "(" + contentType + " " + p.getNameSingular() + ") {");
 		ln("        if (" + p.getNameSingular() + " == null) throw new IllegalArgumentException(\""
 				+ p.getNameSingular() + " == null\");");
 		ln("        if (" + getFieldName(p) + " == null) " + getFieldName(p) + " = new " + getFieldImpl(p) + "();");
 		if (p.isValueObject()) {
-			ln("        boolean added = " + getFieldName(p) + ".add((" + p.getContentType() + ")" + paramExpr
-					+ ".clone(get" + pNameUpper + "Manager()));");
+			ln("        boolean added = " + getFieldName(p) + ".add((" + contentType + ")" + paramExpr + ".clone(get"
+					+ pNameUpper + "Manager()));");
 		} else {
 			if (p instanceof ReferenceListPropertyModel) {
 				if (!((ReferenceListPropertyModel) p).isDuplicatesAllowed()) {
@@ -674,21 +704,21 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		// --- addXxxs ---
 		ln();
-		ln("    public final boolean add" + pNameSingularUpper + "s(Collection<" + p.getContentType() + "> "
-				+ p.getName() + ") {");
+		ln("    public final boolean add" + pNameSingularUpper + "s(Collection<" + contentType + "> " + p.getName()
+				+ ") {");
 		ln("        if (" + p.getName() + " == null) throw new IllegalArgumentException(\"" + p.getName()
 				+ " == null\");");
 		ln("        if (" + getFieldName(p) + " == null) " + getFieldName(p) + " = new " + getFieldImpl(p) + "();");
 		if (p.isValueObject()) {
 			ln("        boolean added = false;");
-			ln("        for (" + p.getContentType() + " " + p.getNameSingular() + " : " + p.getName() + ") {");
+			ln("        for (" + contentType + " " + p.getNameSingular() + " : " + p.getName() + ") {");
 
-			ln("            added = added | " + getFieldName(p) + ".add((" + p.getContentType() + ")"
-					+ p.getNameSingular() + ".clone(get" + pNameUpper + "Manager()));");
+			ln("            added = added | " + getFieldName(p) + ".add((" + contentType + ")" + p.getNameSingular()
+					+ ".clone(get" + pNameUpper + "Manager()));");
 			ln("        }");
 		} else {
 			ln("        boolean added = false;");
-			ln("        for (" + p.getContentType() + " " + p.getNameSingular() + " : " + p.getName() + ") {");
+			ln("        for (" + contentType + " " + p.getNameSingular() + " : " + p.getName() + ") {");
 			if (p instanceof ReferenceListPropertyModel) {
 				if (!((ReferenceListPropertyModel) p).isDuplicatesAllowed()) {
 					ln("            if (" + getFieldName(p) + ".contains(" + p.getNameSingular()
@@ -711,8 +741,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		// --- removeXxx ---
 		ln();
-		ln("    public final boolean remove" + pNameSingularUpper + "(" + p.getContentType() + " "
-				+ p.getNameSingular() + ") {");
+		ln("    public final boolean remove" + pNameSingularUpper + "(" + contentType + " " + p.getNameSingular()
+				+ ") {");
 		ln("        if (" + p.getNameSingular() + " == null) return false;");
 		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        boolean removed = " + getFieldName(p) + ".remove(" + paramExpr + ");");
@@ -729,13 +759,13 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		// --- removeXxxs ---
 		ln();
-		ln("    public final boolean remove" + pNameSingularUpper + "s(Collection<" + p.getContentType() + "> "
-				+ p.getName() + ") {");
+		ln("    public final boolean remove" + pNameSingularUpper + "s(Collection<" + contentType + "> " + p.getName()
+				+ ") {");
 		ln("        if (" + p.getName() + " == null) return false;");
 		ln("        if (" + p.getName() + ".isEmpty()) return false;");
 		ln("        if (" + getFieldName(p) + " == null) return false;");
 		ln("        boolean removed = false;");
-		ln("        for (" + p.getContentType() + " _element: " + p.getName() + ") {");
+		ln("        for (" + contentType + " _element: " + p.getName() + ") {");
 		ln("            removed = removed | " + getFieldName(p) + ".remove(_element);");
 		ln("        }");
 		if (!isLegacyBean(bean) && p.isReference()) {
@@ -762,7 +792,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		ln("        return true;");
 		ln("    }");
 
-		if (p.getContentType().equals(String.class.getName())) {
+		if (contentType.equals(String.class.getName())) {
 			// --- getXxxAsCommaSeperatedString
 			ln();
 			ln("    public final String get" + pNameUpper + "AsCommaSeparatedString() {");
@@ -810,7 +840,10 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 
 		// --- isXxx ---
 		ln();
-		ln("    public final boolean is" + pNameUpper + "(" + p.getType() + " " + p.getName() + ") {");
+		String type4 = p.getType();
+		if (p instanceof ReferencePropertyModel)
+			type4 = getBeanClass(((ReferencePropertyModel) p).getReferencedEntity());
+		ln("    public final boolean is" + pNameUpper + "(" + type4 + " " + p.getName() + ") {");
 		if (p.isPrimitive()) {
 			ln("        return " + getFieldName(p) + " == " + p.getName() + ";");
 		} else {
@@ -873,6 +906,10 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		}
 	}
 
+	protected String getBeanClass(BeanModel entity) {
+		return entity.getBeanClass();
+	}
+
 	@Override
 	protected String getSuperclass() {
 		return bean.getSuperclass();
@@ -886,7 +923,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			result.add(ADatob.class.getName());
 			result.add(AEntity.class.getName());
 			result.add(AStructure.class.getName());
-			result.add(AUser.class.getName());
+			result.add(AuthUser.class.getName());
 		}
 		result.add(Str.class.getName());
 		return result;

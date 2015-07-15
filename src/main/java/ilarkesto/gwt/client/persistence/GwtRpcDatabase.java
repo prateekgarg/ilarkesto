@@ -21,6 +21,7 @@ import ilarkesto.core.persistance.Transaction;
 import ilarkesto.gwt.client.AGwtApplication;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +40,8 @@ public class GwtRpcDatabase extends ACachingEntitiesBackend {
 		AGwtApplication.get().sendChangesToServer(modified, deleted, modifiedProperties, callback);
 	}
 
-	public void onEntitiesReceived(Collection<Map<String, String>> entityDatas) {
+	public Set<AEntity> updateFromServer(Collection<Map<String, String>> entityDatas) {
+		HashSet<AEntity> entities = new HashSet<AEntity>();
 		Transaction t = Transaction.get();
 		t.setIgnoreModificationEvents(true);
 		try {
@@ -54,10 +56,12 @@ public class GwtRpcDatabase extends ACachingEntitiesBackend {
 					cache.add(entity);
 				}
 				entity.updateProperties(data);
+				entities.add(entity);
 			}
 		} finally {
 			t.setIgnoreModificationEvents(false);
 		}
+		return entities;
 	}
 
 	public void onEntityDeletionsReceived(Set<String> entityIds) {

@@ -14,17 +14,20 @@
  */
 package ilarkesto.auth;
 
-import ilarkesto.persistence.ADao;
+import ilarkesto.core.persistance.Entity;
 
-public abstract class AUserDao<U extends AUser> extends ADao<U> {
+public interface AuthUser extends Entity {
 
-	public abstract AUser postUser(String name, String password);
+	String getName();
 
-	public abstract AUser getUserByName(String name);
+	String getRealName();
 
-	@Override
-	protected int getOrderIndex() {
-		return -1000;
-	}
+	void setPassword(String value);
+
+	boolean matchesPassword(String password);
+
+	boolean isAdmin();
+
+	String getAutoLoginString();
 
 }

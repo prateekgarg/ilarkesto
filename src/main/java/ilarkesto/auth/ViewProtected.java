@@ -14,7 +14,7 @@
  */
 package ilarkesto.auth;
 
-public interface ViewProtected<U extends AUser> {
+public interface ViewProtected<U extends AuthUser> {
 
 	boolean isVisibleFor(U user);
 

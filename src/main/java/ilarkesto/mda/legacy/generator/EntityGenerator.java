@@ -130,6 +130,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 
 		if (!bean.isAbstract()) {
 			ln();
+			annotationOverride();
 			ln("    public int compareTo(" + bean.getName() + " other) {");
 			ln("        return " + GermanComparator.class.getName()
 					+ ".INSTANCE.compare(toString(), other.toString());");
@@ -254,10 +255,10 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			PropertyModel reference = br.getReference();
 			if (isLegacyBean(bean) && reference.getBean().isAbstract()) continue;
 			if (reference.isUnique()) {
-				ln("        " + br.getReference().getBean().getBeanClass(), br.getName(), "=",
+				ln("        " + getBeanClass(br.getReference().getBean()), br.getName(), "=",
 					"get" + Str.uppercaseFirstLetter(br.getName()) + "();");
 			} else {
-				ln("        Collection<" + reference.getBean().getBeanClass() + ">", br.getName(), "=",
+				ln("        Collection<" + getBeanClass(reference.getBean()) + ">", br.getName(), "=",
 					"get" + Str.uppercaseFirstLetter(br.getName()) + "s();");
 			}
 		}
@@ -324,10 +325,10 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		if (!isKeytableValue()) return;
 
 		ln();
-		ln("    public static synchronized", bean.getBeanClass(), " create(String key, String label) {");
-		ln("        " + bean.getBeanClass(), " ktvalue = getByKey(key);");
+		ln("    public static synchronized", getBeanClass(bean), " create(String key, String label) {");
+		ln("        " + getBeanClass(bean), " ktvalue = getByKey(key);");
 		ln("        if (ktvalue != null) return ktvalue;");
-		ln("        ktvalue = new", bean.getBeanClass() + "();");
+		ln("        ktvalue = new", getBeanClass(bean) + "();");
 		ln("        ktvalue.setKey(key);");
 		ln("        ktvalue.setLabel(label);");
 		ln("        ktvalue.persist();");
@@ -335,12 +336,12 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		ln("    }");
 
 		ln();
-		ln("    public static synchronized", bean.getBeanClass(), " createWithUuidKey(String label) {");
+		ln("    public static synchronized", getBeanClass(bean), " createWithUuidKey(String label) {");
 		ln("        return create(" + Uuid.class.getName() + ".create(), label);");
 		ln("    }");
 
 		ln();
-		ln("    public static synchronized", bean.getBeanClass(), " createWithUuidKey() {");
+		ln("    public static synchronized", getBeanClass(bean), " createWithUuidKey() {");
 		ln("        return create(" + Uuid.class.getName() + ".create(), \"#\"+listAll().size());");
 		ln("    }");
 	}
@@ -355,10 +356,10 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("        return ret.iterator().next();");
 			ln("    }");
 
-			ln();
-			ln("    protected", bean.getName(), "createSingleton() {");
-			ln("        return new", bean.getName() + "();");
-			ln("    }");
+			// ln();
+			// ln("    protected", bean.getName(), "createSingleton() {");
+			// ln("        return new", bean.getName() + "();");
+			// ln("    }");
 		}
 
 		ln();
@@ -390,7 +391,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("    public abstract boolean is" + Str.uppercaseFirstLetter(p.getName()) + "();");
 
 			ln();
-			ln("    public static Set<" + bean.getBeanClass() + "> listByIs" + Str.uppercaseFirstLetter(p.getName())
+			ln("    public static Set<" + bean.getName() + "> listByIs" + Str.uppercaseFirstLetter(p.getName())
 					+ "() {");
 			ln("        return new " + queryName + "() {");
 			ln("            @Override");
@@ -466,6 +467,8 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 				}
 				String byType = p.getType();
 				if (p.isCollection()) byType = p.getContentType();
+				if (p instanceof ReferencePropertyModel)
+					byType = getBeanClass(((ReferencePropertyModel) p).getReferencedEntity());
 				ln("    public static", bean.getName(), "getBy" + Str.uppercaseFirstLetter(p.getNameSingular())
 						+ "(final " + byType + " " + p.getName() + ") {");
 				if (p.isReference()) {
@@ -529,9 +532,14 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 					ln();
 				}
 
+				String byType = p.getContentType();
+				if (p instanceof ReferencePropertyModel)
+					byType = getBeanClass(((ReferencePropertyModel) p).getReferencedEntity());
+				if (p instanceof ReferenceSetPropertyModel)
+					byType = getBeanClass(((ReferenceSetPropertyModel) p).getReferencedEntity());
 				ln("    public static Set<",
 					bean.getName() + ">",
-					"listBy" + Str.uppercaseFirstLetter(p.getNameSingular()) + "(final " + p.getContentType() + " "
+					"listBy" + Str.uppercaseFirstLetter(p.getNameSingular()) + "(final " + byType + " "
 							+ p.getNameSingular() + ") {");
 
 				if (p.isReference()) {
@@ -576,26 +584,25 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		String by = Str.uppercaseFirstLetter(ref.getName());
 		if (ref.isCollection()) by = Str.removeSuffix(by, "s");
 		if (ref.isUnique()) {
-			ln("    public final " + refEntity.getBeanClass() + " get" + Str.uppercaseFirstLetter(br.getName())
-					+ "() {");
+			ln("    public final " + getBeanClass(refEntity) + " get" + Str.uppercaseFirstLetter(br.getName()) + "() {");
 			if (isLegacyBean(refEntity)) {
 				ln("        return " + Str.lowercaseFirstLetter(refEntity.getName()) + "Dao.get"
 						+ Str.uppercaseFirstLetter(br.getName()) + "By" + by + "((" + bean.getName() + ")this);");
 			} else {
-				ln("        return " + refEntity.getBeanClass() + ".getBy" + by + "((" + bean.getName() + ")this);");
+				ln("        return " + getBeanClass(refEntity) + ".getBy" + by + "((" + bean.getName() + ")this);");
 			}
 			ln("    }");
 		} else {
 			if (isLegacyBean(refEntity)) {
-				ln("    public final java.util.Set<" + refEntity.getBeanClass() + "> get"
+				ln("    public final java.util.Set<" + getBeanClass(refEntity) + "> get"
 						+ Str.uppercaseFirstLetter(br.getName()) + "s() {");
 				ln("        return " + Str.lowercaseFirstLetter(refEntity.getName()) + "Dao.get" + refEntity.getName()
 						+ "sBy" + by + "((" + bean.getName() + ")this);");
 				ln("    }");
 			} else {
-				ln("    public final Set<" + refEntity.getBeanClass() + "> get"
-						+ Str.uppercaseFirstLetter(br.getName()) + "s() {");
-				ln("        return " + refEntity.getBeanClass() + ".listBy" + by + "((" + bean.getName() + ")this);");
+				String refClass = getBeanClass(refEntity);
+				ln("    public final Set<" + refClass + "> get" + Str.uppercaseFirstLetter(br.getName()) + "s() {");
+				ln("        return " + refClass + ".listBy" + by + "((" + bean.getName() + ")this);");
 				ln("    }");
 			}
 		}
@@ -605,10 +612,12 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 	protected Set<String> getSuperinterfaces() {
 		Set<String> result = new LinkedHashSet<String>();
 		result.addAll(super.getSuperinterfaces());
-		if (bean.isViewProtected()) result.add(ViewProtected.class.getName() + "<" + getUserClassName() + ">");
-		if (bean.isEditProtected()) result.add(EditProtected.class.getName() + "<" + getUserClassName() + ">");
-		if (bean.isDeleteProtected()) result.add(DeleteProtected.class.getName() + "<" + getUserClassName() + ">");
-		if (bean.isOwnable()) result.add(Ownable.class.getName() + "<" + getUserClassName() + ">");
+		if (isLegacyBean(bean)) {
+			if (bean.isViewProtected()) result.add(ViewProtected.class.getName() + "<" + getUserClassName() + ">");
+			if (bean.isEditProtected()) result.add(EditProtected.class.getName() + "<" + getUserClassName() + ">");
+			if (bean.isDeleteProtected()) result.add(DeleteProtected.class.getName() + "<" + getUserClassName() + ">");
+			if (bean.isOwnable()) result.add(Ownable.class.getName() + "<" + getUserClassName() + ">");
+		}
 		if (!bean.isAbstract()) result.add(Comparable.class.getName() + "<" + bean.getName() + ">");
 		if (isLegacyBean(bean)) {
 			if (bean.isSearchable()) result.add(Searchable.class.getName());
@@ -617,10 +626,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 	}
 
 	protected final String getUserClassName() {
-		EntityModel userModel = bean.getUserModel();
-		if (userModel == null && bean.getName().equals("User")) userModel = bean;
-		if (userModel == null) return null;
-		return userModel.getPackageName() + "." + userModel.getName();
+		return getBeanClass(bean.getUserModel());
 	}
 
 	@Override
@@ -628,10 +634,8 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		super.writeDependencies();
 		if (isLegacyBean(bean)) {
 			String daoName = Str.lowercaseFirstLetter(bean.getDaoName());
-			if (isLegacyBean(bean)) {
-				if (!bean.isAbstract() && !bean.containsDependency(daoName)) {
-					dependency(bean.getDaoClass(), daoName, true, false);
-				}
+			if (!bean.isAbstract() && !bean.containsDependency(daoName)) {
+				dependency(bean.getDaoClass(), daoName, true, false);
 			}
 			Set<String> refDaos = new LinkedHashSet<String>();
 			for (BackReferenceModel br : bean.getBackReferences()) {
