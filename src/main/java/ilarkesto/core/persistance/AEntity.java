@@ -41,11 +41,6 @@ public class AEntity extends ABaseEntity implements Entity, Searchable, Transfer
 		Transaction.get().persist(this);
 	}
 
-	@Override
-	public final boolean isPersisted() {
-		return Transaction.get().containsWithId(getId());
-	}
-
 	public String getDeleteVeto() {
 		return "Objekt ist nicht löschbar";
 	}

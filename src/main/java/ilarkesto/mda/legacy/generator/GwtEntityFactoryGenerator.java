@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -38,7 +38,7 @@ public class GwtEntityFactoryGenerator extends AClassGenerator {
 		ln("    public", AEntity.class.getName(), "createEntity(String type, String id) {");
 		for (EntityModel entity : entities) {
 			if (entity.isAbstract()) continue;
-			ln("        if (type.equals(\"" + entity.getName() + "\")) return new", entity.getBeanClass()
+			ln("        if (type.equals(\"" + entity.getName() + "\")) return new", getBeanCalss(entity)
 					+ "().setId(id);");
 		}
 		ln("        throw new IllegalStateException(\"Unsupported entity: \" + type);");
@@ -48,10 +48,14 @@ public class GwtEntityFactoryGenerator extends AClassGenerator {
 		annotationOverride();
 		ln("    public Class<? extends", AEntity.class.getName() + ">", "getType(String type) {");
 		for (EntityModel entity : entities) {
-			ln("        if (type.equals(\"" + entity.getName() + "\")) return ", entity.getBeanClass() + ".class;");
+			ln("        if (type.equals(\"" + entity.getName() + "\")) return ", getBeanCalss(entity) + ".class;");
 		}
 		ln("        throw new IllegalStateException(\"Unsupported entity: \" + type);");
 		ln("    }");
+	}
+
+	public String getBeanCalss(EntityModel entity) {
+		return entity.getBeanClass().replace(".server", ".client");
 	}
 
 	@Override

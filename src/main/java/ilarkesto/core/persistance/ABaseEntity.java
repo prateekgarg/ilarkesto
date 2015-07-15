@@ -87,6 +87,11 @@ public abstract class ABaseEntity implements Entity, TransferableEntity {
 		onAfterPersist();
 	}
 
+	@Override
+	public final boolean isPersisted() {
+		return ATransaction.get().containsWithId(getId());
+	}
+
 	protected void onAfterPersist() {}
 
 	@Override

@@ -49,7 +49,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 	protected abstract void handleUnexpectedError(Throwable ex);
 
-	protected abstract AGwtEntityFactory getEntityFactory();
+	protected abstract AGwtEntityFactory createEntityFactory();
 
 	public AGwtApplication() {
 		if (singleton != null) throw new RuntimeException("GWT application already instantiated: " + singleton);
@@ -69,7 +69,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 	@Override
 	public final void onModuleLoad() {
-		AGwtEntityFactory entityFactory = getEntityFactory();
+		AGwtEntityFactory entityFactory = createEntityFactory();
 		if (entityFactory != null) {
 			entitiesBackend = new GwtRpcDatabase(entityFactory);
 			Persistence.initialize(entitiesBackend, new GwtTransactionManager());
