@@ -20,8 +20,8 @@ public class ThreadlocalTransactionManager extends
 		AThreadlocalTransactionManager<ilarkesto.core.persistance.Transaction> {
 
 	@Override
-	protected Transaction newInstance(String name) {
-		return new Transaction(name, false, true);
+	protected Transaction newInstance(String name, boolean writable) {
+		return new Transaction(name, writable, false, true);
 	}
 
 }

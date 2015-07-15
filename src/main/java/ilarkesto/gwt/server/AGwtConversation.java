@@ -129,7 +129,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	private void sendToClientInternal(E entity) {
 		if (entity == null) return;
 
-		if (!Persistence.transactionManager.getTransaction().containsWithId(entity.getId())) {
+		if (!Persistence.transactionManager.getCurrentTransaction().containsWithId(entity.getId())) {
 			getNextData().addDeletedEntity(entity.getId());
 			return;
 		}

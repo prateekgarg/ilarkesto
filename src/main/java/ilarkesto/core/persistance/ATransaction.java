@@ -34,30 +34,35 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 
 	protected final Log log = Log.get(getClass());
 
-	private String name;
-	private boolean autoCommit;
-	private boolean ignoreModifications;
-	private boolean ensureIntegrityOnCommit;
-	private boolean ensuringIntegrity;
-	private LinkedList<Runnable> runnablesAfterCommited;
 	private static int transactionNumberCounter = 0;
 
+	private String name;
+	private boolean autoCommit;
+	private boolean ensureIntegrityOnCommit;
+	private LinkedList<Runnable> runnablesAfterCommited;
+	private boolean writable;
+	private ATransaction<E> parentTransaction;
+
+	private boolean ignoreModificationEvents;
+	private boolean ensuringIntegrity;
 	private EntitiesCache<E> modified = new EntitiesCache<E>();
 	private Map<String, Map<String, String>> modifiedPropertiesByEntityId = new HashMap<String, Map<String, String>>();
 	private Set<String> deleted = new HashSet<String>();
 
-	public ATransaction(String name, boolean autoCommit, boolean ensureIntegrityOnCommit) {
+	public ATransaction(String name, boolean writable, boolean autoCommit, boolean ensureIntegrityOnCommit) {
 		super();
 		transactionNumberCounter++;
 		this.name = "#" + transactionNumberCounter + " (" + name + ")";
+		this.writable = writable;
 		this.autoCommit = autoCommit;
 		this.ensureIntegrityOnCommit = ensureIntegrityOnCommit;
 	}
 
-	public void commit() {
+	void commit() {
 		// if (autoCommit) throw new IllegalStateException("Transaction is autoCommit");
 		if (!isEmpty()) {
 			log.info("commit()", toString());
+			checkWritable();
 			if (ensureIntegrityOnCommit) ensureIntegrityUntilUnchanged();
 			getBackend().update(modified.getAllAsList(), deleted, modifiedPropertiesByEntityId, new CommitCallback());
 		} else {
@@ -116,7 +121,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 		return sb.toString();
 	}
 
-	public void rollback() {
+	void rollback() {
 		log.info("rollback()", toString());
 		Persistence.transactionManager.transactionFinished(this);
 		// getBackend().onTransactionFinished(this);
@@ -126,6 +131,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 
 	public void persist(E entity) {
 		log.info("PERSIST", toString(entity));
+		checkWritable();
 		if (autoCommit) {
 			getBackend().update(Arrays.asList(entity), null, updatePropertiesMap(null, entity), new CommitCallback());
 			return;
@@ -137,7 +143,8 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	}
 
 	public void modified(E entity, String field, String value) {
-		if (ignoreModifications) return;
+		checkWritable();
+		if (ignoreModificationEvents) return;
 		if (!containsWithId(entity.getId())) return;
 		log.info("MODIFIED", toString(entity), field, value);
 		if (autoCommit) {
@@ -152,12 +159,26 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 		updatePropertiesMap(modifiedPropertiesByEntityId, entity, field, value);
 	}
 
+	private void checkWritable() {
+		if (writable) return;
+		throw new WriteInReadOnlyTransactionException(this);
+	}
+
+	public boolean isWritable() {
+		return writable;
+	}
+
+	public boolean isReadOnly() {
+		return !writable;
+	}
+
 	private String toString(E entity) {
 		if (entity == null) return "<null>";
 		return Str.getSimpleName(entity.getClass()) + ":" + entity.getId();
 	}
 
 	public void delete(String entityId) {
+		checkWritable();
 		log.info("DELETE", entityId);
 		if (autoCommit) {
 			getBackend().update(null, Arrays.asList(entityId), null, new CommitCallback());
@@ -245,8 +266,8 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 		return resultCollection;
 	}
 
-	public void setIgnoreModifications(boolean disabled) {
-		this.ignoreModifications = disabled;
+	public void setIgnoreModificationEvents(boolean disabled) {
+		this.ignoreModificationEvents = disabled;
 	}
 
 	public void setAutoCommit(boolean autoCommit) {
@@ -255,6 +276,14 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 
 	public boolean isAutoCommit() {
 		return autoCommit;
+	}
+
+	public void setParentTransaction(ATransaction<E> parentTransaction) {
+		this.parentTransaction = parentTransaction;
+	}
+
+	public ATransaction<E> getParentTransaction() {
+		return parentTransaction;
 	}
 
 	@Override
@@ -367,7 +396,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	}
 
 	public static ATransaction get() {
-		return Persistence.transactionManager.getTransaction();
+		return Persistence.transactionManager.getCurrentTransaction();
 	}
 
 }

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class ACachingEntityDatabase extends AEntityDatabase {
+public abstract class ACachingEntitiesBackend extends AEntitiesBackend {
 
 	protected EntitiesCache<AEntity> cache = new EntitiesCache<AEntity>();
 

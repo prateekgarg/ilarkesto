@@ -59,7 +59,7 @@ public class Persistence {
 			return;
 		}
 
-		final ATransaction transaction = transactionManager.createTransaction(name);
+		final ATransaction transaction = transactionManager.createWriteTransaction(name);
 		boolean autoCommit = transaction.isAutoCommit();
 		transaction.setAutoCommit(false);
 		transaction.runAfterCommited(runAfterCommited);

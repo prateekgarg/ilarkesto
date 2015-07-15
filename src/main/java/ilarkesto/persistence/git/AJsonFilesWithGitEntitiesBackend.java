@@ -21,17 +21,17 @@ import ilarkesto.di.Context;
 import ilarkesto.di.app.AApplication;
 import ilarkesto.integration.git.Git;
 import ilarkesto.integration.git.GitProject;
-import ilarkesto.persistence.file.AJsonFilesEntityDatabase;
+import ilarkesto.persistence.file.AJsonFilesEntitiesBackend;
 import ilarkesto.webapp.AWebApplication;
 
 import java.io.File;
 import java.util.Collection;
 
-public abstract class AJsonFilesWithGitEntityDatabase extends AJsonFilesEntityDatabase {
+public abstract class AJsonFilesWithGitEntitiesBackend extends AJsonFilesEntitiesBackend {
 
 	private GitProject git;
 
-	public AJsonFilesWithGitEntityDatabase() {
+	public AJsonFilesWithGitEntitiesBackend() {
 		super(AApplication.get().getFileStorage().getSubStorage("entities"));
 
 		git = new GitProject(new Git(), new File(AApplication.get().getApplicationDataDir()));

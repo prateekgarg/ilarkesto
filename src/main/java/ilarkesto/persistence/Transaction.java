@@ -21,8 +21,8 @@ import ilarkesto.id.IdentifiableResolver;
 
 public class Transaction extends ATransaction<AEntity> implements IdentifiableResolver<AEntity> {
 
-	public Transaction(String name, boolean autoCommit, boolean ensureIntegrityOnCommit) {
-		super(name, autoCommit, ensureIntegrityOnCommit);
+	public Transaction(String name, boolean writable, boolean autoCommit, boolean ensureIntegrityOnCommit) {
+		super(name, writable, autoCommit, ensureIntegrityOnCommit);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class Transaction extends ATransaction<AEntity> implements IdentifiableRe
 	}
 
 	public static Transaction get() {
-		return (Transaction) Persistence.transactionManager.getTransaction();
+		return (Transaction) Persistence.transactionManager.getCurrentTransaction();
 	}
 
 }

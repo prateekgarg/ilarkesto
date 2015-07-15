@@ -14,7 +14,7 @@
  */
 package ilarkesto.gwt.client.persistence;
 
-import ilarkesto.core.persistance.ACachingEntityDatabase;
+import ilarkesto.core.persistance.ACachingEntitiesBackend;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.Transaction;
@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public class GwtRpcDatabase extends ACachingEntityDatabase {
+public class GwtRpcDatabase extends ACachingEntitiesBackend {
 
 	private AGwtEntityFactory factory;
 
@@ -41,7 +41,7 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 
 	public void onEntitiesReceived(Collection<Map<String, String>> entityDatas) {
 		Transaction t = Transaction.get();
-		t.setIgnoreModifications(true);
+		t.setIgnoreModificationEvents(true);
 		try {
 			for (Map<String, String> data : entityDatas) {
 				String id = data.get("id");
@@ -56,7 +56,7 @@ public class GwtRpcDatabase extends ACachingEntityDatabase {
 				entity.updateProperties(data);
 			}
 		} finally {
-			t.setIgnoreModifications(false);
+			t.setIgnoreModificationEvents(false);
 		}
 	}
 

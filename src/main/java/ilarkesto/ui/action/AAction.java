@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -16,7 +16,10 @@ package ilarkesto.ui.action;
 
 import ilarkesto.base.Str;
 import ilarkesto.concurrent.ATask;
+import ilarkesto.core.base.Ex;
+import ilarkesto.core.base.RunnableWithException;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.Persistence;
 import ilarkesto.di.BeanProvider;
 import ilarkesto.form.Form;
 import ilarkesto.form.validator.Validator;
@@ -24,7 +27,6 @@ import ilarkesto.id.CountingIdGenerator;
 import ilarkesto.id.IdGenerator;
 import ilarkesto.locale.Localizer;
 import ilarkesto.persistence.DaoService;
-import ilarkesto.persistence.Transaction;
 import ilarkesto.ui.AUi;
 import ilarkesto.ui.AView;
 import ilarkesto.ui.DialogTimeoutException;
@@ -54,29 +56,58 @@ public abstract class AAction extends ATask {
 	@Override
 	public final void perform() {
 		ActionPerformer.registerAction(this);
+
 		try {
-			assertPermissions();
-			performAction();
-			Transaction.get().commit();
-		} catch (InterruptedException ex) {
+			Persistence.runInTransaction(getClass().getSimpleName(), new RunnableWithException() {
+
+				@Override
+				public void onRun() throws InterruptedException {
+					assertPermissions();
+					performAction();
+				}
+			});
+		} catch (Exception ex) {
+			if (Ex.containsInCauses(ex, InterruptedException.class)) {
+				// nop
+			} else {
+				ActionAbortedException exAborted = Ex.extractFromCauses(ex, ActionAbortedException.class);
+				if (isRootAction() && !ui.isViewSet()) showReturnView();
+				if (exAborted != null) {
+					exception = exAborted;
+				} else {
+					LOG.error(ex);
+					error(ex);
+					exception = ex;
+				}
+			}
 			finish();
-			Transaction.get().rollback();
-			return;
-		} catch (ActionAbortedException ex) {
-			exception = ex;
-			if (isRootAction() && !ui.isViewSet()) showReturnView();
-			finish();
-			Transaction.get().rollback();
-			return;
-		} catch (Throwable ex) {
-			exception = ex;
-			LOG.error(ex);
-			error(ex);
-			if (isRootAction() && !ui.isViewSet()) showReturnView();
-			finish();
-			Transaction.get().rollback();
 			return;
 		}
+
+		// try {
+		// assertPermissions();
+		// performAction();
+		// Transaction.get().commit();
+		// } catch (InterruptedException ex) {
+		// finish();
+		// Transaction.get().rollback();
+		// return;
+		// } catch (ActionAbortedException ex) {
+		// exception = ex;
+		// if (isRootAction() && !ui.isViewSet()) showReturnView();
+		// finish();
+		// Transaction.get().rollback();
+		// return;
+		// } catch (Exception ex) {
+		// exception = ex;
+		// LOG.error(ex);
+		// error(ex);
+		// if (isRootAction() && !ui.isViewSet()) showReturnView();
+		// finish();
+		// Transaction.get().rollback();
+		// return;
+		// }
+
 		if (!infoDisplayed && autoShowInfoDone) infoDone();
 
 		if (!ui.isViewSet() && isRootAction()) showReturnView();
