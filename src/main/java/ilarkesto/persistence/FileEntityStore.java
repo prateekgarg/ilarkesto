@@ -77,6 +77,12 @@ public class FileEntityStore implements EntityStore {
 		this.dir = dir;
 	}
 
+	private boolean unitTestMode;
+
+	public void setUnitTestMode(boolean unitTestMode) {
+		this.unitTestMode = unitTestMode;
+	}
+
 	// --- ---
 
 	public FileEntityStore() {}
@@ -235,6 +241,8 @@ public class FileEntityStore implements EntityStore {
 		beanSerializer.setAlias(Str.lowercaseFirstLetter(alias), cls);
 		beanSerializer.setAlias(alias, cls);
 
+		if (unitTestMode) return;
+
 		File entitiesDir = new File(dir + "/" + Str.lowercaseFirstLetter(alias));
 
 		File[] files = entitiesDir.listFiles();
@@ -349,7 +357,7 @@ public class FileEntityStore implements EntityStore {
 
 		@Override
 		protected void complete() {
-			IO.move(tmpFile, file, true);
+			if (!unitTestMode) IO.move(tmpFile, file, true);
 			getDao(entity.getClass()).put(entity.getId(), entity);
 		}
 
@@ -393,7 +401,7 @@ public class FileEntityStore implements EntityStore {
 
 		@Override
 		protected void complete() {
-			IO.delete(file);
+			if (!unitTestMode) IO.delete(file);
 			getDao(entity.getClass()).remove(entity.getId());
 		}
 

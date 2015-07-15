@@ -22,9 +22,11 @@ import ilarkesto.concurrent.ATask;
 import ilarkesto.concurrent.DefaultSynchronizer;
 import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.ATransactionManager;
 import ilarkesto.core.persistance.EntitiesBackend;
 import ilarkesto.core.persistance.EntityIntegrityEnsurer;
 import ilarkesto.core.persistance.Persistence;
+import ilarkesto.core.persistance.SingletonTransactionManager;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.di.Context;
@@ -40,6 +42,7 @@ import ilarkesto.persistence.DaoListener;
 import ilarkesto.persistence.DaoService;
 import ilarkesto.persistence.EntityStore;
 import ilarkesto.persistence.FileEntityStore;
+import ilarkesto.persistence.LegacySingletonTransactionManager;
 import ilarkesto.persistence.LegacyThreadlocalTransactionManager;
 import ilarkesto.persistence.Serializer;
 import ilarkesto.persistence.ThreadlocalTransactionManager;
@@ -63,6 +66,7 @@ public abstract class AApplication {
 	private boolean startupFailed;
 	private boolean shuttingDown;
 	private boolean shutdown;
+	private boolean unitTestMode;
 
 	private BuildProperties buildProperties;
 
@@ -81,9 +85,15 @@ public abstract class AApplication {
 		EntitiesBackend backend = createEntitiesBackend();
 		if (backend != null) {
 			log.info("Entities backend:", backend.getClass().getSimpleName());
-			Persistence.initialize(backend,
-				backend instanceof FileEntityStore ? new LegacyThreadlocalTransactionManager()
-						: new ThreadlocalTransactionManager());
+			ATransactionManager tm;
+			if (unitTestMode) {
+				tm = backend instanceof FileEntityStore ? new LegacySingletonTransactionManager()
+						: new SingletonTransactionManager();
+			} else {
+				tm = backend instanceof FileEntityStore ? new LegacyThreadlocalTransactionManager()
+						: new ThreadlocalTransactionManager();
+			}
+			Persistence.initialize(backend, tm);
 		} else {
 			log.debug("No persistence backend");
 		}
@@ -460,6 +470,7 @@ public abstract class AApplication {
 
 	protected EntityStore createEntityStore() {
 		FileEntityStore store = new FileEntityStore();
+		if (unitTestMode) store.setUnitTestMode(true);
 		store.setDir(getApplicationDataDir() + "/entities");
 		store.setVersion(getDataVersion());
 		Context.get().autowire(store);
@@ -491,6 +502,14 @@ public abstract class AApplication {
 				daoService.addListener(listener);
 		}
 		return daoService;
+	}
+
+	public void setUnitTestMode(boolean unitTestMode) {
+		this.unitTestMode = unitTestMode;
+	}
+
+	public boolean isUnitTestMode() {
+		return unitTestMode;
 	}
 
 }

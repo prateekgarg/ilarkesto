@@ -12,16 +12,13 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.gwt.client;
+package ilarkesto.core.persistance;
 
-import ilarkesto.core.persistance.ASingletonTransactionManager;
-import ilarkesto.core.persistance.Transaction;
-
-public class GwtTransactionManager extends ASingletonTransactionManager {
+public class SingletonTransactionManager extends ASingletonTransactionManager<Transaction> {
 
 	@Override
 	protected Transaction newTransaction() {
-		return new Transaction("GWT", true, true, false);
+		return new Transaction("singleton", true, false, true);
 	}
 
 }
