@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -30,11 +30,7 @@ public class Auth {
 
 	public static <U> void resetPassword(U user, AuthenticationContext<U> context) {
 		String defaultPassword = context.getDefaultPassword(user);
-		try {
-			setPassword(user, defaultPassword, context);
-		} catch (UserInputException ex) {
-			throw new RuntimeException(ex);
-		}
+		setPasswordWithoutChecking(user, defaultPassword, context);
 	}
 
 	public static <U> void setPassword(U user, String password, AuthenticationContext<U> context)
@@ -45,6 +41,10 @@ public class Auth {
 		veto = getPasswordVeto(password, context.getUsersKnownStrings(user));
 		if (veto != null) throw new UserInputException(veto);
 
+		setPasswordWithoutChecking(user, password, context);
+	}
+
+	private static <U> void setPasswordWithoutChecking(U user, String password, AuthenticationContext<U> context) {
 		String salt = Str.generatePassword(256);
 		context.setPasswordSalt(user, salt);
 		context.setPasswordHash(user, hashPassword(salt, password));
