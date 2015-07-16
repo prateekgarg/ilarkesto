@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -28,7 +28,7 @@ public class Auth {
 
 	private static final Log log = Log.get(Auth.class);
 
-	public static <U> void resetPassword(U user, LoginContext<U> context) {
+	public static <U> void resetPassword(U user, AuthenticationContext<U> context) {
 		String defaultPassword = context.getDefaultPassword(user);
 		try {
 			setPassword(user, defaultPassword, context);
@@ -37,7 +37,8 @@ public class Auth {
 		}
 	}
 
-	public static <U> void setPassword(U user, String password, LoginContext<U> context) throws UserInputException {
+	public static <U> void setPassword(U user, String password, AuthenticationContext<U> context)
+			throws UserInputException {
 		String veto = context.getNewPasswordVeto(user, password);
 		if (veto != null) throw new UserInputException(veto);
 
@@ -65,44 +66,44 @@ public class Auth {
 		return null;
 	}
 
-	public static <U> void tryLogin(LoginContext<U> context) {
+	public static <U> void tryLogin(LoginContext<U> loginContext) {
 		Utl.sleep(Tm.SECOND);
 
 		U user = null;
 
-		if (user == null) user = checkPassword(context);
+		if (user == null) user = checkPassword(loginContext);
 
-		if (user == null) user = checkAuthKey(context);
+		if (user == null) user = checkAuthKey(loginContext);
 
 		if (user == null) return;
 
-		if (!context.isUserAllowedToLogin(user)) return;
+		if (!loginContext.isUserAllowedToLogin(user)) return;
 
-		context.loginSuccess(user);
+		loginContext.loginSuccess(user);
 	}
 
-	private static <U> U checkAuthKey(LoginContext<U> context) {
-		String authKey = context.getProvidedAuthrorizationSecret();
+	private static <U> U checkAuthKey(LoginContext<U> loginContext) {
+		String authKey = loginContext.getProvidedAuthrorizationSecret();
 		if (Str.isBlank(authKey)) return null;
 
-		return context.getUserByAuthorizationSecret(authKey);
+		return loginContext.getUserByAuthorizationSecret(authKey);
 
 	}
 
-	private static <U> U checkPassword(LoginContext<U> context) {
-		String username = context.getProvidedUsername();
+	private static <U> U checkPassword(LoginContext<U> loginContext) {
+		String username = loginContext.getProvidedUsername();
 		if (Str.isBlank(username)) return null;
 
-		String passwordToCheck = context.getProvidedPassword();
+		String passwordToCheck = loginContext.getProvidedPassword();
 		if (Str.isBlank(passwordToCheck)) return null;
 
-		U user = context.getUserByUsername(username);
+		U user = loginContext.getUserByUsername(username);
 		if (user == null) return null;
 
-		String userPasswordHash = context.getPasswordHash(user);
+		String userPasswordHash = loginContext.getPasswordHash(user);
 		if (Str.isBlank(userPasswordHash)) return null;
 
-		String userPasswordSalt = context.getPasswordSalt(user);
+		String userPasswordSalt = loginContext.getPasswordSalt(user);
 		if (Str.isBlank(userPasswordSalt)) return null;
 
 		String hashToCheck = hashPassword(userPasswordSalt, passwordToCheck);

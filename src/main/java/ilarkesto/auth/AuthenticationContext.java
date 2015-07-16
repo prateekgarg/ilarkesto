@@ -1,39 +1,33 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.auth;
 
-public interface LoginContext<U> {
+import java.util.Set;
 
-	void loginSuccess(U user);
+public interface AuthenticationContext<U> {
 
-	String getProvidedAuthrorizationSecret();
+	String getNewPasswordVeto(U user, String password);
 
-	String getProvidedUsername();
+	Set<String> getUsersKnownStrings(U user);
 
-	String getProvidedPassword();
+	void setPasswordSalt(U user, String passwordSalt);
 
-	U getUserByUsername(String username);
+	void setPasswordHash(U user, String passwordHash);
 
-	U getUserByAuthorizationSecret(String authorizationSecret);
+	void passwordChanged(U user);
 
-	String getPasswordHash(U user);
-
-	String getPasswordSalt(U user);
-
-	String getAuthorizationSecret(U user);
-
-	boolean isUserAllowedToLogin(U user);
+	String getDefaultPassword(U user);
 
 }
