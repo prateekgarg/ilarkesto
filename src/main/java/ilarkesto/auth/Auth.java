@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -28,12 +28,29 @@ public class Auth {
 
 	private static final Log log = Log.get(Auth.class);
 
-	public static <U> void resetPassword(U user, AuthenticationContext<U> context) {
+	public static <U> void changePasswordWithCheck(String currentPassword, String newPassword, U user,
+			AuthenticationContext<U> context) throws UserInputException {
+		if (!Auth.isPasswordMatching(currentPassword, user, context)) throw new WrongPasswordInputException();
+
+		setPassword(newPassword, user, context);
+	}
+
+	public static <U> boolean isPasswordMatchingDefaultPassword(U user, AuthenticationContext<U> context) {
+		return isPasswordMatching(context.getDefaultPassword(user), user, context);
+	}
+
+	public static <U> boolean isPasswordMatching(String passwordToCheck, U user, AuthenticationContext<U> context) {
+		String userPasswordHash = context.getPasswordHash(user);
+		String userPasswordSalt = context.getPasswordSalt(user);
+		return isPasswordMatching(passwordToCheck, userPasswordHash, userPasswordSalt);
+	}
+
+	public static <U> void resetPasswordToDefault(U user, AuthenticationContext<U> context) {
 		String defaultPassword = context.getDefaultPassword(user);
 		setPasswordWithoutChecking(user, defaultPassword, context);
 	}
 
-	public static <U> void setPassword(U user, String password, AuthenticationContext<U> context)
+	public static <U> void setPassword(String password, U user, AuthenticationContext<U> context)
 			throws UserInputException {
 		String veto = context.getNewPasswordVeto(user, password);
 		if (veto != null) throw new UserInputException(veto);
@@ -94,23 +111,26 @@ public class Auth {
 		String username = loginContext.getProvidedUsername();
 		if (Str.isBlank(username)) return null;
 
-		String passwordToCheck = loginContext.getProvidedPassword();
-		if (Str.isBlank(passwordToCheck)) return null;
-
 		U user = loginContext.getUserByUsername(username);
 		if (user == null) return null;
 
+		String passwordToCheck = loginContext.getProvidedPassword();
 		String userPasswordHash = loginContext.getPasswordHash(user);
-		if (Str.isBlank(userPasswordHash)) return null;
-
 		String userPasswordSalt = loginContext.getPasswordSalt(user);
-		if (Str.isBlank(userPasswordSalt)) return null;
+
+		if (!isPasswordMatching(passwordToCheck, userPasswordHash, userPasswordSalt)) return null;
+
+		return user;
+	}
+
+	public static boolean isPasswordMatching(String passwordToCheck, String userPasswordHash, String userPasswordSalt) {
+		if (Str.isBlank(passwordToCheck)) return false;
+		if (Str.isBlank(userPasswordHash)) return false;
+		if (Str.isBlank(userPasswordSalt)) return false;
 
 		String hashToCheck = hashPassword(userPasswordSalt, passwordToCheck);
 
-		if (!userPasswordHash.equals(hashToCheck)) return null;
-
-		return user;
+		return userPasswordHash.equals(hashToCheck);
 	}
 
 	private static String hashPassword(String userPasswordSalt, String password) {

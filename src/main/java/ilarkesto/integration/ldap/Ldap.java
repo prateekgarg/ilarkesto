@@ -15,7 +15,7 @@
 package ilarkesto.integration.ldap;
 
 import ilarkesto.auth.AuthenticationFailedException;
-import ilarkesto.auth.WrongPasswordException;
+import ilarkesto.auth.WrongPasswordInputException;
 import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
@@ -37,13 +37,13 @@ public class Ldap {
 
 	private static Log log = Log.get(Ldap.class);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws WrongPasswordInputException {
 		System.out.println(authenticateUserGetEmail("ldap://adcsv10:389/", "bind user", "bind password", "base dn",
 			"user filter", "user", "password"));
 	}
 
 	public static String authenticateUserGetEmail(String url, String bindUser, String bindPassword, String baseDn,
-			String userFilterRegex, String user, String password) throws AuthenticationFailedException {
+			String userFilterRegex, String user, String password) throws WrongPasswordInputException {
 		Args.assertNotBlank(bindUser, "bindUser", bindPassword, "bindPassword");
 		log.info("LDAP authentication for ", user, "on", url);
 		NamingEnumeration<SearchResult> searchResultEnum;
@@ -67,7 +67,7 @@ public class Ldap {
 		try {
 			Ldap.createDirContext(url, searchResult.getName() + "," + baseDn, password);
 		} catch (AuthenticationException ex) {
-			throw new WrongPasswordException();
+			throw new WrongPasswordInputException();
 		}
 
 		try {
