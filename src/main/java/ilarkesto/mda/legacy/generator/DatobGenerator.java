@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -38,7 +38,6 @@ import ilarkesto.mda.legacy.model.ReferencePropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceSetPropertyModel;
 import ilarkesto.mda.legacy.model.StringPropertyModel;
 import ilarkesto.persistence.ADatob;
-import ilarkesto.persistence.ADatobManager;
 import ilarkesto.persistence.AEntity;
 
 import java.math.BigDecimal;
@@ -178,8 +177,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				s("        if (").s(getFieldName(p)).s(" == null) ").s(getFieldName(p)).s(" = new ").s(getFieldImpl(p))
 						.s("();").ln();
 				if (p.isValueObject()) {
-					s("        get" + Str.uppercaseFirstLetter(p.getName()) + "Manager().ensureIntegrityOfStructures(")
-							.s(getFieldName(p)).s(");").ln();
+					s("        ensureIntegrityOfStructures(").s(getFieldName(p)).s(");").ln();
 				}
 				if (p.isReference()) {
 					ln("        Set<String> " + p.getName() + " = new HashSet<String>(" + getFieldName(p) + ");");
@@ -296,22 +294,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			s(" = new " + getFieldImpl(p) + "()");
 		}
 		ln(";");
-
-		// --- datob manager ---
-		String datobGetter = null;
-		if (p.isValueObject()) {
-			datobGetter = "get" + pNameUpper + "Manager()";
-			ln();
-			ln("    private transient " + ADatobManager.class.getName().replace('$', '.') + "<" + p.getContentType()
-					+ "> " + p.getName() + "Manager;");
-			ln();
-			ln("    private " + ADatobManager.class.getName().replace('$', '.') + "<" + p.getContentType() + "> "
-					+ datobGetter + " {");
-			ln("        if (" + p.getName() + "Manager == null) " + p.getName() + "Manager = new StructureManager<"
-					+ p.getContentType() + ">();");
-			ln("        return " + p.getName() + "Manager;");
-			ln("    }");
-		}
 
 		String getterMethodPrefix = p.isBoolean() ? "is" : "get";
 
@@ -510,7 +492,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				}
 			} else {
 				if (p.isValueObject()) {
-					ln("        return " + p.getName() + ".clone();");
+					ln("        return " + p.getName() + ";");
 				} else {
 					ln("        return " + p.getName() + ";");
 				}
@@ -538,8 +520,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				ln("        if (" + p.getName() + " == null) " + p.getName() + " = Collections.emptyList();");
 				ln("        if (" + getFieldName(p) + ".equals(" + p.getName() + ")) return;");
 				if (p.isValueObject()) {
-					ln("        " + getFieldName(p) + " = cloneValueObjects(" + p.getName() + ", get" + pNameUpper
-							+ "Manager());");
+					ln("        " + getFieldName(p) + " = cloneValueObjects(" + p.getName() + ");");
+					ln("        ensureIntegrityOfStructures(" + getFieldName(p) + ");");
 				} else {
 					ln("        " + getFieldName(p) + " = new " + getFieldImpl(p) + "(" + p.getName() + ");");
 				}
@@ -566,7 +548,8 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 					ln("        }");
 				}
 				if (p.isValueObject()) {
-					ln("        " + getFieldName(p) + " = " + p.getName() + ".clone(this);");
+					ln("        " + getFieldName(p) + " = " + p.getName() + ".clone();");
+					ln("        " + getFieldName(p) + ".bind(this);");
 				} else {
 					ln("        " + getFieldName(p) + " = " + p.getName() + ";");
 				}
@@ -681,8 +664,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 				+ p.getNameSingular() + " == null\");");
 		ln("        if (" + getFieldName(p) + " == null) " + getFieldName(p) + " = new " + getFieldImpl(p) + "();");
 		if (p.isValueObject()) {
-			ln("        boolean added = " + getFieldName(p) + ".add((" + contentType + ")" + paramExpr + ".clone(get"
-					+ pNameUpper + "Manager()));");
+			ln("        boolean added = " + getFieldName(p) + ".add((" + contentType + ")" + paramExpr + ".clone());");
 		} else {
 			if (p instanceof ReferenceListPropertyModel) {
 				if (!((ReferenceListPropertyModel) p).isDuplicatesAllowed()) {
@@ -696,6 +678,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		}
 		if (p.isModified()) {
 			ln("        if (added) {");
+			if (p.isValueObject()) {
+				ln("            ensureIntegrityOfStructures(" + getFieldName(p) + ");");
+			}
 			writeModified(p);
 			ln("        }");
 		}
@@ -714,7 +699,7 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			ln("        for (" + contentType + " " + p.getNameSingular() + " : " + p.getName() + ") {");
 
 			ln("            added = added | " + getFieldName(p) + ".add((" + contentType + ")" + p.getNameSingular()
-					+ ".clone(get" + pNameUpper + "Manager()));");
+					+ ".clone());");
 			ln("        }");
 		} else {
 			ln("        boolean added = false;");
@@ -733,6 +718,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		}
 		if (p.isModified()) {
 			ln("        if (added) {");
+			if (p.isValueObject()) {
+				ln("            ensureIntegrityOfStructures(" + getFieldName(p) + ");");
+			}
 			writeModified(p);
 			ln("        }");
 		}

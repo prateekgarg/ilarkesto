@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -18,7 +18,6 @@ import ilarkesto.base.OverrideExpectedException;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.search.SearchText;
 import ilarkesto.core.search.Searchable;
-import ilarkesto.persistence.AEntity.StructureManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,16 +32,12 @@ import java.util.Set;
  */
 public abstract class ADatob implements Datob, Searchable {
 
-	private transient ADatobManager manager;
+	private transient AEntity entity;
 
 	public ADatob(ADatob template) {}
 
-	final void setManager(ADatobManager manager) {
-		this.manager = manager;
-	}
-
-	protected final ADatobManager getManager() {
-		return manager;
+	final void bind(AEntity entity) {
+		this.entity = entity;
 	}
 
 	public void updateProperties(Map<String, String> properties) {}
@@ -58,21 +53,18 @@ public abstract class ADatob implements Datob, Searchable {
 	}
 
 	protected void updateLastModified() {
-		ADatobManager manager = getManager();
-		if (manager == null) return;
-		manager.updateLastModified(this);
+		if (entity == null) return;
+		entity.updateLastModified();
 	}
 
 	protected void fireModified(String field, String value) {
-		ADatobManager manager = getManager();
-		if (manager == null) return;
-		manager.onDatobModified(this, field, value);
+		if (entity == null) return;
+		entity.fireModified(getClass().getSimpleName() + "." + field, value);
 	}
 
 	protected final void repairMissingMaster() {
-		ADatobManager manager = getManager();
-		if (manager == null) return;
-		manager.onMissingMaster(this);
+		if (entity == null) return;
+		throw new OverrideExpectedException();
 	}
 
 	@Override
@@ -85,9 +77,8 @@ public abstract class ADatob implements Datob, Searchable {
 	public void ensureIntegrity() {}
 
 	public boolean isPersisted() {
-		ADatobManager manager = getManager();
-		if (manager == null) return false;
-		return manager.isPersisted();
+		if (entity == null) return false;
+		return entity.isPersisted();
 	}
 
 	@Override
@@ -104,10 +95,10 @@ public abstract class ADatob implements Datob, Searchable {
 			vo.repairDeadReferences(entityId);
 	}
 
-	protected final <S extends ADatob> Set<S> cloneValueObjects(Collection<S> strucktures, StructureManager<S> manager) {
+	protected final <S extends ADatob> Set<S> cloneValueObjects(Collection<S> strucktures) {
 		Set<S> ret = new HashSet<S>();
 		for (S s : strucktures) {
-			ret.add((S) s.clone(manager));
+			ret.add((S) s.clone());
 		}
 		return ret;
 	}
@@ -135,7 +126,8 @@ public abstract class ADatob implements Datob, Searchable {
 		throw new OverrideExpectedException();
 	}
 
-	public final ADatob clone(ADatobManager manager) {
+	@Override
+	public final ADatob clone() {
 		ADatob result;
 		try {
 			result = getClass().getConstructor(new Class[] { getClass() }).newInstance(new Object[] { this });
@@ -144,7 +136,6 @@ public abstract class ADatob implements Datob, Searchable {
 		} catch (Throwable ex) {
 			throw new RuntimeException(ex);
 		}
-		result.manager = manager;
 		return result;
 	}
 

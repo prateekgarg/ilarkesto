@@ -50,7 +50,7 @@ public abstract class ABaseEntity implements Entity, TransferableEntity {
 
 	protected void onEnsureIntegrity() {}
 
-	protected final void fireModified(String field, String value) {
+	public final void fireModified(String field, String value) {
 		ATransaction.get().modified(this, field, value);
 	}
 

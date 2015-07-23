@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -16,7 +16,6 @@ package ilarkesto.persistence;
 
 import ilarkesto.auth.AuthUser;
 import ilarkesto.base.Iconized;
-import ilarkesto.base.OverrideExpectedException;
 import ilarkesto.core.persistance.ABaseEntity;
 import ilarkesto.core.persistance.ATransaction;
 import ilarkesto.core.persistance.Persistence;
@@ -139,10 +138,10 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 			vo.repairDeadReferences(entityId);
 	}
 
-	protected final <S extends ADatob> Set<S> cloneValueObjects(Collection<S> strucktures, ADatobManager<S> manager) {
+	protected final <S extends ADatob> Set<S> cloneValueObjects(Collection<S> strucktures) {
 		Set<S> ret = new HashSet<S>();
 		for (S s : strucktures) {
-			ret.add((S) s.clone(manager));
+			ret.add((S) s.clone());
 		}
 		return ret;
 	}
@@ -166,40 +165,11 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 		return s.toLowerCase().contains(key);
 	}
 
-	protected void repairDeadDatob(ADatob datob) {
-		throw new OverrideExpectedException();
-	}
-
-	public class StructureManager<D extends ADatob> extends ADatobManager<D> {
-
-		@Override
-		public void onDatobModified(D datob, String field, String value) {
-			AEntity.this.fireModified(field, value);
+	protected void ensureIntegrityOfStructures(Collection<? extends ADatob> structures) {
+		for (ADatob structure : new ArrayList<ADatob>(structures)) {
+			structure.bind(this);
+			structure.ensureIntegrity();
 		}
-
-		@Override
-		public void updateLastModified(D datob) {
-			AEntity.this.updateLastModified();
-		}
-
-		@Override
-		public void onMissingMaster(D datob) {
-			AEntity.this.repairDeadDatob(datob);
-		}
-
-		@Override
-		public boolean isPersisted() {
-			return AEntity.this.isPersisted();
-		}
-
-		@Override
-		public void ensureIntegrityOfStructures(Collection<D> structures) {
-			for (ADatob structure : new ArrayList<ADatob>(structures)) {
-				structure.setManager(this);
-				structure.ensureIntegrity();
-			}
-		}
-
 	}
 
 }
