@@ -56,7 +56,7 @@ public class BigDecimalSumBuilder implements Formatable {
 
 	@Override
 	public String format() {
-		return sum == null ? null : Localizer.get().format(sum, true, 2);
+		return sum == null ? null : Localizer.get().format(sum, true, 2, true);
 	}
 
 }

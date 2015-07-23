@@ -40,9 +40,9 @@ public class Utl {
 	}
 
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor) {
-		if (dividend == null) return null;
-		if (isZeroOrNull(divisor)) return null;
-		return dividend.divide(divisor, BigDecimal.ROUND_HALF_UP);
+		BigDecimal ret = divide(dividend, divisor, 42);
+		if (ret == null) return null;
+		return ret.stripTrailingZeros();
 	}
 
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, int scale) {
