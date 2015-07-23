@@ -106,8 +106,8 @@ public class DaoGenerator extends ABeanGenerator<EntityModel> {
 
 		ln();
 		ln("    @Override");
-		ln("    public void entitySaved(EntityEvent event) {");
-		ln("        super.entitySaved(event);");
+		ln("    public void entityModified(EntityEvent event) {");
+		ln("        super.entityModified(event);");
 		ln("        if (event.getEntity() instanceof " + bean.getName() + ") {");
 		ln("            clearCaches();");
 		ln("        }");

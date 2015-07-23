@@ -112,11 +112,11 @@ public class DaoService implements IdentifiableResolver<AEntity> {
 		listeners.remove(listener);
 	}
 
-	public final void fireEntitySaved(AEntity entity) {
+	public final void fireEntityModified(AEntity entity) {
 		if (listeners == null) return;
 		EntityEvent event = new EntityEvent(this, entity);
 		for (DaoListener listener : listeners)
-			listener.entitySaved(event);
+			listener.entityModified(event);
 	}
 
 	public final void fireEntityDeleted(AEntity entity) {

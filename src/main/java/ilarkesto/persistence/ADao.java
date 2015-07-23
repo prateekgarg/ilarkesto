@@ -232,7 +232,7 @@ public abstract class ADao<E extends AEntity> implements IdentifiableResolver<E>
 	}
 
 	@Override
-	public void entitySaved(EntityEvent event) {}
+	public void entityModified(EntityEvent event) {}
 
 	@Override
 	public void feed(final SearchResultsConsumer searchBox) {
