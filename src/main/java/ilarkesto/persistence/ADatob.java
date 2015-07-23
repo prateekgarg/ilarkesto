@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -18,6 +18,7 @@ import ilarkesto.base.OverrideExpectedException;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.search.SearchText;
 import ilarkesto.core.search.Searchable;
+import ilarkesto.persistence.AEntity.StructureManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +33,17 @@ import java.util.Set;
  */
 public abstract class ADatob implements Datob, Searchable {
 
-	protected abstract ADatobManager getManager();
+	private transient ADatobManager manager;
+
+	public ADatob(ADatob template) {}
+
+	final void setManager(ADatobManager manager) {
+		this.manager = manager;
+	}
+
+	protected final ADatobManager getManager() {
+		return manager;
+	}
 
 	public void updateProperties(Map<String, String> properties) {}
 
@@ -93,8 +104,7 @@ public abstract class ADatob implements Datob, Searchable {
 			vo.repairDeadReferences(entityId);
 	}
 
-	protected final <S extends AStructure> Set<S> cloneValueObjects(Collection<S> strucktures,
-			StructureManager<S> manager) {
+	protected final <S extends ADatob> Set<S> cloneValueObjects(Collection<S> strucktures, StructureManager<S> manager) {
 		Set<S> ret = new HashSet<S>();
 		for (S s : strucktures) {
 			ret.add((S) s.clone(manager));
@@ -125,36 +135,17 @@ public abstract class ADatob implements Datob, Searchable {
 		throw new OverrideExpectedException();
 	}
 
-	public class StructureManager<D extends ADatob> extends ADatobManager<D> {
-
-		@Override
-		public void onDatobModified(D datob, String field, String value) {
-			fireModified(field, value);
+	public final ADatob clone(ADatobManager manager) {
+		ADatob result;
+		try {
+			result = getClass().getConstructor(new Class[] { getClass() }).newInstance(new Object[] { this });
+		} catch (NoSuchMethodException ex) {
+			throw new RuntimeException("Missing copy constructor in " + getClass(), ex);
+		} catch (Throwable ex) {
+			throw new RuntimeException(ex);
 		}
-
-		@Override
-		public void updateLastModified(D datob) {
-			ADatob.this.updateLastModified();
-		}
-
-		@Override
-		public void onMissingMaster(D datob) {
-			repairDeadDatob(datob);
-		}
-
-		@Override
-		public void ensureIntegrityOfStructures(Collection<D> structures) {
-			for (ADatob structure : new ArrayList<ADatob>(structures)) {
-				((AStructure) structure).setManager(this);
-				structure.ensureIntegrity();
-			}
-		}
-
-		@Override
-		public boolean isPersisted() {
-			return ADatob.this.isPersisted();
-		}
-
+		result.manager = manager;
+		return result;
 	}
 
 }

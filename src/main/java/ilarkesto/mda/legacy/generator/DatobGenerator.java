@@ -28,6 +28,7 @@ import ilarkesto.core.time.DateRange;
 import ilarkesto.core.time.DayAndMonth;
 import ilarkesto.core.time.Time;
 import ilarkesto.email.EmailAddress;
+import ilarkesto.mda.legacy.model.ACollectionPropertyModel;
 import ilarkesto.mda.legacy.model.BeanModel;
 import ilarkesto.mda.legacy.model.DatobModel;
 import ilarkesto.mda.legacy.model.EntityModel;
@@ -35,12 +36,10 @@ import ilarkesto.mda.legacy.model.PropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceListPropertyModel;
 import ilarkesto.mda.legacy.model.ReferencePropertyModel;
 import ilarkesto.mda.legacy.model.ReferenceSetPropertyModel;
-import ilarkesto.mda.legacy.model.SetPropertyModel;
 import ilarkesto.mda.legacy.model.StringPropertyModel;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.ADatobManager;
 import ilarkesto.persistence.AEntity;
-import ilarkesto.persistence.AStructure;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -503,9 +502,9 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 			}
 		} else {
 			if (p.isCollection()) {
-				SetPropertyModel sP = (SetPropertyModel) p;
+				ACollectionPropertyModel cP = (ACollectionPropertyModel) p;
 				if (p.isValueObject()) {
-					ln("        return new " + sP.getCollectionImpl() + "(" + p.getName() + ");");
+					ln("        return new " + cP.getCollectionImpl() + "(" + p.getName() + ");");
 				} else {
 					ln("        return new " + getFieldImpl(p) + "(" + p.getName() + ");");
 				}
@@ -923,7 +922,6 @@ public class DatobGenerator<D extends DatobModel> extends ABeanGenerator<D> {
 		if (isLegacyBean(bean)) {
 			result.add(ADatob.class.getName());
 			result.add(AEntity.class.getName());
-			result.add(AStructure.class.getName());
 			result.add(AuthUser.class.getName());
 		}
 		result.add(Str.class.getName());

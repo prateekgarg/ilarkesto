@@ -105,7 +105,7 @@ public abstract class ABeanGenerator<B extends BeanModel> extends AClassGenerato
 	public boolean isLegacyBean(BeanModel model) {
 		if (model == null) return false;
 		if (model.getName().equals("AEntity")) return true;
-		if (model.getName().equals("AStructure")) return true;
+		if (model.getName().equals("ADatob")) return true;
 		if (model.getName().equals("AUser")) return true;
 		return isLegacyBean(model.getSuperbean());
 	}
