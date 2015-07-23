@@ -14,6 +14,8 @@
  */
 package ilarkesto.feeds;
 
+import ilarkesto.base.Tm;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.integration.jdom.JDom;
 import ilarkesto.io.IO;
 import ilarkesto.io.StringOutputStream;
@@ -145,6 +147,10 @@ public class Feed {
 
 	public String getPubDate() {
 		return pubDate;
+	}
+
+	public Feed setPubDate(DateAndTime pubDate) {
+		return setPubDate(pubDate == null ? null : Tm.FORMAT_RFC822.format(pubDate));
 	}
 
 	public String getLastBuildDate() {
