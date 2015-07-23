@@ -53,7 +53,7 @@ public class Localizer {
 
 	public String format(Money money) {
 		if (money == null) return null;
-		return format(money.getAmount(), true) + " " + formatCurrency(money.getCurrency());
+		return format(money.getAmount(), true, 2, false) + " " + formatCurrency(money.getCurrency());
 	}
 
 	public String formatCurrency(String currencyCode) {
