@@ -32,8 +32,6 @@ public abstract class ABaseEntity implements Entity, TransferableEntity {
 	private Long modificationTime;
 	private transient boolean ensuringIntegrity;
 
-	protected abstract void doPersist();
-
 	/**
 	 * Method gets called bevore persiting and after loading
 	 */
@@ -53,7 +51,7 @@ public abstract class ABaseEntity implements Entity, TransferableEntity {
 	protected void onEnsureIntegrity() {}
 
 	protected final void fireModified(String field, String value) {
-		Persistence.transactionManager.getCurrentTransaction().modified(this, field, value);
+		ATransaction.get().modified(this, field, value);
 	}
 
 	/**
@@ -98,7 +96,7 @@ public abstract class ABaseEntity implements Entity, TransferableEntity {
 	@Override
 	public final void persist() {
 		updateLastModified();
-		doPersist();
+		ATransaction.get().persist(this);
 		onAfterPersist();
 	}
 

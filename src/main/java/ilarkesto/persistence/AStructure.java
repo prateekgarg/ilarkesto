@@ -24,10 +24,6 @@ public abstract class AStructure extends ADatob {
 		this.manager = manager;
 	}
 
-	protected final boolean isDeleted() {
-		return false;
-	}
-
 	@Override
 	protected final ADatobManager getManager() {
 		return manager;
