@@ -148,6 +148,8 @@ public class GiiLawProvider extends ALawProvider {
 					code = "StVO";
 				} else if (reference.equals("dtag_bertrano_2013_2")) {
 					code = "DTAGÜbertrAnO 2013";
+				} else if (reference.equals("rstruktfv")) {
+					code = "RStruktFV 2011";
 				}
 
 				code = code.replace("/", "");
