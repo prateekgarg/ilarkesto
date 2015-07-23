@@ -47,6 +47,7 @@ public class Auth {
 
 	public static <U> void resetPasswordToDefault(U user, AuthenticationContext<U> context) {
 		String defaultPassword = context.getDefaultPassword(user);
+		if (Str.isBlank(defaultPassword)) throw new IllegalStateException("Blank default password.");
 		setPasswordWithoutChecking(user, defaultPassword, context);
 	}
 
