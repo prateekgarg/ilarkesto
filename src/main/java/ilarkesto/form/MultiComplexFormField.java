@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -18,12 +18,14 @@ import ilarkesto.base.Factory;
 import ilarkesto.base.Reflect;
 import ilarkesto.id.CountingIdGenerator;
 import ilarkesto.id.IdGenerator;
+import ilarkesto.persistence.ADatob;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,14 +94,17 @@ public class MultiComplexFormField extends AFormField {
 	}
 
 	public MultiComplexFormField setValue(Set<Object> value) {
-		this.value = value;
-		removeButtons.clear();
+		this.value = new LinkedHashSet<Object>();
 		for (Object item : value) {
+			this.value.add(((ADatob) item).clone());
+		}
+		removeButtons.clear();
+		for (Object item : this.value) {
 			RemoveButton button = (RemoveButton) new RemoveButton(item).setLabel("Entfernen").setIcon("delete");
 			removeButtons.put(item, button);
 		}
 		editButtons.clear();
-		for (Object item : value) {
+		for (Object item : this.value) {
 			EditButton button = (EditButton) new EditButton(item).setLabel("Bearbeiten").setIcon("edit");
 			editButtons.put(item, button);
 		}
