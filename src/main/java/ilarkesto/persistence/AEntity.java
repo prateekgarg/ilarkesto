@@ -120,17 +120,7 @@ public abstract class AEntity extends ABaseEntity implements Datob, Transferable
 		return lastEditorId != null;
 	}
 
-	protected void fireModified(String field, String value) {
-		getDao().onDatobModified(this, field, value);
-	}
-
 	protected void repairDeadReferences(String entityId) {}
-
-	protected final void repairMissingMaster() {
-		ADatobManager manager = getManager();
-		if (manager == null) return;
-		manager.onMissingMaster(this);
-	}
 
 	@Override
 	public boolean matches(SearchText searchText) {

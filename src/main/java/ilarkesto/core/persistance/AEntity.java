@@ -49,18 +49,6 @@ public class AEntity extends ABaseEntity implements Entity, Searchable, Transfer
 		return getDeleteVeto() == null;
 	}
 
-	/**
-	 * Gets called when the master entity is deleted.
-	 */
-	protected void repairMissingMaster() {
-		log.info("Deleting entity as repair for missing master:", Persistence.getTypeAndId(this));
-		delete();
-	}
-
-	protected final void fireModified(String field, String value) {
-		Transaction.get().modified(this, field, value);
-	}
-
 	@Override
 	public boolean matches(SearchText search) {
 		return search.matches(toString());

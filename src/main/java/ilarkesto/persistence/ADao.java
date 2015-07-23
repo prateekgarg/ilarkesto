@@ -19,7 +19,6 @@ import ilarkesto.auth.AuthUser;
 import ilarkesto.auth.Ownable;
 import ilarkesto.base.Iconized;
 import ilarkesto.base.Reflect;
-import ilarkesto.base.Utl;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.fp.Predicate;
@@ -43,8 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class ADao<E extends AEntity> extends ADatobManager<E> implements IdentifiableResolver<E>, Searcher,
-		DaoListener, Iconized, Comparable<ADao> {
+public abstract class ADao<E extends AEntity> implements IdentifiableResolver<E>, Searcher, DaoListener, Iconized,
+		Comparable<ADao> {
 
 	private final Log log = Log.get(getClass());
 
@@ -53,35 +52,8 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 
 	// --- ---
 
-	@Override
-	public boolean isPersisted() {
-		throw new IllegalStateException(getClass().getSimpleName() + ".isPersisted() called");
-	}
-
 	protected int getOrderIndex() {
 		return 0;
-	}
-
-	@Override
-	public void onDatobModified(E entity, String field, String value) {
-		// don's save new entities
-		boolean persistent = isPersistent(entity);
-		if (!persistent) return;
-
-		log.debug("Entity modified:", Utl.toStringWithType(entity), "->", field, "=",
-			Str.getFirstLine(Str.format(value), 50, ".."));
-		persist(entity);
-	}
-
-	@Override
-	public void updateLastModified(E entity) {
-		entity.updateLastModified();
-	}
-
-	@Override
-	public void onMissingMaster(E entity) {
-		entity.delete();
-		throw new EnsureIntegrityCompletedException();
 	}
 
 	public boolean isSkipLoadingEntityOnFailure() {
@@ -303,9 +275,6 @@ public abstract class ADao<E extends AEntity> extends ADatobManager<E> implement
 		if (entityName == null) return entityName + "Dao";
 		return getClass().getName();
 	}
-
-	@Override
-	public void ensureIntegrityOfStructures(Collection<E> views) {}
 
 	// --------------------
 	// --- dependencies ---

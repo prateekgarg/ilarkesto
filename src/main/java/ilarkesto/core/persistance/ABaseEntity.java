@@ -17,6 +17,7 @@ package ilarkesto.core.persistance;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.base.Uuid;
+import ilarkesto.core.logging.Log;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class ABaseEntity implements Entity, TransferableEntity {
+
+	private static final Log log = Log.get(ABaseEntity.class);
 
 	private String id;
 	private Long modificationTime;
@@ -48,6 +51,18 @@ public abstract class ABaseEntity implements Entity, TransferableEntity {
 	}
 
 	protected void onEnsureIntegrity() {}
+
+	protected final void fireModified(String field, String value) {
+		Persistence.transactionManager.getCurrentTransaction().modified(this, field, value);
+	}
+
+	/**
+	 * Gets called when the master entity is deleted.
+	 */
+	protected void repairMissingMaster() {
+		log.info("Deleting entity as repair for missing master:", Persistence.getTypeAndId(this));
+		delete();
+	}
 
 	/**
 	 * Provides all referenced entities. Back-references included.
