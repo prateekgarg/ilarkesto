@@ -15,19 +15,17 @@
 package ilarkesto.integration.imdb;
 
 import ilarkesto.base.Str;
-import ilarkesto.core.html.Html;
+import ilarkesto.core.base.Parser;
+import ilarkesto.core.base.Parser.ParseException;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.httpunit.HttpUnit;
 import ilarkesto.io.IO;
+import ilarkesto.net.HttpDownloader;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.xml.sax.SAXException;
 
-import com.meterware.httpunit.HTMLElement;
-import com.meterware.httpunit.TableCell;
-import com.meterware.httpunit.WebImage;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 
@@ -81,62 +79,42 @@ public class Imdb {
 		if (imdbId == null) return null;
 		String url = getPageUrl(imdbId);
 		log.info("Loading IMDB record:", imdbId);
-		WebResponse akasPage = HttpUnit.loadPage(url);
+		String html = HttpDownloader.create().downloadText(url, IO.UTF_8);
+		// System.out.println("-----\n\n" + akasHtml + "\n\n-----------");
 		String title;
 		Integer year;
 		String coverId;
 		String trailerId;
 		try {
-			title = parseTitle(akasPage);
-			year = parseYear(akasPage);
-			coverId = parseCoverId(akasPage);
-			trailerId = parseTrailerId(akasPage);
-			String tagline = parseInfoContent(akasPage, "Tagline");
-			String plot = parseInfoContent(akasPage, "Plot");
-			String awards = parseInfoContent(akasPage, "Awards");
+			title = parseTitle(html);
+			year = parseYear(html);
+			coverId = parseCoverId(html);
+			trailerId = parseTrailerId(html);
+			// String tagline = parseInfoContent(akasPage, "Tagline");
+			// String plot = parseInfoContent(akasPage, "Plot");
+			// String awards = parseInfoContent(akasPage, "Awards");
 		} catch (Exception ex) {
 			throw new RuntimeException("Parsing IMDB page failed: " + url, ex);
 		}
 
-		url = getPageUrlDe(imdbId);
-		WebResponse dePage = HttpUnit.loadPage(url);
-		String titleDe = parseTitle(dePage);
+		String titleDe;
+		try {
+			titleDe = parseTitleDe(html);
+		} catch (ParseException ex) {
+			throw new RuntimeException("Parsing IMDB page failed: " + url, ex);
+		}
 
 		return new ImdbRecord(imdbId, title, titleDe, year, coverId, trailerId);
 	}
 
-	private static String parseTrailerId(WebResponse response) {
-		String text;
-		try {
-			text = response.getText();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		return Str.cutFromTo(text, "href=\"" + PATH_TRAILER + "", "/");
+	private static String parseTrailerId(String html) {
+		return Str.cutFromTo(html, "href=\"" + PATH_TRAILER + "", "/");
 	}
 
-	private static String parseInfoContent(WebResponse response, String label) {
-		String text;
-		try {
-			text = response.getText();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		text = Str.cutFromTo(text, "<h5>" + label + ":</h5>", "</div>");
-		if (text == null) return null;
-		text = Str.cutFrom(text, "<div class=\"info-content\">");
-		if (text == null) return null;
-		if (text.contains("<a ")) text = Str.cutTo(text, "<a ");
-		return Html.convertHtmlToText(text.trim());
-	}
-
-	private static Integer parseYear(WebResponse response) {
-		String title;
-		try {
-			title = response.getTitle();
-		} catch (SAXException ex) {
-			throw new RuntimeException(ex);
-		}
+	private static Integer parseYear(String html) throws ParseException {
+		Parser parser = new Parser(html);
+		parser.gotoAfter("<meta name=\"title\" content=\"");
+		String title = parser.getUntil("\"");
 		if (title == null) return null;
 
 		int idx = title.lastIndexOf(" (");
@@ -154,13 +132,10 @@ public class Imdb {
 		return Integer.parseInt(s.substring(0, 4));
 	}
 
-	private static String parseTitle(WebResponse response) {
-		String title;
-		try {
-			title = response.getTitle();
-		} catch (SAXException ex) {
-			throw new RuntimeException(ex);
-		}
+	private static String parseTitle(String html) throws ParseException {
+		Parser parser = new Parser(html);
+		parser.gotoAfter("<meta property='og:title' content=\"");
+		String title = parser.getUntil("\"");
 		if (title == null) return null;
 		title = Str.cutTo(title, " (");
 		int idx = title.indexOf(" (");
@@ -169,26 +144,45 @@ public class Imdb {
 		return title;
 	}
 
-	private static String parseCoverId(WebResponse response) {
-		HTMLElement img;
-		try {
-			img = response.getElementWithID("primary-poster");
-		} catch (SAXException ex) {
-			throw new RuntimeException(ex);
-		}
-		if (img == null) {
-			TableCell td;
-			try {
-				td = (TableCell) response.getElementWithID("img_primary");
-			} catch (SAXException ex1) {
-				throw new RuntimeException(ex1);
-			}
-			WebImage[] images = td.getImages();
-			if (images != null && images.length > 0) img = images[0];
-		}
+	private static String parseTitleDe(String html) throws ParseException {
+		Parser parser = new Parser(html);
+		parser.gotoAfter("<meta name=\"title\" content=\"");
+		String title = parser.getUntil("\"");
+		if (title == null) return null;
+		title = Str.cutTo(title, " (");
+		int idx = title.indexOf(" (");
+		if (idx > 0) title = title.substring(0, idx).trim();
+		title = Str.removePrefix(title, "IMDb -").trim();
+		return title;
+	}
 
-		if (img == null) return null;
-		String url = img.getAttribute("src");
+	private static String parseCoverId(String html) throws ParseException {
+		Parser parser = new Parser(html);
+		parser.gotoAfter("id=\"img_primary\"");
+		parser.gotoAfter("<img");
+		parser.gotoAfter("src=\"");
+		String url = parser.getUntil("\"");
+
+		// HTMLElement img;
+		// try {
+		// img = response.getElementWithID("primary-poster");
+		// } catch (SAXException ex) {
+		// throw new RuntimeException(ex);
+		// }
+		// if (img == null) {
+		// TableCell td;
+		// try {
+		// td = (TableCell) response.getElementWithID("img_primary");
+		// } catch (SAXException ex1) {
+		// throw new RuntimeException(ex1);
+		// }
+		// WebImage[] images = td.getImages();
+		// if (images != null && images.length > 0) img = images[0];
+		// }
+		//
+		// if (img == null) return null;
+		// String url = img.getAttribute("src");
+
 		if (url == null) return null;
 		if (!url.startsWith(URL_COVERS)) return null;
 		if (!url.contains("._")) return null;

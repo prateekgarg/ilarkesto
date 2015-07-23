@@ -21,12 +21,25 @@ import org.testng.annotations.Test;
 public class ImdbTest extends ATest {
 
 	@Test
+	public void loadLivingDesert() {
+		ImdbRecord record = Imdb.loadRecord("tt0046008");
+		assertEquals(record.getCoverId(), "MV5BOTk3MTMzMzQ5Ml5BMl5BanBnXkFtZTgwMzk1Nzk1MDE@");
+	}
+
+	@Test
+	public void loadDieHard() {
+		ImdbRecord record = Imdb.loadRecord("tt0095016");
+		assertEquals(record.getTitle(), "Die Hard");
+		assertEquals(record.getTitleDe(), "Stirb langsam");
+	}
+
+	@Test
 	public void loadRecordKillbill() {
 		ImdbRecord killbill = Imdb.loadRecord("tt0266697");
 		assertEquals(killbill.getTitle(), "Kill Bill: Vol. 1");
 		assertEquals(killbill.getYear(), Integer.valueOf(2003));
 		assertEquals(killbill.getCoverId(), "MV5BMTU1NDg1Mzg4M15BMl5BanBnXkFtZTYwMDExOTc3");
-		// assertEquals(killbill.getTrailerId(), "vi3102711321");
+		assertEquals(killbill.getTrailerId(), "vi3102711321");
 	}
 
 	@Test
