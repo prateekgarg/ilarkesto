@@ -753,10 +753,10 @@ public class Str {
 	}
 
 	private static boolean isWrapperException(Throwable ex) {
+		if (ex instanceof WrapperException) return true;
 		if (getSimpleName(ex.getClass()).equals("RuntimeException")) return true;
 		if (getSimpleName(ex.getClass()).equals("ExecutionException")) return true;
 		if (getSimpleName(ex.getClass()).equals("UmbrellaException")) return true;
-		if (getSimpleName(ex.getClass()).equals("EntityDoesNotExistException")) return true;
 		return false;
 	}
 
