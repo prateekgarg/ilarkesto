@@ -102,10 +102,10 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			if (!bean.isAbstract()) {
 				writeGetByListBy();
 			}
-			writePredicates();
 			writeOnAfterPersist();
 		}
 
+		writePredicates();
 		writeQueryBaseclass();
 		if (!bean.isAbstract()) writeListAll();
 
@@ -401,6 +401,27 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 			ln("            @Override");
 			ln("            public String toString() {");
 			ln("                return \"" + bean.getName() + ":byIs" + Str.uppercaseFirstLetter(p.getName()) + "\";");
+			ln("            }");
+			ln("        }.list();");
+			ln("    }");
+
+			ln();
+			ln("    public final boolean isNot" + Str.uppercaseFirstLetter(p.getName()) + "() {");
+			ln("        return !is" + Str.uppercaseFirstLetter(p.getName()) + "();");
+			ln("    }");
+
+			ln();
+			ln("    public static Set<" + bean.getName() + "> listByIsNot" + Str.uppercaseFirstLetter(p.getName())
+					+ "() {");
+			ln("        return new " + queryName + "() {");
+			ln("            @Override");
+			ln("            public boolean test(" + bean.getName() + " entity) {");
+			ln("                return entity.isNot" + Str.uppercaseFirstLetter(p.getName()) + "();");
+			ln("            }");
+			ln("            @Override");
+			ln("            public String toString() {");
+			ln("                return \"" + bean.getName() + ":byIsNot" + Str.uppercaseFirstLetter(p.getName())
+					+ "\";");
 			ln("            }");
 			ln("        }.list();");
 			ln("    }");
