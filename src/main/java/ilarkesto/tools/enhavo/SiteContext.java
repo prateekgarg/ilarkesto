@@ -93,6 +93,7 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		String executorCommand = "bash";
 		String output = Proc.execute(outputDir, executorCommand, dst.getAbsolutePath());
 		info(output);
+		// IO.delete(dst);
 	}
 
 	private void processPagesFiles(File dir) {
