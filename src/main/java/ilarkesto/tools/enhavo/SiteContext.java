@@ -1,19 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.tools.enhavo;
 
+import ilarkesto.base.Proc;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.parsing.ParseException;
 import ilarkesto.io.IO;
@@ -30,6 +31,7 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 	private File templatesDir;
 	private File contentDir;
 	private File resourcesDir;
+	private File scriptsDir;
 
 	private File outputDir;
 	private ContentProvider contentProvider;
@@ -50,6 +52,9 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		resourcesDir = new File(dir.getPath() + "/resources");
 		IO.createDirectory(resourcesDir);
 
+		scriptsDir = new File(dir.getPath() + "/scripts");
+		IO.createDirectory(scriptsDir);
+
 		contentProvider = new FilesContentProvider(contentDir, cms.getContentProvider());
 	}
 
@@ -61,10 +66,33 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 
 		processPagesFiles(pagesDir);
 		IO.copyFiles(resourcesDir.listFiles(), outputDir);
+		runScripts();
 	}
 
 	private void clean() {
 		IO.delete(outputDir.listFiles());
+	}
+
+	private void runScripts() {
+		for (File file : IO.listFiles(scriptsDir)) {
+			cms.getProt().pushContext("script> " + file.getName());
+			try {
+				runScript(file);
+			} catch (Exception ex) {
+				error(ex);
+			} finally {
+				cms.getProt().popContext();
+			}
+		}
+	}
+
+	private void runScript(File file) {
+		if (file.isDirectory()) return;
+		File dst = new File(outputDir + "/" + file.getName());
+		IO.copyFile(file, dst);
+		String executorCommand = "bash";
+		String output = Proc.execute(outputDir, executorCommand, dst.getAbsolutePath());
+		info(output);
 	}
 
 	private void processPagesFiles(File dir) {
