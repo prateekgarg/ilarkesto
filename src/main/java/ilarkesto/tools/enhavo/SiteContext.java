@@ -163,7 +163,9 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 	}
 
 	public String getRelativePath(File file) {
-		return Str.removePrefix(file.getPath(), getPagesDir().getPath() + "/");
+		String ret = Str.removePrefix(file.getPath(), getPagesDir().getPath());
+		ret = Str.removePrefix(ret, "/");
+		return ret;
 	}
 
 	public ContentProvider getContentProvider() {
