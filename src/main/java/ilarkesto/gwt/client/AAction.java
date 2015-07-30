@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -37,7 +37,8 @@ public abstract class AAction implements Command, ClickHandler {
 
 	@Override
 	public final void execute() {
-		if (!isExecutable()) throw new RuntimeException("Action not executable: " + this);
+		String executionVeto = getExecutionVeto();
+		if (executionVeto != null) throw new RuntimeException("Action not executable:" + executionVeto);
 		if (!isPermitted()) throw new RuntimeException("Action not permitted: " + this);
 
 		try {
@@ -82,8 +83,17 @@ public abstract class AAction implements Command, ClickHandler {
 		return null;
 	}
 
-	public boolean isExecutable() {
+	/**
+	 * @deprecated {@link #getExecutionVeto()}
+	 */
+	@Deprecated
+	protected boolean isExecutable() {
 		return true;
+	}
+
+	public String getExecutionVeto() {
+		if (!isExecutable()) return "Not executable";
+		return null;
 	}
 
 	public boolean isPermitted() {
