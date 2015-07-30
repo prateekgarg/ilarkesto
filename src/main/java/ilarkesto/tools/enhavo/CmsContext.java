@@ -17,6 +17,7 @@ package ilarkesto.tools.enhavo;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.integration.BeanshellExecutor;
 import ilarkesto.io.IO;
 import ilarkesto.protocol.HtmlProtocolConsumer;
 import ilarkesto.protocol.ProtocolWriter;
@@ -40,6 +41,7 @@ public class CmsContext {
 	private File sitesOutputDir;
 
 	private ContentProvider contentProvider;
+	private BeanshellExecutor beanshellExecutor;
 
 	private ProtocolWriter prot;
 
@@ -59,7 +61,8 @@ public class CmsContext {
 		dataDir = new File(inputDir.getPath() + "/data");
 		IO.createDirectory(dataDir);
 
-		contentProvider = new FilesContentProvider(dataDir, additionalContentProvider);
+		contentProvider = new FilesContentProvider(dataDir, additionalContentProvider)
+				.setBeanshellExecutor(beanshellExecutor);
 	}
 
 	public void build() {
@@ -109,6 +112,15 @@ public class CmsContext {
 
 	public File getInputDir() {
 		return inputDir;
+	}
+
+	public BeanshellExecutor getBeanshellExecutor() {
+		return beanshellExecutor;
+	}
+
+	public CmsContext setBeanshellExecutor(BeanshellExecutor beanshellExecutor) {
+		this.beanshellExecutor = beanshellExecutor;
+		return this;
 	}
 
 	public File findTemplateFile(String templatePath) {

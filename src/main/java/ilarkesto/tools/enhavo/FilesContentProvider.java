@@ -15,6 +15,7 @@
 package ilarkesto.tools.enhavo;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.integration.BeanshellExecutor;
 import ilarkesto.io.FilenameComparator;
 import ilarkesto.io.IO;
 import ilarkesto.json.JsonObject;
@@ -27,6 +28,7 @@ import java.util.List;
 public class FilesContentProvider extends AContentProvider {
 
 	private File dir;
+	private BeanshellExecutor beanshellExecutor;
 
 	public FilesContentProvider(File dir, ContentProvider fallback) {
 		super(fallback);
@@ -45,12 +47,25 @@ public class FilesContentProvider extends AContentProvider {
 		if (file.isDirectory()) return createFromDir(file);
 
 		String name = file.getName();
+
 		if (name.endsWith(".json")) {
 			JsonObject json = JsonObject.loadFile(file, false);
 			appendFilename(json, file);
 			return json;
 		}
+
+		if (name.endsWith(".bs")) return executeBeanshellScript(file);
+
 		return IO.readFile(file);
+	}
+
+	private Object executeBeanshellScript(File file) {
+		String script = IO.readFile(file);
+		if (Str.isBlank(script)) return null;
+
+		if (beanshellExecutor == null) beanshellExecutor = new BeanshellExecutor();
+
+		return beanshellExecutor.executeScript(script);
 	}
 
 	private Object createFromDir(File dir) {
@@ -112,6 +127,11 @@ public class FilesContentProvider extends AContentProvider {
 		}
 		Collections.sort(ret, FilenameComparator.INSTANCE);
 		return ret;
+	}
+
+	public FilesContentProvider setBeanshellExecutor(BeanshellExecutor beanshellExecutor) {
+		this.beanshellExecutor = beanshellExecutor;
+		return this;
 	}
 
 }
