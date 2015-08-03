@@ -203,6 +203,12 @@ public class JsonObject {
 		return (JsonObject) get(name);
 	}
 
+	public JsonObject getObjectOrCreate(String name) {
+		JsonObject ret = getObject(name);
+		if (ret == null) ret = putNewObject(name);
+		return ret;
+	}
+
 	public boolean isObject(String property) {
 		return get(property) instanceof JsonObject;
 	}
@@ -317,6 +323,14 @@ public class JsonObject {
 	}
 
 	// --- manipulating ---
+
+	public <V> V putIfNull(String name, V value) {
+		if (name == null || name.length() == 0) throw new RuntimeException("name required");
+		Object currentValue = get(name);
+		if (currentValue != null) return (V) currentValue;
+		elements.put(name, adopt(value));
+		return value;
+	}
 
 	public <V> V put(String name, V value) {
 		if (name == null || name.length() == 0) throw new RuntimeException("name required");
