@@ -72,6 +72,7 @@ public class Gwt {
 	public static LinkedHashMap<String, String> parseHistoryToken(String token) {
 		LinkedHashMap<String, String> ret = new LinkedHashMap<String, String>();
 		if (Str.isBlank(token)) return ret;
+		token = token.trim();
 		int sepIdx = token.indexOf(HISTORY_TOKEN_SEPARATOR);
 		while (sepIdx > 0) {
 			String part = token.substring(0, sepIdx);
@@ -87,7 +88,11 @@ public class Gwt {
 		if (Str.isBlank(part)) return;
 		int idx = part.indexOf('=');
 		if (idx < 0) {
-			resultContainer.put(part, part);
+			if (resultContainer.isEmpty()) {
+				resultContainer.put("value", part);
+			} else {
+				resultContainer.put(part, part);
+			}
 			return;
 		}
 		resultContainer.put(part.substring(0, idx), part.substring(idx + 1));
