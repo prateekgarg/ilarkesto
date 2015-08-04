@@ -1,19 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.gwt.client.desktop.fields;
 
+import ilarkesto.core.base.UserInputException;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateRange;
 import ilarkesto.gwt.client.desktop.Widgets;
@@ -52,7 +53,7 @@ public abstract class AEditableDateRangeField extends AEditableField {
 	}
 
 	@Override
-	public void trySubmit() throws RuntimeException {
+	public void trySubmit() throws UserInputException {
 		Date start = prepareValue(startBox.getText());
 		Date end = prepareValue(endBox.getText());
 		if (end == null) end = start;
@@ -110,9 +111,19 @@ public abstract class AEditableDateRangeField extends AEditableField {
 	}
 
 	private void updatePreviousValue() {
-		Date start = prepareValue(startBox.getText());
+		Date start;
+		try {
+			start = prepareValue(startBox.getText());
+		} catch (UserInputException ex) {
+			return;
+		}
 		if (start == null) return;
-		Date end = prepareValue(endBox.getText());
+		Date end;
+		try {
+			end = prepareValue(endBox.getText());
+		} catch (UserInputException ex) {
+			return;
+		}
 		if (end == null) end = start;
 		try {
 			previousValue = new DateRange(start, end);
@@ -120,10 +131,16 @@ public abstract class AEditableDateRangeField extends AEditableField {
 	}
 
 	private void updateDaysLabel() {
-		daysLabel.setText(computeDays());
+		String days;
+		try {
+			days = computeDays();
+		} catch (UserInputException ex) {
+			days = ex.getMessage();
+		}
+		daysLabel.setText(days);
 	}
 
-	private String computeDays() {
+	private String computeDays() throws UserInputException {
 		Date start = prepareValue(startBox.getText());
 		if (start == null) return null;
 		Date end = prepareValue(endBox.getText());
@@ -152,7 +169,7 @@ public abstract class AEditableDateRangeField extends AEditableField {
 		return value == null ? null : Widgets.text(value.formatShortest());
 	}
 
-	private Date prepareValue(String value) {
+	private Date prepareValue(String value) throws UserInputException {
 		if (value == null) return null;
 		value = value.trim();
 		if (value.isEmpty()) return null;
@@ -161,7 +178,7 @@ public abstract class AEditableDateRangeField extends AEditableField {
 		try {
 			javaDate = format.parse(value);
 		} catch (Exception ex) {
-			throw new RuntimeException("Eingabe muß ein Datum sein. TT.MM.JJJJ, z.B. 01.01.2001");
+			throw new UserInputException("Eingabe muß ein Datum sein. TT.MM.JJJJ, z.B. 01.01.2001");
 		}
 		return new Date(javaDate);
 	}

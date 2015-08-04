@@ -52,7 +52,7 @@ public abstract class AEditableField extends AField {
 
 	protected abstract IsWidget createEditorWidget();
 
-	protected abstract void trySubmit() throws RuntimeException;
+	protected abstract void trySubmit() throws Exception;
 
 	protected final Widget createEditorWidgetForUse() {
 		if (isEditorAsync()) {
@@ -99,7 +99,11 @@ public abstract class AEditableField extends AField {
 
 			@Override
 			public void run() {
-				trySubmit();
+				try {
+					trySubmit();
+				} catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
 				onSubmitted();
 			}
 
