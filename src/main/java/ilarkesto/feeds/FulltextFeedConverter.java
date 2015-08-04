@@ -71,8 +71,6 @@ public class FulltextFeedConverter {
 		String link = item.getLink();
 		if (Str.isBlank(link)) return;
 
-		log.info("----------> ", link);
-
 		String text = downloadText(link);
 		if (Str.isBlank(text)) return;
 		item.setDescription(text);
@@ -81,7 +79,6 @@ public class FulltextFeedConverter {
 	static String downloadText(String url) {
 		log.info("Downloading", url);
 		String text = downloader.downloadText(url, IO.UTF_8);
-		log.info(text);
 		if (Str.isBlank(text)) return null;
 		text = extract(text);
 		text = optimize(text);
