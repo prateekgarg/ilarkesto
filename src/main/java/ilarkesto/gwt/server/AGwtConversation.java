@@ -20,13 +20,14 @@ import ilarkesto.base.Utl;
 import ilarkesto.core.base.RuntimeTracker;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.persistance.TransferBus;
-import ilarkesto.core.persistance.TransferableEntity;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.gwt.client.ADataTransferObject;
 import ilarkesto.gwt.client.ClientDataTransporter;
+import ilarkesto.gwt.client.Transportable;
 import ilarkesto.webapp.AWebSession;
 
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class AGwtConversation<S extends AWebSession, E extends TransferableEntity> implements
-		ClientDataTransporter<E>, Comparable<AGwtConversation> {
+public abstract class AGwtConversation<S extends AWebSession> implements ClientDataTransporter,
+		Comparable<AGwtConversation> {
 
 	private static final Log log = Log.get(AGwtConversation.class);
 	private static final TimePeriod DEFAULT_TIMEOUT = TimePeriod.minutes(2);
@@ -49,7 +50,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	 */
 	private ADataTransferObject nextData;
 	private Object nextDataLock = new Object();
-	private Map<E, Long> remoteEntityModificationTimes = Collections.synchronizedMap(new HashMap<E, Long>());
+	private Map<Entity, Long> remoteEntityModificationTimes = Collections.synchronizedMap(new HashMap<Entity, Long>());
 
 	private S session;
 	private int number;
@@ -72,6 +73,11 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		touch();
 	}
 
+	@Override
+	public void sendToClient(Transportable transportable) {
+		throw new RuntimeException("Unsupported Transportable: " + transportable.getClass().getName());
+	}
+
 	public int getNumber() {
 		return number;
 	}
@@ -80,28 +86,28 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		remoteEntityModificationTimes.clear();
 	}
 
-	public final void clearRemoteEntitiesByType(Class<? extends E> type) {
-		List<E> toRemove = new ArrayList<E>();
-		for (E entity : remoteEntityModificationTimes.keySet()) {
+	public final void clearRemoteEntitiesByType(Class<? extends Entity> type) {
+		List<Entity> toRemove = new ArrayList<Entity>();
+		for (Entity entity : remoteEntityModificationTimes.keySet()) {
 			if (entity.getClass().equals(type)) toRemove.add(entity);
 		}
-		for (E entity : toRemove) {
+		for (Entity entity : toRemove) {
 			remoteEntityModificationTimes.remove(entity);
 		}
 	}
 
-	protected boolean isEntityVisible(E entity) {
+	protected boolean isEntityVisible(Entity entity) {
 		return true;
 	}
 
-	protected void filterEntityProperties(E entity, Map propertiesMap) {}
+	protected void filterEntityProperties(Entity entity, Map propertiesMap) {}
 
-	public boolean isAvailableOnClient(E entity) {
+	public boolean isAvailableOnClient(Entity entity) {
 		return remoteEntityModificationTimes.containsKey(entity);
 	}
 
 	@Override
-	public void sendToClient(E entity) {
+	public void sendToClient(Entity entity) {
 		if (entity == null) return;
 		RuntimeTracker rt = new RuntimeTracker();
 		sendToClientInternal(entity);
@@ -112,11 +118,11 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 	}
 
 	@Override
-	public final void sendToClient(Collection<? extends E> entities) {
+	public final void sendToClient(Collection<? extends Entity> entities) {
 		if (entities == null) return;
 		transferBusWarningPosted = false;
 		RuntimeTracker rt = new RuntimeTracker();
-		for (E entity : entities) {
+		for (Entity entity : entities) {
 			sendToClientInternal(entity);
 		}
 		if (rt.getRuntime() > 3000) {
@@ -126,7 +132,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 
 	boolean transferBusWarningPosted;
 
-	private void sendToClientInternal(E entity) {
+	private void sendToClientInternal(Entity entity) {
 		if (entity == null) return;
 
 		if (!Persistence.transactionManager.getCurrentTransaction().containsWithId(entity.getId())) {
@@ -146,20 +152,20 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 			transferBusWarningPosted = true;
 		}
 
-		for (TransferableEntity e : transferBus.getEntities()) {
-			addToNextData((E) e);
+		for (Entity e : transferBus.getEntities()) {
+			addToNextData(e);
 		}
 	}
 
-	public final void sendToClientIfTracking(Collection<? extends E> entities) {
+	public final void sendToClientIfTracking(Collection<? extends Entity> entities) {
 		if (entities == null) return;
-		for (E entity : entities) {
+		for (Entity entity : entities) {
 			sendToClientIfTracking(entity);
 		}
 	}
 
 	@Override
-	public final void sendToClient(E... entities) {
+	public final void sendToClient(Entity... entities) {
 		sendToClient(Arrays.asList(entities));
 	}
 
@@ -168,13 +174,13 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		getNextData().addDeletedEntity(entityId);
 	}
 
-	public void sendToClientIfTracking(E entity) {
+	public void sendToClientIfTracking(Entity entity) {
 		if (entity == null) return;
 		if (!isAvailableOnClient(entity)) return;
 		sendToClient(entity);
 	}
 
-	private void addToNextData(E entity) {
+	private void addToNextData(Entity entity) {
 		Long timeRemote = remoteEntityModificationTimes.get(entity);
 		Long timeLocal = entity.getModificationTime();
 
@@ -183,8 +189,8 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 
 		if (timeLocal.equals(timeRemote)) {
 			if (log.isDebugEnabled())
-				log.debug("Remote entity already up to date:", toString(entity), "for", this, "->", timeLocal, "/",
-					timeRemote);
+				log.debug("RemotEntity entity already up to date:", toString(entity), "for", this, "->", timeLocal,
+					"/", timeRemote);
 			return;
 		}
 
@@ -196,7 +202,7 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 		if (log.isDebugEnabled()) log.debug("Sending", toString(entity), "to", this);
 	}
 
-	private String toString(E entity) {
+	private String toString(Entity entity) {
 		if (entity == null) return "<null>";
 		return Str.getSimpleName(entity.getClass()) + " " + entity.getId() + " " + entity.toString();
 	}
@@ -212,6 +218,11 @@ public abstract class AGwtConversation<S extends AWebSession, E extends Transfer
 
 	public ADataTransferObject getNextData() {
 		return nextData;
+	}
+
+	@Override
+	public ADataTransferObject getDataTransferObject() {
+		return getNextData();
 	}
 
 	public S getSession() {

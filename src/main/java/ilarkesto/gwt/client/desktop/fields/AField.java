@@ -12,11 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.gwt.client.desktop;
+package ilarkesto.gwt.client.desktop.fields;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.gwt.client.Updatable;
+import ilarkesto.gwt.client.desktop.Widgets;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Float;

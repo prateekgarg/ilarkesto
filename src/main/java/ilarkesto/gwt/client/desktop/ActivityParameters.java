@@ -17,6 +17,7 @@ package ilarkesto.gwt.client.desktop;
 import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.time.DateRange;
 import ilarkesto.gwt.client.Gwt;
 
@@ -60,7 +61,7 @@ public class ActivityParameters implements Serializable, IsSerializable {
 		put("value", value);
 	}
 
-	public ActivityParameters(AEntity entity) {
+	public ActivityParameters(Entity entity) {
 		this(entity.getId());
 	}
 
@@ -104,7 +105,7 @@ public class ActivityParameters implements Serializable, IsSerializable {
 
 	// --- helpers ---
 
-	public ActivityParameters put(AEntity entity) {
+	public ActivityParameters put(Entity entity) {
 		return put(Str.lowercaseFirstLetter(Str.getSimpleName(entity.getClass())) + "Id", entity.getId());
 	}
 

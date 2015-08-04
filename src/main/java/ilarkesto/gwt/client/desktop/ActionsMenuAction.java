@@ -12,42 +12,45 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.core.persistance;
+package ilarkesto.gwt.client.desktop;
 
+import ilarkesto.gwt.client.AAction;
+
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-public class TransferBus {
+public class ActionsMenuAction extends AAction {
 
-	private Set<Entity> entities = new HashSet<Entity>();
+	private List<AAction> actions = new ArrayList<AAction>();
 
-	public void add(Entity entity) {
-		if (entity == null) return;
-		boolean added = entities.add(entity);
-		if (added) {
-			entity.collectPassengers(this);
+	public ActionsMenuAction(AAction... actions) {
+		addActions(actions);
+	}
+
+	public void addActions(AAction... actions) {
+		for (AAction action : actions) {
+			this.actions.add(action);
 		}
 	}
 
-	public void add(Entity... entities) {
-		if (entities == null || entities.length == 0) return;
-		for (Entity entity : entities) {
-			if (entity == null) return;
-			add(entity);
-		}
+	public void addActions(Collection<AAction> actions) {
+		this.actions.addAll(actions);
 	}
 
-	public void add(Collection<? extends Entity> entities) {
-		if (entities == null || entities.isEmpty()) return;
-		for (Entity entity : entities) {
-			if (entity == null) return;
-			add(entity);
-		}
+	@Override
+	public String getLabel() {
+		return "Funktionen";
 	}
 
-	public Set<Entity> getEntities() {
-		return entities;
+	@Override
+	protected void onExecute() {
+		new ActionSelectionDialogBox(actions).setPopupPositionAndShow(getClickEvent());
+	}
+
+	@Override
+	protected String getIconName() {
+		return "menu";
 	}
 
 }

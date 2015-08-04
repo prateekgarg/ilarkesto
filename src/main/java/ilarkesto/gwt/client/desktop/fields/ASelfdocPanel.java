@@ -12,22 +12,29 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.gwt.client;
+package ilarkesto.gwt.client.desktop.fields;
 
-import ilarkesto.core.persistance.Entity;
+import ilarkesto.gwt.client.desktop.ACardPanel;
+import ilarkesto.gwt.client.desktop.Widgets;
 
-import java.util.Collection;
+import com.google.gwt.user.client.ui.DialogBox;
 
-public interface ClientDataTransporter {
+public abstract class ASelfdocPanel extends ACardPanel {
 
-	void sendToClient(Entity entity);
+	protected String selfdocKey;
+	protected DialogBox dialog;
 
-	void sendToClient(Entity... entities);
+	public ASelfdocPanel(String selfdocKey) {
+		super();
+		this.selfdocKey = selfdocKey;
+	}
 
-	void sendToClient(Collection<? extends Entity> entities);
+	public void showInDialog() {
+		dialog = Widgets.showDialog(null, this);
+	}
 
-	ADataTransferObject getDataTransferObject();
-
-	void sendToClient(Transportable transportable);
+	public void setDialog(DialogBox dialog) {
+		this.dialog = dialog;
+	}
 
 }

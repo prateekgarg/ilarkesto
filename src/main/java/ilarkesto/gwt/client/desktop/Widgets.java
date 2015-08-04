@@ -23,6 +23,8 @@ import ilarkesto.core.money.MultipleCurrenciesException;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.time.DateRange;
 import ilarkesto.gwt.client.AAction;
+import ilarkesto.gwt.client.desktop.fields.AField;
+import ilarkesto.gwt.client.desktop.fields.ASelfdocPanel;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -520,6 +522,22 @@ public class Widgets {
 		extensionPoint.addGotoEntityClickHandler(focusPanel, entity);
 	}
 
+	public static AAction selfdocAction(String selfdocKey) {
+		return extensionPoint.selfdocAction(selfdocKey);
+	}
+
+	public static ASelfdocPanel selfdocPanel(String selfdocKey) {
+		return extensionPoint.selfdocPanel(selfdocKey);
+	}
+
+	public static Workspace workspace() {
+		return extensionPoint.workspace();
+	}
+
+	public static ASidebarWidget desktopSidebar() {
+		return extensionPoint.desktopSidebar();
+	}
+
 	protected static ExtensionPoint extensionPoint = new ExtensionPoint();
 
 	protected static class ExtensionPoint {
@@ -533,6 +551,18 @@ public class Widgets {
 			return text(object);
 		}
 
+		public ASidebarWidget desktopSidebar() {
+			return new ASidebarWidget();
+		}
+
+		public Workspace workspace() {
+			return new Workspace(new BreadcrumbHelper());
+		}
+
+		public ASelfdocPanel selfdocPanel(String selfdocKey) {
+			throw new RuntimeException("Not implemented in ilarkesto. Widgets.extensionPoint not activated.");
+		}
+
 		public void addGotoEntityClickHandler(FocusPanel focusPanel, AEntity entity) {
 			throw new RuntimeException("Not implemented in ilarkesto. Widgets.extensionPoint not activated.");
 		}
@@ -542,6 +572,9 @@ public class Widgets {
 			throw new RuntimeException("Not implemented in ilarkesto. Widgets.extensionPoint not activated.");
 		}
 
+		public AAction selfdocAction(String selfdocKey) {
+			throw new RuntimeException("Not implemented in ilarkesto. Widgets.extensionPoint not activated.");
+		}
 	}
 
 }

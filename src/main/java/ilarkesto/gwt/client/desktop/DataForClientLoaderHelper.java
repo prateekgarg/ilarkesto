@@ -12,22 +12,17 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
-package ilarkesto.gwt.client;
+package ilarkesto.gwt.client.desktop;
 
-import ilarkesto.core.persistance.Entity;
+import ilarkesto.core.logging.Log;
+import ilarkesto.gwt.client.AGwtApplication;
 
-import java.util.Collection;
+public class DataForClientLoaderHelper {
 
-public interface ClientDataTransporter {
+	private static final Log log = Log.get(DataForClientLoaderHelper.class);
 
-	void sendToClient(Entity entity);
-
-	void sendToClient(Entity... entities);
-
-	void sendToClient(Collection<? extends Entity> entities);
-
-	ADataTransferObject getDataTransferObject();
-
-	void sendToClient(Transportable transportable);
+	public static final void load(DataForClientLoader loader) {
+		AGwtApplication.get().load(loader);
+	}
 
 }

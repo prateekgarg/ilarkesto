@@ -17,7 +17,10 @@ package ilarkesto.gwt.client;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.persistance.Persistence;
+import ilarkesto.gwt.client.desktop.ActivityRuntimeStatistics;
+import ilarkesto.gwt.client.desktop.DataForClientLoader;
 import ilarkesto.gwt.client.persistence.AGwtEntityFactory;
 import ilarkesto.gwt.client.persistence.GwtRpcDatabase;
 
@@ -42,6 +45,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 	protected GwtLogRecordHandler logRecordHandler;
 	private String abortMessage;
 	private GwtRpcDatabase entitiesBackend;
+	public ActivityRuntimeStatistics stats;
 
 	protected abstract void init();
 
@@ -50,6 +54,8 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 	protected abstract void handleUnexpectedError(Throwable ex);
 
 	protected abstract AGwtEntityFactory createEntityFactory();
+
+	public abstract String getTokenForEntityActivity(Entity entity);
 
 	public AGwtApplication() {
 		if (singleton != null) throw new RuntimeException("GWT application already instantiated: " + singleton);
@@ -65,6 +71,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 			}
 		});
 		History.addValueChangeHandler(new HistoryTokenChangedHandler());
+		stats = new ActivityRuntimeStatistics();
 	}
 
 	@Override
@@ -162,6 +169,10 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 			onHistoryTokenChanged(event.getValue());
 		}
 
+	}
+
+	public void load(DataForClientLoader loader) {
+		throw new RuntimeException("Not implemented in " + getClass());
 	}
 
 }
