@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -27,12 +27,16 @@ import ilarkesto.core.persistance.AEntityQuery;
 import ilarkesto.core.persistance.AEntitySetBackReferenceHelper;
 import ilarkesto.core.persistance.AllByTypeQuery;
 import ilarkesto.core.persistance.EditableKeytableValue;
+import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.persistance.KeytableValue;
 import ilarkesto.core.persistance.Transaction;
 import ilarkesto.core.persistance.ValuesCache;
+import ilarkesto.core.persistance.meta.EntityFieldMetadata;
+import ilarkesto.core.persistance.meta.EntityMetadata;
 import ilarkesto.core.search.Searchable;
 import ilarkesto.mda.legacy.model.BackReferenceModel;
+import ilarkesto.mda.legacy.model.BeanModel;
 import ilarkesto.mda.legacy.model.ComputedValueModel;
 import ilarkesto.mda.legacy.model.EntityModel;
 import ilarkesto.mda.legacy.model.ParameterModel;
@@ -55,6 +59,8 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 
 	@Override
 	protected void writeContent() {
+		writeMetadata();
+
 		ln();
 		ln("    protected static final " + Log.class.getName() + " log = " + Log.class.getName() + ".get("
 				+ bean.getName() + ".class);");
@@ -149,6 +155,80 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		}
 
 		super.writeContent();
+	}
+
+	private void writeMetadata() {
+		ln();
+		s("    public static class", bean.getName() + "Metadata");
+		BeanModel superbean = bean.getSuperbean();
+		if (superbean != null) {
+			s(" extends", superbean.getName() + "Metadata");
+		}
+		ln(" implements", EntityMetadata.class.getName(), "{");
+		for (PropertyModel pm : bean.getProperties()) {
+			writeFieldMetadata(pm);
+		}
+		ln();
+		ln("        public static transient", EntityFieldMetadata.class.getName() + "[] fields = new",
+			EntityFieldMetadata.class.getName() + "[] {");
+		boolean first = true;
+		for (PropertyModel pm : bean.getPropertiesAndSuperbeanProperties()) {
+			if (first) {
+				first = false;
+				s("            ");
+			} else {
+				s("            ,");
+			}
+			ln(pm.getName());
+		}
+		ln("        };");
+		ln();
+		ln("        public", EntityFieldMetadata.class.getName() + "[] getFields() {");
+		ln("            return fields;");
+		ln("        }");
+		ln();
+		ln("        public", EntityFieldMetadata.class.getName(), "getField(String fieldName) {");
+		for (PropertyModel pm : bean.getPropertiesAndSuperbeanProperties()) {
+			ln("            if (\"" + pm.getName() + "\".equals(fieldName)) return " + pm.getName() + ";");
+			if (pm.isReference()) {
+				if (pm.isCollection()) {
+					ln("            if (\"" + pm.getName() + "Ids\".equals(fieldName)) return " + pm.getName() + ";");
+				} else {
+					ln("            if (\"" + pm.getName() + "Id\".equals(fieldName)) return " + pm.getName() + ";");
+				}
+			}
+		}
+		ln("            return null;");
+		ln("        }");
+		ln();
+		ln("    }");
+		ln();
+		ln("    public static transient final", bean.getName() + "Metadata metadata = new", bean.getName()
+				+ "Metadata();");
+		ln();
+		annotationOverride();
+		ln("    public", bean.getName() + "Metadata getMetadata() { return metadata; };");
+	}
+
+	private void writeFieldMetadata(PropertyModel pm) {
+		ln();
+		ln("        public static transient final", EntityFieldMetadata.class.getName(), pm.getName(), "= new",
+			EntityFieldMetadata.class.getName() + "() {");
+		ln();
+		ln("            public static final String name = \"" + pm.getName() + "\";");
+		ln("            public static final String label = \"" + pm.getLabel() + "\";");
+		ln();
+		ln("            public String getName() { return name; };");
+		ln();
+		ln("            public String getLabel() { return label; };");
+		ln();
+		ln("            public Object getValue(" + Entity.class.getName() + " entity) {");
+		String accessor = pm.isBoolean() ? "is" : "get";
+		ln("                return ((" + bean.getName() + ")entity)." + accessor
+				+ Str.uppercaseFirstLetter(pm.getName()) + "();");
+		ln("            }");
+		ln();
+		ln("        };");
 	}
 
 	private void writeComputedValue(ComputedValueModel cv) {
