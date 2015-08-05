@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -37,7 +37,8 @@ public class FulltextFeedConverter {
 		// }
 		// System.out.println(converter.feed.createRssText());
 
-		log.info("\n\n >>>", downloadText("http://www.engadget.com/2015/07/06/gopro-hero4-session/?ncid=rss_truncated"));
+		log.info("\n\n >>>",
+			downloadText("http://www.inside-handy.de/tipps/36598-amazon-blitzpreise-samsung-galaxy-s6-zum-sparpreis"));
 
 	}
 
@@ -92,6 +93,8 @@ public class FulltextFeedConverter {
 			text = text.replace("<H" + i, "<H" + iDest).replace("</H" + i, "</H" + iDest);
 		}
 
+		text = text.replace("type=\"text/javascript\"", "type=\"text/unsupported\"");
+
 		return text;
 	}
 
@@ -140,6 +143,12 @@ public class FulltextFeedConverter {
 			text = text.substring(idx);
 			text = Str.removeSuffixStartingWith(text, "</article>");
 			return text;
+		}
+
+		if ((idx = text.indexOf("<div vocab=\"http://schema.org/\" typeof=\"NewsArticle\">")) > 0) {
+			log.debug("div typeof=\"NewsArticle\""); // inside-handy
+			text = text.substring(idx);
+			text = Str.removeSuffixStartingWith(text, "<div class=\"share-container social_bar\"");
 		}
 
 		log.warn("Identification failed:", text);
