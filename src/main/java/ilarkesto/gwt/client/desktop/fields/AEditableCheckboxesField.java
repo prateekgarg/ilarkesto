@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -24,7 +24,6 @@ import ilarkesto.gwt.client.desktop.Widgets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -39,9 +38,15 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 
 	public abstract void applyValue(List<String> selectedKeys);
 
-	public abstract Map<String, ?> createOptions();
+	public abstract String getValueForKey(String key);
+
+	public abstract Collection<String> createOptionKeys();
 
 	public abstract Collection<String> getSelectedOptionKeys();
+
+	public String getDisplayValueForKey(String key) {
+		return getValueForKey(key);
+	}
 
 	@Override
 	public boolean isValueSet() {
@@ -83,11 +88,10 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 	}
 
 	protected String getDisplayText() {
-		Map<String, ?> options = createOptions();
 		Collection<String> selectedKeys = getSelectedOptionKeys();
 		List<String> values = new ArrayList<String>(selectedKeys.size());
 		for (String key : selectedKeys) {
-			values.add(getTextForOption(options.get(key)));
+			values.add(getDisplayValueForKey(key));
 		}
 		String delimiter = isDisplayMultiline() ? "\n" : ", ";
 		String displayText = Str.concat(values, delimiter);
@@ -104,10 +108,10 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 
 		public Table() {
 			Collection<String> selectedKeys = getSelectedOptionKeys();
-			Map<String, ?> options = createOptions();
-			items = new ArrayList<Item>(options.size());
-			for (Map.Entry<String, ?> entry : options.entrySet()) {
-				Item item = new Item(entry.getKey(), entry.getValue());
+			Collection<String> optionKeys = createOptionKeys();
+			items = new ArrayList<Item>(optionKeys.size());
+			for (String key : optionKeys) {
+				Item item = new Item(key, getValueForKey(key));
 				items.add(item);
 				if (selectedKeys.contains(item.key)) item.selected = true;
 			}
