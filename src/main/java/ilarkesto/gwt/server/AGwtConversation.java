@@ -86,6 +86,10 @@ public abstract class AGwtConversation<S extends AWebSession> implements ClientD
 		remoteEntityModificationTimes.clear();
 	}
 
+	public final void clearRemoteEntity(Entity entity) {
+		remoteEntityModificationTimes.remove(entity);
+	}
+
 	public final void clearRemoteEntitiesByType(Class<? extends Entity> type) {
 		List<Entity> toRemove = new ArrayList<Entity>();
 		for (Entity entity : remoteEntityModificationTimes.keySet()) {
