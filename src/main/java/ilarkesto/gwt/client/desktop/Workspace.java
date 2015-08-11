@@ -105,7 +105,7 @@ public class Workspace {
 		return titleText;
 	}
 
-	private void setBreadcrumb(List<AEntity> entities) {
+	public void setBreadcrumb(List<? extends AEntity> entities) {
 		breadcrumb.clear();
 		boolean first = true;
 		for (AEntity entity : entities) {

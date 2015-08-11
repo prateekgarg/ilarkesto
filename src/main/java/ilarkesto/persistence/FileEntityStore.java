@@ -103,8 +103,9 @@ public class FileEntityStore implements EntityStore {
 
 		// create operations
 		List<Operation> operations = new ArrayList<FileEntityStore.Operation>(modified.size() + deletedIds.size());
-		for (AEntity entity : modified) {
+		for (AEntity entity : new HashSet<AEntity>(modified)) {
 			if (entity instanceof Transient) continue;
+			if (deletedIds.contains(entity.getId())) continue;
 			operations.add(new SaveOperation(entity));
 		}
 
