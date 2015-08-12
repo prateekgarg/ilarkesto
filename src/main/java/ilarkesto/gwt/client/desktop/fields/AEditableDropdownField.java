@@ -1,23 +1,24 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.gwt.client.desktop.fields;
 
+import ilarkesto.core.base.EnumMapper;
 import ilarkesto.core.base.Utl;
 import ilarkesto.gwt.client.desktop.Widgets;
 
-import java.util.Map;
+import java.util.Collection;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -38,9 +39,9 @@ public abstract class AEditableDropdownField extends AEditableField {
 
 	public abstract void applyValue(String value);
 
-	public abstract Map<String, String> createOptions();
-
 	public abstract String getSelectedOptionKey();
+
+	public abstract EnumMapper<String, String> getOptions();
 
 	@Override
 	public boolean isValueSet() {
@@ -73,10 +74,10 @@ public abstract class AEditableDropdownField extends AEditableField {
 			i++;
 		}
 
-		Map<String, String> options = createOptions();
-		for (Map.Entry<String, String> entry : options.entrySet()) {
-			String key = entry.getKey();
-			String label = entry.getValue();
+		EnumMapper<String, String> options = getOptions();
+		Collection<String> keys = options.getKeys();
+		for (String key : keys) {
+			String label = options.getValueForKey(key);
 			listBox.addItem(label, key);
 			if (Utl.equals(selectedKey, key)) selectedIndex = i;
 			i++;
@@ -96,7 +97,7 @@ public abstract class AEditableDropdownField extends AEditableField {
 		// }
 		// });
 
-		if (options.size() < 3) {
+		if (keys.size() < 3) {
 			listBox.addChangeHandler(new ChangeHandler() {
 
 				@Override
@@ -146,7 +147,7 @@ public abstract class AEditableDropdownField extends AEditableField {
 		String value = null;
 		String key = getSelectedOptionKey();
 		if (key != null) {
-			value = createOptions().get(key);
+			value = getOptions().getValueForKey(key);
 			if (value == null) value = "[" + key + "]";
 		}
 		return new Label(prepareValueForDisplay(key, value));
