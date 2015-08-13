@@ -40,7 +40,7 @@ public class JuraNormReference {
 		String orig = s;
 
 		s = s.trim();
-		s = Str.removePrefix(s, "§");
+		if (s.contains("§")) s = s.substring(s.indexOf('§') + 1).trim();
 		s = Str.removePrefix(s, "§");
 		s = s.trim();
 
