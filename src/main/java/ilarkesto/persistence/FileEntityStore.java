@@ -363,7 +363,8 @@ public class FileEntityStore implements EntityStore {
 		}
 
 		public void wirteTemporaryFile() {
-			if (!tmpFile.getParentFile().exists()) tmpFile.getParentFile().mkdirs();
+			File parentDir = tmpFile.getParentFile();
+			if (!parentDir.exists()) parentDir.mkdirs();
 			BufferedOutputStream out;
 			try {
 				out = new BufferedOutputStream(new FileOutputStream(tmpFile));
@@ -373,7 +374,9 @@ public class FileEntityStore implements EntityStore {
 			beanSerializer.serialize(entity, out);
 			IO.close(out);
 
-			if (!tmpFile.exists()) throw new RuntimeException("Writing entity file failed: " + tmpFile.getPath());
+			if (!tmpFile.exists())
+				throw new RuntimeException("Writing entity file for " + entity.getClass().getSimpleName() + ":"
+						+ entity.getId() + " failed: " + tmpFile.getPath());
 
 			if (tmpFile.length() < 1)
 				throw new RuntimeException("Writing entity file caused empty file: " + tmpFile.getPath());
