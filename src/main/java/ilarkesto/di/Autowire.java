@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * Utility class for autowiering
- * 
+ *
  * @author wko
  */
 public class Autowire {
@@ -42,7 +42,7 @@ public class Autowire {
 	 * Autowire the class <code>clazz</code> with beans provided by <code>beanProvider</code>. Use the given
 	 * <code>objectStringMapper</code> to convert from/to strings if required. For each bean provided by
 	 * <code>beanProvider</code> a <em>static</em> setter is called on the given class <code>clazz</code>.
-	 * 
+	 *
 	 * @param objectStringMapper optional
 	 * @return the given <code>clazz</code>
 	 */
@@ -73,24 +73,18 @@ public class Autowire {
 	 * Autowire the object <code>bean</code> with beans provided by <code>beanProvider</code>. Use the given
 	 * <code>objectStringMapper</code> to convert from/to strings if required. For each bean provided by
 	 * <code>beanProvider</code> a setter is called on the given object <code>bean</code>.
-	 * 
+	 *
 	 * @param objectStringMapper optional
 	 * @return the given <code>bean</code>
 	 */
 	public static <T> T autowire(T bean, final BeanProvider beanProvider, final ObjectStringMapper objectStringMapper) {
-		boolean xxx = bean.getClass().getSimpleName().endsWith("Action");
-		if (xxx) log.info("Autowiring:", bean, "->", beanProvider);
 
 		final Set<String> availableBeanNames = beanProvider.beanNames();
 		Class beanClass = bean.getClass();
 
 		List<Method> setters = Reflect.getSetters(beanClass);
-		if (xxx) log.info("    properties:", setters);
 		for (Method setter : setters) {
 			String propertyName = Reflect.getPropertyNameFromSetter(setter);
-			if (xxx)
-				log.info("         propertyName:", propertyName, " setter:", setter, " availableBeanNames.contains():",
-					availableBeanNames.contains(propertyName));
 			if (setter != null) {
 				if (setter.getAnnotation(AutowireHostile.class) != null) continue;
 				if (availableBeanNames.contains(propertyName)) {

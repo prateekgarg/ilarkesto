@@ -161,7 +161,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		ln();
 		s("    public static class", bean.getName() + "Metadata");
 		BeanModel superbean = bean.getSuperbean();
-		if (superbean != null) {
+		if (superbean != null && !superbean.getName().equals("AEntity")) {
 			s(" extends", superbean.getName() + "Metadata");
 		}
 		ln(" implements", EntityMetadata.class.getName(), "{");

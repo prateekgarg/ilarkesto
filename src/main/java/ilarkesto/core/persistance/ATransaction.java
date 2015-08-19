@@ -61,7 +61,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	void commit() {
 		// if (autoCommit) throw new IllegalStateException("Transaction is autoCommit");
 		if (!isEmpty()) {
-			log.info("commit()", toString());
+			log.info(name, "commit()", toString());
 			checkWritable();
 			if (ensureIntegrityOnCommit) ensureIntegrityUntilUnchanged();
 			getBackend().update(modified.getAllAsList(), deleted, modifiedPropertiesByEntityId, new CommitCallback());
@@ -95,7 +95,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 				}
 
 				Set<Entity> referencedEntities = deletedEntity.getReferencedEntities();
-				log.debug("Ensuring integrity for referenced entities of deleted entity:",
+				log.debug(name, "Ensuring integrity for referenced entities of deleted entity:",
 					Persistence.toStringWithTypeAndId(deletedEntity), referencedEntities);
 
 				for (Entity referencedEntity : referencedEntities) {
@@ -122,7 +122,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	}
 
 	void rollback() {
-		log.info("rollback()", toString());
+		log.info(name, "rollback()", toString());
 		Persistence.transactionManager.transactionFinished(this);
 		// getBackend().onTransactionFinished(this);
 		modified = null;
@@ -130,7 +130,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 	}
 
 	public void persist(E entity) {
-		log.info("PERSIST", toString(entity));
+		log.info(name, "PERSIST", toString(entity));
 		checkWritable();
 		if (autoCommit) {
 			getBackend().update(Arrays.asList(entity), null, updatePropertiesMap(null, entity), new CommitCallback());
@@ -146,7 +146,7 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 		checkWritable();
 		if (ignoreModificationEvents) return;
 		if (!containsWithId(entity.getId())) return;
-		log.info("MODIFIED", toString(entity), field, value);
+		log.info(name, "MODIFIED", toString(entity), field, value);
 		if (autoCommit) {
 			getBackend().update(Arrays.asList(entity), null, updatePropertiesMap(null, entity, field, value),
 				new CommitCallback());
@@ -179,13 +179,13 @@ public abstract class ATransaction<E extends Entity> implements EntitiesProvider
 
 	public void delete(String entityId) {
 		checkWritable();
-		log.info("DELETE", entityId);
+		log.info(name, "DELETE", entityId);
 		if (autoCommit) {
 			getBackend().update(null, Arrays.asList(entityId), null, new CommitCallback());
 			return;
 		}
 		if (deleted.contains(entityId)) {
-			log.debug("Already deleted:", entityId);
+			log.debug(name, "Already deleted:", entityId);
 			return;
 		}
 		deleted.add(entityId);
