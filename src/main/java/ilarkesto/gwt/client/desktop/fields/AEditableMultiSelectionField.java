@@ -43,7 +43,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class AEditableCheckboxesField extends AEditableField {
+public abstract class AEditableMultiSelectionField extends AEditableField {
 
 	private boolean showAsTable = false;
 
@@ -99,7 +99,7 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 		return showAsTable || optionKeys.size() >= 23;
 	}
 
-	public AEditableCheckboxesField setShowAsTable(boolean showAsTable) {
+	public AEditableMultiSelectionField setShowAsTable(boolean showAsTable) {
 		this.showAsTable = showAsTable;
 		return this;
 	}
