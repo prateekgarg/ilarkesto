@@ -1000,4 +1000,14 @@ public class Str {
 		return key.replace("..", "__");
 	}
 
+	public static int getTotalLength(List<String> values) {
+		if (values == null || values.isEmpty()) return 0;
+		int len = 0;
+		for (String s : values) {
+			if (s == null) continue;
+			len += s.length();
+		}
+		return len;
+	}
+
 }

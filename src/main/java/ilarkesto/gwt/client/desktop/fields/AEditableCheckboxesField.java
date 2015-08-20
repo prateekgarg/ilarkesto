@@ -17,22 +17,37 @@ package ilarkesto.gwt.client.desktop.fields;
 import ilarkesto.core.base.Str;
 import ilarkesto.gwt.client.AAction;
 import ilarkesto.gwt.client.desktop.AObjectTable;
+import ilarkesto.gwt.client.desktop.ActionButton;
 import ilarkesto.gwt.client.desktop.BuilderPanel;
 import ilarkesto.gwt.client.desktop.Colors;
 import ilarkesto.gwt.client.desktop.Widgets;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class AEditableCheckboxesField extends AEditableField {
+
+	private boolean showAsTable = false;
+
+	private Map<String, CheckBox> checkboxes;
 
 	private Table table;
 
@@ -56,13 +71,86 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 
 	@Override
 	public void trySubmit() throws RuntimeException {
-		applyValue(table.getSelectedKeys());
+		List<String> selectedKeys = table == null ? getSelectedKeysFromCheckboxes() : table.getSelectedKeys();
+		applyValue(selectedKeys);
+	}
+
+	private List<String> getSelectedKeysFromCheckboxes() {
+		List<String> selectedKeys = new ArrayList<String>();
+		for (Map.Entry<String, CheckBox> entry : checkboxes.entrySet()) {
+			String key = entry.getKey();
+			CheckBox checkBox = entry.getValue();
+			if (checkBox.getValue().booleanValue()) selectedKeys.add(key);
+		}
+		return selectedKeys;
 	}
 
 	@Override
 	public IsWidget createEditorWidget() {
-		table = new Table();
-		return table;
+		Collection<String> optionKeys = createOptionKeys();
+		if (isShowAsTable(optionKeys)) {
+			table = new Table(optionKeys);
+			return table;
+		}
+		return createCheckboxesEditorWidget(optionKeys);
+	}
+
+	protected boolean isShowAsTable(Collection<String> optionKeys) {
+		return showAsTable || optionKeys.size() >= 23;
+	}
+
+	public AEditableCheckboxesField setShowAsTable(boolean showAsTable) {
+		this.showAsTable = showAsTable;
+		return this;
+	}
+
+	private IsWidget createCheckboxesEditorWidget(Collection<String> optionKeys) {
+		checkboxes = new LinkedHashMap<String, CheckBox>();
+
+		boolean horizontal = isHorizontal();
+		Panel panel = horizontal ? new FlowPanel() : new VerticalPanel();
+
+		Collection<String> selectedKeys = getSelectedOptionKeys();
+
+		int inRow = 0;
+
+		for (String key : optionKeys) {
+			String label = getTextForOption(getValueForKey(key));
+			CheckBox checkBox = new CheckBox(label);
+			checkBox.getElement().setId(getId() + "_checkbox_" + key);
+			checkBox.setValue(selectedKeys.contains(key));
+			if (getEditVetoMessage() == null) {} else {
+				checkBox.setEnabled(false);
+				checkBox.setTitle(getEditVetoMessage());
+			}
+			updateStyle(checkBox);
+			checkBox.addValueChangeHandler(new CheckboxChangeHandler(checkBox));
+			if (horizontal) {
+				Style style = checkBox.getElement().getStyle();
+				style.setProperty("minWidth", "100px");
+				style.setDisplay(Display.BLOCK);
+				style.setFloat(com.google.gwt.dom.client.Style.Float.LEFT);
+				style.setWidth(220, Unit.PX);
+				style.setMarginRight(Widgets.defaultSpacing, Unit.PX);
+			}
+			checkboxes.put(key, checkBox);
+			panel.add(checkBox);
+			inRow++;
+			if (horizontal && inRow >= 3) {
+				panel.add(new HTML("<br>"));
+				inRow = 0;
+			}
+		}
+		if (horizontal) {
+			panel.add(Widgets.clear());
+		}
+
+		if (optionKeys.size() >= 10) {
+			panel.add(new ActionButton(new SelectAllCheckboxesAction()));
+			panel.add(new ActionButton(new DeselectAllCheckboxesAction()));
+		}
+
+		return panel;
 	}
 
 	private String getTextForOption(Object value) {
@@ -93,22 +181,21 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 		for (String key : selectedKeys) {
 			values.add(getDisplayValueForKey(key));
 		}
-		String delimiter = isDisplayMultiline() ? "\n" : ", ";
+		String delimiter = isDisplayMultiline(values) ? "\n" : ", ";
 		String displayText = Str.concat(values, delimiter);
 		return displayText;
 	}
 
-	protected boolean isDisplayMultiline() {
-		return false;
+	protected boolean isDisplayMultiline(List<String> values) {
+		return Str.getTotalLength(values) >= 120;
 	}
 
 	class Table extends AObjectTable<Item> {
 
 		private ArrayList<Item> items;
 
-		public Table() {
+		public Table(Collection<String> optionKeys) {
 			Collection<String> selectedKeys = getSelectedOptionKeys();
-			Collection<String> optionKeys = createOptionKeys();
 			items = new ArrayList<Item>(optionKeys.size());
 			for (String key : optionKeys) {
 				Item item = new Item(key, getValueForKey(key));
@@ -120,7 +207,7 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 		@Override
 		protected void init(BuilderPanel wrapper) {
 			super.init(wrapper);
-			wrapper.createTitle("", new SelectAllAction(), new DeselectAllAction());
+			wrapper.createTitle("", new SelectAllInTableAction(), new DeselectAllInTableAction());
 
 			add(new AColumn() {
 
@@ -189,7 +276,7 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 			return ret;
 		}
 
-		class SelectAllAction extends AAction {
+		class SelectAllInTableAction extends AAction {
 
 			@Override
 			public String getLabel() {
@@ -210,7 +297,7 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 			}
 		}
 
-		class DeselectAllAction extends AAction {
+		class DeselectAllInTableAction extends AAction {
 
 			@Override
 			public String getLabel() {
@@ -245,6 +332,64 @@ public abstract class AEditableCheckboxesField extends AEditableField {
 			this.value = value;
 		}
 
+	}
+
+	class SelectAllCheckboxesAction extends AAction {
+
+		@Override
+		public String getLabel() {
+			return "Alle auswählen";
+		}
+
+		@Override
+		protected String getIconName() {
+			return "select_all";
+		}
+
+		@Override
+		protected void onExecute() {
+			Boolean value = true;
+			for (CheckBox checkbox : checkboxes.values()) {
+				checkbox.setValue(value);
+			}
+		}
+	}
+
+	class DeselectAllCheckboxesAction extends AAction {
+
+		@Override
+		public String getLabel() {
+			return "Keine auswählen";
+		}
+
+		@Override
+		protected String getIconName() {
+			return "deselect_all";
+		}
+
+		@Override
+		protected void onExecute() {
+			Boolean value = false;
+			for (CheckBox checkbox : checkboxes.values()) {
+				checkbox.setValue(value);
+			}
+		}
+
+	}
+
+	class CheckboxChangeHandler implements ValueChangeHandler<Boolean> {
+
+		private CheckBox checkBox;
+
+		public CheckboxChangeHandler(CheckBox checkBox) {
+			super();
+			this.checkBox = checkBox;
+		}
+
+		@Override
+		public void onValueChange(ValueChangeEvent<Boolean> event) {
+			updateStyle(checkBox);
+		}
 	}
 
 }
