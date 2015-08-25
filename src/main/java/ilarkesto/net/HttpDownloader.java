@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public abstract class HttpDownloader {
+public class HttpDownloader {
 
 	public static Class<? extends HttpDownloader> defaultType = HttpDownloader.class;
 
@@ -29,6 +29,10 @@ public abstract class HttpDownloader {
 	private String baseUrl;
 
 	private boolean sslServerCheckingDisabled = true;
+
+	public HttpDownloader() {
+		System.out.println("instantiated");
+	}
 
 	public static HttpDownloader create() {
 		return Reflect.newInstance(defaultType);
