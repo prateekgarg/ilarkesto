@@ -18,7 +18,7 @@ import java.util.zip.ZipInputStream;
 
 public abstract class HttpDownloader {
 
-	public static Class<? extends HttpDownloader> defaultType = ApacheHttpDownloader.class;
+	public static Class<? extends HttpDownloader> defaultType = HttpDownloader.class;
 
 	private static final Log log = Log.get(HttpDownloader.class);
 
