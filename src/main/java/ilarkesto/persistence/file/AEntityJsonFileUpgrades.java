@@ -89,6 +89,12 @@ public abstract class AEntityJsonFileUpgrades {
 		return false;
 	}
 
+	protected boolean addNew(JsonObject json, String fieldName, boolean value) {
+		if (json.contains(fieldName)) return false;
+		json.put(fieldName, value);
+		return true;
+	}
+
 	protected boolean remove(JsonObject json, String... fields) {
 		boolean removed = false;
 		for (String field : fields) {
