@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -237,7 +237,14 @@ public class DateRange implements Comparable<DateRange>, Serializable, Formatabl
 	}
 
 	public DateRange moveToYear(int year) {
-		return new DateRange(new Date(year, start.month, start.day), new Date(year, end.month, end.day));
+		Date newStart = new Date(year, start.month, start.day);
+		Date newEnd = new Date(year, end.month, end.day);
+		if (newEnd.isBefore(newStart)) newEnd = new Date(year + 1, end.month, end.day);
+		return new DateRange(newStart, newEnd);
+	}
+
+	public DateRange moveToYears(int startYear, int endYear) {
+		return new DateRange(new Date(startYear, start.month, start.day), new Date(endYear, end.month, end.day));
 	}
 
 	// --- creates ---
