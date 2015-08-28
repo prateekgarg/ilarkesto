@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -220,6 +220,12 @@ public class Utl {
 		return result;
 	}
 
+	public static <T> List<T> sortReverse(Collection<T> collection, Comparator<T> comparator) {
+		List<T> result = new ArrayList<T>(collection);
+		Collections.sort(result, reverseComparator(comparator));
+		return result;
+	}
+
 	public static int hashCode(Object... objects) {
 		int hashCode = 23;
 		for (Object object : objects) {
@@ -367,6 +373,16 @@ public class Utl {
 
 	public static int compareReverse(Object a, Object b) {
 		return compare(a, b) * -1;
+	}
+
+	public static <A> Comparator<A> reverseComparator(final Comparator<A> comparator) {
+		return new Comparator<A>() {
+
+			@Override
+			public int compare(A o1, A o2) {
+				return comparator.compare(o2, o1);
+			}
+		};
 	}
 
 	public static int parseHex(String hex) {
