@@ -7,6 +7,9 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-5.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-commons-5.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-util-5.0.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh-2.0b5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/codemirror_V-0.4-gwt16.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.10.jar"/>
@@ -21,14 +24,23 @@
 	<classpathentry exported="true" kind="lib" path="lib/google-api-client-1.19.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/guava-18.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/guice-4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwt-codeserver-2.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwt-dev-2.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwt-dnd-3.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwt-servlet-2.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwt-user-2.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gwtupload-1.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpcore-4.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpunit-1.6.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/itext-asian-5.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/itext-pdfa-5.5.6-1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/itext-xtra-5.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/itextpdf-5.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaudiotagger-2.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.servlet-api-3.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcip-annotations-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcommander-1.48.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.23.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdom2-2.0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jfreechart-1.0.19.jar"/>
@@ -41,19 +53,12 @@
 	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-schemas-3.12.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/scribe-1.3.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/testng-6.9.4.jar"/>
-	<classpathentry kind="lib" path="lib/jcommander-1.48.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/tidy.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/validation-api-1.1.0.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/velocity-1.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xmlbeans-2.6.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javax.mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xercesImpl-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xml-apis-1.4.01.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlbeans-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xstream-1.4.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gwt-dnd-3.3.0.jar"/>
-	<classpathentry kind="lib" path="lib/gwt-servlet-2.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gwt-user-2.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gwtupload-1.0.3.jar"/>
-	<classpathentry kind="lib" path="lib/gwt-codeserver-2.7.0.jar"/>
-	<classpathentry kind="lib" path="lib/gwt-dev-2.7.0.jar"/>
-	<classpathentry kind="lib" path="lib/httpcore-4.3.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
