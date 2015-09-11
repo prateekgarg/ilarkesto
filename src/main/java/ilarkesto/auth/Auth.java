@@ -135,7 +135,7 @@ public class Auth {
 	}
 
 	private static String hashPassword(String userPasswordSalt, String password) {
-		return PasswordHasher.hashPassword(password, userPasswordSalt, "SHA-256:");
+		return PasswordHasher.hashPasswordWithSha256(password, userPasswordSalt, "SHA-256:");
 	}
 
 	public static boolean isVisible(Object entity, AuthUser user) {

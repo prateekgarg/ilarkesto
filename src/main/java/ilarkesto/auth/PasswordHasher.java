@@ -19,17 +19,22 @@ import java.security.NoSuchAlgorithmException;
 
 public class PasswordHasher {
 
-	private static final String ALGORITHM = "SHA-256";
+	public static final String ALGORITHM_SHA_256 = "SHA-256";
 
-	public static String hashPassword(String password, String salt, String prefix) {
+	public static String hashPasswordWithSha256(String password, String salt, String prefix) {
+		return hashPassword(ALGORITHM_SHA_256, password, salt, prefix);
+	}
+
+	public static String hashPassword(String algorithm, String password, String salt, String prefix) {
 		if (salt == null) salt = "";
 		MessageDigest md;
 		try {
-			md = MessageDigest.getInstance(ALGORITHM);
+			md = MessageDigest.getInstance(algorithm);
 		} catch (NoSuchAlgorithmException ex) {
-			throw new RuntimeException("Unsupported algorithm: " + ALGORITHM, ex);
+			throw new RuntimeException("Unsupported algorithm: " + algorithm, ex);
 		}
-		md.update((password + salt).getBytes());
+		if (salt != null) password += salt;
+		md.update(password.getBytes());
 
 		byte byteData[] = md.digest();
 
@@ -42,7 +47,7 @@ public class PasswordHasher {
 	}
 
 	public static String hashPassword(String password, String salt) {
-		return hashPassword(password, salt, null);
+		return hashPasswordWithSha256(password, salt, null);
 	}
 
 }

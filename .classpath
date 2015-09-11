@@ -60,5 +60,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/xml-apis-1.4.01.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlbeans-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xstream-1.4.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jbcrypt-0.3m.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

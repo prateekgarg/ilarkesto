@@ -139,7 +139,8 @@ public abstract class AEditableTextBoxField<T> extends AEditableField {
 
 	@Override
 	public IsWidget createDisplayWidget() {
-		String text = isMasked() ? "**********" : getDisplayValue();
+		String text = getDisplayValue();
+		if (text != null && isMasked()) text = "**********";
 		if (text != null) {
 			String suffix = getSuffix();
 			if (suffix != null) text += " " + suffix;
