@@ -23,7 +23,7 @@ import ilarkesto.io.StringOutputStream;
 import ilarkesto.json.JsonObject;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -55,17 +55,24 @@ public class FtpClient {
 		}
 	}
 
-	public FTPFile[] listFiles() {
+	public List<FTPFile> listFiles() {
+		ArrayList<FTPFile> ret = new ArrayList<FTPFile>();
 		try {
-			return client.listFiles();
+			for (FTPFile file : client.listFiles()) {
+				String name = file.getName();
+				if (name.equals(".")) continue;
+				if (name.equals("..")) continue;
+				ret.add(file);
+			}
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+		return ret;
 	}
 
 	public List<FTPFile> listFilesSortedByTime() {
-		FTPFile[] files = listFiles();
-		return Utl.sort(Arrays.asList(files), FtpClient.FILES_BY_TIME_COMPARATOR);
+		List<FTPFile> files = listFiles();
+		return Utl.sort(files, FtpClient.FILES_BY_TIME_COMPARATOR);
 	}
 
 	public JsonObject downloadJson(String filename) {
@@ -101,7 +108,7 @@ public class FtpClient {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		if (!created) throw new RuntimeException("Creating directory failed: " + name);
+		// if (!created) throw new RuntimeException("Creating directory failed: " + name);
 	}
 
 	public void changeDir(String path) {
