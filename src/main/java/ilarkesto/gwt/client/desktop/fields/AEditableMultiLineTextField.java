@@ -69,8 +69,8 @@ public abstract class AEditableMultiLineTextField extends AEditableField {
 			textArea.setTitle(getEditVetoMessage());
 		}
 
-		if (getMaxNumberOfCharacters() > -1) {
-			textArea.getElement().setAttribute("maxlength", String.valueOf(getMaxNumberOfCharacters()));
+		if (getMaxLength() > -1) {
+			textArea.getElement().setAttribute("maxlength", String.valueOf(getMaxLength()));
 		}
 
 		return textArea;
@@ -101,7 +101,7 @@ public abstract class AEditableMultiLineTextField extends AEditableField {
 		return null;
 	}
 
-	public int getMaxNumberOfCharacters() {
+	public int getMaxLength() {
 		return -1;
 	}
 
