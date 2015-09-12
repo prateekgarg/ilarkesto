@@ -68,6 +68,11 @@ public abstract class AEditableMultiLineTextField extends AEditableField {
 			textArea.setEnabled(false);
 			textArea.setTitle(getEditVetoMessage());
 		}
+
+		if (getMaxNumberOfCharacters() > -1) {
+			textArea.getElement().setAttribute("maxlength", String.valueOf(getMaxNumberOfCharacters()));
+		}
+
 		return textArea;
 	}
 
@@ -94,6 +99,10 @@ public abstract class AEditableMultiLineTextField extends AEditableField {
 
 	public String getAlternateValueIfValueIsNull() {
 		return null;
+	}
+
+	public int getMaxNumberOfCharacters() {
+		return -1;
 	}
 
 	private class EnterKeyUpHandler implements KeyUpHandler {
