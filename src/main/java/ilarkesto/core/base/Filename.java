@@ -59,4 +59,15 @@ public class Filename {
 		return filename;
 	}
 
+	public boolean isImage() {
+		if (suffix == null && prefix == null) parse();
+		if (suffix == null) return false;
+		String type = suffix.toLowerCase();
+		if (type.equals("png")) return true;
+		if (type.equals("jpg")) return true;
+		if (type.equals("gif")) return true;
+		if (type.equals("jpeg")) return true;
+		return false;
+	}
+
 }
