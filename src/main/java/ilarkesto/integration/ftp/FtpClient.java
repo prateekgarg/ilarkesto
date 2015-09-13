@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -22,6 +22,9 @@ import ilarkesto.io.IO.StringInputStream;
 import ilarkesto.io.StringOutputStream;
 import ilarkesto.json.JsonObject;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -93,10 +96,39 @@ public class FtpClient {
 	}
 
 	public void uploadText(String path, String text) {
+		log.debug("Upload:", path);
 		try {
 			client.storeFile(path, new StringInputStream(text));
 		} catch (IOException ex) {
 			throw new RuntimeException("Uploading failed: " + path, ex);
+		}
+	}
+
+	public void uploadFile(String path, File file) {
+		log.debug("Upload:", path);
+		if (!file.exists()) return;
+		try {
+			client.storeFile(path, new BufferedInputStream(new FileInputStream(file)));
+		} catch (IOException ex) {
+			throw new RuntimeException("Uploading failed: " + path + " <- " + file.getAbsolutePath(), ex);
+		}
+	}
+
+	public void uploadFileIfNotThere(String name, File file) {
+		log.debug("Upload:", name);
+		if (!file.exists()) return;
+
+		for (FTPFile ftpFile : listFiles()) {
+			if (!ftpFile.getName().equals(name)) continue;
+			// if (ftpFile.getSize() != file.length()) continue;
+			log.debug("  Skipping upload, already there:", name);
+			return;
+		}
+
+		try {
+			client.storeFile(name, new BufferedInputStream(new FileInputStream(file)));
+		} catch (IOException ex) {
+			throw new RuntimeException("Uploading failed: " + name + " <- " + file.getAbsolutePath(), ex);
 		}
 	}
 
