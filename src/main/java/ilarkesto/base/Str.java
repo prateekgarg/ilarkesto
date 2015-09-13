@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
@@ -544,30 +543,6 @@ public class Str extends ilarkesto.core.base.Str {
 			if (s.indexOf(c) < 0) return c;
 		}
 		return Character.MAX_VALUE;
-	}
-
-	public static String constructUrl(String base, Map parameters) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(base);
-		if (parameters != null && parameters.size() > 0) {
-			boolean first = true;
-			Set<Map.Entry> entries = parameters.entrySet();
-			for (Map.Entry entry : entries) {
-				if (first) {
-					sb.append('?');
-					first = false;
-				} else {
-					sb.append("&");
-				}
-
-				Object key = entry.getKey();
-				Object value = entry.getValue();
-				sb.append(key);
-				sb.append("=");
-				if (value != null) sb.append(encodeUrlParameter(value.toString()));
-			}
-		}
-		return sb.toString();
 	}
 
 	public static String getPrimitiveTypeName(String className) {

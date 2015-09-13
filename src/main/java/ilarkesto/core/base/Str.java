@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -287,6 +287,30 @@ public class Str {
 		if (s.length() > maxlength) {
 			return s.substring(0, maxlength - fillerOnCut.length()) + fillerOnCut;
 		} else return s;
+	}
+
+	public static String constructUrl(String base, Map parameters) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(base);
+		if (parameters != null && parameters.size() > 0) {
+			boolean first = true;
+			Set<Map.Entry> entries = parameters.entrySet();
+			for (Map.Entry entry : entries) {
+				if (first) {
+					sb.append('?');
+					first = false;
+				} else {
+					sb.append("&");
+				}
+
+				Object key = entry.getKey();
+				Object value = entry.getValue();
+				sb.append(key);
+				sb.append("=");
+				if (value != null) sb.append(encodeUrlParameter(value.toString()));
+			}
+		}
+		return sb.toString();
 	}
 
 	public static String encodeUrlParameter(String s) {
@@ -937,7 +961,7 @@ public class Str {
 		 * to the left, up one, and diagonally up and to the left of the current cost count being calculated).
 		 * (Note that the arrays aren't really copied anymore, just switched...this is clearly much better
 		 * than cloning an array or doing a System.arraycopy() each time through the outer loop.)
-		 *
+		 * 
 		 * Effectively, the difference between the two implementations is this one does not cause an out of
 		 * memory condition when calculating the LD over two very large strings.
 		 */
