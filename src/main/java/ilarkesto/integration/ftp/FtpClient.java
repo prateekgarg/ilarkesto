@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -18,6 +18,7 @@ import ilarkesto.core.auth.LoginData;
 import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
+import ilarkesto.io.IO;
 import ilarkesto.io.IO.StringInputStream;
 import ilarkesto.io.StringOutputStream;
 import ilarkesto.json.JsonObject;
@@ -26,6 +27,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -191,6 +193,9 @@ public class FtpClient {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+
+		client.setAutodetectUTF8(false);
+		client.setCharset(Charset.forName(IO.UTF_8));
 	}
 
 	public static Comparator<FTPFile> FILES_BY_TIME_COMPARATOR = new Comparator<FTPFile>() {

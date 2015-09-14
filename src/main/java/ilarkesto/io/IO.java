@@ -49,6 +49,7 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -1548,20 +1549,14 @@ public abstract class IO {
 		}
 	}
 
-	public static class StringInputStream extends InputStream {
+	public static class StringInputStream extends ByteArrayInputStream {
 
-		String s;
-		int len;
-		int index;
-
-		public StringInputStream(String s) {
-			this.s = s;
-			len = s.length();
+		public StringInputStream(String s, Charset charset) {
+			super(s.getBytes(charset));
 		}
 
-		@Override
-		public int read() {
-			return index >= len ? -1 : s.charAt(index++);
+		public StringInputStream(String s) {
+			this(s, Charset.defaultCharset());
 		}
 
 	}
