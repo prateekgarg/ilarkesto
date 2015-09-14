@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -16,6 +16,7 @@ package ilarkesto.integration.ftp;
 
 import ilarkesto.core.auth.LoginData;
 import ilarkesto.core.auth.LoginDataProvider;
+import ilarkesto.core.base.Filepath;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
@@ -60,10 +61,10 @@ public class FtpClient {
 		}
 	}
 
-	public List<FTPFile> listFiles() {
+	public List<FTPFile> listFiles(String path) {
 		ArrayList<FTPFile> ret = new ArrayList<FTPFile>();
 		try {
-			for (FTPFile file : client.listFiles()) {
+			for (FTPFile file : client.listFiles(path)) {
 				String name = file.getName();
 				if (name.equals(".")) continue;
 				if (name.equals("..")) continue;
@@ -75,24 +76,24 @@ public class FtpClient {
 		return ret;
 	}
 
-	public List<FTPFile> listFilesSortedByTime() {
-		List<FTPFile> files = listFiles();
+	public List<FTPFile> listFilesSortedByTime(String path) {
+		List<FTPFile> files = listFiles(path);
 		return Utl.sort(files, FtpClient.FILES_BY_TIME_COMPARATOR);
 	}
 
-	public JsonObject downloadJson(String filename) {
-		String json = downloadText(filename);
+	public JsonObject downloadJson(String path) {
+		String json = downloadText(path);
 		return new JsonObject(json);
 	}
 
-	public String downloadText(String filename) {
-		log.debug("download:", filename);
+	public String downloadText(String path) {
+		log.debug("download:", path);
 		StringOutputStream out = new StringOutputStream();
 		try {
-			boolean loaded = client.retrieveFile(filename, out);
-			if (!loaded) throw new RuntimeException("Downloading file failed: " + filename);
+			boolean loaded = client.retrieveFile(path, out);
+			if (!loaded) throw new RuntimeException("Downloading file failed: " + path);
 		} catch (IOException ex) {
-			throw new RuntimeException("Downloading file failed: " + filename, ex);
+			throw new RuntimeException("Downloading file failed: " + path, ex);
 		}
 		return out.toString();
 	}
@@ -120,69 +121,77 @@ public class FtpClient {
 		}
 	}
 
-	public void uploadFiles(File[] files) {
+	public void uploadFiles(String path, File[] files) {
+		createDir(path);
 		for (File file : files) {
+			String filePath = path + "/" + file.getName();
 			if (file.isDirectory()) {
-				createDir(file.getName());
-				changeDir(file.getName());
-				uploadFiles(file.listFiles());
+				createDir(filePath);
+				uploadFiles(filePath, file.listFiles());
 			} else {
-				uploadFile(file.getName(), file);
+				uploadFile(filePath, file);
 			}
 		}
 	}
 
-	public void uploadFileIfNotThere(String name, File file) {
-		log.debug("Upload:", name);
+	public void uploadFileIfNotThere(String path, File file) {
+		log.debug("Upload:", path);
 		if (!file.exists()) return;
 
-		for (FTPFile ftpFile : listFiles()) {
-			if (!ftpFile.getName().equals(name)) continue;
-			// if (ftpFile.getSize() != file.length()) continue;
-			log.debug("  Skipping upload, already there:", name);
+		FTPFile ftpFile = getFile(path);
+		if (ftpFile != null) {
+			log.debug("  Skipping upload, already there:", path);
 			return;
 		}
 
 		try {
-			client.storeFile(name, new BufferedInputStream(new FileInputStream(file)));
+			client.storeFile(path, new BufferedInputStream(new FileInputStream(file)));
 		} catch (IOException ex) {
-			throw new RuntimeException("Uploading failed: " + name + " <- " + file.getAbsolutePath(), ex);
+			throw new RuntimeException("Uploading failed: " + path + " <- " + file.getAbsolutePath(), ex);
 		}
 	}
 
-	public void createDir(String name) {
-		if (existsDir(name)) return;
-		log.debug("create dir:", name);
+	public void createDir(String path) {
+		if (existsDir(path)) return;
+		log.debug("create dir:", path);
+		boolean created;
 		try {
-			client.makeDirectory(name);
+			created = client.makeDirectory(path);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+		if (!created) throw new RuntimeException("Creating directory failed: " + path);
 	}
 
-	public void changeDir(String path) {
-		log.debug("change dir:", path);
-		boolean changed;
-		try {
-			changed = client.changeWorkingDirectory(path);
-		} catch (IOException ex) {
-			throw new RuntimeException("Changing directory failed: " + path, ex);
-		}
-		if (!changed) throw new RuntimeException("Changing directory failed: " + path);
+	// public void changeDir(String path) {
+	// log.debug("change dir:", path);
+	// boolean changed;
+	// try {
+	// changed = client.changeWorkingDirectory(path);
+	// } catch (IOException ex) {
+	// throw new RuntimeException("Changing directory failed: " + path, ex);
+	// }
+	// if (!changed) throw new RuntimeException("Changing directory failed: " + path);
+	// }
+
+	public boolean existsFileOrDir(String path) {
+		return getFile(path) != null;
 	}
 
-	public boolean existsFileOrDir(String name) {
-		for (FTPFile ftpFile : listFiles()) {
-			if (ftpFile.getName().equals(name)) return true;
-		}
-		return false;
+	public boolean existsDir(String path) {
+		FTPFile file = getFile(path);
+		if (file == null) return false;
+		return file.isDirectory();
 	}
 
-	public boolean existsDir(String name) {
-		for (FTPFile ftpFile : listFiles()) {
-			if (ftpFile.getName().equals(name) && ftpFile.isDirectory()) return true;
+	public FTPFile getFile(String path) {
+		Filepath filepath = new Filepath(path);
+		String parentPath = filepath.getParentAsString();
+		String name = filepath.getLastElementName();
+		for (FTPFile ftpFile : listFiles(parentPath)) {
+			if (ftpFile.getName().equals(name)) return ftpFile;
 		}
-		return false;
+		return null;
 	}
 
 	public FtpClient setPort(Integer port) {
