@@ -233,6 +233,11 @@ public class FtpClient {
 			throw new RuntimeException(ex);
 		}
 
+		try {
+			client.setFileType(FTPClient.BINARY_FILE_TYPE);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 		client.setAutodetectUTF8(false);
 		client.setCharset(Charset.forName(IO.UTF_8));
 	}
