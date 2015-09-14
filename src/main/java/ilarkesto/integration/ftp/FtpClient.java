@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -109,10 +109,26 @@ public class FtpClient {
 	public void uploadFile(String path, File file) {
 		log.debug("Upload:", path);
 		if (!file.exists()) return;
+
+		if (file.isDirectory()) { throw new IllegalStateException("Uploading file failed. File is a directory: "
+				+ file.getAbsolutePath()); }
+
 		try {
 			client.storeFile(path, new BufferedInputStream(new FileInputStream(file)));
 		} catch (IOException ex) {
 			throw new RuntimeException("Uploading failed: " + path + " <- " + file.getAbsolutePath(), ex);
+		}
+	}
+
+	public void uploadFiles(File[] files) {
+		for (File file : files) {
+			if (file.isDirectory()) {
+				createDir(file.getName());
+				changeDir(file.getName());
+				uploadFiles(file.listFiles());
+			} else {
+				uploadFile(file.getName(), file);
+			}
 		}
 	}
 
@@ -135,14 +151,13 @@ public class FtpClient {
 	}
 
 	public void createDir(String name) {
+		if (existsDir(name)) return;
 		log.debug("create dir:", name);
-		boolean created;
 		try {
-			created = client.makeDirectory(name);
+			client.makeDirectory(name);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		// if (!created) throw new RuntimeException("Creating directory failed: " + name);
 	}
 
 	public void changeDir(String path) {
@@ -154,6 +169,20 @@ public class FtpClient {
 			throw new RuntimeException("Changing directory failed: " + path, ex);
 		}
 		if (!changed) throw new RuntimeException("Changing directory failed: " + path);
+	}
+
+	public boolean existsFileOrDir(String name) {
+		for (FTPFile ftpFile : listFiles()) {
+			if (ftpFile.getName().equals(name)) return true;
+		}
+		return false;
+	}
+
+	public boolean existsDir(String name) {
+		for (FTPFile ftpFile : listFiles()) {
+			if (ftpFile.getName().equals(name) && ftpFile.isDirectory()) return true;
+		}
+		return false;
 	}
 
 	public FtpClient setPort(Integer port) {
