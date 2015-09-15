@@ -311,7 +311,7 @@ public class Widgets {
 		if (object instanceof DateRange) return new Label(((DateRange) object).formatShortest());
 		if (object instanceof Number) {
 			Number number = (Number) object;
-			return new Label(Localizer.get().format(number, number.intValue() >= 10000, 2, true));
+			return new Label(Localizer.get().format(number, true, 2, true));
 		}
 		Label label = new Label(Str.format(object));
 		if (object instanceof Money || object instanceof BigDecimal || object instanceof Long
