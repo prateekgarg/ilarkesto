@@ -31,12 +31,16 @@ public class ImageThumbFactory {
 		this.thumbDir = thumbDir;
 	}
 
-	public File getThumb(File imageFile, String folder, String scale) {
-		return getThumb(imageFile, folder, Integer.parseInt(scale));
+	public File getThumb(File imageFile, String folder, String size) {
+		return getThumb(imageFile, folder, Integer.parseInt(size));
 	}
 
 	public File getThumb(File imageFile, String folder, int size) {
-		File thumbFile = new File(thumbDir.getPath() + "/" + folder + "/" + size + "/" + imageFile.getName());
+		return getThumb(imageFile, folder, imageFile.getName(), size);
+	}
+
+	public File getThumb(File imageFile, String folder, String id, int size) {
+		File thumbFile = new File(thumbDir.getPath() + "/" + folder + "/" + size + "/" + id);
 		if (thumbFile.exists() && thumbFile.lastModified() == imageFile.lastModified()) return thumbFile;
 		createThumb(imageFile, thumbFile, size);
 		return thumbFile;
