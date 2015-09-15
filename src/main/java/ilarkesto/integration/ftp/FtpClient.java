@@ -100,7 +100,7 @@ public class FtpClient {
 	}
 
 	public void uploadText(String path, String text) {
-		log.debug("Upload:", path);
+		log.info("Upload:", path);
 		boolean success;
 		try {
 			success = client.storeFile(path, new StringInputStream(text));
@@ -111,7 +111,7 @@ public class FtpClient {
 	}
 
 	public void uploadFile(String path, File file) {
-		log.debug("Upload:", path);
+		log.info("Upload:", path);
 		if (!file.exists()) return;
 
 		if (file.isDirectory()) { throw new IllegalStateException("Uploading file failed. File is a directory: "
@@ -158,7 +158,7 @@ public class FtpClient {
 
 	public void createDir(String path) {
 		if (existsDir(path)) return;
-		log.debug("create dir:", path);
+		log.info("Create dir:", path);
 		boolean created;
 		try {
 			created = client.makeDirectory(path);
