@@ -34,6 +34,7 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 	public Boolean developmentMode;
 	private ArrayList<ErrorWrapper> errors;
 	public Integer conversationNumber;
+	private String returnValue;
 
 	private String userId;
 	private Set<String> deletedEntities;
@@ -42,6 +43,14 @@ public abstract class ADataTransferObject implements Serializable, IsSerializabl
 	public synchronized void clear() {
 		entities = null;
 		deletedEntities = null;
+	}
+
+	public void setReturnValue(String returnValue) {
+		this.returnValue = returnValue;
+	}
+
+	public String getReturnValue() {
+		return returnValue;
 	}
 
 	public synchronized void addError(ErrorWrapper error) {
