@@ -36,7 +36,10 @@ public abstract class AEditableDateField extends AEditableTextBoxField<Date> {
 		} catch (Exception ex) {
 			throw new RuntimeException("Eingabe muß ein Datum sein. TT.MM.JJJJ, z.B. 01.01.2001");
 		}
-		return new Date(javaDate);
+		Date date = new Date(javaDate);
+		if (date.getYear() > 9999)
+			throw new RuntimeException("Eingabe muß ein Datum sein. TT.MM.JJJJ, z.B. 01.01.2001");
+		return date;
 	}
 
 	@Override

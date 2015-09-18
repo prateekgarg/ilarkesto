@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -19,6 +19,7 @@ import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateRange;
 import ilarkesto.gwt.client.desktop.Widgets;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -66,10 +67,14 @@ public abstract class AEditableDateRangeField extends AEditableField {
 	protected IsWidget createEditorWidget() {
 		startBox = new GoonDateBox(new DateBox.DefaultFormat(format));
 		startBox.getElement().setId(getId() + "_start_textBox");
+		startBox.getElement().getStyle().setWidth(100, Unit.PX);
+		startBox.setMaxLength(10);
 		startBox.addKeyUpHandler(new EnterKeyUpHandler());
 
 		endBox = new GoonDateBox(new DateBox.DefaultFormat(format));
 		endBox.getElement().setId(getId() + "_end_textBox");
+		endBox.getElement().getStyle().setWidth(100, Unit.PX);
+		endBox.setMaxLength(10);
 		endBox.addKeyUpHandler(new EnterKeyUpHandler());
 
 		DateRange value = getValue();
@@ -105,9 +110,12 @@ public abstract class AEditableDateRangeField extends AEditableField {
 		});
 
 		daysLabel = new Label();
+		daysLabel.getElement().getStyle().setLineHeight(35, Unit.PX);
 		updateDaysLabel();
 
-		return Widgets.horizontalFlowPanel(Widgets.defaultSpacing, startBox, Widgets.text("bis"), endBox, daysLabel);
+		Label bis = Widgets.text("bis");
+		bis.getElement().getStyle().setLineHeight(35, Unit.PX);
+		return Widgets.horizontalFlowPanel(Widgets.defaultSpacing, startBox, bis, endBox, daysLabel);
 	}
 
 	private void updatePreviousValue() {
@@ -180,7 +188,10 @@ public abstract class AEditableDateRangeField extends AEditableField {
 		} catch (Exception ex) {
 			throw new UserInputException("Eingabe muß ein Datum sein. TT.MM.JJJJ, z.B. 01.01.2001");
 		}
-		return new Date(javaDate);
+		Date date = new Date(javaDate);
+		if (date.getYear() > 9999)
+			throw new UserInputException("Eingabe muß ein Datum sein. TT.MM.JJJJ, z.B. 01.01.2001");
+		return date;
 	}
 
 	private class EnterKeyUpHandler implements KeyUpHandler {
