@@ -108,9 +108,18 @@ public abstract class AEditableField extends AField {
 			}
 
 		});
+		onAfterSubmitted();
 	}
 
+	/**
+	 * Called after <code>trySubmit()</code> <strong>inside of</strong> transaction.
+	 */
 	protected void onSubmitted() {}
+
+	/**
+	 * Called after <code>trySubmit()</code> <strong>after</strong> transaction.
+	 */
+	protected void onAfterSubmitted() {}
 
 	protected String getEditVetoMessage() {
 		return editVetoMessage;
