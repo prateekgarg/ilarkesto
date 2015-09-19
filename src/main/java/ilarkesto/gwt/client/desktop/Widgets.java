@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -26,7 +26,6 @@ import ilarkesto.gwt.client.AAction;
 import ilarkesto.gwt.client.desktop.fields.AField;
 import ilarkesto.gwt.client.desktop.fields.ASelfdocPanel;
 
-import java.math.BigDecimal;
 import java.util.Iterator;
 
 import com.google.gwt.dom.client.Style;
@@ -309,13 +308,14 @@ public class Widgets {
 	public static Label text(Object object) {
 		if (object == null) return null;
 		if (object instanceof DateRange) return new Label(((DateRange) object).formatShortest());
+		Label label;
 		if (object instanceof Number) {
 			Number number = (Number) object;
-			return new Label(Localizer.get().format(number, true, 2, true));
+			label = new Label(Localizer.get().format(number, true, 2, true));
+		} else {
+			label = new Label(Str.format(object));
 		}
-		Label label = new Label(Str.format(object));
-		if (object instanceof Money || object instanceof BigDecimal || object instanceof Long
-				|| object instanceof Integer) {
+		if (object instanceof Money || object instanceof Number) {
 			label.getElement().getStyle().setTextAlign(TextAlign.RIGHT);
 			label.getElement().getStyle().setWhiteSpace(WhiteSpace.NOWRAP);
 		}
