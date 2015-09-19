@@ -63,6 +63,16 @@ public class KunagiConnector {
 		return ret;
 	}
 
+	public String postIssueAndGetIssReference(OperationObserver observer, String name, String email, String subject,
+			String text, String additionalInfo, boolean wiki, boolean publish) {
+		String responnse = postIssue(observer, name, email, subject, text, additionalInfo, wiki, publish);
+		if (responnse == null) return null;
+		log.info("Response:", responnse);
+		int idx = responnse.indexOf("href='iss");
+		if (idx < 0) return null;
+		return responnse.substring(idx + 6, responnse.indexOf(".html"));
+	}
+
 	public KunagiConnector setHttpDownloader(HttpDownloader httpDownloader) {
 		this.httpDownloader = httpDownloader;
 		return this;
