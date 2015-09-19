@@ -379,14 +379,19 @@ public abstract class AObjectTableWithGroups<O, G> implements IsWidget, Updatabl
 		}
 		if (wrapper == null) {
 			if (this instanceof DataForClientLoader) {
-				asWidgetWrapper.add(new BuilderPanel().setStyleCard().addWithPadding(
-					Widgets.waitinfo("Daten werden abgerufen")));
-				DataForClientLoaderHelper.load((DataForClientLoader) this);
+				loadDataFromServer();
 			} else {
 				update();
 			}
 		}
 		return asWidgetWrapper;
+	}
+
+	protected final void loadDataFromServer() {
+		asWidgetWrapper.clear();
+		asWidgetWrapper.add(new BuilderPanel().setStyleCard()
+				.addWithPadding(Widgets.waitinfo("Daten werden abgerufen")));
+		DataForClientLoaderHelper.load((DataForClientLoader) this);
 	}
 
 	public void loadDataForClientOnServer(ClientDataTransporter transporter, ActivityParameters parameters) {
