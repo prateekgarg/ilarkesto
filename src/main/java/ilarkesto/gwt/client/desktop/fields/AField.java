@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -40,6 +40,10 @@ public abstract class AField implements Updatable {
 	public abstract String getLabel();
 
 	public abstract IsWidget createDisplayWidget();
+
+	public String getLabelColor() {
+		return "#999999";
+	}
 
 	public String getMilestoneLabel() {
 		return getLabel();
@@ -124,12 +128,13 @@ public abstract class AField implements Updatable {
 	}
 
 	public Widget createLabelWidget() {
-		Label label = Widgets.textFieldlabel(getLabel());
-		if (label != null) {
-			Style style = label.getElement().getStyle();
-			if (isLabelAlignRight()) style.setTextAlign(TextAlign.RIGHT);
-			// if (isLabelImportant()) style.setFontSize(120, Unit.PCT);
-		}
+		String labelText = getLabel();
+		if (labelText == null) labelText = "";
+		Label label = Widgets.textFieldlabel(labelText);
+		Style labelStyle = label.getElement().getStyle();
+		labelStyle.setColor(getLabelColor());
+		if (isLabelAlignRight()) labelStyle.setTextAlign(TextAlign.RIGHT);
+		// if (isLabelImportant()) style.setFontSize(120, Unit.PCT);
 
 		String href = getHref();
 		if (href == null) return label;

@@ -23,6 +23,7 @@ import ilarkesto.gwt.client.ADataTransferObject;
 import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.Updatable;
 import ilarkesto.gwt.client.desktop.ActionSelectionDialogBox;
+import ilarkesto.gwt.client.desktop.Colors;
 import ilarkesto.gwt.client.desktop.DataForClientLoader;
 import ilarkesto.gwt.client.desktop.DataForClientLoaderHelper;
 import ilarkesto.gwt.client.desktop.Widgets;
@@ -195,9 +196,9 @@ public abstract class AEditableField extends AField {
 	}
 
 	@Override
-	public String getWarning() {
-		if (isMandatory() && !isValueSet()) return "Eingabe erforderlich";
-		return super.getWarning();
+	public String getLabelColor() {
+		if (isMandatory() && !isValueSet()) return Colors.warning;
+		return super.getLabelColor();
 	}
 
 	public AEditableField setUpdatable(Updatable updateOnSubmit) {
