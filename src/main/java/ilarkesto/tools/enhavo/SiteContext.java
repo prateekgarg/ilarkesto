@@ -23,6 +23,7 @@ import ilarkesto.templating.Template;
 import ilarkesto.templating.TemplateResolver;
 
 import java.io.File;
+import java.io.FileFilter;
 
 public class SiteContext extends ABuilder implements TemplateResolver {
 
@@ -66,7 +67,15 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		clean();
 
 		processPagesFiles(pagesDir);
-		IO.copyFiles(resourcesDir.listFiles(), outputDir);
+		IO.copyFiles(resourcesDir.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File pathname) {
+				if (pathname.getName().equals(IO.MAC_SYS_FILENAME)) return false;
+				return true;
+			}
+
+		}), outputDir);
 		runScripts();
 	}
 
