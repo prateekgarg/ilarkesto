@@ -15,17 +15,34 @@
 package ilarkesto.tools.enhavo;
 
 import ilarkesto.base.CommandLineArgs;
+import ilarkesto.base.Utl;
+import ilarkesto.concurrent.TaskManager;
+import ilarkesto.core.persistance.EntitiesBackend;
+import ilarkesto.core.persistance.InMemoryEntitiesBackend;
+import ilarkesto.di.app.AApplication;
+import ilarkesto.di.app.ApplicationStarter;
+import ilarkesto.io.AFileChangeWatchTask;
 import ilarkesto.io.IO;
 
 import java.io.File;
 import java.io.IOException;
 
-public class Enhavo {
+public class EnhavoApplication extends AApplication {
 
-	public static void main(String[] args) throws InterruptedException {
-		CommandLineArgs cla = new CommandLineArgs(args);
-		boolean loop = cla.popFlag("loop");
+	public static void main(String[] args) {
+		ApplicationStarter.startApplication(EnhavoApplication.class, args);
+	}
+
+	private CmsContext cmsContext;
+	private boolean watch;
+
+	@Override
+	protected void onStart() {
+		CommandLineArgs cla = new CommandLineArgs(getArguments());
 		String path = cla.popParameter();
+		boolean loop = cla.popFlag("loop");
+		watch = cla.popFlag("watch");
+
 		if (path == null) {
 			exitWithError("Missing <cms-path> parameter");
 			return;
@@ -46,7 +63,7 @@ public class Enhavo {
 			IO.createDirectory(dir);
 		}
 
-		CmsContext cmsContext = new CmsContext(dir, null);
+		cmsContext = new CmsContext(dir, null);
 
 		if (loop) {
 			loop(cmsContext);
@@ -56,16 +73,51 @@ public class Enhavo {
 		cmsContext.build();
 	}
 
-	private static void exitWithError(String message) {
+	@Override
+	protected boolean isPreventProcessEnd() {
+		if (watch) return true;
+		return super.isPreventProcessEnd();
+	}
+
+	@Override
+	protected void scheduleTasks(TaskManager tm) {
+		if (watch) tm.start(new WatchTask(cmsContext));
+	}
+
+	@Override
+	protected void onShutdown() {}
+
+	private void exitWithError(String message) {
 		System.out.println(message);
 		System.exit(1);
 	}
 
-	private static void loop(CmsContext cmsContext) throws InterruptedException {
+	private static void loop(CmsContext cmsContext) {
 		while (true) {
 			cmsContext.build();
-			Thread.sleep(5000);
+			Utl.sleep(5000);
 		}
+	}
+
+	static class WatchTask extends AFileChangeWatchTask {
+
+		private CmsContext cms;
+
+		public WatchTask(CmsContext cms) {
+			super(cms.getInputDir(), 300, 3000);
+			this.cms = cms;
+		}
+
+		@Override
+		protected void onChange() {
+			cms.build();
+		}
+
+	}
+
+	@Override
+	protected EntitiesBackend createEntitiesBackend() {
+		return new InMemoryEntitiesBackend();
 	}
 
 }

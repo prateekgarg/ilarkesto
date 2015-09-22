@@ -1,20 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
 package ilarkesto.tools.enhavo;
 
 import ilarkesto.base.Proc;
+import ilarkesto.base.Proc.UnexpectedReturnCodeException;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.parsing.ParseException;
 import ilarkesto.io.IO;
@@ -36,6 +37,7 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 
 	private File outputDir;
 	private ContentProvider contentProvider;
+	private SiteBuildlog siteBuildlog;
 
 	public SiteContext(CmsContext cms, File dir) {
 		super(cms);
@@ -58,11 +60,16 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 
 		contentProvider = new FilesContentProvider(contentDir, cms.getContentProvider()).setBeanshellExecutor(cms
 				.getBeanshellExecutor());
+
+		siteBuildlog = new SiteBuildlog(this);
+
+		cms.getProt().addConsumers(siteBuildlog);
 	}
 
 	@Override
 	protected void onBuild() {
 		outputDir = new File(cms.getSitesOutputDir().getPath() + "/" + dir.getName());
+		siteBuildlog.onBuildStart();
 
 		clean();
 
@@ -76,28 +83,31 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 			}
 
 		}), outputDir);
-		runScripts();
+		boolean success = runScripts();
+
+		if (success) siteBuildlog.onBuildSuccess();
 	}
 
 	private void clean() {
 		IO.delete(outputDir.listFiles());
 	}
 
-	private void runScripts() {
+	private boolean runScripts() {
 		for (File file : IO.listFiles(scriptsDir)) {
 			cms.getProt().pushContext("script> " + file.getName());
+			boolean success;
 			try {
-				runScript(file);
-			} catch (Exception ex) {
-				error(ex);
+				success = runScript(file);
 			} finally {
 				cms.getProt().popContext();
 			}
+			if (!success) return false;
 		}
+		return true;
 	}
 
-	private void runScript(File file) {
-		if (file.isDirectory()) return;
+	private boolean runScript(File file) {
+		if (file.isDirectory()) return true;
 		String executorCommand = "bash";
 
 		Proc proc = new Proc(executorCommand);
@@ -107,11 +117,17 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		proc.addEnvironmentParameter("CMS_OUTPUT_DIR", cms.getOutputDir().getAbsolutePath());
 		proc.addEnvironmentParameter("CMS_SITE_INPUT_DIR", dir.getAbsolutePath());
 		proc.addEnvironmentParameter("CMS_SITE_OUTPUT_DIR", outputDir.getAbsolutePath());
-		String output = proc.execute();
+		String output;
+		try {
+			output = proc.execute();
+		} catch (UnexpectedReturnCodeException ex) {
+			error(ex.getRc(), ex.getOutput());
+			return false;
+		}
 
 		info(output);
 
-		// IO.delete(dst);
+		return true;
 	}
 
 	private void processPagesFiles(File dir) {
@@ -142,7 +158,7 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		IO.copyFile(source, file);
 	}
 
-	private File getOutputFile(String path) {
+	File getOutputFile(String path) {
 		return new File(outputDir.getPath() + "/" + path);
 	}
 

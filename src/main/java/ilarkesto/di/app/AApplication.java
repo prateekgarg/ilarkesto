@@ -221,7 +221,26 @@ public abstract class AApplication {
 				shutdown(true);
 				throw new RuntimeException("Application startup failed.", ex);
 			}
+
+			if (isPreventProcessEnd()) {
+				Thread thread = new Thread() {
+
+					@Override
+					public void run() {
+						while (!isShutdown()) {
+							Utl.sleep(1000);
+						}
+					};
+
+				};
+				thread.setDaemon(false);
+				thread.start();
+			}
 		}
+	}
+
+	protected boolean isPreventProcessEnd() {
+		return false;
 	}
 
 	protected void onPreStart() {}

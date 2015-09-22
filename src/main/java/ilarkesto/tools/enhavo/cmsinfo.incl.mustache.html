@@ -2,8 +2,88 @@
 <hr>
 <h4>CMS_BUILD_INFO</h4>
 
-<h5>Build</h5>
-<iframe src="../../build.html" width="100%" height="1024px"></iframe>
+<div id="cms_build_info" style="font-family: monospace;"></div>
+
+<script>
+function enhavoCmsBuildInfo() {
+    
+    var lastTimestamp;
+    
+    function loadBuildlog() {
+        var xmlhttp = new XMLHttpRequest();
+        var url = ".buildlog.json";
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var buildlog = JSON.parse(xmlhttp.responseText);
+                
+                if (lastTimestamp && lastTimestamp !== buildlog.timestamp) {
+                    lastTimestamp = buildlog.timestamp;
+                    console.log(buildlog);
+                    if (buildlog.success) {                        
+                        location.reload();
+                    }
+                }
+                                
+                lastTimestamp = buildlog.timestamp;
+                setTimeout(function(){ loadBuildlog(); }, 500);             
+                printBuildlog(buildlog);
+            }
+        }
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+    }
+    
+    function printBuildlog(buildlog) {
+        var builddate = new Date();
+        builddate.setTime(buildlog.timestamp);
+        
+        var rootDiv = document.getElementById("cms_build_info");
+        rootDiv.innerHTML = 'Build ' + escapeHtml(formatDate(builddate));
+
+        buildlog.messages.forEach(function(message) {
+            var msgDiv = document.createElement('div');
+            if (message.type === 'ERROR') msgDiv.style.color = 'red';
+            msgDiv.innerHTML = formatIndent(message.depth) + escapeHtml(message.text);
+            rootDiv.appendChild(msgDiv);
+        });        
+    }
+    
+    function formatIndent(depth) {
+        var ret = '';
+        for (i = 0; i < depth; i++) {
+            ret += "&nbsp;&nbsp;";
+        }
+        return ret;
+    }
+    
+    function formatDate(date) {
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+        var sec = date.getSeconds();
+
+        month = (month < 10 ? "0" : "") + month;
+        day = (day < 10 ? "0" : "") + day;
+        hour = (hour < 10 ? "0" : "") + hour;
+        min = (min < 10 ? "0" : "") + min;
+        sec = (sec < 10 ? "0" : "") + sec;
+        
+        return date.getFullYear() + "-" + month + "-" + day + " " +  hour + ":" + min + ":" + sec;
+    }
+    
+    var entityMap = {"&": "&amp;","<": "&lt;",">": "&gt;",'"': '&quot;',"'": '&#39;',"/": '&#x2F;'};
+    function escapeHtml(string) {
+        return String(string).replace(/[&<>"'\/]/g, function (s) {
+            return entityMap[s];
+        });
+    }
+
+    loadBuildlog();
+}
+enhavoCmsBuildInfo();
+
+</script>
 
 <h5>Content</h5>
 <pre>{{/content}}</pre>

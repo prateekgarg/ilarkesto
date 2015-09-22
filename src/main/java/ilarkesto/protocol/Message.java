@@ -25,7 +25,7 @@ public class Message {
 	private Type type;
 	private Object[] s;
 
-	Message(Type type, Object... s) {
+	public Message(Type type, Object... s) {
 		super();
 		this.type = type;
 		this.s = s;
@@ -37,6 +37,10 @@ public class Message {
 
 	public String getText() {
 		return Str.formatMessage(s);
+	}
+
+	public Type getType() {
+		return type;
 	}
 
 	@Override
