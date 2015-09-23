@@ -48,6 +48,9 @@ public class FtpClient {
 
 	private FTPClient client;
 
+	private String chmodForCreatedDirs;
+	private String chmodForUploadedFiles;
+
 	public FtpClient(String server, LoginDataProvider login) {
 		super();
 		this.server = server;
@@ -62,6 +65,14 @@ public class FtpClient {
 			throw new RuntimeException(ex);
 		}
 		if (!deleted) throw new RuntimeException("Deleting remote file failed: " + path);
+	}
+
+	public void setChmodForCreatedDirs(String chmodForCreatedDirs) {
+		this.chmodForCreatedDirs = chmodForCreatedDirs;
+	}
+
+	public void setChmodForUploadedFiles(String chmodForUploadedFiles) {
+		this.chmodForUploadedFiles = chmodForUploadedFiles;
 	}
 
 	public List<FTPFile> listFiles(String path) {
@@ -109,23 +120,9 @@ public class FtpClient {
 		} catch (IOException ex) {
 			throw new RuntimeException("Uploading failed: " + path, ex);
 		}
-		if (!success) throw new RuntimeException("Uploading failed: " + path);
-	}
+		if (!success) throw new RuntimeException("Uploading failed: " + path + " -> " + client.getReplyString());
 
-	public void uploadFile(String path, File file) {
-		log.info("Upload:", path);
-		if (!file.exists()) return;
-
-		if (file.isDirectory()) { throw new IllegalStateException("Uploading file failed. File is a directory: "
-				+ file.getAbsolutePath()); }
-
-		boolean success;
-		try {
-			success = client.storeFile(path, new BufferedInputStream(new FileInputStream(file)));
-		} catch (IOException ex) {
-			throw new RuntimeException("Uploading failed: " + path + " <- " + file.getAbsolutePath(), ex);
-		}
-		if (!success) throw new RuntimeException("Uploading failed: " + path);
+		chmod(chmodForUploadedFiles, path);
 	}
 
 	public void uploadFiles(String path, File[] files) {
@@ -151,11 +148,39 @@ public class FtpClient {
 			return;
 		}
 
+		upload(path, file);
+	}
+
+	public void uploadFile(String path, File file) {
+		log.info("Upload:", path);
+		if (!file.exists()) return;
+
+		if (file.isDirectory()) { throw new IllegalStateException("Uploading file failed. File is a directory: "
+				+ file.getAbsolutePath()); }
+		upload(path, file);
+	}
+
+	private void upload(String path, File file) {
 		try {
 			client.storeFile(path, new BufferedInputStream(new FileInputStream(file)));
 		} catch (IOException ex) {
 			throw new RuntimeException("Uploading failed: " + path + " <- " + file.getAbsolutePath(), ex);
 		}
+
+		chmod(chmodForUploadedFiles, path);
+	}
+
+	public void executeCommand(String command) {
+		log.info("Command:", command);
+
+		boolean executed;
+		try {
+			executed = client.sendSiteCommand(command);
+		} catch (IOException ex) {
+			throw new RuntimeException("Command execution failed: " + command, ex);
+		}
+		if (!executed)
+			throw new RuntimeException("Command execution failed: " + command + " | " + client.getReplyString());
 	}
 
 	public void createDir(String path) {
@@ -168,6 +193,13 @@ public class FtpClient {
 			throw new RuntimeException(ex);
 		}
 		if (!created) throw new RuntimeException("Creating directory failed: " + path);
+
+		chmod(chmodForCreatedDirs, path);
+	}
+
+	public void chmod(String chmodExpression, String path) {
+		if (chmodExpression == null) return;
+		executeCommand("chmod " + chmodExpression + " " + path);
 	}
 
 	// public void changeDir(String path) {
