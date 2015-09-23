@@ -57,7 +57,19 @@ public class FtpClient {
 		this.login = login;
 	}
 
-	public void delete(String path) {
+	public void deleteDir(String path) {
+		for (FTPFile file : listFiles(path)) {
+			if (file.isDirectory()) {
+				deleteDir(path + "/" + file.getName());
+			} else {
+				deleteFile(path + "/" + file.getName());
+			}
+		}
+		deleteFile(path);
+	}
+
+	public void deleteFile(String path) {
+		log.info("Delete:", path);
 		boolean deleted;
 		try {
 			deleted = client.deleteFile(path);
