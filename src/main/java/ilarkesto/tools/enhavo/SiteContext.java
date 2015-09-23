@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -19,6 +19,7 @@ import ilarkesto.base.Proc.UnexpectedReturnCodeException;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.parsing.ParseException;
 import ilarkesto.io.IO;
+import ilarkesto.json.JsonObject;
 import ilarkesto.templating.MustacheLikeTemplateParser;
 import ilarkesto.templating.Template;
 import ilarkesto.templating.TemplateResolver;
@@ -34,6 +35,10 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 	private File contentDir;
 	private File resourcesDir;
 	private File scriptsDir;
+	private File configFile;
+
+	private JsonObject jConfig;
+	private boolean productionMode;
 
 	private File outputDir;
 	private ContentProvider contentProvider;
@@ -58,6 +63,8 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		scriptsDir = new File(dir.getPath() + "/scripts");
 		IO.createDirectory(scriptsDir);
 
+		configFile = new File(dir.getPath() + "/config.json");
+
 		contentProvider = new FilesContentProvider(contentDir, cms.getContentProvider()).setBeanshellExecutor(cms
 				.getBeanshellExecutor());
 
@@ -66,8 +73,29 @@ public class SiteContext extends ABuilder implements TemplateResolver {
 		cms.getProt().addConsumers(siteBuildlog);
 	}
 
+	private void loadConfig() {
+		boolean save = false;
+		if (configFile.exists()) jConfig = new JsonObject(IO.readFile(configFile, IO.UTF_8));
+
+		if (jConfig == null) {
+			save = true;
+			jConfig = new JsonObject();
+		}
+
+		if (!jConfig.contains("productionMode")) {
+			jConfig.put("productionMode", false);
+			save = true;
+		}
+
+		if (save) IO.writeFile(configFile, jConfig.toFormatedString(), IO.UTF_8);
+
+		productionMode = jConfig.isTrue("productionMode");
+	}
+
 	@Override
 	protected void onBuild() {
+		loadConfig();
+
 		outputDir = new File(cms.getSitesOutputDir().getPath() + "/" + dir.getName());
 		siteBuildlog.onBuildStart();
 
