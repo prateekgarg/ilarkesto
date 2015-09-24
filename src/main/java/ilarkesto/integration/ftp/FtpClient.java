@@ -14,6 +14,7 @@
  */
 package ilarkesto.integration.ftp;
 
+import ilarkesto.base.Sys;
 import ilarkesto.core.auth.LoginData;
 import ilarkesto.core.auth.LoginDataProvider;
 import ilarkesto.core.base.Filepath;
@@ -24,6 +25,7 @@ import ilarkesto.io.IO;
 import ilarkesto.io.IO.StringInputStream;
 import ilarkesto.io.StringOutputStream;
 import ilarkesto.json.JsonObject;
+import ilarkesto.swing.LoginPanel;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -39,6 +41,18 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 public class FtpClient {
+
+	public static void main(String[] args) {
+		LoginData login = LoginPanel.showDialog(null, "FTP to localhost", new File(Sys.getUsersHomePath()
+				+ "/.ilarkesto/ftp.localhost.properties"));
+
+		FtpClient ftp = new FtpClient("localhost", login);
+		ftp.connect();
+		String dirname = "test_" + System.currentTimeMillis();
+		ftp.createDir(dirname);
+		ftp.deleteDir(dirname);
+		ftp.close();
+	}
 
 	private static final Log log = Log.get(FtpClient.class);
 
@@ -69,12 +83,13 @@ public class FtpClient {
 	}
 
 	public void deleteFile(String path) {
-		if (!isFileExisting(path)) return;
+		FTPFile file = getFile(path);
+		if (file == null) return;
 
 		log.info("Delete:", path);
 		boolean deleted;
 		try {
-			deleted = client.deleteFile(path);
+			deleted = file.isDirectory() ? client.removeDirectory(path) : client.deleteFile(path);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -92,14 +107,7 @@ public class FtpClient {
 	}
 
 	public boolean isFileExisting(String path) {
-		Filepath filepath = new Filepath(path);
-		String parentpath = filepath.getParentAsString();
-		String filename = filepath.getLastElementName();
-		if (parentpath == null) parentpath = ".";
-		for (FTPFile file : listFiles(parentpath)) {
-			if (file.getName().equals(filename)) return true;
-		}
-		return false;
+		return getFile(path) != null;
 	}
 
 	public List<FTPFile> listFiles(String path) {
