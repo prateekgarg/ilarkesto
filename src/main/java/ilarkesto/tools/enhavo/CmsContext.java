@@ -42,6 +42,7 @@ public class CmsContext {
 	private File outputDir;
 	private File sitesOutputDir;
 
+	private BuildObserver buildObserver;
 	private ContentProvider contentProvider;
 	private BeanshellExecutor beanshellExecutor;
 
@@ -69,6 +70,7 @@ public class CmsContext {
 	}
 
 	public void build() {
+		if (buildObserver != null) buildObserver.onBuildStart();
 		HtmlBuilder htmlProtocolBuilder;
 		try {
 			htmlProtocolBuilder = new HtmlBuilder(new File(outputDir.getPath() + "/build.html"), IO.UTF_8);
@@ -91,6 +93,7 @@ public class CmsContext {
 			prot.info(rt.getRuntimeFormated());
 			htmlProtocolBuilder.close();
 		}
+		if (buildObserver != null) buildObserver.onBuildEnd(rt.getRuntime());
 	}
 
 	private void buildSites() {
@@ -149,4 +152,7 @@ public class CmsContext {
 		return ret;
 	}
 
+	public void setBuildObserver(BuildObserver buildObserver) {
+		this.buildObserver = buildObserver;
+	}
 }

@@ -15,7 +15,6 @@
 package ilarkesto.io;
 
 import ilarkesto.concurrent.ALoopTask;
-import ilarkesto.core.base.RuntimeTracker;
 
 import java.io.File;
 import java.util.Map;
@@ -27,9 +26,8 @@ public abstract class AFileChangeWatchTask extends ALoopTask {
 	private long maxSleep;
 	private float sleepIncrementFactor = 1.02f;
 
-	private Map<String, Long> modificationTimesByPath;
+	private DirChangeState changeState;
 	private long sleep;
-	private long warningRuntime = 2000;
 
 	protected abstract void onChange();
 
@@ -48,25 +46,20 @@ public abstract class AFileChangeWatchTask extends ALoopTask {
 
 	@Override
 	protected void beforeLoop() throws InterruptedException {
-		modificationTimesByPath = IO.getModificationTimes(root);
+		changeState = new DirChangeState(root);
 		onFirstChange();
 	}
 
 	@Override
 	protected void iteration() throws InterruptedException {
-		RuntimeTracker rt = new RuntimeTracker();
-		Map<String, Long> newModificationTimes = IO.getModificationTimes(root);
-		if (rt.getRuntime() >= warningRuntime)
-			log.warn("Checking modification times took", rt.getRuntimeFormated(), "->", root.getAbsolutePath());
-
-		if (newModificationTimes.equals(modificationTimesByPath)) {
+		if (!changeState.isChanged()) {
 			sleep = Math.min(maxSleep, (long) (sleep * sleepIncrementFactor));
 			return;
 		}
 
-		modificationTimesByPath = newModificationTimes;
 		sleep = minSleep;
 		onChange();
+		changeState.reset();
 	}
 
 	@Override
