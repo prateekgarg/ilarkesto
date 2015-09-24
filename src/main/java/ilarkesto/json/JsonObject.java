@@ -324,12 +324,15 @@ public class JsonObject {
 
 	// --- manipulating ---
 
-	public <V> V putIfNull(String name, V value) {
+	/**
+	 * @return true, if property did not exist before
+	 */
+	public boolean putIfNull(String name, Object value) {
 		if (name == null || name.length() == 0) throw new RuntimeException("name required");
 		Object currentValue = get(name);
-		if (currentValue != null) return (V) currentValue;
+		if (currentValue != null) return false;
 		elements.put(name, adopt(value));
-		return value;
+		return true;
 	}
 
 	public <V> V put(String name, V value) {

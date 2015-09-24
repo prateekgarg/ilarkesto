@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -911,6 +911,29 @@ public abstract class IO {
 		}
 	}
 
+	public static void copyFileIfDiffersInTimeAndLength(File source, File destination) {
+		if (source.getAbsolutePath().equals(destination.getAbsolutePath())) return;
+		if (source.isDirectory()) {
+			copyFilesIfDifferInTimeAndLength(source.listFiles(), destination, null);
+			return;
+		}
+
+		if (destination.exists() && destination.lastModified() == source.lastModified()
+				&& destination.length() == source.length()) return;
+
+		FileInputStream in;
+		try {
+			in = new FileInputStream(source);
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
+		try {
+			copyDataToFile(in, destination);
+		} finally {
+			close(in);
+		}
+	}
+
 	public static void copyFile(File sourceFile, OutputStream dst) {
 		copyFile(sourceFile.getPath(), dst);
 	}
@@ -945,6 +968,18 @@ public abstract class IO {
 				copyFiles(f.listFiles(), new File(destinationDir + "/" + f.getName()), filter);
 			} else {
 				copyFile(f, new File(destinationDir + "/" + f.getName()));
+			}
+		}
+	}
+
+	public static void copyFilesIfDifferInTimeAndLength(File[] files, File destinationDir, FileFilter filter) {
+		createDirectory(destinationDir);
+		for (File f : files) {
+			if (filter != null && !filter.accept(f)) continue;
+			if (f.isDirectory()) {
+				copyFilesIfDifferInTimeAndLength(f.listFiles(), new File(destinationDir + "/" + f.getName()), filter);
+			} else {
+				copyFileIfDiffersInTimeAndLength(f, new File(destinationDir + "/" + f.getName()));
 			}
 		}
 	}
