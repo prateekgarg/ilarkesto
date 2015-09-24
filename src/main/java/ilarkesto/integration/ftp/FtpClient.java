@@ -76,7 +76,11 @@ public class FtpClient {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		if (!deleted) throw new RuntimeException("Deleting remote file failed: " + path);
+
+		// Filepath parentpath = new Filepath(path).getParent();
+
+		// if (!deleted) throw new RuntimeException("Deleting remote file failed: " +
+		// path+" | "+client.getReplyString());
 	}
 
 	public void setChmodForCreatedDirs(String chmodForCreatedDirs) {
