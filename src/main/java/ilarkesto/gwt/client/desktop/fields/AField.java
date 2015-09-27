@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -130,11 +130,7 @@ public abstract class AField implements Updatable {
 	public Widget createLabelWidget() {
 		String labelText = getLabel();
 		if (labelText == null) labelText = "";
-		Label label = Widgets.textFieldlabel(labelText);
-		Style labelStyle = label.getElement().getStyle();
-		labelStyle.setColor(getLabelColor());
-		if (isLabelAlignRight()) labelStyle.setTextAlign(TextAlign.RIGHT);
-		// if (isLabelImportant()) style.setFontSize(120, Unit.PCT);
+		Widget label = createLabelWidget(labelText);
 
 		String href = getHref();
 		if (href == null) return label;
@@ -147,6 +143,14 @@ public abstract class AField implements Updatable {
 		panel.add(label);
 		panel.add(button);
 		return panel;
+	}
+
+	private Widget createLabelWidget(String labelText) {
+		Label label = Widgets.textFieldlabel(labelText);
+		Style labelStyle = label.getElement().getStyle();
+		labelStyle.setColor(getLabelColor());
+		if (isLabelAlignRight()) labelStyle.setTextAlign(TextAlign.RIGHT);
+		return label;
 	}
 
 	protected String getHrefIcon() {

@@ -23,7 +23,6 @@ import ilarkesto.gwt.client.ADataTransferObject;
 import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.Updatable;
 import ilarkesto.gwt.client.desktop.ActionSelectionDialogBox;
-import ilarkesto.gwt.client.desktop.Colors;
 import ilarkesto.gwt.client.desktop.DataForClientLoader;
 import ilarkesto.gwt.client.desktop.DataForClientLoaderHelper;
 import ilarkesto.gwt.client.desktop.Widgets;
@@ -35,6 +34,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -54,6 +54,17 @@ public abstract class AEditableField extends AField {
 	protected abstract IsWidget createEditorWidget();
 
 	protected abstract void trySubmit() throws Exception;
+
+	@Override
+	public Widget createLabelWidget() {
+		if (isMandatory()) {
+			Widget label = super.createLabelWidget();
+			Label marker = Widgets.textWarning("*");
+			marker.getElement().getStyle().setProperty("fontSize", label.getElement().getStyle().getFontSize());
+			return Widgets.horizontalPanel(0, label, marker);
+		}
+		return super.createLabelWidget();
+	}
 
 	protected final Widget createEditorWidgetForUse() {
 		if (isEditorAsync()) {
@@ -193,12 +204,6 @@ public abstract class AEditableField extends AField {
 
 	public boolean isMandatory() {
 		return false;
-	}
-
-	@Override
-	public String getLabelColor() {
-		if (isMandatory() && !isValueSet()) return Colors.warning;
-		return super.getLabelColor();
 	}
 
 	public AEditableField setUpdatable(Updatable updateOnSubmit) {
