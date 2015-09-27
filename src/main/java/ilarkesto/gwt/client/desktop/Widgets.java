@@ -50,6 +50,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.ValueBoxBase;
@@ -165,12 +166,30 @@ public class Widgets {
 		return label;
 	}
 
+	public static PopupPanel popup(boolean autoHide, String title, IsWidget widget) {
+		BuilderPanel bp = new BuilderPanel();
+		if (title != null) bp.addWithPadding(textTitle(title));
+		bp.add(widget);
+
+		PopupPanel dialog = new PopupPanel(autoHide, true);
+		dialog.getElement().getStyle().setProperty("maxWidth", "90%");
+		dialog.setWidget(bp);
+		dialog.setGlassEnabled(true);
+		Style style = dialog.getElement().getStyle();
+		style.setPadding(0, Unit.PX);
+		dialog.center();
+
+		return dialog;
+	}
+
 	public static DialogBox dialog(boolean autoHide, String title, IsWidget widget) {
 		DialogBox dialog = new ExtendedDialogBox(autoHide, true);
 		dialog.getElement().getStyle().setProperty("maxWidth", "90%");
 		dialog.setText(title);
 		dialog.setWidget(widget);
 		dialog.setGlassEnabled(true);
+		Style style = dialog.getElement().getStyle();
+		style.setPadding(0, Unit.PX);
 		dialog.center();
 
 		return dialog;
