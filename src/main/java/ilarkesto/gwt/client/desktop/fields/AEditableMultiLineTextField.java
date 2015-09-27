@@ -55,7 +55,7 @@ public abstract class AEditableMultiLineTextField extends AEditableField {
 		textArea.getElement().setId(getId() + "_textArea");
 		Style style = textArea.getElement().getStyle();
 		style.setWidth(getTextBoxWidth(), Unit.PX);
-		style.setHeight(100, Unit.PX);
+		style.setHeight(getTextBoxHeight(), Unit.PX);
 		style.setPadding(Widgets.defaultSpacing, Unit.PX);
 
 		String value = getValue();
@@ -80,6 +80,10 @@ public abstract class AEditableMultiLineTextField extends AEditableField {
 		int width = Window.getClientWidth();
 		if (width > 700) width = 700;
 		return width;
+	}
+
+	protected int getTextBoxHeight() {
+		return 100;
 	}
 
 	@Override
