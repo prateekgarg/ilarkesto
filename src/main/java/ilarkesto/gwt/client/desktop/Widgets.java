@@ -168,7 +168,11 @@ public class Widgets {
 
 	public static PopupPanel popup(boolean autoHide, String title, IsWidget widget) {
 		BuilderPanel bp = new BuilderPanel();
-		if (title != null) bp.addWithPadding(textTitle(title));
+		if (title != null) {
+			Label titleLabel = textTitleInverted(title);
+			titleLabel.getElement().getStyle().setPadding(Widgets.defaultSpacing, Unit.PX);
+			bp.add(titleLabel);
+		}
 		bp.add(widget);
 
 		PopupPanel dialog = new PopupPanel(autoHide, true);
@@ -253,6 +257,17 @@ public class Widgets {
 		panel.getElement().getStyle().setPaddingRight(paddingRight, Unit.PX);
 		panel.getElement().getStyle().setPaddingBottom(paddingBottom, Unit.PX);
 		return panel;
+	}
+
+	public static Label textTitleInverted(Object object) {
+		if (object == null) return null;
+		Label label = new Label(Str.format(object));
+		Style style = label.getElement().getStyle();
+		style.setFontWeight(FontWeight.BOLD);
+		style.setFontSize(105, Unit.PCT);
+		style.setBackgroundColor(Colors.googleBlue);
+		style.setColor("white");
+		return label;
 	}
 
 	public static Label textTitle(Object object) {
