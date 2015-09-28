@@ -23,14 +23,15 @@ import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 import ilarkesto.io.IO.StringInputStream;
-import ilarkesto.io.StringOutputStream;
 import ilarkesto.json.JsonObject;
 import ilarkesto.swing.LoginPanel;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -137,14 +138,18 @@ public class FtpClient {
 
 	public String downloadText(String path) {
 		log.debug("download:", path);
-		StringOutputStream out = new StringOutputStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			boolean loaded = client.retrieveFile(path, out);
 			if (!loaded) throw new RuntimeException("Downloading file failed: " + path);
 		} catch (IOException ex) {
 			throw new RuntimeException("Downloading file failed: " + path, ex);
 		}
-		return out.toString();
+		try {
+			return new String(out.toByteArray(), IO.UTF_8);
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public void uploadText(String path, String text) {
