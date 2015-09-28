@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -27,8 +27,11 @@ import ilarkesto.io.IO;
 import ilarkesto.swing.LoginPanel;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -146,6 +149,22 @@ public class Eml {
 
 	static {
 		setCharset(IO.ISO_LATIN_1);
+	}
+
+	public static void writeMessage(Message message, File file) {
+		IO.createDirectory(file.getParentFile());
+		BufferedOutputStream out;
+		try {
+			out = new BufferedOutputStream(new FileOutputStream(file));
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException("Writing email to " + file.getAbsolutePath() + " failed.", ex);
+		}
+		writeMessage(message, out);
+		try {
+			out.close();
+		} catch (IOException ex) {
+			throw new RuntimeException("Writing email to " + file.getAbsolutePath() + " failed.", ex);
+		}
 	}
 
 	public static void writeMessage(Message message, OutputStream out) {
@@ -374,9 +393,14 @@ public class Eml {
 		return sb.toString();
 	}
 
-	public static String getToFormated(Message msg) throws MessagingException {
+	public static String getToFormated(Message msg) {
 		StringBuffer sb = new StringBuffer();
-		Address[] aa = msg.getRecipients(Message.RecipientType.TO);
+		Address[] aa;
+		try {
+			aa = msg.getRecipients(Message.RecipientType.TO);
+		} catch (MessagingException ex) {
+			throw new RuntimeException(ex);
+		}
 		for (int i = 0; i < aa.length; i++) {
 			sb.append(aa[i].toString());
 			if (i < aa.length - 1) sb.append(", ");
