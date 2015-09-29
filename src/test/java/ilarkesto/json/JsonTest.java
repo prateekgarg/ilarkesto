@@ -119,6 +119,14 @@ public class JsonTest extends ATest {
 	}
 
 	@Test
+	public void parseError() {
+		try {
+			JsonObject.parse("{\"a\":\"v\",}");
+			fail("Exception expected");
+		} catch (ParseException ex) {}
+	}
+
+	@Test
 	public void getParent() {
 		JsonObject witek = new JsonObject();
 		JsonObject address = new JsonObject();
