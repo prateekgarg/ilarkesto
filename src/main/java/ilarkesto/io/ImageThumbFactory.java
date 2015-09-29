@@ -25,10 +25,12 @@ public class ImageThumbFactory {
 	private Log log = Log.get(ImageThumbFactory.class);
 
 	private File thumbDir;
+	private ThumbCreator thumbCreator;
 
-	public ImageThumbFactory(File thumbDir) {
+	public ImageThumbFactory(File thumbDir, ThumbCreator thumbCreator) {
 		super();
 		this.thumbDir = thumbDir;
+		this.thumbCreator = thumbCreator;
 	}
 
 	public File getThumb(File imageFile, String folder, String size) {
@@ -42,15 +44,27 @@ public class ImageThumbFactory {
 	public File getThumb(File imageFile, String folder, String id, int size) {
 		File thumbFile = new File(thumbDir.getPath() + "/" + folder + "/" + size + "/" + id);
 		if (thumbFile.exists() && thumbFile.lastModified() == imageFile.lastModified()) return thumbFile;
-		createThumb(imageFile, thumbFile, size);
+		log.info("Creating thumb:", imageFile, "->", thumbFile);
+		IO.createDirectory(thumbFile.getParentFile());
+		thumbCreator.createThumb(imageFile, thumbFile, size);
 		return thumbFile;
 	}
 
-	private void createThumb(File imageFile, File thumbFile, int size) {
-		log.info("Creating thumb:", imageFile, "->", thumbFile);
-		BufferedImage image = Awt.loadImage(imageFile);
-		Image thumbImage = Awt.quadratizeAndLimitSize(image, size);
-		Awt.writeImage(thumbImage, "JPG", thumbFile);
-		thumbFile.setLastModified(imageFile.lastModified());
+	public static interface ThumbCreator {
+
+		void createThumb(File imageFile, File thumbFile, int size);
 	}
+
+	public static class AwtQuadratizeAndLimitSizeThumbCreator implements ThumbCreator {
+
+		@Override
+		public void createThumb(File imageFile, File thumbFile, int size) {
+			BufferedImage image = Awt.loadImage(imageFile);
+			Image thumbImage = Awt.quadratizeAndLimitSize(image, size);
+			Awt.writeImage(thumbImage, "JPG", thumbFile);
+			thumbFile.setLastModified(imageFile.lastModified());
+		}
+
+	}
+
 }
