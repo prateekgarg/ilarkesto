@@ -115,12 +115,14 @@ public class Json {
 			s = s.replace("\\u" + code, String.valueOf(ch));
 			idx = s.indexOf("\\u", idx);
 		}
-		s = s.replace("\\\\", "\\");
 		s = s.replace("\\\"", "\"");
-		s = s.replace("\\t", "\t");
-		s = s.replace("\\r", "\r");
-		s = s.replace("\\n", "\n");
+		s = s.replace("\\\\", "\\");
 		s = s.replace("\\/", "/");
+		s = s.replace("\\b", "\b");
+		s = s.replace("\\f", "\f");
+		s = s.replace("\\n", "\n");
+		s = s.replace("\\r", "\r");
+		s = s.replace("\\t", "\t");
 		return s;
 	}
 

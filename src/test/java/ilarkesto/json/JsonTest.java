@@ -11,9 +11,16 @@ public class JsonTest extends ATest {
 
 	@Test
 	public void parseString() {
+		assertEquals(Json.parseString("\\\""), "\"");
+		assertEquals(Json.parseString("\\/"), "/");
+		assertEquals(Json.parseString("\\b"), "\b");
+		assertEquals(Json.parseString("\\f"), "\f");
+		assertEquals(Json.parseString("\\n"), "\n");
+		assertEquals(Json.parseString("\\r"), "\r");
 		assertEquals(Json.parseString("\\t"), "\t");
-		assertEquals(Json.parseString("a \\n \\\\ \\/"), "a \n \\ /");
 		assertEquals(Json.parseString("\\u20ac"), "€");
+
+		assertEquals(Json.parseString("a \\n \\\\ \\/"), "a \n \\ /");
 	}
 
 	@Test
