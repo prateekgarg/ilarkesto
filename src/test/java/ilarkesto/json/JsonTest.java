@@ -120,10 +120,7 @@ public class JsonTest extends ATest {
 
 	@Test
 	public void parseError() {
-		try {
-			JsonObject.parse("{\"a\":\"v\",}");
-			fail("Exception expected");
-		} catch (ParseException ex) {}
+		assertEquals(JsonObject.parse("{\"a\":\"v\",}").toString(), "{\"a\":\"v\"}");
 	}
 
 	@Test

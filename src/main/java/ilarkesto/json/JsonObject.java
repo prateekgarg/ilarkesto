@@ -475,7 +475,8 @@ public class JsonObject {
 	}
 
 	private void parseElement(String json) {
-		parseWhitespace(json, "\"");
+		parseWhitespace(json, "'\"'");
+		if (json.charAt(idx) == '}') return;
 		if (json.charAt(idx) != '"') throw new ParseException("Expecting '\"'", json, idx);
 		idx++;
 		int nameEndIdx = Json.getFirstQuoting(json, idx);
