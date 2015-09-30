@@ -14,12 +14,34 @@
  */
 package ilarkesto.io;
 
+import ilarkesto.core.base.MapBuilder;
+import ilarkesto.json.JsonObject;
 import ilarkesto.testng.ATest;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Map;
 
 import org.apache.tools.ant.filters.StringInputStream;
 import org.testng.annotations.Test;
 
 public class IOTest extends ATest {
+
+	@Test
+	public void post() throws MalformedURLException, IOException {
+		String url = "http://httpbin.org/post";
+		Map parameters = new MapBuilder(true).put("field1", "a").put("field2", "ü").put("field3", "c").getMap();
+
+		String result = IO.postAndGetResult(url, parameters, IO.UTF_8, null, null);
+
+		// String result = new ApacheHttpDownloader().post(url, parameters, IO.UTF_8);
+
+		log.info(result);
+		JsonObject jForm = new JsonObject(result).getObject("form");
+		assertEquals(jForm.getString("field1"), "a");
+		assertEquals(jForm.getString("field2"), "ü");
+		assertEquals(jForm.getString("field3"), "c");
+	}
 
 	@Test
 	public void stringInputStream() {

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -474,13 +474,13 @@ public abstract class IO {
 		return ret;
 	}
 
-	public static URLConnection post(URL url, Map<String, String> parameters, String encoding, String username,
+	public static HttpURLConnection post(URL url, Map<String, String> parameters, String encoding, String username,
 			String password) throws IOException {
-		StringBuffer sb = null;
+		StringBuilder sb = null;
 		if (parameters != null) {
 			for (Map.Entry<String, String> entry : parameters.entrySet()) {
 				if (sb == null) {
-					sb = new StringBuffer();
+					sb = new StringBuilder();
 				} else {
 					sb.append("&");
 				}
@@ -489,19 +489,33 @@ public abstract class IO {
 				sb.append(URLEncoder.encode(entry.getValue(), UTF_8));
 			}
 		}
-		if (sb == null) sb = new StringBuffer();
 
-		URLConnection connection = url.openConnection();
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+		connection.setDoInput(true);
+		connection.setUseCaches(false);
+		// connection.setRequestProperty("Accept",
+		// "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+		// connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
+		// connection.setRequestProperty("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.5,en;q=0.3");
+		// connection.setRequestProperty("Connection", "keep-alive");
+		// connection.setRequestProperty("DNT", "1");
 		if (username != null) {
 			connection.setRequestProperty("Authorization",
 				"Basic " + Base64.encodeBytes((username + ":" + password).getBytes()));
 		}
-		connection.setDoOutput(true);
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(),
-				encoding == null ? getFileEncoding() : encoding));
-		out.println(sb.toString());
-		out.println();
-		close(out);
+		connection.setRequestProperty("User-Agent",
+			"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:41.0) Gecko/20100101 Firefox/41.0");
+		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + UTF_8);
+		if (sb != null) {
+			String encodedData = sb.toString(); // URLEncoder.encode(sb.toString());
+			connection.setRequestProperty("Content-Length", String.valueOf(encodedData.length()));
+			OutputStream os = connection.getOutputStream();
+			os.write(encodedData.getBytes());
+			os.close();
+		}
 		return connection;
 	}
 
@@ -518,8 +532,12 @@ public abstract class IO {
 
 	public static String postAndGetResult(URL url, Map<String, String> parameters, String encoding, String username,
 			String password) throws IOException {
-		URLConnection connection = post(url, parameters, encoding, username, password);
+		HttpURLConnection connection = post(url, parameters, encoding, username, password);
 		if (connection.getContentEncoding() != null) encoding = connection.getContentEncoding();
+		int responseCode = connection.getResponseCode();
+		if (responseCode != HttpURLConnection.HTTP_OK)
+			throw new RuntimeException("HTTP response code not OK: " + responseCode + " "
+					+ connection.getResponseMessage());
 		return readToString(connection.getInputStream(), encoding);
 	}
 

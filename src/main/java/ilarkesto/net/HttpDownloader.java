@@ -12,13 +12,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class HttpDownloader {
 
-	public static Class<? extends HttpDownloader> defaultType = HttpDownloader.class;
+	public static Class<? extends HttpDownloader> defaultType = ApacheHttpDownloader.class;
 
 	private static final Log log = Log.get(HttpDownloader.class);
 
@@ -29,6 +33,8 @@ public class HttpDownloader {
 	private String baseUrl;
 
 	private boolean sslServerCheckingDisabled = true;
+
+	private Map<String, String> cookieStore = new HashMap<String, String>();
 
 	public HttpDownloader() {
 		System.out.println("instantiated");
@@ -57,7 +63,48 @@ public class HttpDownloader {
 	public String post(String url, Map<String, String> parameters, Map<String, String> requestHeaders, String charset) {
 		if (requestHeaders != null && !requestHeaders.isEmpty())
 			throw new IllegalArgumentException("request headers not supported with " + getClass().getName());
-		return IO.postAndGetResult(url, parameters, charset, null, null);
+		HttpURLConnection connection;
+		try {
+			connection = IO.post(new URL(url), parameters, charset, null, null);
+		} catch (Exception ex) {
+			throw new RuntimeException("HTTP POST failed.", ex);
+		}
+		int responseCode;
+		String responseMessage;
+		try {
+			responseCode = connection.getResponseCode();
+			responseMessage = connection.getResponseMessage();
+		} catch (IOException ex) {
+			throw new RuntimeException("HTTP POST failed.", ex);
+		}
+		if (responseCode != HttpURLConnection.HTTP_OK)
+			throw new RuntimeException("HTTP response code not OK: " + responseCode + " " + responseMessage);
+
+		Map<String, List<String>> headers = connection.getHeaderFields();
+		// for (Entry<String, List<String>> headerEntry : headers.entrySet()) {
+		// String name = headerEntry.getKey();
+		// List<String> values = headerEntry.getValue();
+		// log.debug("HTTP response header:", name, values);
+		// }
+		List<String> cookieStrings = headers.get("Set-Cookie");
+		if (cookieStrings != null) {
+			for (String s : cookieStrings) {
+				s = s.substring(0, s.indexOf(';'));
+				int idx = s.indexOf('=');
+				String name = s.substring(0, idx);
+				String value = s.substring(idx + 1, s.length() - 1);
+				cookieStore.put(name, value);
+				log.info("Cookie stored:", name, "=", value);
+			}
+		}
+
+		String contentEncoding = connection.getContentEncoding();
+		if (contentEncoding == null) contentEncoding = IO.UTF_8;
+		try {
+			return IO.readToString(connection.getInputStream(), contentEncoding);
+		} catch (IOException ex) {
+			throw new RuntimeException("HTTP POST failed.", ex);
+		}
 	}
 
 	public final void downloadUrlToFile(String url, File file) {
@@ -158,4 +205,5 @@ public class HttpDownloader {
 	public void upload(String url, File file, Map<String, String> map, Object object, String charset) {
 		throw new RuntimeException("Not implemented: upload()");
 	}
+
 }
