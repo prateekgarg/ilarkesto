@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -27,9 +27,12 @@ import ilarkesto.json.JsonObject;
 import ilarkesto.swing.LoginPanel;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -92,7 +95,7 @@ public class FtpClient {
 		try {
 			deleted = file.isDirectory() ? client.removeDirectory(path) : client.deleteFile(path);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			throw new RuntimeException("Deleting remote file failed: " + path, ex);
 		}
 
 		if (!deleted)
@@ -150,6 +153,42 @@ public class FtpClient {
 		} catch (UnsupportedEncodingException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public void downloadFile(String path, File destination) {
+		downloadFile(path, destination, false);
+	}
+
+	public void downloadFile(String path, File destination, boolean deleteRemotey) {
+		log.debug("download:", path, "->", destination.getPath());
+
+		IO.createDirectory(destination.getParentFile());
+		File tmpFile = new File(destination.getParent() + "/" + destination.getName() + ".~downloading");
+
+		BufferedOutputStream out;
+		try {
+			out = new BufferedOutputStream(new FileOutputStream(tmpFile));
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException("Downloading file failed. Writing local file failed: "
+					+ tmpFile.getAbsolutePath(), ex);
+		}
+
+		try {
+			boolean loaded = client.retrieveFile(path, out);
+			out.close();
+			if (!loaded) throw new RuntimeException("Downloading file failed: " + path);
+		} catch (IOException ex) {
+			IO.deleteQuiet(tmpFile);
+			throw new RuntimeException("Downloading file failed: " + path, ex);
+		}
+
+		try {
+			if (deleteRemotey) deleteFile(path);
+			IO.move(tmpFile, destination, true);
+		} finally {
+			IO.deleteQuiet(tmpFile);
+		}
+
 	}
 
 	public void uploadText(String path, String text) {
@@ -318,6 +357,7 @@ public class FtpClient {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+		client.enterLocalPassiveMode();
 		client.setAutodetectUTF8(false);
 		client.setCharset(Charset.forName(IO.UTF_8));
 	}
