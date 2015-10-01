@@ -405,7 +405,7 @@ public class EntityGenerator extends DatobGenerator<EntityModel> {
 		if (!isKeytableValue()) return;
 
 		ln();
-		ln("    public static synchronized", getBeanClass(bean), " create(String key, String label) {");
+		ln("    public static", getBeanClass(bean), " create(String key, String label) {");
 		ln("        " + getBeanClass(bean), " ktvalue = getByKey(key);");
 		ln("        if (ktvalue != null) return ktvalue;");
 		ln("        ktvalue = new", getBeanClass(bean) + "();");
