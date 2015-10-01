@@ -367,16 +367,23 @@ public class FileEntityStore implements EntityStore {
 			BufferedOutputStream out;
 			try {
 				out = new BufferedOutputStream(new FileOutputStream(tmpFile));
-				out.flush();
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				throw new RuntimeException("Writing entity file for " + entity.getClass().getSimpleName() + ":"
+						+ entity.getId() + " failed: " + tmpFile.getPath(), ex);
 			}
 			beanSerializer.serialize(entity, out);
+			try {
+				out.flush();
+			} catch (IOException ex) {
+				throw new RuntimeException("Writing entity file for " + entity.getClass().getSimpleName() + ":"
+						+ entity.getId() + " failed: " + tmpFile.getPath(), ex);
+			}
 			IO.close(out);
 
 			if (!tmpFile.exists())
 				throw new RuntimeException("Writing entity file for " + entity.getClass().getSimpleName() + ":"
-						+ entity.getId() + " failed: " + tmpFile.getPath());
+						+ entity.getId() + " failed. File does not exist after serialization: " + tmpFile.getPath()
+						+ " | Entity: " + entity);
 
 			if (tmpFile.length() < 1)
 				throw new RuntimeException("Writing entity file caused empty file: " + tmpFile.getPath());
