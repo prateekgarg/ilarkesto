@@ -46,8 +46,9 @@ public abstract class AEditableMultiFieldField extends AEditableField {
 
 	@Override
 	public final IsWidget createEditorWidget() {
-		if (subFields == null) subFields = getSubFields();
 		VerticalPanel panel = new VerticalPanel();
+		initializeEditorPanel(panel);
+		if (subFields == null) subFields = getSubFields();
 		for (AEditableField subField : subFields) {
 			subField.setParent(this);
 			panel.add(createLabelWidget(subField));
@@ -64,6 +65,8 @@ public abstract class AEditableMultiFieldField extends AEditableField {
 		}
 		return panel;
 	}
+
+	protected void initializeEditorPanel(VerticalPanel panel) {}
 
 	public Widget createLabelWidget(AEditableField field) {
 		String labelText = field.getLabel();
