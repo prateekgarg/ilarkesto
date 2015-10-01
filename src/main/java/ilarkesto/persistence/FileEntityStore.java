@@ -368,6 +368,7 @@ public class FileEntityStore implements EntityStore {
 			BufferedOutputStream out;
 			try {
 				out = new BufferedOutputStream(new FileOutputStream(tmpFile));
+				out.flush();
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
