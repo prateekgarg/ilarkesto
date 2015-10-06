@@ -19,6 +19,8 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.persistance.Persistence;
+import ilarkesto.gwt.client.desktop.AActivityCatalog;
+import ilarkesto.gwt.client.desktop.AGwtNavigator;
 import ilarkesto.gwt.client.desktop.ActivityRuntimeStatistics;
 import ilarkesto.gwt.client.desktop.DataForClientLoader;
 import ilarkesto.gwt.client.persistence.AGwtEntityFactory;
@@ -46,6 +48,8 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 	private String abortMessage;
 	private GwtRpcDatabase entitiesBackend;
 	public ActivityRuntimeStatistics stats;
+	private AGwtNavigator navigator;
+	private AActivityCatalog activityCatalog;
 
 	protected abstract void init();
 
@@ -57,6 +61,8 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 	public abstract String getTokenForEntityActivity(Entity entity);
 
+	public abstract AActivityCatalog createActivityCatalog();
+
 	public AGwtApplication() {
 		if (singleton != null) throw new RuntimeException("GWT application already instantiated: " + singleton);
 		singleton = this;
@@ -67,6 +73,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 			@Override
 			public void onUncaughtException(Throwable ex) {
+				if (navigator != null) navigator.disable();
 				handleUnexpectedError(ex);
 			}
 		});
@@ -76,6 +83,7 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 	@Override
 	public final void onModuleLoad() {
+		activityCatalog = createActivityCatalog();
 		AGwtEntityFactory entityFactory = createEntityFactory();
 		if (entityFactory != null) {
 			entitiesBackend = new GwtRpcDatabase(entityFactory);
@@ -159,6 +167,10 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 		return singleton;
 	}
 
+	public final AActivityCatalog getActivityCatalog() {
+		return activityCatalog;
+	}
+
 	public abstract void sendChangesToServer(Collection<AEntity> modified, Collection<String> deleted,
 			Map<String, Map<String, String>> modifiedProperties, Runnable callback);
 
@@ -173,6 +185,11 @@ public abstract class AGwtApplication<D extends ADataTransferObject> implements 
 
 	public void load(DataForClientLoader loader) {
 		throw new RuntimeException("Not implemented in " + getClass());
+	}
+
+	public void setNavigator(AGwtNavigator navigator) {
+		this.navigator = navigator;
+		History.addValueChangeHandler(navigator);
 	}
 
 }
