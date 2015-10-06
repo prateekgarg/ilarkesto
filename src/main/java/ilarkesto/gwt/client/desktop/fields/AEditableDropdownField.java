@@ -97,6 +97,7 @@ public abstract class AEditableDropdownField extends AEditableField {
 	}
 
 	protected boolean isShowAsRadioButtons() {
+		if (true) return false; // TODO Bug: isMandatory() muss mit ausgewertet werden!
 		if (getParent() == null) return true;
 		if (isRadioButtonsHorizontal(getOptionKeys())) return true;
 		return !isParentMultiField();
