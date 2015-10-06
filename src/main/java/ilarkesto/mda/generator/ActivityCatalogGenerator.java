@@ -17,6 +17,7 @@ package ilarkesto.mda.generator;
 import ilarkesto.base.Comparators;
 import ilarkesto.core.base.Str;
 import ilarkesto.gwt.client.desktop.AActivity;
+import ilarkesto.gwt.client.desktop.AActivityCatalog;
 import ilarkesto.io.IO;
 import ilarkesto.mda.legacy.generator.AClassGenerator;
 
@@ -38,15 +39,22 @@ public class ActivityCatalogGenerator extends AClassGenerator {
 
 	@Override
 	protected void writeContent() {
+		writeInit();
 		writeGetActivityNames();
 		writeIsActivityAvailable();
 		writeInstantiateActivity();
 	}
 
+	private void writeInit() {
+		ln();
+		ln("    static {");
+		ln("        " + AActivityCatalog.class.getName() + ".INSTANCE = new ActivityCatalog();");
+		ln("    }");
+	}
+
 	private void writeGetActivityNames() {
 		ln();
-		s("    public static final " + List.class.getName() + "<String>", "ACTIVITY_NAMES = " + Arrays.class.getName()
-				+ ".asList(");
+		s("    public " + List.class.getName() + "<String>", "ACTIVITY_NAMES = " + Arrays.class.getName() + ".asList(");
 		List<File> activities = findActivities();
 		boolean first = true;
 		for (File file : activities) {
@@ -59,11 +67,18 @@ public class ActivityCatalogGenerator extends AClassGenerator {
 			s("\"" + activityName + "\"");
 		}
 		ln(");");
+
+		ln();
+		annotationOverride();
+		ln("    public " + List.class.getName() + "<String> getActivityNames() {");
+		ln("        return ACTIVITY_NAMES;");
+		ln("    }");
 	}
 
 	private void writeIsActivityAvailable() {
 		ln();
-		ln("    public static boolean isActivityAvailable(String name) {");
+		annotationOverride();
+		ln("    public  boolean isActivityAvailable(String name) {");
 		List<File> activities = findActivities();
 		for (File file : activities) {
 			String activityName = Str.removeSuffix(file.getName(), "Activity.java");
@@ -75,7 +90,8 @@ public class ActivityCatalogGenerator extends AClassGenerator {
 
 	private void writeInstantiateActivity() {
 		ln();
-		ln("    public static", AActivity.class.getName(), "instantiateActivity(String name) {");
+		annotationOverride();
+		ln("    public", AActivity.class.getName(), "instantiateActivity(String name) {");
 		List<File> activities = findActivities();
 		for (File file : activities) {
 			String activityName = Str.removeSuffix(file.getName(), "Activity.java");
@@ -115,6 +131,11 @@ public class ActivityCatalogGenerator extends AClassGenerator {
 	@Override
 	protected String getName() {
 		return "ActivityCatalog";
+	}
+
+	@Override
+	protected String getSuperclass() {
+		return AActivityCatalog.class.getName();
 	}
 
 	@Override
