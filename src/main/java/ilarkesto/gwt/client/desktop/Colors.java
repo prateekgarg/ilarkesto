@@ -2,6 +2,9 @@ package ilarkesto.gwt.client.desktop;
 
 public class Colors {
 
+	public static final String white = "#FFF";
+	public static final String black = "#000";
+
 	public static final String googleBlue = "#0099CC";
 	public static final String googleLightBlue = "#33B5E5";
 	public static final String googlePurple = "#9933CC";

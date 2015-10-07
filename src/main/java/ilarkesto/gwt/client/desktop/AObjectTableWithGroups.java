@@ -34,6 +34,7 @@ import java.util.Map;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.FontStyle;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.WhiteSpace;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -181,7 +182,7 @@ public abstract class AObjectTableWithGroups<O, G> implements IsWidget, Updatabl
 		if (row.object == null) {
 			Widget groupWidget;
 			try {
-				groupWidget = getGroupWidget(row.group);
+				groupWidget = createGroupWidget(row.group);
 			} catch (Exception ex) {
 				throw new RuntimeException(Str.getSimpleName(getClass()) + "getGroupWidget() failed");
 			}
@@ -215,11 +216,14 @@ public abstract class AObjectTableWithGroups<O, G> implements IsWidget, Updatabl
 		return 0;
 	}
 
-	protected Widget getGroupWidget(G group) {
+	protected Widget createGroupWidget(G group) {
 		if (group instanceof String) {
 			Label title = Widgets.text(group);
-			title.getElement().getStyle().setColor(Colors.googleBlue);
-			return Widgets.frame(title);
+			Style style = title.getElement().getStyle();
+			style.setColor("white");
+			style.setBackgroundColor(Colors.googleBlue);
+			style.setPadding(Widgets.defaultSpacing, Unit.PX);
+			return title;
 		}
 		return Widgets.widget(group);
 	}
