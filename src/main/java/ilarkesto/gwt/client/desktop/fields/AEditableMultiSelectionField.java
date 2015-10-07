@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -49,7 +49,7 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 
 	private Map<String, CheckBox> checkboxes;
 
-	private Table table;
+	private ItemsTable table;
 
 	public abstract void applyValue(List<String> selectedKeys);
 
@@ -89,10 +89,14 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 	public IsWidget createEditorWidget() {
 		Collection<String> optionKeys = createOptionKeys();
 		if (isShowAsTable(optionKeys)) {
-			table = new Table(optionKeys);
+			table = createItemsTable(optionKeys);
 			return table;
 		}
 		return createCheckboxesEditorWidget(optionKeys);
+	}
+
+	protected ItemsTable createItemsTable(Collection<String> optionKeys) {
+		return new ItemsTable(optionKeys);
 	}
 
 	protected boolean isShowAsTable(Collection<String> optionKeys) {
@@ -172,29 +176,28 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 
 	@Override
 	public IsWidget createDisplayWidget() {
-		return new Label(getDisplayText());
+		return new Label(createDisplayText());
 	}
 
-	protected String getDisplayText() {
+	protected String createDisplayText() {
 		Collection<String> selectedKeys = getSelectedOptionKeys();
 		List<String> values = new ArrayList<String>(selectedKeys.size());
 		for (String key : selectedKeys) {
-			values.add(getDisplayValueForKey(key));
+			String itemText = getDisplayValueForKey(key);
+			values.add(itemText);
 		}
-		String delimiter = isDisplayMultiline(values) ? "\n" : ", ";
-		String displayText = Str.concat(values, delimiter);
-		return displayText;
+		return isDisplayMultiline(values) ? Str.concat(values, "\n", "* ", null) : Str.concat(values, ", ");
 	}
 
 	protected boolean isDisplayMultiline(List<String> values) {
-		return Str.getTotalLength(values) >= 120;
+		return values.size() > 1 && Str.getTotalLength(values) >= 120;
 	}
 
-	class Table extends AObjectTable<Item> {
+	public class ItemsTable extends AObjectTable<Item> {
 
 		private ArrayList<Item> items;
 
-		public Table(Collection<String> optionKeys) {
+		public ItemsTable(Collection<String> optionKeys) {
 			Collection<String> selectedKeys = getSelectedOptionKeys();
 			items = new ArrayList<Item>(optionKeys.size());
 			for (String key : optionKeys) {
@@ -229,6 +232,11 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 
 			});
 
+			initColumns();
+
+		}
+
+		protected void initColumns() {
 			add(new AColumn() {
 
 				@Override
@@ -236,14 +244,7 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 					return getTextForOption(o.value);
 				}
 
-				@Override
-				public String getColor(Item o) {
-					if (o.selected) return Colors.googlePurple;
-					return Colors.greyedText;
-				}
-
 			});
-
 		}
 
 		@Override
@@ -276,6 +277,12 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 			return ret;
 		}
 
+		@Override
+		protected String getRowColor(Item o) {
+			if (o.selected) return Colors.googlePurple;
+			return Colors.greyedText;
+		}
+
 		class SelectAllInTableAction extends AAction {
 
 			@Override
@@ -293,7 +300,7 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 				for (Item item : items) {
 					item.selected = true;
 				}
-				Table.this.update();
+				ItemsTable.this.update();
 			}
 		}
 
@@ -314,13 +321,13 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 				for (Item item : items) {
 					item.selected = false;
 				}
-				Table.this.update();
+				ItemsTable.this.update();
 			}
 
 		}
 	}
 
-	class Item {
+	public static class Item {
 
 		private String key;
 		private Object value;
@@ -330,6 +337,18 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 			super();
 			this.key = key;
 			this.value = value;
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public Object getValue() {
+			return value;
+		}
+
+		public boolean isSelected() {
+			return selected;
 		}
 
 	}
