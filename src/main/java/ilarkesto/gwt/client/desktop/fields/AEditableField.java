@@ -34,7 +34,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -56,14 +55,8 @@ public abstract class AEditableField extends AField {
 	protected abstract void trySubmit() throws Exception;
 
 	@Override
-	public Widget createLabelWidget(String text) {
-		if (isMandatory() && !isValueSet()) {
-			Widget label = super.createLabelWidget(text);
-			Label marker = Widgets.textWarning("*");
-			marker.getElement().getStyle().setProperty("fontSize", label.getElement().getStyle().getFontSize());
-			return Widgets.horizontalFlowPanel(2, label, marker);
-		}
-		return super.createLabelWidget(text);
+	protected boolean isLabelMandatoryMarkerActive() {
+		return isMandatory() && !isValueSet();
 	}
 
 	protected final Widget createEditorWidgetForUse() {

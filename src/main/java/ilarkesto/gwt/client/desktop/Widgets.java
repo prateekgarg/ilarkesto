@@ -44,6 +44,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -319,13 +320,14 @@ public class Widgets {
 		return label;
 	}
 
-	public static Label textFieldlabel(Object text) {
+	public static Widget textFieldlabel(Object text, boolean appendMandatoryMarker) {
 		if (text == null) return null;
-		Label label = new Label(Str.format(text));
-		Style style = label.getElement().getStyle();
-		style.setFontSize(65, Unit.PCT);
-		style.setColor("#999999");
-		return label;
+
+		String html = "<span style='color: #999; font-size: 65%;'>" + Str.toHtml(Str.format(text), true);
+		if (appendMandatoryMarker) html += "<span style='color: " + Colors.googleOrange + "'> *</span>";
+		html += "</span>";
+
+		return new HTML(html);
 	}
 
 	public static Label textSecondary(Object object) {

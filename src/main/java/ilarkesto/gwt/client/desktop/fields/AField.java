@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -19,7 +19,6 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.gwt.client.Updatable;
 import ilarkesto.gwt.client.desktop.Widgets;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.dom.client.Style.TextAlign;
 import com.google.gwt.dom.client.Style.Unit;
@@ -40,10 +39,6 @@ public abstract class AField implements Updatable {
 	public abstract String getLabel();
 
 	public abstract IsWidget createDisplayWidget();
-
-	public String getLabelColor() {
-		return "#999999";
-	}
 
 	public String getMilestoneLabel() {
 		return getLabel();
@@ -146,11 +141,13 @@ public abstract class AField implements Updatable {
 	}
 
 	protected Widget createLabelWidget(String labelText) {
-		Label label = Widgets.textFieldlabel(labelText);
-		Style labelStyle = label.getElement().getStyle();
-		labelStyle.setColor(getLabelColor());
-		if (isLabelAlignRight()) labelStyle.setTextAlign(TextAlign.RIGHT);
+		Widget label = Widgets.textFieldlabel(labelText, isLabelMandatoryMarkerActive());
+		if (isLabelAlignRight()) label.getElement().getStyle().setTextAlign(TextAlign.RIGHT);
 		return label;
+	}
+
+	protected boolean isLabelMandatoryMarkerActive() {
+		return false;
 	}
 
 	protected String getHrefIcon() {

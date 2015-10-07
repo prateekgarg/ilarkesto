@@ -120,7 +120,7 @@ public abstract class AObjectTableWithGroups<O, G> implements IsWidget, Updatabl
 					columnTitle = "ERROR: " + Str.formatException(ex);
 				}
 
-				Label titleWidget = Widgets.textFieldlabel(columnTitle);
+				Widget titleWidget = Widgets.textFieldlabel(columnTitle, false);
 				if (titleWidget != null && (sortColumnIndex == column.index)) {
 					// Sortierte Spalte hervorheben
 					Style style = titleWidget.getElement().getStyle();
