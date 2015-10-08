@@ -351,6 +351,10 @@ public abstract class AEditableMultiSelectionField extends AEditableField {
 			return selected;
 		}
 
+		public <T> T getValue(Class<T> valueType) {
+			return (T) value;
+		}
+
 	}
 
 	class SelectAllCheckboxesAction extends AAction {
