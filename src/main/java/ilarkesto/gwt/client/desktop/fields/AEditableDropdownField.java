@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- *
+ * 
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see <http://www.gnu.org/licenses/>.
  */
@@ -16,6 +16,7 @@ package ilarkesto.gwt.client.desktop.fields;
 
 import ilarkesto.core.base.EnumMapper;
 import ilarkesto.core.base.Utl;
+import ilarkesto.gwt.client.desktop.Colors;
 import ilarkesto.gwt.client.desktop.Widgets;
 
 import java.util.Collection;
@@ -71,6 +72,8 @@ public abstract class AEditableDropdownField extends AEditableField {
 			for (String value : radioButtons.keySet()) {
 				RadioButton radioButton = radioButtons.get(value);
 				if (!radioButton.getValue()) continue;
+				if (NULL_KEY.equals(value)) value = null;
+				log.debug("XXXXXXXXXX value = ", value);
 				return value;
 			}
 		} else {
@@ -108,7 +111,7 @@ public abstract class AEditableDropdownField extends AEditableField {
 	}
 
 	protected boolean isRadioButtonsHorizontal(Collection<String> optionKeys) {
-		return optionKeys.size() <= 2;
+		return isMandatory() ? optionKeys.size() <= 2 : optionKeys.size() <= 1;
 	}
 
 	private Panel createRadioButtonPanel() {
@@ -116,44 +119,64 @@ public abstract class AEditableDropdownField extends AEditableField {
 
 		boolean horizontal = isRadioButtonsHorizontal(getOptionKeys());
 		Panel panel = horizontal ? new FlowPanel() : new VerticalPanel();
+
+		if (!isMandatory()) {
+			panel.add(createRadioButton(horizontal, NULL_KEY, getNullValueLabel()));
+		}
 		for (String key : getOptionKeys()) {
 			String label = getOptions().getValueForKey(key);
-
-			RadioButton radioButton = new RadioButton(getId(), label);
-			radioButton.getElement().setId(getId() + "_radiobutton_");
-
-			final boolean selected = key.equals(getSelectedOptionKey());
-			radioButton.setValue(selected);
-
-			if (getEditVetoMessage() == null) {} else {
-				radioButton.setEnabled(false);
-				radioButton.setTitle(getEditVetoMessage());
-			}
-			Style style = radioButton.getElement().getStyle();
-			style.setProperty("minWidth", "100px");
-			style.setProperty("minHeight", "32px");
-			style.setDisplay(Display.BLOCK);
-			style.setFloat(com.google.gwt.dom.client.Style.Float.LEFT);
-			style.setWidth(horizontal ? getTextBoxWidth() / 2 : getTextBoxWidth(), Unit.PX);
-			style.setMarginRight(Widgets.defaultSpacing, Unit.PX);
-
-			if (!isParentMultiField()) {
-				radioButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-					@Override
-					public void onValueChange(ValueChangeEvent<Boolean> event) {
-						if (fieldEditorDialogBox == null) return;
-						fieldEditorDialogBox.submit();
-					}
-				});
-			}
-
-			radioButtons.put(key, radioButton);
-			panel.add(radioButton);
+			panel.add(createRadioButton(horizontal, key, label));
 		}
 		panel.add(Widgets.clear());
 
 		return panel;
+	}
+
+	protected String getNullValueLabel() {
+		return "keine Auswahl";
+	}
+
+	private boolean isSelectedOptionKey(String key) {
+		String selectedKey = getSelectedOptionKey();
+		if (NULL_KEY.equals(key) && selectedKey == null) return true;
+		if (key.equals(selectedKey)) return true;
+		return false;
+	}
+
+	private RadioButton createRadioButton(boolean horizontal, String key, String label) {
+		RadioButton radioButton = new RadioButton(getId(), label);
+		radioButton.getElement().setId(getId() + "_radiobutton_");
+
+		radioButton.setValue(isSelectedOptionKey(key));
+
+		if (getEditVetoMessage() != null) {
+			radioButton.setEnabled(false);
+			radioButton.setTitle(getEditVetoMessage());
+		}
+
+		Style style = radioButton.getElement().getStyle();
+		style.setProperty("minWidth", "100px");
+		style.setProperty("minHeight", "32px");
+		style.setDisplay(Display.BLOCK);
+		style.setFloat(com.google.gwt.dom.client.Style.Float.LEFT);
+		style.setWidth(horizontal ? getTextBoxWidth() / 2 : getTextBoxWidth(), Unit.PX);
+		style.setMarginRight(Widgets.defaultSpacing, Unit.PX);
+		if (NULL_KEY.equals(key)) {
+			style.setColor(Colors.greyedText);
+		}
+
+		if (!isParentMultiField()) {
+			radioButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<Boolean> event) {
+					if (fieldEditorDialogBox == null) return;
+					fieldEditorDialogBox.submit();
+				}
+			});
+		}
+		radioButtons.put(key, radioButton);
+		return radioButton;
 	}
 
 	private ListBox createListBox() {
