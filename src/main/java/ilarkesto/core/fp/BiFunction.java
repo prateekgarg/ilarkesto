@@ -1,4 +1,4 @@
-package ilarkesto.functional;
+package ilarkesto.core.fp;
 
 public abstract class BiFunction<A, B, C> {
 

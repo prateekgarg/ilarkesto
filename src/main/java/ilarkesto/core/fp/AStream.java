@@ -1,17 +1,17 @@
-package ilarkesto.functional;
+package ilarkesto.core.fp;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public abstract class Stream<A> {
+public abstract class AStream<A> {
 
 	protected abstract A next();
 
 	protected abstract boolean hasNext();
 
-	private static class InitialStream<A> extends Stream<A> {
+	private static class InitialStream<A> extends AStream<A> {
 
 		private Iterator<A> source;
 
@@ -30,19 +30,19 @@ public abstract class Stream<A> {
 		}
 	}
 
-	private static class MapStream<A, B> extends Stream<B> {
+	private static class MapStream<A, B> extends AStream<B> {
 
-		private Stream<A> upstream;
+		private AStream<A> upstream;
 		private Function<A, B> mapping;
 
-		private MapStream(Stream<A> upstream, Function<A, B> mapping) {
+		private MapStream(AStream<A> upstream, Function<A, B> mapping) {
 			this.upstream = upstream;
 			this.mapping = mapping;
 		}
 
 		@Override
 		protected B next() {
-			return mapping.apply(upstream.next());
+			return mapping.eval(upstream.next());
 		}
 
 		@Override
@@ -52,12 +52,12 @@ public abstract class Stream<A> {
 
 	}
 
-	private static class FilterStream<A> extends Stream<A> {
+	private static class FilterStream<A> extends AStream<A> {
 
-		private Stream<A> upstream;
+		private AStream<A> upstream;
 		private Predicate<A> survivesFilter;
 
-		private FilterStream(Stream<A> upstream, Predicate<A> survivesFilter) {
+		private FilterStream(AStream<A> upstream, Predicate<A> survivesFilter) {
 			this.upstream = upstream;
 			this.survivesFilter = survivesFilter;
 		}
@@ -88,15 +88,15 @@ public abstract class Stream<A> {
 
 	}
 
-	public static <A> Stream<A> start(Iterable<A> source) {
+	public static <A> AStream<A> start(Iterable<A> source) {
 		return new InitialStream<A>(source.iterator());
 	}
 
-	public <B> Stream<B> map(Function<A, B> mapping) {
+	public <B> AStream<B> map(Function<A, B> mapping) {
 		return new MapStream<A, B>(this, mapping);
 	}
 
-	public Stream<A> filter(Predicate<A> survivesFilter) {
+	public AStream<A> filter(Predicate<A> survivesFilter) {
 		return new FilterStream<A>(this, survivesFilter);
 	}
 
