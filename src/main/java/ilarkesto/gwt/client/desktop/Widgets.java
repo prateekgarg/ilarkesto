@@ -73,6 +73,13 @@ public class Widgets {
 		return image;
 	}
 
+	public static Image image(String url, Integer width) {
+		if (url == null) return null;
+		Image image = new Image(url);
+		if (width != null) image.setWidth(width + "px");
+		return image;
+	}
+
 	public static FlowPanel flowPanel(Object... objects) {
 		FlowPanel panel = new FlowPanel();
 		for (Object object : objects) {
