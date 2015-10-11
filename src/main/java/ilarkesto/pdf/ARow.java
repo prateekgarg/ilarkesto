@@ -122,4 +122,8 @@ public abstract class ARow {
 		return cells;
 	}
 
+	public void addMissingCells() {
+		int missingCellCount = table.getColumnCount() - getCellCount();
+		if (missingCellCount > 0) cell().setColspan(missingCellCount);
+	}
 }

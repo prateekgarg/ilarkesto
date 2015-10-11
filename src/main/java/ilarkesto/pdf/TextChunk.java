@@ -49,4 +49,9 @@ public class TextChunk extends AParagraphElement {
 		return fontStyle;
 	}
 
+	@Override
+	public String toString() {
+		return text == null ? "<null>" : text.toString();
+	}
+
 }

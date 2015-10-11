@@ -16,6 +16,7 @@ package ilarkesto.pdf;
 
 import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Color;
+import ilarkesto.core.base.Str;
 import ilarkesto.core.html.Html;
 
 import java.io.File;
@@ -117,4 +118,8 @@ public abstract class AParagraph extends APdfElement {
 
 	// --- dependencies ---
 
+	@Override
+	public String toString() {
+		return "P: " + Str.format(elements);
+	}
 }
