@@ -219,7 +219,7 @@ public class FtpClient {
 
 	public void uploadFileIfNotThere(String path, File file) {
 		log.debug("Upload:", path);
-		if (!file.exists()) return;
+		if (file == null || !file.exists()) return;
 
 		FTPFile ftpFile = getFile(path);
 		if (ftpFile != null) {
@@ -232,7 +232,7 @@ public class FtpClient {
 
 	public void uploadFile(String path, File file) {
 		log.info("Upload:", path);
-		if (!file.exists()) return;
+		if (file == null || !file.exists()) return;
 
 		if (file.isDirectory()) { throw new IllegalStateException("Uploading file failed. File is a directory: "
 				+ file.getAbsolutePath()); }

@@ -14,6 +14,7 @@
  */
 package ilarkesto.io;
 
+import ilarkesto.core.base.Filename;
 import ilarkesto.core.logging.Log;
 
 import java.awt.Image;
@@ -42,6 +43,12 @@ public class ImageThumbFactory {
 	}
 
 	public File getThumb(File imageFile, String folder, String id, int size) {
+		if (!imageFile.exists()) return null;
+		if (new Filename(id).getSuffix() == null) {
+			String suffix = new Filename(imageFile.getName()).getSuffix();
+			if (suffix == null) suffix = "jpg";
+			id += "." + suffix;
+		}
 		File thumbFile = new File(thumbDir.getPath() + "/" + folder + "/" + size + "/" + id);
 		if (thumbFile.exists() && thumbFile.lastModified() == imageFile.lastModified()) return thumbFile;
 		log.info("Creating thumb:", imageFile, "->", thumbFile);
