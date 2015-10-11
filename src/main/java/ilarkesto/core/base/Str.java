@@ -117,6 +117,7 @@ public class Str {
 	}
 
 	public static String toFileCompatibleString(String s, String spaceReplacement) {
+		if (s == null) return "null";
 		if (spaceReplacement != null) s = s.replace(" ", spaceReplacement);
 		s = s.replace('/', '-');
 		s = s.replace('\\', '-');
